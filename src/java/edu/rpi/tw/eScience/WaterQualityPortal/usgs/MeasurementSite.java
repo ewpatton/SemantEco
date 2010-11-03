@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MeasurementSite {
-	String loc_id;
+	private String loc_id;
 	double lat,lon;
 	String country_code;
 	Integer state_code;
@@ -20,6 +20,14 @@ public class MeasurementSite {
 	    	String unit;  //g/ml
 	    	
 	    }
+
+		public void setId(String loc_id) {
+			this.loc_id = loc_id;
+		}
+
+		public String getId() {
+			return loc_id;
+		}
 		   
 
 
