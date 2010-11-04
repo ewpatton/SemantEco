@@ -5,6 +5,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -87,9 +90,11 @@ public final class USGSParser {
     		MeasurementSite x = new MeasurementSite();//i cannot include the id, lat,long here 
     		data.put(x.getId(), x);//I cannot use get here
     		
-    		
-    		
     		}
 		
+    	
+    	
+    	
+    	
     }
 }
