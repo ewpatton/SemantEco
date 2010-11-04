@@ -1,14 +1,15 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.usgs;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.*;
 
 public class MeasurementSite  {
-    USGSParser parser;
+    USGSParser parser = new USGSParser();
 	private String loc_id;
 	double lat = Double.parseDouble(parts[2]);
-	double longtitude = Double.parseDouble(parts[11])
+	double longtitude = Double.parseDouble(parts[11]);
 	String country_code;
 	Integer state_code = Integer.parseInt(parts[24]);
 	Integer county_code = Integer.parseInt(parts[12]);
