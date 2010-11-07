@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
 
+import edu.rpi.tw.eScience.WaterQualityPortal.usgs.MeasurementSite.Measurement;
+
 
 public final class USGSParser {
 	
@@ -79,7 +81,7 @@ public final class USGSParser {
     	while ((line=readbuffer.readLine())!=null){
     		
 
-    		String parts[] = new String[10000];
+    		String parts[] = new String[1000];
     		parts = line.split("\t");
     		String loc_id = parts[2];//I am confused about what position the elements have to take
     		String lat = parts[11];
@@ -91,10 +93,49 @@ public final class USGSParser {
     		data.put(x.getId(), x);//I cannot use get here
     		
     		}
+    	
+    	/*MeasurementSite()  {
+    	    USGSParser parser = new USGSParser();
+    	    String parts [];//not sure for that
+    		private String loc_id;
+    		double lat = Double.parseDouble(parts[2]);
+    		double longtitude = Double.parseDouble(parts[11]);
+    		String country_code;
+    		Integer state_code = Integer.parseInt(parts[24]);
+    		Integer county_code = Integer.parseInt(parts[12]);
+    		ArrayList<Measurement> data = new ArrayList<Measurement>(); 
+    	    	
+    	}
+    		    void Measurement() {
+    		    	String ID; 
+    		    	Date date;
+    		    	String time;
+    		    	String chemical;
+    		    	double value;
+    		    	String unit;  //g/ml
+    		    	
+    		    }*/
+
+    			public void setId(String loc_id) {
+    				this.loc_id = loc_id;
+    			}
+
+    			public String getId() {
+    				return loc_id;
+    			}
+    			   
+
+
+    	
 		
     	
     	
     	
     	
-    }
+    
+    	
+    	
+	
+}  
+	
 }

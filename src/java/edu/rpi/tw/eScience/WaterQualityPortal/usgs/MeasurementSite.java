@@ -7,6 +7,7 @@ import java.util.*;
 
 public class MeasurementSite  {
     USGSParser parser = new USGSParser();
+    String parts [];//not sure for that
 	private String loc_id;
 	double lat = Double.parseDouble(parts[2]);
 	double longtitude = Double.parseDouble(parts[11]);
