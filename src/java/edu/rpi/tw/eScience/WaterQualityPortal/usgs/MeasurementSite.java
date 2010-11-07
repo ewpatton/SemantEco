@@ -33,6 +33,12 @@ public class MeasurementSite  {
 		public String getId() {
 			return loc_id;
 		}
+
+		public void adddata(
+				edu.rpi.tw.eScience.WaterQualityPortal.usgs.MeasurementSite.Measurement x) {
+			// TODO Auto-generated method stub
+			
+		}
 		   
 
 
