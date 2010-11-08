@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.usgs.MeasurementSite.Measurement;
 
 public final class USGSParser {
 	
-	boolean downloadSiteInfo1(String state, String county) {
+	static boolean downloadSiteInfo1(String state, String county) {
 		String firstPart="/Station/search?north=&west=&east=&south=&within=&lat=&long=&statecode=";
 		String secondPart="&countycode=";
 		String thirdPart="&siteType=&organization=&siteid=&huc=&sampleMedia=&characteristicType=&characteristicName=&pCode=&startDateLo=&startDateHi=&mimeType=tab&bBox=&zip=yes";
@@ -66,7 +67,7 @@ public final class USGSParser {
 		return true;
 	}
 	
-	boolean downloadSiteInfo2(String state, String county) {
+	static boolean downloadSiteInfo2(String state, String county) {
 		String firstPart="/Result/search?north=&west=&east=&south=&within=&lat=&long=&statecode=";
 		String secondPart="&countycode=";
 		String thirdPart="&siteType=&organization=&siteid=&huc=&sampleMedia=&characteristicType=&characteristicName=&pCode=&startDateLo=&startDateHi=&mimeType=tab&bBox=&zip=yes";
@@ -129,31 +130,41 @@ public final class USGSParser {
 		
         //@SuppressWarnings("unused")
 		HashMap<String,MeasurementSite> data = new HashMap<String,MeasurementSite>();
+		
+		downloadSiteInfo1("44", "44%3A001");
     	
-    	final BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/data.txt"));
+    	BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/sites.txt"));
     	String line1;
+    	boolean first1 = true;
     	while ((line1=readbuffer1.readLine())!=null){
-    		
+    		if(first1) {
+    			first1 = false;
+    			continue;
+    		}
 
     		String parts[] = new String[1000];
     		parts = line1.split("\t");
-    		String loc_id = parts[2];//I am confused about what position the elements have to take
+    		String loc_id = parts[2];
     		String lat = parts[11];
     		String longitude = parts[12];
     		String country_code = parts[24]; 
     		String state_code = parts[25];
     		String county_code = parts[26];// I have problem with the array bounds here
-    		MeasurementSite x = new MeasurementSite();//i cannot include the id, lat,long here 
-    		data.put(x.getId(), x);//I cannot use get here
+    		MeasurementSite x = new USGSParser.MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),Integer.parseInt(country_code),Integer.parseInt(state_code),Integer.parseInt(county_code)); 
+    		data.put(x.getID(), x);//I cannot use get here
     		
     		}
     	
     
-    	
+    	downloadSiteInfo2("44", "44%3A001");
         BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
     	String line2;
+    	boolean first2 = true;
     	while ((line2=readbuffer2.readLine())!=null){
-    		
+    		if(first2) {
+    			first2 = false;
+    			continue;
+    		}
 
     		String parts[] = new String[1000];
     		parts = line2.split("\t");
@@ -162,69 +173,113 @@ public final class USGSParser {
     		String time = parts[7];
     		String chemical = parts[31]; 
     		String value = parts[33];
-    		String unit = parts[34];// I have problem with the array bounds here
-    		Measurement x = new Measurement();//i cannot include the id, lat,long here 
-    		MeasurementSite temp = data.getID(); 
-    		temp.adddata(x);
+    		String unit = parts[34];
     		
-    		
+    		MeasurementSite temp = data.get(ID);
+    		@SuppressWarnings("deprecation")
+			USGSParser.MeasurementSite.Measurement x = new USGSParser.MeasurementSite.Measurement(ID,new Date(date),time,chemical,Double.parseDouble(value),unit);
+    		temp.addData(x);
     		}
-	}  	
-    	void MeasurementSite()  {
-    	    USGSParser parser = new USGSParser();
-    	    String parts[];//not sure for that
-    		String loc_id;
-    		double lat = Double.parseDouble(parts[11]);
-    		double longtitude = Double.parseDouble(parts[12]);
-    		String country_code;
-    		Integer state_code = Integer.parseInt(parts[25]);
-    		Integer county_code = Integer.parseInt(parts[26]);
-    		ArrayList<Measurement> data = new ArrayList<Measurement>(); 
-    	    	
+    	for(MeasurementSite x : data.values()) {
+    		System.out.println(x.toString());
     	}
-    		    void Measurement() {
-    		        USGSParser parser = new USGSParser();
-    	            String parts [];//not sure for that
-    		    	String ID; 
-    		    	Date date;
-    		    	String time;
-    		    	String chemical;
-    		    	double value = Double.parseDouble(parts[33]);
-    		    	String unit;  //g/ml
-    		    	
+	}
+
+ 	
+    	static class MeasurementSite {
+    		double lat,longitude;
+    		String loc_id;
+    		Integer country_code;
+    		Integer state_code;
+    		Integer county_code;
+    		ArrayList<Measurement> data = new ArrayList<Measurement>(); 
+
+			public void setID(String ID) {
+				loc_id = ID;
+			}
+
+			public void addData(
+					edu.rpi.tw.eScience.WaterQualityPortal.usgs.USGSParser.MeasurementSite.Measurement x) {
+				data.add(x);
+			}
+
+			public String getID() {
+				return loc_id;
+			}
+			
+			@Override
+			public String toString() {
+				String result = "";
+				result += "<TestingSite rdf:ID=\"";
+				result += "<TestingSite rdf:Country_code=\"";
+				result += "<TestingSite rdf:State_code=\"";
+				result += "<TestingSite rdf:County_code=\"";
+				result += loc_id;
+				result += country_code;
+				result +=state_code;
+				result +=county_code;
+				result += "\">\n";
+				result += "<hasLocation>\n";
+				result += "<geo:Point>\n";
+				result += "<geo:lat rdf:datatype=\"&xsd;float\">"+lat+"</geo:lat>\n";
+				result += "<geo:long rdf:datatype=\"&xsd;float\">"+longitude+"</geo:long>\n";
+				result += "</geo:Point>\n";
+				result += "</hasLocation>\n";
+                for(Measurement m : data) {
+    				result += "<hasMeasurement>\n";
+                	result += m.toString();
+                    result += "</hasMeasurement>\n";
+                }
+				result += "</TestingSite>\n";
+				return result;
+			}
+	
+    		public MeasurementSite(String locationID, double latitude, double longitude, Integer countrycode, Integer statecode, Integer countycode)  {
+	    	    this.loc_id = locationID;
+	    	    this.lat = latitude;
+	    	    this.longitude = longitude;
+	    	    this.country_code = countrycode;
+	    	    this.state_code = statecode;
+	    	    this.county_code = countycode;
+	    	}
+    		
+    		static class Measurement {
+    			String ID;
+    			Date date;
+    			String time;
+    			String chemical;
+    			double value;
+    			String unit;
+    			
+    			@Override
+    			public String toString() {
+    				String result = "";
+    				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    				result += "<Measurement>\n";
+    				result += "<hasDate rdf:datatype=\"&xsd;dateTime\">"+df.format(date)+"</hasDate>\n";
+                    result += "<hasUnit>"+unit+"</hasUnit>\n";
+                    result += "<hasMeasurement>"+value+"</hasMeasurement>\n";
+                    result += "<hasElement>\n";
+                    result += "<Element rdf:about=\"#"+chemical+"\"/>\n";
+                    result += "</hasElement>\n";
+    				result += "</Measurement>\n";
+    				return result;
+    			}
+    			
+    			@SuppressWarnings("deprecation")
+				public Measurement(String identification, Date Startdate, String StartTime, String chemicalname, double value_measurement, String unit_measurement) {
+    		    	this.ID = identification; 
+    		    	this.date = Startdate;
+    		    	this.time = StartTime;
+    		    	String[] parts = time.split(":");
+    		    	this.date.setHours(Integer.parseInt(parts[0]));
+    		    	this.date.setMinutes(Integer.parseInt(parts[1]));
+    		    	this.date.setSeconds(Integer.parseInt(parts[2]));
+    		        this.chemical = chemicalname;
+    		    	this.value = value_measurement;
+    		    	this.unit = unit_measurement;  
     		    }
 
-    	/*private static BufferedReader extracted() throws FileNotFoundException {
-		final BufferedReader readbuffer = new BufferedReader(new FileReader("/tmp/sites.txt"));
-		return readbuffer;
-	}*/
-
-    			public void setId(String loc_id) {
-    				this.loc_id = loc_id;
-    			}
-
-    			public String getId(String loc_id) {
-    				return loc_id;
-    			}
-    			   
-
-    			public void setID(String ID) {
-    				this.ID = ID;
-    			}
-
-    			public String getID(String ID) {
-    				return ID;
-    			}
-    	
-		
-    	
-    	
-    	
-    	
-    
-    	
-    	
-	
-  
-	
+    		}
+    	}
 }
