@@ -149,9 +149,9 @@ public final class USGSParser {
     		String longitude = parts[12];
     		String country_code = parts[24]; 
     		String state_code = parts[25];
-    		String county_code = parts[26];// I have problem with the array bounds here
-    		MeasurementSite x = new USGSParser.MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),Integer.parseInt(country_code),Integer.parseInt(state_code),Integer.parseInt(county_code)); 
-    		data.put(x.getID(), x);//I cannot use get here
+    		String county_code = parts[26];
+    		USGSParser.MeasurementSite x = new USGSParser.MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),Integer.parseInt(country_code),Integer.parseInt(state_code),Integer.parseInt(county_code)); 
+    		data.put(x.getID(), x);
     		
     		}
     	
@@ -183,6 +183,14 @@ public final class USGSParser {
     	for(MeasurementSite x : data.values()) {
     		System.out.println(x.toString());
     	}
+    	
+    	/*catch(Exception e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    	return true;*/
+    	
+    	
 	}
 
  	
@@ -216,8 +224,8 @@ public final class USGSParser {
 				result += "<TestingSite rdf:County_code=\"";
 				result += loc_id;
 				result += country_code;
-				result +=state_code;
-				result +=county_code;
+				result += state_code;
+				result += county_code;
 				result += "\">\n";
 				result += "<hasLocation>\n";
 				result += "<geo:Point>\n";
