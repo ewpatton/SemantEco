@@ -132,4 +132,32 @@
       </owl:Restriction>
     </owl:intersectionOf>
   </owl:Class>
+
+  <owl:Class rdf:about="#ExcessiveColiformMeasurement-1">
+    <rdfs:subClassOf rdf:resource="&epa;ExceededThreshold"/>
+    <owl:intersectionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="&epa;WaterMeasurement"/>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="&epa;hasMeasuredValue"/>
+	<owl:someValuesFrom>
+	  <rdfs:Datatype>
+	    <owl:onDatatype rdf:resource="&xsd;float"/>
+	    <owl:withRestrictions rdf:parseType="Collection">
+	      <rdf:Description rdf:about="#Threshold-Drinking">
+		<xsd:minInclusive rdf:datatype="&xsd;float">200</xsd:minInclusive>
+	      </rdf:Description>
+	    </owl:withRestrictions>
+	  </rdfs:Datatype>
+	</owl:someValuesFrom>
+      </owl:Restriction>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="&epa;hasMeasuredElement"/>
+	<owl:hasValue rdf:resource="&elem;Coliform,_fecal_general"/>
+      </owl:Restriction>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="&epa;testNumber"/>
+        <owl:hasValue rdf:datatype="&xsd;nonNegativeInteger">1</owl:hasValue>
+      </owl:Restriction>
+    </owl:intersectionOf>
+  </owl:Class>
 </rdf:RDF>
