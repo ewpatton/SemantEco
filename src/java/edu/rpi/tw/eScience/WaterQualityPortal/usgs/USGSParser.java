@@ -143,7 +143,7 @@ public final class USGSParser {
     		}
 
     		String parts[] = new String[1000];
-    		parts = line1.split("\t");
+    		parts = line1.split("\t");// \n
     		String loc_id = parts[2];
     		String lat = parts[11];
     		String longitude = parts[12];
@@ -167,8 +167,8 @@ public final class USGSParser {
     		}
 
     		String parts[] = new String[1000];
-    		parts = line2.split("\t");
-    		String ID = parts[21];//I am confused about what position the elements have to take
+    		parts = line2.split("\t");//\n
+    		String ID = parts[21];
     		String date= parts[6];
     		String time = parts[7];
     		String chemical = parts[31]; 
