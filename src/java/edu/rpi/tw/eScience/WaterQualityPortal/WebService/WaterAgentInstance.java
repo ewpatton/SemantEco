@@ -18,7 +18,7 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 public class WaterAgentInstance implements HttpHandler {
 	
 	public void handle(HttpExchange arg0) throws IOException {
-
+		try {
 		//get query string
 		String queryString=parseRequest(arg0);
 		
@@ -35,7 +35,9 @@ public class WaterAgentInstance implements HttpHandler {
 		os.write(response.getBytes());
 		os.flush();
 		os.close();
-		
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	public String parseRequest(HttpExchange arg0) throws IOException
 	{
