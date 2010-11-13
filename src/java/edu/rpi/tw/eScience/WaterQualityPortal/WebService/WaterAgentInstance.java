@@ -24,8 +24,11 @@ public class WaterAgentInstance implements HttpHandler {
 			String queryString=parseRequest(arg0);
 			
 			//load ontology model
-			Model model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			model.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
+			Model owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
+			Model pmlModel = ModelFactory.createDefaultModel();
+			pmlModel.read("http://was.tw.rpi.edu/data/RIDEM-pml.owl");
+			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
 			//get query result in xml format
 			String response = getQueryResult(model,queryString);
