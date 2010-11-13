@@ -43,16 +43,12 @@ public class ZipCodeLookup {
 		}
 	}
 	
-	public static ZipCodeLookup execute(String zipCode) {
+	public static ZipCodeLookup execute(String zipCode) throws Exception {
 		if(stateLookup==null) doStateLookup();
 		ZipCodeLookup zcl = null;
 		if(cached.containsKey(zipCode)) return cached.get(zipCode);
-		try {
-			zcl = new ZipCodeLookup(zipCode);
-			if(zcl.loaded()) cached.put(zipCode, zcl);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		zcl = new ZipCodeLookup(zipCode);
+		if(zcl.loaded()) cached.put(zipCode, zcl);
 		return zcl;
 	}
 	

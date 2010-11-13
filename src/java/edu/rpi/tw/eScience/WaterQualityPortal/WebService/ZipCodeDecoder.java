@@ -20,8 +20,14 @@ public class ZipCodeDecoder implements HttpHandler {
 		for(int i=0;i<inputs.length;i++) {
 			String split[] = inputs[i].split("=");
 			if(split[0].equals("code")) {
-				ZipCodeLookup zcl = ZipCodeLookup.execute(split[1]);
-				String result = zcl.toString();
+				String result=null;
+				try {
+					ZipCodeLookup zcl = ZipCodeLookup.execute(split[1]);
+					result = zcl.toString();
+				}
+				catch(Exception e) {
+					result = "{\"error\":\"Unknown zip code\"}";
+				}
 				arg0.sendResponseHeaders(200, result.length());
 				found=true;
 				OutputStream m = arg0.getResponseBody();
