@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="WaterQualityPortal" basedir="." default="javac">
+	<property name="src.dir" value="src"/>
+	<property name="bin.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+	
+	<path id="build-classpath">
+		<pathelement path="${lib.dir}/arq-2.8.4.jar"/>
+		<pathelement path="${lib.dir}/icu4j-3.4.4.jar"/>
+		<pathelement path="${lib.dir}/iri-0.8.jar"/>
+		<pathelement path="${lib.dir}/jena-2.6.3.jar"/>
+		<pathelement path="${lib.dir}/junit-4.5.jar"/>
+		<pathelement path="${lib.dir}/log4j-1.2.13.jar"/>
+		<pathelement path="${lib.dir}/lucene-core-2.3.1.jar"/>
+		<pathelement path="${lib.dir}/pellet-jena.jar"/>
+		<pathelement path="${lib.dir}/slf4j-api-1.5.8.jar"/>
+		<pathelement path="${lib.dir}/slf4j-log4j12-1.5.8.jar"/>
+		<pathelement path="${lib.dir}/stax-api-1.0.1.jar"/>
+		<pathelement path="${lib.dir}/wstx-asl-3.2.9.jar"/>
+		<pathelement path="${lib.dir}/xercexImpl-2.7.1.jar"/>
+	</path>
+	
+	<target name="javac" description="Compile Java source">
+		<mkdir dir="${bin.dir}"/>
+		<javac srcdir="${src.dir}" includes="**" encoding="utf-8"
+				destdir="${bin.dir}" source="1.6" target="1.6" 
+				nowarn="true" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="build-classpath"/>
+		</javac>
+	</target>
+</project>

@@ -1,4 +1,4 @@
-package WebService;
+package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 
@@ -18,10 +18,11 @@ public class WaterAgent {
 			e.printStackTrace();
 			return;
 		}
-		server.createContext("/", new WaterAgentInstance());
+		server.createContext("/zip", new ZipCodeDecoder());
+		server.createContext("/agent", new WaterAgentInstance());
 		server.setExecutor(null);
 		server.start();
-		System.out.println("Web service stated...");
+		System.out.println("Web service started...");
 		
 	}
 }

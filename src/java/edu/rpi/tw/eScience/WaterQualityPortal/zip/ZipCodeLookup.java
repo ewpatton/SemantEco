@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -60,7 +61,7 @@ public class ZipCodeLookup {
 	String county="";
 	String city="";
 	String countyNum="",stateNum="";
-	double lat,lon;
+	double lat,lng;
 	boolean loaded;
 	
 	ZipCodeLookup(String zip) {
@@ -84,7 +85,7 @@ public class ZipCodeLookup {
 				countyNum = content.getString("adminCode2");
 				city = content.getString("placeName");
 				lat = content.getDouble("lat");
-				lon = content.getDouble("lng");
+				lng = content.getDouble("lng");
 				loaded = true;
 			}
 		}
@@ -122,10 +123,29 @@ public class ZipCodeLookup {
 	}
 	
 	public double getLongitude() {
-		return lon;
+		return lng;
 	}
 	
 	public boolean loaded() {
 		return loaded;
+	}
+	
+	public String toString() {
+		JSONObject result = new JSONObject();
+		JSONObject description = new JSONObject();
+		try {
+			description.put("code", zip);
+			description.put("state", state);
+			description.put("county", county);
+			description.put("city", city);
+			description.put("stateCode", stateNum);
+			description.put("countyCode", getCountyCode());
+			description.put("lat", lat);
+			description.put("lng", lng);
+			result.put("result", description);
+		} catch (JSONException e) {
+			return "{\"error\":\""+e.toString()+"\"";
+		}
+		return result.toString();
 	}
 }

@@ -1,7 +1,6 @@
-package WebService;
+package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.hp.hpl.jena.query.QueryExecution;

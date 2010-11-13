@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<link rel="stylesheet" href="main.css" type="text/css"/>
+<title>Water Quality Portal</title>
+<script src="main.js" type="text/javascript"></script>
+</head>
+<body onload="colorize();">
+<div class="container">
+<div id="header">
+<img src="header.png" alt="header"/>
+</div>
+<div id="content">
+  <p class="welcome">Welcome to the Water Quality Portal</p>
+  <p class="prompt">Please enter your Zip Code:<br/><br/>
+<input type="text" id="zip" onkeypress="return verify(event);" maxlength="5" onkeyup="colorize();"/><br/><br/>
+<span class="hidden" id="instruct">Press enter to continue</span>
+</p>
+  <div id="footer"><a href="about.html">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="privacy.html">Privacy</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="contact.html">Contact</a></div>
+</div>
+</div>
+</body>
+</html>
