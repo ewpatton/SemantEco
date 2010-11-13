@@ -1,4 +1,8 @@
-function submit(zip) {
+function parent(x) {
+	return x.parentElement ? x.parentElement : x.parentNode;
+}
+
+function submitZip(zip) {
     var xhttp = null;
     if(xhttp==null && window.XMLHttpRequest)
         xhttp = new XMLHttpRequest();
@@ -8,14 +12,26 @@ function submit(zip) {
         window.alert("Your browser does not support JavaScript XML requests");
         return;
     }
+    var elem = document.getElementById("zip");
+    var p = parent(elem);
+    var spin = document.createElementNS("http://www.w3.org/1999/xhtml","img");
+    spin.setAttribute("src","spinner.gif");
+    spin.setAttribute("alt","Loading...");
+    p.insertBefore(spin, elem.nextSibling);
     xhttp.open("GET","http://was.tw.rpi.edu:14490/zip?code="+zip,true);
     xhttp.onreadystatechange = function() {
         if(xhttp.readyState==4) {
             if(xhttp.status==200) {
+            	var data = JSON.parse(xhttp.responseText);
+            	if(data.error!=undefined) {
+            	}
+            	else if(data.result!=undefined) {
+            		parent(p).removeChild(p);
+            	}
             }
-            else if(xhttp.status==404) {
+            else {
+            	
             }
-            window.alert(xhttp.responseText);
         }
     };
     xhttp.send(null);
@@ -25,24 +41,26 @@ function colorize() {
     var zip = document.getElementById("zip");
     var span = document.getElementById("instruct");
     if(zip.value.length==5) {
-	zip.style.borderColor = "#229922";
-	zip.style.backgroundColor = "#ddffdd";
-	span.style.visibility = "visible";
+		zip.style.borderColor = "#229922";
+		zip.style.backgroundColor = "#ddffdd";
+		span.style.visibility = "visible";
     }
     else {
-	zip.style.borderColor = "#999922";
-	zip.style.backgroundColor = "#ffffdd";
-	span.style.visibility = "hidden";
+		zip.style.borderColor = "#999922";
+		zip.style.backgroundColor = "#ffffdd";
+		span.style.visibility = "hidden";
     }
 }
 
 function verify(e) {
+	e = e ? e : window.event;
     var key = e ? e.which : window.event.keyCode;
     var keychar = String.fromCharCode(key);
     if(key==13) {
 	submit(document.getElementById("zip").value);
 	return false;
     }
+    if(e.ctrlKey || e.altKey || e.metaKey) return true;
     if((key==null) || (key==0) || (key==8) || (key==9) || (key==27)) {
 	return true;
     }
