@@ -49,6 +49,7 @@ public class ZipCodeLookup {
 		if(cached.containsKey(zipCode)) return cached.get(zipCode);
 		zcl = new ZipCodeLookup(zipCode);
 		if(zcl.loaded()) cached.put(zipCode, zcl);
+		else throw new Exception("Invalid zip code");
 		return zcl;
 	}
 	
