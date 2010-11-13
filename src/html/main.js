@@ -28,12 +28,16 @@ function submitZip(zip) {
             	if(data.error!=undefined) {
             	}
             	else if(data.result!=undefined) {
+            		p = document.getElementById("display");
             		var mapContainer = document.createElementNS(XHTML,"div");
             		var mapContent = document.createElementNS(XHTML,"div");
             		mapContent.style.width="600px";
             		mapContent.style.height="400px";
+            		mapContent.style.marginLeft="auto";
+            		mapContent.style.marginRight="auto";
             		mapContainer.appendChild(mapContent);
-            		parent(p).replaceChild(mapContent,p);
+            		parent(p).replaceChild(mapContainer,p);
+            		mapContainer.setAttribute("id","display");
             		window.map = new GMap2(mapContent);
                     window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
             		window.geocoder = new GClientGeocoder();
