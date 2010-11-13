@@ -57,7 +57,7 @@ function verify(e) {
     var key = e ? e.which : window.event.keyCode;
     var keychar = String.fromCharCode(key);
     if(key==13) {
-	submit(document.getElementById("zip").value);
+	submitZip(document.getElementById("zip").value);
 	return false;
     }
     if(e.ctrlKey || e.altKey || e.metaKey) return true;
