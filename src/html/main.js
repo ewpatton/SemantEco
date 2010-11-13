@@ -33,7 +33,7 @@ function submitZip(zip) {
             		mapContent.style.width="600px";
             		mapContent.style.height="400px";
             		mapContainer.appendChild(mapContent);
-            		parent(p).replaceChild(p,mapContent);
+            		parent(p).replaceChild(mapContent,p);
             		window.map = new GMap2(mapContent);
                     window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
             		window.geocoder = new GClientGeocoder();
