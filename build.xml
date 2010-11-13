@@ -3,6 +3,8 @@
 	<property name="src.dir" value="src"/>
 	<property name="bin.dir" value="bin"/>
 	<property name="lib.dir" value="lib"/>
+	<property name="www.dir" value="/var/www/water"/>
+	<property name="html.dir" value="${src.dir}/html"/>
 	
 	<path id="build-classpath">
 		<pathelement path="${lib.dir}/arq-2.8.4.jar"/>
@@ -27,5 +29,11 @@
 				nowarn="true" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="build-classpath"/>
 		</javac>
+	</target>
+	
+	<target name="web" description="Update web documents">
+		<copy todir="${www.dir}">
+			<fileset dir="${html.dir}"/>
+		</copy>
 	</target>
 </project>
