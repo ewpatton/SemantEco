@@ -118,7 +118,27 @@ public final class USGSParser {
 }
 
 
-	
+	public static String[] split(String x, String regex) {
+		int count=1;
+		int start=0;
+		while(x.indexOf(regex, start)>-1) {
+			start = x.indexOf(regex, start)+regex.length();
+			count++;
+		}
+		String[] parts = new String[count];
+		start = 0;
+		while(true) {
+			int end = x.indexOf(regex);
+			if(end==-1) {
+				parts[start] = x;
+				break;
+			}
+			parts[start] = x.substring(0,end);
+			x = x.substring(end+regex.length());
+			start++;
+		}
+		return parts;
+	}
 	
 	/**
 	 * @param args
@@ -143,14 +163,14 @@ public final class USGSParser {
     		}
 
     		String parts[] = new String[1000];
-    		parts = line1.split("\t");// \n
-    		String loc_id = parts[2];
+    		parts = split(line1,"\t");
+            String loc_id = parts[2];
     		String lat = parts[11];
     		String longitude = parts[12];
     		String country_code = parts[24]; 
     		String state_code = parts[25];
     		String county_code = parts[26];
-    		USGSParser.MeasurementSite x = new USGSParser.MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),Integer.parseInt(country_code),Integer.parseInt(state_code),Integer.parseInt(county_code)); 
+    		USGSParser.MeasurementSite x = new USGSParser.MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
     		data.put(x.getID(), x);
     		
     		}
@@ -158,6 +178,7 @@ public final class USGSParser {
     
     	downloadSiteInfo2("44", "44%3A001");
         BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	String line2;
     	boolean first2 = true;
     	while ((line2=readbuffer2.readLine())!=null){
@@ -167,7 +188,7 @@ public final class USGSParser {
     		}
 
     		String parts[] = new String[1000];
-    		parts = line2.split("\t");//\n
+    		parts = split(line2,"\t");
     		String ID = parts[21];
     		String date= parts[6];
     		String time = parts[7];
@@ -176,8 +197,9 @@ public final class USGSParser {
     		String unit = parts[34];
     		
     		MeasurementSite temp = data.get(ID);
-    		@SuppressWarnings("deprecation")
-			USGSParser.MeasurementSite.Measurement x = new USGSParser.MeasurementSite.Measurement(ID,new Date(date),time,chemical,Double.parseDouble(value),unit);
+    		if(value.equals("")) value = "0";
+    		if(date.equals("") || time.equals("")) continue;
+			USGSParser.MeasurementSite.Measurement x = new USGSParser.MeasurementSite.Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
     		temp.addData(x);
     		}
     	for(MeasurementSite x : data.values()) {
@@ -197,7 +219,7 @@ public final class USGSParser {
     	static class MeasurementSite {
     		double lat,longitude;
     		String loc_id;
-    		Integer country_code;
+    		String country_code;
     		Integer state_code;
     		Integer county_code;
     		ArrayList<Measurement> data = new ArrayList<Measurement>(); 
@@ -242,7 +264,7 @@ public final class USGSParser {
 				return result;
 			}
 	
-    		public MeasurementSite(String locationID, double latitude, double longitude, Integer countrycode, Integer statecode, Integer countycode)  {
+    		public MeasurementSite(String locationID, double latitude, double longitude, String countrycode, Integer statecode, Integer countycode)  {
 	    	    this.loc_id = locationID;
 	    	    this.lat = latitude;
 	    	    this.longitude = longitude;
