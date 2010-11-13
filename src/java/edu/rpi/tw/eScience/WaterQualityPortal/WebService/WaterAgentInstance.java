@@ -18,6 +18,7 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 public class WaterAgentInstance implements HttpHandler {
 	
 	public void handle(HttpExchange arg0) throws IOException {
+		arg0.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		try {
 			//get query string
 			String queryString=parseRequest(arg0);
