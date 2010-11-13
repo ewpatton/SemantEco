@@ -19,24 +19,27 @@ public class WaterAgentInstance implements HttpHandler {
 	
 	public void handle(HttpExchange arg0) throws IOException {
 		try {
-		//get query string
-		String queryString=parseRequest(arg0);
-		
-		//load ontology model
-		Model model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-		model.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
-		
-		//get query result in xml format
-		String response = getQueryResult(model,queryString);
-		//String response = arg0.getRequestURI().getQuery();
-		//send response back
-		arg0.sendResponseHeaders(200, response.length());
-		OutputStream os = arg0.getResponseBody();
-		os.write(response.getBytes());
-		os.flush();
-		os.close();
+			//get query string
+			String queryString=parseRequest(arg0);
+			
+			//load ontology model
+			Model model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			model.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
+			
+			//get query result in xml format
+			String response = getQueryResult(model,queryString);
+			//String response = arg0.getRequestURI().getQuery();
+			//send response back
+			arg0.sendResponseHeaders(200, response.length());
+			OutputStream os = arg0.getResponseBody();
+			os.write(response.getBytes());
+			os.flush();
+			os.close();
 		} catch(Exception e) {
-			e.printStackTrace();
+			String stackTrace = e.getStackTrace().toString();
+			arg0.sendResponseHeaders(500, stackTrace.length());
+			arg0.getResponseBody().write(stackTrace.getBytes("UTF-8"));
+			arg0.getResponseBody().close();
 		}
 	}
 	public String parseRequest(HttpExchange arg0) throws IOException
