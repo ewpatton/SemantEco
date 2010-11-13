@@ -1,3 +1,5 @@
+var XHTML="http://www.w3.org/1999/xhtml";
+
 function parent(x) {
 	return x.parentElement ? x.parentElement : x.parentNode;
 }
@@ -14,7 +16,7 @@ function submitZip(zip) {
     }
     var elem = document.getElementById("zip");
     var p = parent(elem);
-    var spin = document.createElementNS("http://www.w3.org/1999/xhtml","img");
+    var spin = document.createElementNS(XHTML,"img");
     spin.setAttribute("src","spinner.gif");
     spin.setAttribute("alt","Loading...");
     p.insertBefore(spin, elem.nextSibling);
@@ -26,7 +28,15 @@ function submitZip(zip) {
             	if(data.error!=undefined) {
             	}
             	else if(data.result!=undefined) {
-            		parent(p).removeChild(p);
+            		var mapContainer = document.createElementNS(XHTML,"div");
+            		var mapContent = document.createElementNS(XHTML,"div");
+            		mapContent.style.width="600px";
+            		mapContent.style.height="400px";
+            		mapContainer.appendChild(mapContent);
+            		parent(p).replaceChild(p,mapContent);
+            		window.map = new GMap2(mapContent);
+                    window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
+            		window.geocoder = new GClientGeocoder();
             	}
             }
             else {
