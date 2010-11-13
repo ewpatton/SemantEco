@@ -15,6 +15,7 @@ public class ZipCodeDecoder implements HttpHandler {
 		String query = arg0.getRequestURI().getQuery();
 		String inputs[] = query.split("&");
 		arg0.getResponseHeaders().add("Content-type", "text/plain");
+		arg0.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		boolean found=false;
 		for(int i=0;i<inputs.length;i++) {
 			String split[] = inputs[i].split("=");

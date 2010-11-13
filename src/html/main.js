@@ -1,5 +1,24 @@
 function submit(zip) {
-    window.alert(zip);
+    var xhttp = null;
+    if(xhttp==null && window.XMLHttpRequest)
+        xhttp = new XMLHttpRequest();
+    if(xhttp==null)
+        xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    if(xhttp==null) {
+        window.alert("Your browser does not support JavaScript XML requests");
+        return;
+    }
+    xhttp.open("GET","http://was.tw.rpi.edu:14490/zip?code="+zip,true);
+    xhttp.onreadystatechange = function() {
+        if(xhttp.readyState==4) {
+            if(xhttp.status==200) {
+            }
+            else if(xhttp.status==404) {
+            }
+            window.alert(xhttp.responseText);
+        }
+    };
+    xhttp.send(null);
 }
 
 function colorize() {

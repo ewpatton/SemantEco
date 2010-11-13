@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CP=bin
+JARS=`ls lib/`
+
+for JAR in $JARS; do
+    CP=$CP:lib/$JAR
+done
+
+java -classpath $CP edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgent
