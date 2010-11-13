@@ -31,9 +31,9 @@ var violatedfacility=new Array();
           }
         );
 	showPollutedWater();
-	showCleanWater();
+	
  	showViolatedFacility();
-	showFacility();
+	
       }
     }
    
@@ -82,6 +82,7 @@ var violatedfacility=new Array();
          		map.addOverlay(marker);	
 			}			
 			});
+		showCleanWater();
         }
 	});
 	}
@@ -182,6 +183,7 @@ var violatedfacility=new Array();
 				 map.addOverlay(marker);			
 			     }			
 			 });
+			showFacility();
 		 }
 	     });
    }
@@ -235,6 +237,7 @@ function showFacility()
          		map.addOverlay(marker);	
 			}			
 		});
+		
 	       }
 	   });
    }	  
