@@ -240,15 +240,10 @@ public final class USGSParser {
 			@Override
 			public String toString() {
 				String result = "";
-				result += "<TestingSite rdf:ID=\"";
-				result += "<TestingSite rdf:Country_code=\"";
-				result += "<TestingSite rdf:State_code=\"";
-				result += "<TestingSite rdf:County_code=\"";
-				result += loc_id;
-				result += country_code;
-				result += state_code;
-				result += county_code;
-				result += "\">\n";
+				result += "<TestingSite rdf:ID=\""+loc_id+"\">\n";
+				result += "<hasCountryCode>"+country_code+"</hasCountryCode>\n";
+				result += "<hasStateCode>"+state_code+"</hasStateCode>\n";
+				result += "<hasCountyCode>"+county_code+"</hasCountyCode>\n";
 				result += "<hasLocation>\n";
 				result += "<geo:Point>\n";
 				result += "<geo:lat rdf:datatype=\"&xsd;float\">"+lat+"</geo:lat>\n";
