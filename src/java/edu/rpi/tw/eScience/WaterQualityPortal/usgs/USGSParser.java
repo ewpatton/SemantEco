@@ -16,7 +16,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public final class USGSParser {
 	
-	static boolean downloadSiteInfo1(String state, String county) {
+	static String downloadSiteInfo1(String state, String county) {
 		String firstPart="/Station/search?north=&west=&east=&south=&within=&lat=&long=&statecode=";
 		String secondPart="&countycode=";
 		String thirdPart="&siteType=&organization=&siteid=&huc=&sampleMedia=&characteristicType=&characteristicName=&pCode=&startDateLo=&startDateHi=&mimeType=tab&bBox=&zip=yes";
@@ -58,12 +58,12 @@ public final class USGSParser {
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-		return true;
+		return finalQuery;
 	}
 	
-	static boolean downloadSiteInfo2(String state, String county) {
+	static String downloadSiteInfo2(String state, String county) {
 		String firstPart="/Result/search?north=&west=&east=&south=&within=&lat=&long=&statecode=";
 		String secondPart="&countycode=";
 		String thirdPart="&siteType=&organization=&siteid=&huc=&sampleMedia=&characteristicType=&characteristicName=&pCode=&startDateLo=&startDateHi=&mimeType=tab&bBox=&zip=yes";
@@ -108,9 +108,9 @@ public final class USGSParser {
 	}
 	catch(Exception e) {
 		e.printStackTrace();
-		return false;
+		return null;
 	}
-	return true;
+	return finalQuery;
 }
 
 
@@ -161,12 +161,13 @@ public final class USGSParser {
     		String parts[] = new String[1000];
     		parts = split(line1,"\t");
             String loc_id = parts[2];
+            String label = parts[3];
     		String lat = parts[11];
     		String longitude = parts[12];
     		String country_code = parts[24]; 
     		String state_code = parts[25];
     		String county_code = parts[26];
-    		MeasurementSite x = new MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
+    		MeasurementSite x = new MeasurementSite(loc_id, label, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
     		data.put(x.getID(), x);
     		
     		}
@@ -212,71 +213,75 @@ public final class USGSParser {
 	}
 
  	
-    	Collection<MeasurementSite> process(String stateCode, String countyCode) throws Exception {
-    		HashMap<String,MeasurementSite> data = new HashMap<String,MeasurementSite>();
-    		
-    		downloadSiteInfo1(stateCode, countyCode.replaceAll(":", "%3A"));
-        	
-        	BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/sites.txt"));
-        	String line1;
-        	boolean first1 = true;
-        	while ((line1=readbuffer1.readLine())!=null){
-        		if(first1) {
-        			first1 = false;
-        			continue;
-        		}
-        		String parts[];
-        		parts = split(line1,"\t");
-                String loc_id = parts[2];
-        		String lat = parts[11];
-        		String longitude = parts[12];
-        		String country_code = parts[24]; 
-        		String state_code = parts[25];
-        		String county_code = parts[26];
-        		MeasurementSite x = new MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
-        		data.put(x.getID(), x);
-        	}
-        	
-        	downloadSiteInfo2(stateCode, countyCode.replaceAll(":", "%3A"));
-            BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        	String line2;
-        	boolean first2 = true;
-        	while ((line2=readbuffer2.readLine())!=null){
-        		if(first2) {
-        			first2 = false;
-        			continue;
-        		}
-        		String parts[];
-        		parts = split(line2,"\t");
-        		String ID = parts[21];
-        		String date= parts[6];
-        		String time = parts[7];
-        		String chemical = parts[31]; 
-        		String value = parts[33];
-        		String unit = parts[34];
-        		
-        		MeasurementSite temp = data.get(ID);
-        		if(value.equals("")) value = "0";
-        		if(date.equals("") || time.equals("")) continue;
-    			Measurement x = new Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
-        		temp.addData(x);
-        	}
-        	return data.values();
+	Collection<MeasurementSite> process(String stateCode, String countyCode) throws Exception {
+		HashMap<String,MeasurementSite> data = new HashMap<String,MeasurementSite>();
+		
+		String source = downloadSiteInfo1(stateCode, countyCode.replaceAll(":", "%3A"));
+    	
+    	BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/sites.txt"));
+    	String line1;
+    	boolean first1 = true;
+    	int counter = 0;
+    	while ((line1=readbuffer1.readLine())!=null){
+    		if(first1) {
+    			first1 = false;
+    			continue;
+    		}
+    		counter++;
+    		String parts[];
+    		parts = split(line1,"\t");
+            String loc_id = parts[2];
+            String label = parts[3];
+    		String lat = parts[11];
+    		String longitude = parts[12];
+    		String country_code = parts[24]; 
+    		String state_code = parts[25];
+    		String county_code = parts[26];
+    		MeasurementSite x = new MeasurementSite(loc_id, label, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code));
+    		x.setSourceDocument(source, counter);
+    		data.put(x.getID(), x);
     	}
+    	
+    	source = downloadSiteInfo2(stateCode, countyCode.replaceAll(":", "%3A"));
+        BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	String line2;
+    	boolean first2 = true;
+    	while ((line2=readbuffer2.readLine())!=null){
+    		if(first2) {
+    			first2 = false;
+    			continue;
+    		}
+    		String parts[];
+    		parts = split(line2,"\t");
+    		String ID = parts[21];
+    		String date= parts[6];
+    		String time = parts[7];
+    		String chemical = parts[31]; 
+    		String value = parts[33];
+    		String unit = parts[34];
+    		
+    		MeasurementSite temp = data.get(ID);
+    		if(value.equals("")) value = "0";
+    		if(date.equals("") || time.equals("")) continue;
+			Measurement x = new Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
+    		temp.addData(x);
+    	}
+    	return data.values();
+	}
 
-		public boolean getData(String stateCode, String countyCode,
-				OntModel owlModel, Model pmlModel) {
-			try {
-				Collection<MeasurementSite> data = process(stateCode, countyCode);
-				for(MeasurementSite m : data) {
-					m.asIndividual(owlModel, pmlModel);
-				}
-				return true;
+	public boolean getData(String stateCode, String countyCode,
+			OntModel owlModel, Model pmlModel) {
+		try {
+			Collection<MeasurementSite> data = process(stateCode, countyCode);
+			for(MeasurementSite m : data) {
+				m.asIndividual(owlModel, pmlModel);
 			}
-			catch(Exception e) {
-				e.printStackTrace();
-				return false;
-			}
+			return true;
 		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }
