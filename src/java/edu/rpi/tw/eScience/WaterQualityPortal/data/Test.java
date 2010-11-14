@@ -34,24 +34,23 @@ public class Test implements WaterDataProvider {
 	}
 	
 	@Override
-	public Model getData() {
-		OntModel m = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-		m.read("src/rdf/cleanwater.owl");
-		Resource FacilityClass = m.getResource(ns+"Facility");
-		Property hasMeasurement = m.getProperty(ns+"hasMeasurement");
-		Individual facility = m.createIndividual(ns+"ID", FacilityClass);
+	public boolean getData(OntModel owlModel, Model pmlModel) {
+		owlModel.read("src/rdf/cleanwater.owl");
+		Resource FacilityClass = owlModel.getResource(ns+"Facility");
+		Property hasMeasurement = owlModel.getProperty(ns+"hasMeasurement");
+		Individual facility = owlModel.createIndividual(ns+"ID", FacilityClass);
 		for(Measurement item : getMeasurements()) {
-			Individual measurement = item.asIndividual(m);
+			Individual measurement = item.asIndividual(owlModel);
 			facility.addProperty(hasMeasurement, measurement);
 		}
-		// TODO Auto-generated method stub
-		return m;
+		return true;
 	}
 
 	@Override
-	public Model getData(Date start, Date end) {
+	public boolean getData(OntModel owlModel, Model pmlModel, 
+			Date start, Date end) {
 		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 
 	@Override

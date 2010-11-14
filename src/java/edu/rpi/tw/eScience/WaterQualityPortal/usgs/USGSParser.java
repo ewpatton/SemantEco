@@ -1,22 +1,18 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.usgs;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.usgs.MeasurementSite.Measurement;
-
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 
 public final class USGSParser {
 	
@@ -170,7 +166,7 @@ public final class USGSParser {
     		String country_code = parts[24]; 
     		String state_code = parts[25];
     		String county_code = parts[26];
-    		USGSParser.MeasurementSite x = new USGSParser.MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
+    		MeasurementSite x = new MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
     		data.put(x.getID(), x);
     		
     		}
@@ -199,7 +195,7 @@ public final class USGSParser {
     		MeasurementSite temp = data.get(ID);
     		if(value.equals("")) value = "0";
     		if(date.equals("") || time.equals("")) continue;
-			USGSParser.MeasurementSite.Measurement x = new USGSParser.MeasurementSite.Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
+			Measurement x = new Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
     		temp.addData(x);
     		}
     	for(MeasurementSite x : data.values()) {
@@ -216,95 +212,71 @@ public final class USGSParser {
 	}
 
  	
-    	static class MeasurementSite {
-    		double lat,longitude;
-    		String loc_id;
-    		String country_code;
-    		Integer state_code;
-    		Integer county_code;
-    		ArrayList<Measurement> data = new ArrayList<Measurement>(); 
-
-			public void setID(String ID) {
-				loc_id = ID;
-			}
-
-			public void addData(
-					edu.rpi.tw.eScience.WaterQualityPortal.usgs.USGSParser.MeasurementSite.Measurement x) {
-				data.add(x);
-			}
-
-			public String getID() {
-				return loc_id;
-			}
-			
-			@Override
-			public String toString() {
-				String result = "";
-				result += "<TestingSite rdf:ID=\""+loc_id+"\">\n";
-				result += "<hasCountryCode>"+country_code+"</hasCountryCode>\n";
-				result += "<hasStateCode>"+state_code+"</hasStateCode>\n";
-				result += "<hasCountyCode>"+county_code+"</hasCountyCode>\n";
-				result += "<hasLocation>\n";
-				result += "<geo:Point>\n";
-				result += "<geo:lat rdf:datatype=\"&xsd;float\">"+lat+"</geo:lat>\n";
-				result += "<geo:long rdf:datatype=\"&xsd;float\">"+longitude+"</geo:long>\n";
-				result += "</geo:Point>\n";
-				result += "</hasLocation>\n";
-                for(Measurement m : data) {
-    				result += "<hasMeasurement>\n";
-                	result += m.toString();
-                    result += "</hasMeasurement>\n";
-                }
-				result += "</TestingSite>\n";
-				return result;
-			}
-	
-    		public MeasurementSite(String locationID, double latitude, double longitude, String countrycode, Integer statecode, Integer countycode)  {
-	    	    this.loc_id = locationID;
-	    	    this.lat = latitude;
-	    	    this.longitude = longitude;
-	    	    this.country_code = countrycode;
-	    	    this.state_code = statecode;
-	    	    this.county_code = countycode;
-	    	}
+    	Collection<MeasurementSite> process(String stateCode, String countyCode) throws Exception {
+    		HashMap<String,MeasurementSite> data = new HashMap<String,MeasurementSite>();
     		
-    		static class Measurement {
-    			String ID;
-    			Date date;
-    			String time;
-    			String chemical;
-    			double value;
-    			String unit;
-    			
-    			@Override
-    			public String toString() {
-    				String result = "";
-    				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    				result += "<Measurement>\n";
-    				result += "<hasDate rdf:datatype=\"&xsd;dateTime\">"+df.format(date)+"</hasDate>\n";
-                    result += "<hasUnit>"+unit+"</hasUnit>\n";
-                    result += "<hasMeasurement>"+value+"</hasMeasurement>\n";
-                    result += "<hasElement>\n";
-                    result += "<Element rdf:about=\"#"+chemical+"\"/>\n";
-                    result += "</hasElement>\n";
-    				result += "</Measurement>\n";
-    				return result;
-    			}
-    			
-    			@SuppressWarnings("deprecation")
-				public Measurement(String identification, Date Startdate, String StartTime, String chemicalname, double value_measurement, String unit_measurement) {
-    		    	this.ID = identification; 
-    		    	this.date = Startdate;
-    		    	this.time = StartTime;
-    		    	String[] parts = time.split(":");
-    		    	this.date.setHours(Integer.parseInt(parts[0]));
-    		    	this.date.setMinutes(Integer.parseInt(parts[1]));
-    		    	this.date.setSeconds(Integer.parseInt(parts[2]));
-    		        this.chemical = chemicalname;
-    		    	this.value = value_measurement;
-    		    	this.unit = unit_measurement;  
-    		    }
-
-    		}
+    		downloadSiteInfo1(stateCode, countyCode.replaceAll(":", "%3A"));
+        	
+        	BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/sites.txt"));
+        	String line1;
+        	boolean first1 = true;
+        	while ((line1=readbuffer1.readLine())!=null){
+        		if(first1) {
+        			first1 = false;
+        			continue;
+        		}
+        		String parts[];
+        		parts = split(line1,"\t");
+                String loc_id = parts[2];
+        		String lat = parts[11];
+        		String longitude = parts[12];
+        		String country_code = parts[24]; 
+        		String state_code = parts[25];
+        		String county_code = parts[26];
+        		MeasurementSite x = new MeasurementSite(loc_id, Double.parseDouble(lat), Double.parseDouble(longitude),country_code,Integer.parseInt(state_code),Integer.parseInt(county_code)); 
+        		data.put(x.getID(), x);
+        	}
+        	
+        	downloadSiteInfo2(stateCode, countyCode.replaceAll(":", "%3A"));
+            BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        	String line2;
+        	boolean first2 = true;
+        	while ((line2=readbuffer2.readLine())!=null){
+        		if(first2) {
+        			first2 = false;
+        			continue;
+        		}
+        		String parts[];
+        		parts = split(line2,"\t");
+        		String ID = parts[21];
+        		String date= parts[6];
+        		String time = parts[7];
+        		String chemical = parts[31]; 
+        		String value = parts[33];
+        		String unit = parts[34];
+        		
+        		MeasurementSite temp = data.get(ID);
+        		if(value.equals("")) value = "0";
+        		if(date.equals("") || time.equals("")) continue;
+    			Measurement x = new Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
+        		temp.addData(x);
+        	}
+        	return data.values();
     	}
+
+		public boolean getData(String stateCode, String countyCode,
+				OntModel owlModel, Model pmlModel) {
+			try {
+				Collection<MeasurementSite> data = process(stateCode, countyCode);
+				for(MeasurementSite m : data) {
+					m.asIndividual(owlModel, pmlModel);
+				}
+				return true;
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 }

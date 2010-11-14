@@ -8,7 +8,7 @@
   <!ENTITY time "http://www.w3.org/2006/time" >
   <!ENTITY epa "http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#" >
   <!ENTITY elem "http://sweet.jpl.nasa.gov/2.1/matrElement.owl#" >
-  <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl" >
+  <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#" >
   <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
   <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#">
   <!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#">
