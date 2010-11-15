@@ -161,7 +161,7 @@ public class Ontology {
 	}
 	
 	public static OntProperty hasElement(OntModel m) {
-		return m.createDatatypeProperty(EPA.hasElement);
+		return m.createObjectProperty(EPA.hasElement);
 	}
 	
 	public static OntClass Element(OntModel m) {

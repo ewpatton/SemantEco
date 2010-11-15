@@ -39,7 +39,7 @@
 		    	<owl:onProperty rdf:resource="#hasMeasurement"/>
 		    	<owl:allValuesFrom rdf:resource="#WaterMeasurement"/>
 		   	</owl:Restriction>
-		</rdfs:subClasOf>
+		</rdfs:subClassOf>
 	</owl:Class>
 
 	<owl:Class rdf:about="#ExceededThreshold">
