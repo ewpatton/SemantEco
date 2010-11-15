@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -89,6 +90,9 @@ public class WaterAgentInstance implements HttpHandler {
 					e.printStackTrace();
 				}
 			}
+			FileOutputStream fos = new FileOutputStream("/usr/local/water/example.rdf");
+			owlModel.write(fos);
+			fos.close();
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
 			//get query result in xml format
