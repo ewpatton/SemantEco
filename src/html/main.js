@@ -56,7 +56,7 @@ function submitZip(zip) {
             		mapLegend.style.backgroundColor="white";
             		mapLegend.style.fontSize="9pt";
             		mapContainer.appendChild(mapLegend);
-            		img.setAttribute("src","image/cleanwater2.jpg");
+            		img.setAttribute("src","image/cleanwater2.png");
             		img.setAttribute("height","12");
             		td.appendChild(img);
             		td.appendChild(document.createTextNode(" Water"));

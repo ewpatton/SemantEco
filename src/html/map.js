@@ -128,7 +128,7 @@ function showCleanWater()
     				});			
     				if(lat!=""&&lng!=""&&show){
     					var thisIcon = new GIcon(G_DEFAULT_ICON);
-    					thisIcon.image = "http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater2.jpg";
+    					thisIcon.image = "image/cleanwater2.png";
 
     					var latlng = new GLatLng(lat ,lng);
     					markerOptions = { icon:thisIcon };
