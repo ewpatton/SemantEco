@@ -85,7 +85,7 @@ function showPollutedWater()
 		            	map.addOverlay(marker);	
 		            }
 	            });
-	            showCleanWater();
+	            //showCleanWater();
 			}
 	});
 }
