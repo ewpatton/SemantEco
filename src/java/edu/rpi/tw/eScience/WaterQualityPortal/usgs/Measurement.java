@@ -9,6 +9,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
@@ -98,15 +99,52 @@ public class Measurement {
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Individual m = owlModel.createIndividual(Ontology.WaterMeasurement(owlModel));
-		OntProperty prop = Ontology.inXSDDateTime(owlModel);
+		OntProperty prop;
+		
+		Resource info;
+		Property hasUsage = pmlModel.createProperty(Ontology.PMLP.hasReferenceSourceUsage);
+		
+		// Time
+		prop = Ontology.inXSDDateTime(owlModel);
 		m.addLiteral(prop, df.format(date));
+		// PML
+		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, df.format(date));
+		info.addProperty(hasUsage, rowColRef(6, pmlModel));
+		
+		// Unit
 		prop = Ontology.hasUnit(owlModel);
 		m.addLiteral(prop, unit);
+		// PML
+		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, unit);
+		info.addProperty(hasUsage, rowColRef(34, pmlModel));
+		
+		// Value
 		prop = Ontology.hasValue(owlModel);
 		m.addLiteral(prop, value);
+		// PML
+		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, value);
+		info.addProperty(hasUsage, rowColRef(33, pmlModel));
+
+		// Element
 		prop = Ontology.hasElement(owlModel);
 		Individual elem = owlModel.createIndividual(asURI(), Ontology.Element(owlModel));
 		m.addProperty(prop, elem);
+		// PML
+		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, elem);
+		info.addProperty(hasUsage, rowColRef(31, pmlModel));
+
 		return m;
 	}
 }

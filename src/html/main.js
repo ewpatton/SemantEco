@@ -16,13 +16,12 @@ function submitZip(zip) {
     }
     var elem = document.getElementById("zip");
     var p = parent(elem);
-    var spin = document.createElementNS(XHTML,"img");
-    spin.setAttribute("src","spinner.gif");
-    spin.setAttribute("alt","Loading...");
-    p.insertBefore(spin, elem.nextSibling);
+    var spinner = document.getElementById("spinner");
+    spinner.style.display = "block";
     xhttp.open("GET","http://was.tw.rpi.edu:14490/zip?code="+zip,true);
     xhttp.onreadystatechange = function() {
         if(xhttp.readyState==4) {
+        	spinner.style.display = "none";
             if(xhttp.status==200) {
             	var data = JSON.parse(xhttp.responseText);
             	if(data.error!=undefined) {
