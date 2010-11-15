@@ -73,6 +73,7 @@ function showPollutedWater()
 		            if(lat!=""&&lng!=""){
 		            	var blueIcon = new GIcon(G_DEFAULT_ICON);
 		            	blueIcon.image = "image/pollutedwater.png";
+		            	blueIcon.iconSize = new GSize(211,239);
 		            	 
 		            	var latlng = new GLatLng(lat ,lng);
 		            	markerOptions = { icon:blueIcon };
@@ -129,6 +130,7 @@ function showCleanWater()
     				if(lat!=""&&lng!=""&&show){
     					var thisIcon = new GIcon(G_DEFAULT_ICON);
     					thisIcon.image = "image/cleanwater2.png";
+		            	thisIcon.iconSize = new GSize(134,154);
 
     					var latlng = new GLatLng(lat ,lng);
     					markerOptions = { icon:thisIcon };

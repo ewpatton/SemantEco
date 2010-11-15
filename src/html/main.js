@@ -85,6 +85,7 @@ function submitZip(zip) {
             		parent(p).replaceChild(mapContainer,p);
             		mapContainer.setAttribute("id","display");
             		window.map = new GMap2(mapContent);
+            		window.map.setUI(new GMapUIOptions(new GSize(600,400)));
             		mapContent.style.borderStyle = "double";
             		mapContent.style.borderWidth = "1px";
             		mapContent.style.borderColor = "black";
