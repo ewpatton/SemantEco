@@ -128,11 +128,13 @@ public class Measurement {
 		prop = Ontology.hasValue(owlModel);
 		m.addLiteral(prop, value);
 		// PML
+		/*
 		info = pmlModel.createResource(Ontology.PMLP.Information);
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, value);
 		info.addProperty(hasUsage, rowColRef(33, pmlModel));
+		*/
 
 		// Element
 		prop = Ontology.hasElement(owlModel);
