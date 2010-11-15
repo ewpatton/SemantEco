@@ -131,7 +131,7 @@ public class ZipCodeLookup {
 		JSONObject result = new JSONObject();
 		JSONObject description = new JSONObject();
 		try {
-			description.put("code", zip);
+			description.put("zipCode", zip);
 			description.put("state", state);
 			description.put("county", county);
 			description.put("city", city);

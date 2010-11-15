@@ -2,9 +2,12 @@ package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
@@ -14,10 +17,18 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
+import edu.rpi.tw.eScience.WaterQualityPortal.usgs.DataService;
+
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 
 public class WaterAgentInstance implements HttpHandler {
+	
+	
+	public WaterAgentInstance() {
+	}
 	
 	public Map<String,String> parseRequest(HttpExchange arg0) throws IOException
 	{
@@ -33,6 +44,17 @@ public class WaterAgentInstance implements HttpHandler {
 		}
 		return result;
 	}
+	
+	public List<WaterDataProvider> getProviders() {
+		List<WaterDataProvider> providers = new ArrayList<WaterDataProvider>();
+		try {
+			providers.add(new DataService());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return providers;
+	}
 
 	public void handle(HttpExchange arg0) throws IOException {
 		arg0.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -46,7 +68,7 @@ public class WaterAgentInstance implements HttpHandler {
 			String queryString=params.get("query");
 			
 			//load ontology model
-			Model owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			OntModel owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 			Model pmlModel = ModelFactory.createDefaultModel();
 			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
 			try {
@@ -55,6 +77,17 @@ public class WaterAgentInstance implements HttpHandler {
 			}
 			catch(Exception e) {
 				System.err.println("Unable to find regulations for state "+state);
+			}
+			List<WaterDataProvider> providers = getProviders();
+			for(WaterDataProvider wdp : providers) {
+				try {
+					wdp.setUserSource(countyCode, stateCode, zip);
+					wdp.getData(owlModel, pmlModel);
+				}
+				catch(Exception e) {
+					System.err.println("Exception thrown by "+wdp.getName());
+					e.printStackTrace();
+				}
 			}
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
