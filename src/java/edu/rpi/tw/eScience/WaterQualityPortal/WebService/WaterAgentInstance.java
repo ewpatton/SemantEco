@@ -90,9 +90,6 @@ public class WaterAgentInstance implements HttpHandler {
 					e.printStackTrace();
 				}
 			}
-			FileOutputStream fos = new FileOutputStream("/usr/local/water/example.rdf");
-			owlModel.write(fos);
-			fos.close();
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
 			//get query result in xml format
