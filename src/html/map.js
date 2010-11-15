@@ -72,7 +72,7 @@ function showPollutedWater()
 		            });
 		            if(lat!=""&&lng!=""){
 		            	var blueIcon = new GIcon(G_DEFAULT_ICON);
-		            	blueIcon.image = "http://tw2.tw.rpi.edu/zhengj3/demo/pollutedwater.png";
+		            	blueIcon.image = "image/pollutedwater.png";
 		            	 
 		            	var latlng = new GLatLng(lat ,lng);
 		            	markerOptions = { icon:blueIcon };
