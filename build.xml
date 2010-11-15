@@ -7,7 +7,7 @@
 	<property name="html.dir" value="${src.dir}/html"/>
 	<property name="rdf.target.dir" value="${www.dir}/rdf"/>
 	<property name="rdf.src.dir" value="${src.dir}/rdf"/>
-	<property name="img.target.dir" value="${www.dir}/image"/>
+	<property name="img.target.dir" value="${html.dir}/image"/>
 	<property name="img.src.dir" value="${src.dir}/image"/>
 	
 	<path id="build-classpath">
