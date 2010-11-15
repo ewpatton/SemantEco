@@ -37,17 +37,18 @@ function showAddress(address) {
   }
 }
    
-function showPollutedWater(county,state,zip)
+function showPollutedWater(countyCode,stateCode,state,zip)
 {
 	$.ajax({type: "GET",
             url: "http://was.tw.rpi.edu:14490/agent", // SPARQL service URI
-            data: "county="+encodeURIComponent(county)+"&state="+state+"&zip="+zip+"&query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#PollutedWaterSource>. ?s this:hasLocation ?loc. ?loc geo:latitude ?lat. ?loc geo:longitude ?log.}"), // query parameter
+            data: "countyCode="+encodeURIComponent(countyCode)+"&stateCode="+stateCode+"&state="+state+"&zip="+zip+"&query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#PollutedWaterSource>. ?s this:hasLocation ?loc. ?loc geo:latitude ?lat. ?loc geo:longitude ?log.}"), // query parameter
 			beforeSend: function(xhr) {
 			    xhr.setRequestHeader("Accept", "application/sparql-results+xml");
 			},
             dataType: "xml",
             success: function(data) {
 				pollutedwatersource = new Array();
+				document.getElementById("spinner").style.display="none";
 	            $(data).find('result').each(function(){
 		            var lat="",lng="",sub="";
 		            $(this).find("binding").each(function(){

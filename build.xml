@@ -5,6 +5,8 @@
 	<property name="lib.dir" value="lib"/>
 	<property name="www.dir" value="/var/www/water"/>
 	<property name="html.dir" value="${src.dir}/html"/>
+	<property name="rdf.target.dir" value="${www.dir}/rdf"/>
+	<property name="rdf.src.dir" value="${src.dir}/rdf"/>
 	
 	<path id="build-classpath">
 		<pathelement path="${lib.dir}/arq-2.8.4.jar"/>
@@ -34,6 +36,10 @@
 	<target name="web" description="Update web documents">
 		<copy todir="${www.dir}">
 			<fileset dir="${html.dir}"/>
+		</copy>
+		<mkdir dir="${rdf.target.dir}"/>
+		<copy todir="${rdf.target.dir}">
+			<fileset dir="${rdf.src.dir}"/>
 		</copy>
 	</target>
 </project>

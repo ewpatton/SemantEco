@@ -2,6 +2,8 @@ package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -17,17 +19,43 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 public class WaterAgentInstance implements HttpHandler {
 	
+	public Map<String,String> parseRequest(HttpExchange arg0) throws IOException
+	{
+		HashMap<String,String> result = new HashMap<String, String>();
+		String query = arg0.getRequestURI().getQuery();
+		//parse request
+		String [] request=query.split("&");
+		
+		
+		for(int i=0;i<request.length;i++) {
+			String[] pieces = request[i].split("=");
+			result.put(pieces[0], java.net.URLDecoder.decode(pieces[1],"UTF-8"));
+		}
+		return result;
+	}
+
 	public void handle(HttpExchange arg0) throws IOException {
 		arg0.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		try {
 			//get query string
-			String queryString=parseRequest(arg0);
+			Map<String,String> params = parseRequest(arg0);
+			String countyCode = params.get("countyCode");
+			String stateCode = params.get("stateCode");
+			String state = params.get("state");
+			String zip = params.get("zip");
+			String queryString=params.get("query");
 			
 			//load ontology model
 			Model owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
 			Model pmlModel = ModelFactory.createDefaultModel();
-			pmlModel.read("http://was.tw.rpi.edu/data/RIDEM-pml.owl");
+			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
+			try {
+				owlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-owl.rdf");
+				pmlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-pml.rdf");
+			}
+			catch(Exception e) {
+				System.err.println("Unable to find regulations for state "+state);
+			}
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
 			//get query result in xml format
@@ -46,36 +74,7 @@ public class WaterAgentInstance implements HttpHandler {
 			arg0.getResponseBody().close();
 		}
 	}
-	public String parseRequest(HttpExchange arg0) throws IOException
-	{
-		//read request
-		/*
-		InputStream is = arg0.getRequestBody();		
-		String query = "";
-		
-		int c = is.read();
-		while(c!=-1) {
-			query = query + Character.toString((char)c);
-			c = is.read();
-		}
-		*
-		*/
-		String query = arg0.getRequestURI().getQuery();
-		//parse request
-		String [] request=query.split("=");
-		
-		String queryString="";
-		
-		if(request.length>=2)
-		{
-			if(request[0].compareTo("query")==0)
-			{
-				queryString=request[1];
-			}
-		}
-		
-		return java.net.URLDecoder.decode( queryString, "UTF-8");
-	}
+
 	public String getQueryResult(Model model, String queryString)
 	{
 		QueryExecution qe = QueryExecutionFactory.create(queryString, model);
@@ -87,6 +86,7 @@ public class WaterAgentInstance implements HttpHandler {
 		
 		return result;
 	}
+
 	public void listStatements(Model model)
 	{
 		StmtIterator iter = model.listStatements();

@@ -27,6 +27,7 @@ function submitZip(zip) {
             	if(data.error!=undefined) {
             	}
             	else if(data.result!=undefined) {
+            		spinner.style.display = "block";
             		p = document.getElementById("display");
             		var mapContainer = document.createElementNS(XHTML,"div");
             		var mapContent = document.createElementNS(XHTML,"div");
@@ -83,7 +84,11 @@ function submitZip(zip) {
             		parent(p).replaceChild(mapContainer,p);
             		mapContainer.setAttribute("id","display");
             		window.map = new GMap2(mapContent);
-                    window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
+            		mapContent.style.borderStyle = "double";
+            		mapContent.style.borderWidth = "1px";
+            		mapContent.style.borderColor = "black";
+            		window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
+            		window.map.enableScrollWheelZoom();
             		window.geocoder = new GClientGeocoder();
             	}
             }
