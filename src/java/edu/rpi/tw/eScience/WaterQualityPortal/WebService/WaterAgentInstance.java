@@ -101,9 +101,10 @@ public class WaterAgentInstance implements HttpHandler {
 			os.flush();
 			os.close();
 		} catch(Exception e) {
-			String stackTrace = e.getStackTrace().toString();
-			arg0.sendResponseHeaders(500, stackTrace.length());
-			arg0.getResponseBody().write(stackTrace.getBytes("UTF-8"));
+			e.printStackTrace();
+			String response = "Server side error. Please see log for details.";
+			arg0.sendResponseHeaders(500, response.length());
+			arg0.getResponseBody().write(response.getBytes("UTF-8"));
 			arg0.getResponseBody().close();
 		}
 	}
