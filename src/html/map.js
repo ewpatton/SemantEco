@@ -98,7 +98,7 @@ function showCleanWater()
             		"&stateCode="+window.appState.stateCode+
             		"&state="+window.appState.stateAbbr+
             		"&zip="+window.appState.zipCode+
-            		"query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#WaterSource>. ?s this:hasLocation ?loc. ?loc geo:latitude ?lat. ?loc geo:longitude ?log.}"), // query parameter
+            		"&query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#WaterSource>. ?s this:hasLocation ?loc. ?loc geo:latitude ?lat. ?loc geo:longitude ?log.}"), // query parameter
 			beforeSend: function(xhr) {
 				xhr.setRequestHeader("Accept", "application/sparql-results+xml");
     		},
