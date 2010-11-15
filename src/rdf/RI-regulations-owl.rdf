@@ -59,10 +59,10 @@
 	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
+	    <owl:onDatatype rdf:resource="&xsd;double"/>
 	    <owl:withRestrictions rdf:parseType="Collection">
 	      <rdf:Description rdf:about="#ArsenicThreshold-Drinking">
-		<xsd:minInclusive rdf:datatype="&xsd;float">0.18</xsd:minInclusive>
+		<xsd:minInclusive rdf:datatype="&xsd;double">0.18</xsd:minInclusive>
 	      </rdf:Description>
 	    </owl:withRestrictions>
 	  </rdfs:Datatype>
@@ -83,10 +83,10 @@
 	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
+	    <owl:onDatatype rdf:resource="&xsd;double"/>
 	    <owl:withRestrictions rdf:parseType="Collection">
 	      <rdf:Description rdf:about="#AntimonyThreshold-Drinking">
-		<xsd:minInclusive rdf:datatype="&xsd;float">5.6</xsd:minInclusive>
+		<xsd:minInclusive rdf:datatype="&xsd;double">5.6</xsd:minInclusive>
 	      </rdf:Description>
 	    </owl:withRestrictions>
 	  </rdfs:Datatype>
@@ -107,10 +107,10 @@
 	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
+	    <owl:onDatatype rdf:resource="&xsd;double"/>
 	    <owl:withRestrictions rdf:parseType="Collection">
 	      <rdf:Description rdf:about="#CyanideThreshold-Drinking">
-		<xsd:minInclusive rdf:datatype="&xsd;float">140</xsd:minInclusive>
+		<xsd:minInclusive rdf:datatype="&xsd;double">140</xsd:minInclusive>
 	      </rdf:Description>
 	    </owl:withRestrictions>
 	  </rdfs:Datatype>
@@ -131,10 +131,10 @@
 	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
+	    <owl:onDatatype rdf:resource="&xsd;double"/>
 	    <owl:withRestrictions rdf:parseType="Collection">
 	      <rdf:Description rdf:about="#MercuryThreshold-Drinking">
-		<xsd:minInclusive rdf:datatype="&xsd;float">0.14</xsd:minInclusive>
+		<xsd:minInclusive rdf:datatype="&xsd;double">0.14</xsd:minInclusive>
 	      </rdf:Description>
 	    </owl:withRestrictions>
 	  </rdfs:Datatype>
@@ -156,10 +156,10 @@
 	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
+	    <owl:onDatatype rdf:resource="&xsd;double"/>
 	    <owl:withRestrictions rdf:parseType="Collection">
 	      <rdf:Description rdf:about="#Threshold-Drinking">
-		<xsd:minInclusive rdf:datatype="&xsd;float">200</xsd:minInclusive>
+		<xsd:minInclusive rdf:datatype="&xsd;double">200</xsd:minInclusive>
 	      </rdf:Description>
 	    </owl:withRestrictions>
 	  </rdfs:Datatype>
