@@ -85,62 +85,63 @@ function showPollutedWater()
 		            	map.addOverlay(marker);	
 		            }
 	            });
-	            //showCleanWater();
+	            showCleanWater();
 			}
 	});
 }
    
-   function showCleanWater()
-   {
-   	 $.ajax({
-        type: "GET",
-    url: "http://was.tw.rpi.edu:14490/agent", // SPARQL service URI
-   data: "query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#WaterSource>. ?s this:hasLocation ?loc. ?loc geo:latitude ?lat. ?loc geo:longitude ?log.}"), // query parameter
-    beforeSend: function(xhr) {
-        xhr.setRequestHeader("Accept", "application/sparql-results+xml");
-    },
-    dataType: "xml",
-    success: function(data) {
-	$(data).find('result').each(function(){
-		var lat="",lng="",sub="";var show=true;
-		$(this).find("binding").each(function(){
-			if($(this).attr("name")=="s")
-			    {					
-				for(var i=0;i<pollutedwatersource.length;i++)
-				    {
-					if($(this).find("uri").text()==pollutedwatersource[i]){
-					    show=false;
-					}
-				    }
-				sub=$(this).find("uri").text();
-			    }
-			if($(this).attr("name")=="lat")
-			{
-				lat=($(this).find("literal").text());
-			}
-			if($(this).attr("name")=="log")
-			{
-				lng=($(this).find("literal").text());
-			}
-			
+function showCleanWater()
+{
+	$.ajax({type: "GET",
+			url: "http://was.tw.rpi.edu:14490/agent", // SPARQL service URI
+			data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
+            		"&stateCode="+window.appState.stateCode+
+            		"&state="+window.appState.stateAbbr+
+            		"&zip="+window.appState.zipCode+
+            		"query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#WaterSource>. ?s this:hasLocation ?loc. ?loc geo:latitude ?lat. ?loc geo:longitude ?log.}"), // query parameter
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader("Accept", "application/sparql-results+xml");
+    		},
+    		dataType: "xml",
+    		success: function(data) {
+    			$(data).find('result').each(function(){
+    				var lat="",lng="",sub="";var show=true;
+    				$(this).find("binding").each(function(){
+    					if($(this).attr("name")=="s")
+    					{					
+    						for(var i=0;i<pollutedwatersource.length;i++)
+    						{
+    							if($(this).find("uri").text()==pollutedwatersource[i]){
+    								show=false;
+    							}
+    						}
+    						sub=$(this).find("uri").text();
+    					}
+    					if($(this).attr("name")=="lat")
+    					{
+    						lat=($(this).find("literal").text());
+    					}
+    					if($(this).attr("name")=="log")
+    					{
+    						lng=($(this).find("literal").text());
+    					}
+    				});			
+    				if(lat!=""&&lng!=""&&show){
+    					var thisIcon = new GIcon(G_DEFAULT_ICON);
+    					thisIcon.image = "http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater2.jpg";
 
-		});			
-		if(lat!=""&&lng!=""&&show){
-    		var thisIcon = new GIcon(G_DEFAULT_ICON);
-    		thisIcon.image = "http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater2.jpg";
-
-		var latlng = new GLatLng(lat ,lng);
-		markerOptions = { icon:thisIcon };
-		var marker=new GMarker(latlng, markerOptions);
-		GEvent.addListener(marker, "click",
-			function() {
-				marker.openInfoWindowHtml(sub);
-				}
-			);
-         		map.addOverlay(marker);	
-			}			
-		});
-        }
+    					var latlng = new GLatLng(lat ,lng);
+    					markerOptions = { icon:thisIcon };
+    					var marker=new GMarker(latlng, markerOptions);
+    					GEvent.addListener(marker, "click",
+    							function() {
+    								marker.openInfoWindowHtml(sub);
+    							}
+    						);
+    					map.addOverlay(marker);	
+    				}
+    			});
+    		}
     });
 }
    function showViolatedFacility()
