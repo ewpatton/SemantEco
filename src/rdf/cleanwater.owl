@@ -1,41 +1,70 @@
 <!DOCTYPE rdf:RDF [
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-	 <!ENTITY time "http://www.w3.org/2006/time#">
-    <!ENTITY otherOnt "http://example.org/otherOntologies/families/" >
-	<!ENTITY epa "http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#">
+  <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+  <!ENTITY geo "http://www.w3.org/2003/01/geo/wgs84_pos#" >
+  <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+  <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+  <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+  <!ENTITY time "http://www.w3.org/2006/time" >
+  <!ENTITY epa "http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#" >
+  <!ENTITY elem "http://sweet.jpl.nasa.gov/2.1/matrElement.owl#" >
+  <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#" >
+  <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
+  <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#">
+  <!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#">
+  <!ENTITY repr "http://sweet.jpl.nasa.gov/2.1/repr.owl#">
 ]>
  
 <rdf:RDF 
-	 xml:base="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"
-	 xmlns="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"
-	 xmlns:epa="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"
-	 xmlns:otherOnt="http://example.org/otherOntologies/families/"
-	 xmlns:owl="http://www.w3.org/2002/07/owl#"
-	 xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-	 xmlns:time="http://www.w3.org/2006/time#"
-	 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	 xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
-	 xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+	 xml:base="&epa;"
+	 xmlns="&epa;"
+   xmlns:epa="&epa;"
+   xmlns:owl="&owl;"
+   xmlns:rdfs="&rdfs;"
+   xmlns:time="&time;"
+   xmlns:rdf="&rdf;"
+   xmlns:geo="&geo;"
+   xmlns:pmlp="&pmlp;"
+   xmlns:elem="&elem;"
+   xmlns:body="&body;"
+   xmlns:comp="&comp;"
+   xmlns:chem="&chem;"
+   xmlns:repr="&repr;"
+   xmlns:xsd="&xsd;">
 
+	<owl:Class rdf:about="#MeasurementSite">
+		<rdfs:subClassOf rdf:resource="&body;BodyOfWater"/>
+		<rdfs:subClassOf rdf:resource="&geo;Point"/>
+		<rdfs:subClassOf>
+		    <owl:Restriction>
+		    	<owl:onProperty rdf:resource="#hasMeasurement"/>
+		    	<owl:allValuesFrom rdf:resource="#WaterMeasurement"/>
+		   	</owl:Restriction>
+		</rdfs:subClasOf>
+	</owl:Class>
 
-	<owl:Class rdf:about="#WaterSource">
-	</owl:Class>
-	
-	<owl:Class rdf:about="#Element">
-	</owl:Class>
-	
-	<owl:Class rdf:about="#Location">
-	</owl:Class>
-	
 	<owl:Class rdf:about="#ExceededThreshold">
 	</owl:Class>
 	
 	<owl:Class rdf:about="#Facility">
+		<rdfs:subClassOf>
+			<owl:Restriction>
+				<owl:onProperty rdf:resource="#hasMeasurement"/>
+				<owl:allValuesFrom rdf:resource="#FacilityMeasurement"/>
+			</owl:Restriction>
+		</rdfs:subClassOf>
 	</owl:Class>
 	
 	<owl:Class rdf:about="#Violation">
+	</owl:Class>
+	
+	<owl:Class rdf:about="#ViolatingFacility">
+		<owl:intersectionOf rdf:parseType="Collection">
+			<owl:Class rdf:about="#Facility"/>
+			<owl:Restriction>
+				<owl:onProperty rdf:resource="#hasMeasurement"/>
+				<owl:someValuesFrom rdf:resource="#Violation"/>
+			</owl:Restriction>
+		</owl:intersectionOf>
 	</owl:Class>
 	
 	<owl:Class rdf:about="#Flood">
@@ -43,109 +72,42 @@
 
 	<owl:Class rdf:ID="PollutedThing"/>
 	
-  <owl:Class rdf:about="#Measurement">
-  </owl:Class>
-  
     <owl:Class rdf:about="#WaterMeasurement">
-	<rdfs:subClassOf rdf:resource="#Measurement"/>
-  </owl:Class>
+		<rdfs:subClassOf rdf:resource="&repr;Measurement"/>
+  	</owl:Class>
   
     <owl:Class rdf:about="#FacilityMeasurement">
-	<rdfs:subClassOf rdf:resource="#Measurement"/>
-  </owl:Class>
-  <owl:Class rdf:about="#Arsenic">
-	<rdfs:subClassOf rdf:resource="#Element"/>
-  </owl:Class>
-  
-  <owl:Class rdf:ID="PollutedWaterSource">
-    <rdfs:subClassOf rdf:resource="#PollutedThing"/>
-    <owl:intersectionOf rdf:parseType="Collection">
-      <owl:Class rdf:about="#WaterSource"/>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="#hasMeasurement"/>       	
-		<owl:someValuesFrom rdf:resource="#ExceededThreshold"/>
-      </owl:Restriction>
-    </owl:intersectionOf>
-  </owl:Class>
+		<rdfs:subClassOf rdf:resource="&repr;Measurement"/>
+  	</owl:Class>
+  	
+	<owl:Class rdf:ID="PollutedWaterSource">
+    	<rdfs:subClassOf rdf:resource="#PollutedThing"/>
+    	<owl:intersectionOf rdf:parseType="Collection">
+      		<owl:Class rdf:about="&body;BodyOfWater"/>
+      		<owl:Restriction>
+        		<owl:onProperty rdf:resource="#hasMeasurement"/>       	
+				<owl:someValuesFrom rdf:resource="#ExceededThreshold"/>
+      		</owl:Restriction>
+    	</owl:intersectionOf>
+  	</owl:Class>
  
-  <owl:Class rdf:about="#ArsenicThreshold">
-  <rdfs:subClassOf rdf:resource="#ExceededThreshold"/>
-    <owl:intersectionOf rdf:parseType="Collection">
-      <owl:Class rdf:about="#WaterMeasurement"/>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="#hasMeasuredValue"/>       	
-	<owl:someValuesFrom>
-	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
-	    <owl:withRestrictions rdf:parseType="Collection">
-	      <rdf:Description>
-		<xsd:minInclusive rdf:datatype="&xsd;float">2.0</xsd:minInclusive>
-	      </rdf:Description>
-	    </owl:withRestrictions>
-	  </rdfs:Datatype>
-	</owl:someValuesFrom>
-      </owl:Restriction>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="#hasMeasuredElement"/>       	
-		<owl:someValuesFrom rdf:resource="#Arsenic"/>
-      </owl:Restriction>	  
-    </owl:intersectionOf>    
-  </owl:Class>
+  	<owl:DatatypeProperty rdf:about="#hasValue">
+  		<rdf:type rdf:resource="&owl;FunctionalProperty"/>
+	</owl:DatatypeProperty>
+  
+	<owl:FunctionalProperty rdf:about="#hasMeasurement">
+		<rdf:type rdf:resource="&owl;ObjectProperty"/>
+		<rdfs:range rdf:resource="&repr;Measurement"/>
+  	</owl:FunctionalProperty>
+  
+  	<owl:ObjectProperty rdf:about="#hasElement">
+     	<rdfs:domain rdf:resource="&repr;Measurement"/>
+     	<rdfs:range rdf:resource="&elem;Element"/>
+     	<rdf:type rdf:resource="&owl;FunctionalProperty"/>
+   	</owl:ObjectProperty>
 
-
-  <owl:Class rdf:about="#ArsenicViolation">
-  <rdfs:subClassOf rdf:resource="#Violation"/>
-    <owl:intersectionOf rdf:parseType="Collection">
-      <owl:Class rdf:about="#FacilityMeasurement"/>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="#hasMeasuredValue"/>       	
-	<owl:someValuesFrom>
-	  <rdfs:Datatype>
-	    <owl:onDatatype rdf:resource="&xsd;float"/>
-	    <owl:withRestrictions rdf:parseType="Collection">
-	      <rdf:Description>
-		<xsd:minInclusive rdf:datatype="&xsd;float">1.0</xsd:minInclusive>
-	      </rdf:Description>
-	    </owl:withRestrictions>
-	  </rdfs:Datatype>
-	</owl:someValuesFrom>
-      </owl:Restriction>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="#hasMeasuredElement"/>       	
-		<owl:someValuesFrom rdf:resource="#Arsenic"/>
-      </owl:Restriction>	  
-    </owl:intersectionOf>    
-  </owl:Class>
-  
-  <owl:DatatypeProperty rdf:about="#hasMeasuredValue">
-  </owl:DatatypeProperty>
-  <owl:FunctionalProperty rdf:about="#hasMeasuredValue"/>
-  
-  
-  <owl:FunctionalProperty rdf:about="#hasMeasuredElement">
-	<rdfs:domain rdf:resource="#Measurement"/>
-	<rdfs:range rdf:resource="#Element"/>
-  </owl:FunctionalProperty>
-  
-  
-  <owl:FunctionalProperty rdf:about="#hasMeasurement">
-	<rdfs:range rdf:resource="#Measurement"/>
-  </owl:FunctionalProperty>
-  
-   <owl:ObjectProperty rdf:about="#hasElement">
-     <rdfs:domain rdf:resource="&epa;WaterSource"/>
-     <rdfs:range rdf:resource="&epa;Element"/>
-   </owl:ObjectProperty>
-
-    <owl:ObjectProperty rdf:about="hasLocation">
-     <rdfs:range rdf:resource="&epa;Location"/>
-   </owl:ObjectProperty> 
-  
-    <owl:ObjectProperty rdf:about="hasTime">
-     <rdfs:range rdf:resource="&time;Instant"/>
-   </owl:ObjectProperty>
-   
  <!--  *********************************Testing Instance********************************************** --> 
+ <!--
   <epa:WaterMeasurement rdf:about="#WaterMeasurement1">
     <hasMeasuredElement>
 		<Arsenic/>
@@ -229,5 +191,5 @@
 	</epa:hasLocation>
 	<epa:releaseToWaterSource rdf:resource="RIWater1" />
   </epa:Facility>  
-  
+-->  
 </rdf:RDF>

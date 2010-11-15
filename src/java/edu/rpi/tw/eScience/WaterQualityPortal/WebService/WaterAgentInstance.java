@@ -70,7 +70,7 @@ public class WaterAgentInstance implements HttpHandler {
 			//load ontology model
 			OntModel owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 			Model pmlModel = ModelFactory.createDefaultModel();
-			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/demo/cleanwater.owl");
+			owlModel.read("http://was.tw.rpi.edu/water/rdf/cleanwater.owl");
 			try {
 				owlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-owl.rdf");
 				pmlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-pml.rdf");
