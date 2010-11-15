@@ -96,9 +96,12 @@ public class Measurement {
 		return source;
 	}
 
+	static int counter=0;
+	
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
+		counter++;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		Individual m = owlModel.createIndividual(Ontology.WaterMeasurement(owlModel));
+		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+counter, Ontology.WaterMeasurement(owlModel));
 		OntProperty prop;
 		
 		Resource info;
