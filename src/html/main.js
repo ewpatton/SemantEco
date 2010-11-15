@@ -88,7 +88,7 @@ function submitZip(zip) {
             		mapContent.style.borderStyle = "double";
             		mapContent.style.borderWidth = "1px";
             		mapContent.style.borderColor = "black";
-            		window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
+            		window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 12);
             		window.map.enableScrollWheelZoom();
             		window.geocoder = new GClientGeocoder();
             		showPollutedWater();
