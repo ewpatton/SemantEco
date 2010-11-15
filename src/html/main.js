@@ -63,7 +63,7 @@ function submitZip(zip) {
             		tr.appendChild(td);
             		td = document.createElementNS(XHTML,"td");
             		img = document.createElementNS(XHTML,"img");
-            		img.setAttribute("src","image/pollutedwater.jpg");
+            		img.setAttribute("src","image/pollutedwater.png");
             		img.setAttribute("height","12");
             		td.appendChild(img);
             		td.appendChild(document.createTextNode(" Polluted Water"));
