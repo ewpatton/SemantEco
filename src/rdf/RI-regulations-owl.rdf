@@ -36,13 +36,27 @@
     <rdfs:label xml:lang="en">Cyanide</rdfs:label>
   </comp:InorganicCompound>
   <comp:InorganicCompound rdf:about="#Cyanide"/>
+  
+  <!-- OWL Sameas relations -->
+  <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Arsenic">
+    <owl:sameAs rdf:resource="&elem;As"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Antimony">
+    <owl:sameAs rdf:resource="&elem;Sb"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Mercury">
+    <owl:sameAs rdf:resource="&elem;Hg"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Cyanide">
+    <owl:sameAs rdf:resource="&elem;CN"/>
+  </owl:Thing>
 
   <owl:Class rdf:about="#ExcessiveArsenicMeasurement">
     <rdfs:subClassOf rdf:resource="&epa;ExceededThreshold"/>
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="&epa;WaterMeasurement"/>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredValue"/>
+	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
 	    <owl:onDatatype rdf:resource="&xsd;float"/>
@@ -55,7 +69,7 @@
 	</owl:someValuesFrom>
       </owl:Restriction>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredElement"/>
+	<owl:onProperty rdf:resource="&epa;hasElement"/>
 	<owl:hasValue rdf:resource="&elem;As"/>
       </owl:Restriction>
     </owl:intersectionOf>
@@ -66,7 +80,7 @@
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="&epa;WaterMeasurement"/>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredValue"/>
+	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
 	    <owl:onDatatype rdf:resource="&xsd;float"/>
@@ -79,7 +93,7 @@
 	</owl:someValuesFrom>
       </owl:Restriction>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredElement"/>
+	<owl:onProperty rdf:resource="&epa;hasElement"/>
 	<owl:hasValue rdf:resource="&elem;Sb"/>
       </owl:Restriction>
     </owl:intersectionOf>
@@ -90,7 +104,7 @@
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="&epa;WaterMeasurement"/>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredValue"/>
+	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
 	    <owl:onDatatype rdf:resource="&xsd;float"/>
@@ -103,7 +117,7 @@
 	</owl:someValuesFrom>
       </owl:Restriction>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredElement"/>
+	<owl:onProperty rdf:resource="&epa;hasElement"/>
 	<owl:hasValue rdf:resource="#CN"/>
       </owl:Restriction>
     </owl:intersectionOf>
@@ -114,7 +128,7 @@
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="&epa;WaterMeasurement"/>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredValue"/>
+	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
 	    <owl:onDatatype rdf:resource="&xsd;float"/>
@@ -127,18 +141,19 @@
 	</owl:someValuesFrom>
       </owl:Restriction>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredElement"/>
+	<owl:onProperty rdf:resource="&epa;hasElement"/>
 	<owl:hasValue rdf:resource="&elem;Hg"/>
       </owl:Restriction>
     </owl:intersectionOf>
   </owl:Class>
 
+<!--
   <owl:Class rdf:about="#ExcessiveColiformMeasurement-1">
     <rdfs:subClassOf rdf:resource="&epa;ExceededThreshold"/>
     <owl:intersectionOf rdf:parseType="Collection">
-      <owl:Class rdf:about="&epa;WaterMeasurement"/>
+      <owl:Class rdf:about="&epa;FacilityMeasurement"/>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredValue"/>
+	<owl:onProperty rdf:resource="&epa;hasValue"/>
 	<owl:someValuesFrom>
 	  <rdfs:Datatype>
 	    <owl:onDatatype rdf:resource="&xsd;float"/>
@@ -151,7 +166,7 @@
 	</owl:someValuesFrom>
       </owl:Restriction>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="&epa;hasMeasuredElement"/>
+	<owl:onProperty rdf:resource="&epa;hasElement"/>
 	<owl:hasValue rdf:resource="&elem;Coliform,_fecal_general"/>
       </owl:Restriction>
       <owl:Restriction>
@@ -160,4 +175,5 @@
       </owl:Restriction>
     </owl:intersectionOf>
   </owl:Class>
+  -->
 </rdf:RDF>
