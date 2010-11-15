@@ -54,6 +54,7 @@ public class ZipCodeLookup {
 	}
 	
 	String state="";
+	String stateAbbr="";
 	String zip="";
 	String county="";
 	String city="";
@@ -77,6 +78,7 @@ public class ZipCodeLookup {
 			if(codes.length()>0) {
 				content = codes.getJSONObject(0);
 				state = content.getString("adminName1");
+				stateAbbr = content.getString("adminCode1");
 				stateNum = stateLookup.get(state.toLowerCase());
 				county = content.getString("adminName2");
 				countyNum = content.getString("adminCode2");
@@ -97,6 +99,10 @@ public class ZipCodeLookup {
 	
 	public String getStateName() {
 		return state;
+	}
+	
+	public String getStateAbbreviation() {
+		return stateAbbr;
 	}
 	
 	public String getStateCode() {
@@ -133,6 +139,7 @@ public class ZipCodeLookup {
 		try {
 			description.put("zipCode", zip);
 			description.put("state", state);
+			description.put("stateAbbr", stateAbbr);
 			description.put("county", county);
 			description.put("city", city);
 			description.put("stateCode", stateNum);

@@ -91,7 +91,7 @@ function submitZip(zip) {
             		window.map.setCenter(new GLatLng(data.result.lat, data.result.lng), 13);
             		window.map.enableScrollWheelZoom();
             		window.geocoder = new GClientGeocoder();
-            		showPollutedWater(window.appState.countyCode, window.appState.stateCode, window.appState.state, window.appState.zipCode);
+            		showPollutedWater();
             	}
             }
             else {
