@@ -127,3 +127,8 @@ div#spinner img {
 	margin-top: 25%;
 	width: 48px;
 }
+
+table img {
+	width: 16px;
+	height: 16px;
+}
