@@ -1,5 +1,11 @@
 var XHTML="http://www.w3.org/1999/xhtml";
 
+if(document.createElementNS===undefined) {
+	document.createElementNS = function(a,b) {
+		return document.createElement(b);
+	};
+}
+
 function parent(x) {
 	return x.parentElement ? x.parentElement : x.parentNode;
 }
@@ -120,7 +126,7 @@ function colorize() {
 
 function verify(e) {
 	e = e ? e : window.event;
-    var key = e ? e.which : window.event.keyCode;
+    var key = e.which ? e.which : e.keyCode;
     var keychar = String.fromCharCode(key);
     if(key==13) {
 	submitZip(document.getElementById("zip").value);
