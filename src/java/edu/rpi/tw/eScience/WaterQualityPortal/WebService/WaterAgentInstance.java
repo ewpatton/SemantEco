@@ -118,15 +118,15 @@ public class WaterAgentInstance implements HttpHandler {
 	public String getQueryResult(Model model, String queryString)
 	{
 		QueryExecution qe = QueryExecutionFactory.create(queryString, model);
-		ResultSet queryResults = qe.execSelect();
 		
-		if(queryResults!=null) {
-		
+		try {
+			ResultSet queryResults = qe.execSelect();
+
 			String result = ResultSetFormatter.asXMLString(queryResults);
 			qe.close();
 			return result;
 		}
-		else {
+		catch(Exception e) {
 			Model m2 = qe.execDescribe();
 			StringWriter sw = new StringWriter();
 			m2.write(sw);
