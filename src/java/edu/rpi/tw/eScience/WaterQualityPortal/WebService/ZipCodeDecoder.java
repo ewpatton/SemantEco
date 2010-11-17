@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
+import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup.ServerFailedToRespondException;
 
 public class ZipCodeDecoder implements HttpHandler {
 
@@ -24,6 +25,9 @@ public class ZipCodeDecoder implements HttpHandler {
 				try {
 					ZipCodeLookup zcl = ZipCodeLookup.execute(split[1]);
 					result = zcl.toString();
+				}
+				catch(ServerFailedToRespondException e) {
+					result = "{\"error\":\"Geonames server not responding. Please try again later.\"}";
 				}
 				catch(Exception e) {
 					result = "{\"error\":\"Unknown zip code\"}";

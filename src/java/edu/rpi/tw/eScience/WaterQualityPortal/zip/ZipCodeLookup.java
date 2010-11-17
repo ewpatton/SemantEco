@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,8 +44,14 @@ public class ZipCodeLookup {
 		}
 	}
 	
+	public static void init() {
+		ZipCodeLookup zcl = new ZipCodeLookup();
+		cached.put("02809", zcl);
+	}
+	
 	public static ZipCodeLookup execute(String zipCode) throws Exception {
 		if(stateLookup==null) doStateLookup();
+		if(!cached.containsKey("02809")) init();
 		ZipCodeLookup zcl = null;
 		if(cached.containsKey(zipCode)) return cached.get(zipCode);
 		zcl = new ZipCodeLookup(zipCode);
@@ -62,12 +69,33 @@ public class ZipCodeLookup {
 	double lat,lng;
 	boolean loaded;
 	
-	ZipCodeLookup(String zip) {
+	public class ServerFailedToRespondException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4312453358087597654L;
+		
+	}
+	
+	ZipCodeLookup() {
+		state="Rhode Island";
+		stateAbbr="RI";
+		zip="02809";
+		county="Bristol";
+		city="Bristol";
+		countyNum="001";
+		stateNum="44";
+	}
+	
+	ZipCodeLookup(String zip) throws ServerFailedToRespondException {
 		this.zip = zip;
 		String query = queryBase+zip+queryEnd;
 		try {
 			URL requestURL = new URL(query);
-			InputStream o = (InputStream)requestURL.getContent();
+			URLConnection conn = requestURL.openConnection();
+			conn.setReadTimeout(5000);
+			InputStream o = (InputStream)conn.getContent();
 			InputStreamReader isr = new InputStreamReader(o);
 			BufferedReader br = new BufferedReader(isr);
 			String result="";
@@ -87,6 +115,9 @@ public class ZipCodeLookup {
 				lng = content.getDouble("lng");
 				loaded = true;
 			}
+		}
+		catch(java.net.SocketTimeoutException e) {
+			throw new ServerFailedToRespondException();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
