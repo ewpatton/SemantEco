@@ -24,7 +24,7 @@ function submitZip(zip) {
     var p = parent(elem);
     var spinner = document.getElementById("spinner");
     spinner.style.display = "block";
-    xhttp.open("GET","http://was.tw.rpi.edu:14490/zip?code="+zip,true);
+    xhttp.open("GET","http://was.tw.rpi.edu/water/service/zip?code="+zip,true);
     xhttp.onreadystatechange = function() {
         if(xhttp.readyState==4) {
         	spinner.style.display = "none";
