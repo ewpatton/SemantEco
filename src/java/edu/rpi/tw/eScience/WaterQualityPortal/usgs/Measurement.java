@@ -110,7 +110,8 @@ public class Measurement {
 		prop = Ontology.inXSDDateTime(owlModel);
 		m.addLiteral(prop, df.format(date));
 		// PML
-		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, df.format(date));
@@ -120,7 +121,8 @@ public class Measurement {
 		prop = Ontology.hasUnit(owlModel);
 		m.addLiteral(prop, unit);
 		// PML
-		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, unit);
@@ -130,7 +132,8 @@ public class Measurement {
 		prop = Ontology.hasValue(owlModel);
 		m.addLiteral(prop, value);
 		// PML
-		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, value);
@@ -141,7 +144,8 @@ public class Measurement {
 		Individual elem = owlModel.createIndividual(asURI(), Ontology.Element(owlModel));
 		m.addProperty(prop, elem);
 		// PML
-		info = pmlModel.createResource(Ontology.PMLP.Information);
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, elem);
