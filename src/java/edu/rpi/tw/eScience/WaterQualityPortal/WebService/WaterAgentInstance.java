@@ -3,6 +3,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,11 +120,18 @@ public class WaterAgentInstance implements HttpHandler {
 		QueryExecution qe = QueryExecutionFactory.create(queryString, model);
 		ResultSet queryResults = qe.execSelect();
 		
-		String result = ResultSetFormatter.asXMLString(queryResults);
-
-		qe.close();
+		if(queryResults!=null) {
 		
-		return result;
+			String result = ResultSetFormatter.asXMLString(queryResults);
+			qe.close();
+			return result;
+		}
+		else {
+			Model m2 = qe.execDescribe();
+			StringWriter sw = new StringWriter();
+			m2.write(sw);
+			return sw.toString();
+		}
 	}
 
 	public void listStatements(Model model)
