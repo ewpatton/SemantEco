@@ -86,6 +86,8 @@ public class ZipCodeLookup {
 		city="Bristol";
 		countyNum="001";
 		stateNum="44";
+		lat = 41.6842;
+		lng = -71.26866;
 	}
 	
 	ZipCodeLookup(String zip) throws ServerFailedToRespondException {
