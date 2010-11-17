@@ -99,7 +99,7 @@ public class WaterAgentInstance implements HttpHandler {
 			String response = getQueryResult(model,queryString);
 			//String response = arg0.getRequestURI().getQuery();
 			//send response back
-			arg0.getResponseHeaders().set("Content-type", "application/sparql-results+xml");
+			arg0.getResponseHeaders().set("Content-type", "text/xml");
 			arg0.sendResponseHeaders(200, response.length());
 			OutputStream os = arg0.getResponseBody();
 			os.write(response.getBytes());
