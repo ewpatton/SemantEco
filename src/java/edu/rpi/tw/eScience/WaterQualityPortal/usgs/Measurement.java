@@ -66,7 +66,7 @@ public class Measurement {
 	}
 	
 	public Resource rowColRef(int col, Model pmlModel) {
-		Resource usgs = pmlModel.createResource(Ontology.EPA.NS+"USGS",pmlModel.createResource(Ontology.PMLP.Organization));
+		Resource usgs = pmlModel.createResource(Ontology.EPA.NS+"USGS");
 		Resource source = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.SourceUsage));
 		Resource frag = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.DocumentFragmentByRowCol));
 		Resource document = pmlModel.createResource(src, pmlModel.createResource(Ontology.PMLP.Dataset));
@@ -132,28 +132,24 @@ public class Measurement {
 		prop = Ontology.hasValue(owlModel);
 		m.addLiteral(prop, value);
 		// PML
-		/*
 		info = pmlModel.createResource();
 		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, value);
 		info.addProperty(hasUsage, rowColRef(33, pmlModel));
-		*/
 
 		// Element
 		prop = Ontology.hasElement(owlModel);
 		Individual elem = owlModel.createIndividual(asURI(), Ontology.Element(owlModel));
 		m.addProperty(prop, elem);
 		// PML
-		/*
 		info = pmlModel.createResource();
 		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, elem);
 		info.addProperty(hasUsage, rowColRef(31, pmlModel));
-		*/
 
 		return m;
 	}

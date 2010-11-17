@@ -12,7 +12,7 @@ public class WaterAgent {
 		System.out.println("Starting web service...");
 		HttpServer server=null;
 		try {
-			server = HttpServer.create(new InetSocketAddress(14490), 10);
+			server = HttpServer.create(new InetSocketAddress(14490), 30);
 		}
 		catch(IOException e) {
 			e.printStackTrace();

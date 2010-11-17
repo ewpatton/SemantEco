@@ -10,6 +10,144 @@ function parent(x) {
 	return x.parentElement ? x.parentElement : x.parentNode;
 }
 
+function spinner() {
+	var x = document.createElementNS(XHTML,"img");
+	x.setAttribute("src","spinner.gif");
+	x.setAttribute("alt","loading...");
+	return x;
+}
+
+function queryButton(site, func) {
+	var a = document.createElementNS(XHTML,"a");
+	var img = document.createElementNS(XHTML,"img");
+	img.setAttribute("src","query.png");
+	img.setAttribute("alt","Show underlying query");
+	a.appendChild(img);
+	if(a.addEventListener) {
+	}
+	else {
+	}
+	return a;
+}
+
+function queryForWaterPollution(site, justQuery) {
+	var query =
+	"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
+	"PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+	"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
+	"PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
+	"PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
+	"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
+	"PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
+	"SELECT DISTINCT ?site ?measure ?element ?label ?value ?unit ?limit ?time WHERE {\r\n"+
+	(justQuery ? "# Find measurements that exceed threshold\r\n" : "")+
+	"<"+site.uri+"> epa:hasMeasurement ?measure .\r\n"+
+	"?measure rdf:type epa:ExceededThreshold .\r\n"+
+	"?measure epa:hasElement ?element .\r\n"+
+	(justQuery ? "# Get element label for pretty-printing\r\n" : "")+
+	"OPTIONAL { ?element rdfs:label ?label . }\r\n"+
+	"?measure epa:hasValue ?value .\r\n"+
+	"?measure epa:hasUnit ?unit .\r\n"+
+	(justQuery ? "# Retrieve threshold information from regulation ontology\r\n" : "")+
+	"?measure rdf:type ?threshold .\r\n"+
+	"?threshold owl:intersectionOf ?desc .\r\n"+
+	"?desc list:member ?restriction .\r\n"+
+	"?restriction owl:onProperty epa:hasValue .\r\n"+
+	"?restriction owl:someValuesFrom ?datatype .\r\n"+
+	"?datatype owl:withRestrictions ?desc2 .\r\n"+
+	"?desc2 list:member ?limiter .\r\n"+
+	"?limiter xsd:minInclusive ?limit .\r\n"+
+	"?measure time:inXSDDateTime ?time .\r\n"+
+	"}";
+	if(justQuery) return query;
+	var timeQuery =
+		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
+		"PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
+		"PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
+		"PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
+		"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
+		"PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
+		"PREFIX pmlp: <http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#>\r\n"+
+		"\r\n"+
+		"SELECT DISTINCT ?lastTime WHERE {\r\n"+
+		"  XXXXX epa:hasMeasurement ?measure .\r\n"+
+		"  ?measure time:inXSDDateTime ?lastTime .\r\n"+
+		"}\r\n"+
+		"ORDER BY DESC(?time)\r\n"+
+		"LIMIT 1";
+	
+	var contents = document.createElementNS(XHTML,"div");
+	var nextElem = document.createElementNS(XHTML,"h4");
+	nextElem.appendChild(document.createTextNode(site.label));
+	contents.appendChild(nextElem);
+	
+	if(site.isPolluted) {
+		nextElem = document.createElementNS(XHTML,"p");
+		nextElem.appendChild(document.createTextNode("Last test occurred on "));
+		nextElem.appendChild(spinner());
+		contents.appendChild(nextElem);
+		nextElem = document.createElementNS(XHTML,"p");
+		nextElem.appendChild(document.createTextNode("Pollutants:"));
+		nextElem.appendChild(queryButton(site, queryForWaterPollution));
+		contents.appendChild(nextElem);
+		nextElem = document.createElementNS(XHTML,"table");
+		var tbody = document.createElementNS(XHTML,"tbody");
+		nextElem.appendChild(tbody);
+		contents.appendChild(nextElem);
+		nextElem = document.createElementNS(XHTML,"tr");
+		var td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Pollutant"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Time Measured"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Value"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Limit"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		nextElem = document.createElementNS(XHTML,"tr");
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		tbody.appendChild(nextElem);
+	}
+	else {
+		nextElem = document.createElementNS(XHTML,"p");
+		nextElem.appendChild(document.createTextNode("According to all current regulations, this water supply is not polluted."));
+		contents.appendChild(nextElem);
+	}
+	
+	return contents;
+}
+
+function queryForWaterDataProvider(site, justQuery) {
+	
+}
+
+function queryForWaterRegulationProvider(site, justQuery) {
+	
+}
+
+function createMapPopup(site) {
+	if(site.isWaterSource) {
+		var elem = document.createElementNS(XHTML,"div");
+		
+	}
+}
+
 function submitZip(zip) {
     var xhttp = null;
     if(xhttp==null && window.XMLHttpRequest)

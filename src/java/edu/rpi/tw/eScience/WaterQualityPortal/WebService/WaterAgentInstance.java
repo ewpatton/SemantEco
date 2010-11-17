@@ -1,6 +1,5 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;

@@ -13,6 +13,10 @@ import java.util.*;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDFS;
+
+import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
 public final class USGSParser {
 	
@@ -267,6 +271,7 @@ public final class USGSParser {
     		if(value.equals("")) value = "0";
     		if(date.equals("") || time.equals("")) continue;
 			Measurement x = new Measurement(ID,counter++,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
+			x.setSourceDocument(source, counter);
     		temp.addData(x);
     	}
     	return data.values();
@@ -275,6 +280,8 @@ public final class USGSParser {
 	public boolean getData(String stateCode, String countyCode,
 			OntModel owlModel, Model pmlModel) {
 		try {
+			Resource usgs = pmlModel.createResource(Ontology.EPA.NS+"USGS",pmlModel.createResource(Ontology.PMLP.Organization));
+			usgs.addLiteral(RDFS.label, "United States Geological Survey");
 			Collection<MeasurementSite> data = process(stateCode, countyCode);
 			for(MeasurementSite m : data) {
 				m.asIndividual(owlModel, pmlModel);
