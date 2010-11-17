@@ -178,6 +178,7 @@ public final class USGSParser {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	String line2;
     	boolean first2 = true;
+    	int counter = 0;
     	while ((line2=readbuffer2.readLine())!=null){
     		if(first2) {
     			first2 = false;
@@ -196,7 +197,7 @@ public final class USGSParser {
     		MeasurementSite temp = data.get(ID);
     		if(value.equals("")) value = "0";
     		if(date.equals("") || time.equals("")) continue;
-			Measurement x = new Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
+			Measurement x = new Measurement(ID,counter++,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
     		temp.addData(x);
     		}
     	for(MeasurementSite x : data.values()) {
@@ -247,6 +248,7 @@ public final class USGSParser {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	String line2;
     	boolean first2 = true;
+    	counter = 0;
     	while ((line2=readbuffer2.readLine())!=null){
     		if(first2) {
     			first2 = false;
@@ -264,7 +266,7 @@ public final class USGSParser {
     		MeasurementSite temp = data.get(ID);
     		if(value.equals("")) value = "0";
     		if(date.equals("") || time.equals("")) continue;
-			Measurement x = new Measurement(ID,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
+			Measurement x = new Measurement(ID,counter++,sdf.parse(date),time,chemical,Double.parseDouble(value),unit);
     		temp.addData(x);
     	}
     	return data.values();

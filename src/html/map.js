@@ -81,7 +81,7 @@ function showPollutedWater()
         showCleanWater();
 	};
 	$.ajax({type: "GET",
-            url: "http://was.tw.rpi.edu/wate/service/agent", // SPARQL service URI
+            url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
             data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
                   "&stateCode="+window.appState.stateCode+
                   "&state="+window.appState.stateAbbr+
@@ -102,66 +102,66 @@ function showPollutedWater()
    
 function showCleanWater()
 {
-	var success = function(data) {
-		$(data).find('result').each(function(){
-			var lat="",lng="",sub="",label="";var show=true;
-			$(this).find("binding").each(function(){
-				if($(this).attr("name")=="s")
-				{					
-					for(var i=0;i<pollutedwatersource.length;i++)
-					{
-						if($(this).find("uri").text()==pollutedwatersource[i]){
-							show=false;
-						}
-					}
-					sub=$(this).find("uri").text();
-				}
-				if($(this).attr("name")=="lat")
-				{
-					lat=($(this).find("literal").text());
-				}
-				if($(this).attr("name")=="log")
-				{
-					lng=($(this).find("literal").text());
-				}
-				if($(this).attr("name")=="label")
-				{
-					label=($(this).find("literal").text());
-				}
-			});			
-			if(lat!=""&&lng!=""&&show){
-				var thisIcon = new GIcon(G_DEFAULT_ICON,"image/cleanwater2.png");
-				thisIcon.iconSize = new GSize(30,34);
-				var latlng = new GLatLng(lat ,lng);
-				markerOptions = { icon:thisIcon };
-				var marker=new GMarker(latlng, markerOptions);
-				GEvent.addListener(marker, "click",
-						function() {
-							marker.openInfoWindowHtml(label);
-						}
-				);
-				map.addOverlay(marker);	
-			};
+    var success = function(data) {
+	$(data).find('result').each(function(){
+	    var lat="",lng="",sub="",label="";var show=true;
+	    $(this).find("binding").each(function(){
+		if($(this).attr("name")=="s")
+		{					
+		    for(var i=0;i<pollutedwatersource.length;i++)
+		    {
+			if($(this).find("uri").text()==pollutedwatersource[i]){
+			    show=false;
+			}
+		    }
+		    sub=$(this).find("uri").text();
 		}
-	}
-	$.ajax({type: "GET",
-			url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
-			data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
-            		"&stateCode="+window.appState.stateCode+
-            		"&state="+window.appState.stateAbbr+
-            		"&zip="+window.appState.zipCode+
-            		"&query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#BodyOfWater>. ?s geo:lat ?lat. ?s geo:long ?log. ?s rdfs:label ?label . }"), // query parameter
-			beforeSend: function(xhr) {
-				xhr.setRequestHeader("Accept", "application/sparql-results+xml");
-    		},
-    		dataType: "xml",
-    		error: function(xhr, text, err) {
-    			if(xhr.status == 200) {
-    				success(xhr.responseXML);
-    			}
-    		},
-    		success: success
-    });
+		if($(this).attr("name")=="lat")
+		{
+		    lat=($(this).find("literal").text());
+		}
+		if($(this).attr("name")=="log")
+		{
+		    lng=($(this).find("literal").text());
+		}
+		if($(this).attr("name")=="label")
+		{
+		    label=($(this).find("literal").text());
+		}
+	    });			
+	    if(lat!=""&&lng!=""&&show){
+		var thisIcon = new GIcon(G_DEFAULT_ICON,"image/cleanwater2.png");
+		thisIcon.iconSize = new GSize(30,34);
+		var latlng = new GLatLng(lat ,lng);
+		markerOptions = { icon:thisIcon };
+		var marker=new GMarker(latlng, markerOptions);
+		GEvent.addListener(marker, "click",
+				   function() {
+				       marker.openInfoWindowHtml(label);
+				   }
+				  );
+		map.addOverlay(marker);	
+	    };
+	});
+    };
+    $.ajax({type: "GET",
+	    url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
+	    data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
+            "&stateCode="+window.appState.stateCode+
+            "&state="+window.appState.stateAbbr+
+            "&zip="+window.appState.zipCode+
+            "&query=" + encodeURIComponent("prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type <http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#BodyOfWater>. ?s geo:lat ?lat. ?s geo:long ?log. ?s rdfs:label ?label . }"), // query parameter
+	    beforeSend: function(xhr) {
+		xhr.setRequestHeader("Accept", "application/sparql-results+xml");
+    	    },
+    	    dataType: "xml",
+    	    error: function(xhr, text, err) {
+    		if(xhr.status == 200) {
+    		    success(xhr.responseXML);
+    		}
+    	    },
+    	    success: success
+	   });
 }
 
 function showViolatedFacility()

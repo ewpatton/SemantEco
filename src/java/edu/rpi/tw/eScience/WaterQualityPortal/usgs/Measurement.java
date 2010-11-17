@@ -15,6 +15,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
 public class Measurement {
 	String ID;
+	int id2;
 	Date date;
 	String time;
 	String chemical;
@@ -37,8 +38,9 @@ public class Measurement {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public Measurement(String identification, Date Startdate, String StartTime, String chemicalname, double value_measurement, String unit_measurement) {
+	public Measurement(String identification, int id2, Date Startdate, String StartTime, String chemicalname, double value_measurement, String unit_measurement) {
     	this.ID = identification; 
+    	this.id2 = id2;
     	this.date = Startdate;
     	this.time = StartTime;
     	String[] parts = time.split(":");
@@ -96,12 +98,9 @@ public class Measurement {
 		return source;
 	}
 
-	static int counter=0;
-	
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
-		counter++;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+counter, Ontology.WaterMeasurement(owlModel));
+		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+id2, Ontology.WaterMeasurement(owlModel));
 		OntProperty prop;
 		
 		Resource info;
