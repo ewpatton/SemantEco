@@ -95,10 +95,9 @@
   		<rdf:type rdf:resource="&owl;FunctionalProperty"/>
 	</owl:DatatypeProperty>
   
-	<owl:FunctionalProperty rdf:about="#hasMeasurement">
-		<rdf:type rdf:resource="&owl;ObjectProperty"/>
+	<owl:ObjectProperty rdf:about="#hasMeasurement">
 		<rdfs:range rdf:resource="&repr;Measurement"/>
-  	</owl:FunctionalProperty>
+  	</owl:ObjectProperty>
   
   	<owl:ObjectProperty rdf:about="#hasElement">
      	<rdfs:domain rdf:resource="&repr;Measurement"/>

@@ -40,15 +40,19 @@
   <!-- OWL Sameas relations -->
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Arsenic">
     <owl:sameAs rdf:resource="&elem;As"/>
+    <rdfs:label>Arsenic</rdfs:label>
   </owl:Thing>
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Antimony">
     <owl:sameAs rdf:resource="&elem;Sb"/>
+    <rdfs:label>Antimony</rdfs:label>
   </owl:Thing>
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Mercury">
     <owl:sameAs rdf:resource="&elem;Hg"/>
+    <rdfs:label>Mercury</rdfs:label>
   </owl:Thing>
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Cyanide">
     <owl:sameAs rdf:resource="&elem;CN"/>
+    <rdfs:label>Cyanide</rdfs:label>
   </owl:Thing>
 
   <owl:Class rdf:about="#ExcessiveArsenicMeasurement">
