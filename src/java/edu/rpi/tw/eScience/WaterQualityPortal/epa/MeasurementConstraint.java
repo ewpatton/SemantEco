@@ -220,17 +220,16 @@ public class MeasurementConstraint {
 		info.addProperty(RDF.predicate, prop);
 		info.addLiteral(RDF.object, cmpValue);
 		info.addProperty(hasUsage, rowColRef(col+1, pmlModel));
-		
-		//
+
 		// CMP Type???
-		prop = Ontology.hasUnit(owlModel);
-		m.addLiteral(prop, cmpUnit);
+		prop = Ontology.hasCmpType(owlModel);
+		m.addLiteral(prop, cmpType);
 		// PML
 		info = pmlModel.createResource();
 		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, cmpUnit);
+		info.addLiteral(RDF.object, cmpType);
 		info.addProperty(hasUsage, rowColRef(col, pmlModel));
 		
 		// Element
