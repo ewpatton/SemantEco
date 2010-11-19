@@ -609,13 +609,13 @@ public class EpaDataAgent {
 		//output file
 		String searchByZipResult = curDir+"/searchByZipResult";
 		//Step 1
-		//commAgent.doCommunication(1, searchByZipTarget, commContent, searchByZipResult);
+		commAgent.doCommunication(1, searchByZipTarget, commContent, searchByZipResult);
 		//invoke python script
 		String curArgs[] = new String [2]; 
 		curArgs[0] = searchByZipResult;
 		curArgs[1] = curDir;
 		//Step 2
-		//pythonExe(scriptExtractSearchResult, curArgs, 2);
+		pythonExe(scriptExtractSearchResult, curArgs, 2);
 		//
 		String soupDataPath = curDir+soupDataFile;
 		//Step 3
@@ -689,10 +689,10 @@ public class EpaDataAgent {
 		EpaDataAgent dataAgent = new EpaDataAgent();
 		EpaUtil util = new EpaUtil();
 		String zipCode = "02809";//12208 12180
-		dataAgent.downloadFacPage = false;
-		dataAgent.downloadGeoData = false;
-		dataAgent.downloadOCVPage = false;
-		dataAgent.downloadCSVFile = false;
+		//dataAgent.downloadFacPage = false;
+		//dataAgent.downloadGeoData = false;
+		//dataAgent.downloadOCVPage = false;
+		//dataAgent.downloadCSVFile = false;
 		dataAgent.startQuery(zipCode);
 		dataAgent.saveToRdf(zipCode);
 		
