@@ -6,33 +6,31 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
+
+import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
+
 
 public class FacilityMeasurement {
+	int id;
 	String elementName;
 	int testNumber;
 	String date;
 	String value;
-	String unit;
+	String unit;	
+	String src;
+	String postContent;
+	int row;
 	
-	@Override
-	public String toString() {
-		String result = "";
-		Calendar cal = str2Calendar(date);
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		result += "<FacilityMeasurement>\n";		
-		result += "<hasDate rdf:datatype=\"&xsd;dateTime\">"+df.format(cal.getTime())+"</hasDate>\n";
-        result += "<hasUnit>"+unit+"</hasUnit>\n";
-        result += "<hasMeasurement>"+value+"</hasMeasurement>\n";
-        result += "<hasElement>\n";
-        result += "<Element rdf:about=\"#"+elementName+"\"/>\n";
-        result += "</hasElement>\n";
-        result += "<hasTestNumber rdf:datatype=\"&xsd;nonNegativeInteger\">"+testNumber+"</hasTestNumber>\n";
-		result += "</FacilityMeasurement>\n";
-		return result;
-	}
-	
-	public FacilityMeasurement(String curElementName, int curTestNumber, 
+	public FacilityMeasurement(int curId, String curElementName, int curTestNumber, 
 			String curDate, String curValue, String curUnit){
+		id = curId;
 		elementName = curElementName;
 		testNumber = curTestNumber;
 		date = curDate;
@@ -75,6 +73,163 @@ public class FacilityMeasurement {
 		System.out.println("date: "+ date +"\n");
 		System.out.println("value: "+ value +"\n");
 		System.out.println("unit: "+ unit +"\n");
+	}
+	
+	public void setSourceDocument(String src, String postContent, int row) {
+		this.src = src;
+		this.postContent = postContent;
+		this.row = row;
+	}
+	
+	String asURI() {
+		return Ontology.EPA.NS+elementName;
+	}
+	
+	public Resource rowColRef(int col, Model pmlModel) {
+		Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA");
+		Resource source = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.SourceUsage));
+		Resource frag = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.DocumentFragmentByRowCol));
+		Resource document = pmlModel.createResource(src, pmlModel.createResource(Ontology.PMLP.Dataset));
+
+		Property prop;
+
+		// Relate source to fragment
+		prop = pmlModel.createProperty(Ontology.PMLP.hasSource);
+		source.addProperty(prop, frag);
+		
+		// Relate row/col information
+		prop = pmlModel.createProperty(Ontology.PMLP.hasFromCol);
+		frag.addLiteral(prop, col);
+		prop = pmlModel.createProperty(Ontology.PMLP.hasToCol);
+		frag.addLiteral(prop, col);
+		prop = pmlModel.createProperty(Ontology.PMLP.hasFromRow);
+		frag.addLiteral(prop, row);
+		prop = pmlModel.createProperty(Ontology.PMLP.hasToRow);
+		frag.addLiteral(prop, row);
+		
+		// Relate fragment to document
+		prop = pmlModel.createProperty(Ontology.PMLP.hasDocument);
+		frag.addProperty(prop, document);
+		
+		// Relate document to publisher
+		prop = pmlModel.createProperty(Ontology.PMLP.hasPublisher);
+		document.addProperty(prop, epa);
+
+		return source;
+	}
+
+	
+	@Override
+	public String toString() {
+		String result = "";
+		Calendar cal = str2Calendar(date);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		result += "<FacilityMeasurement>\n";		
+		result += "<hasDate rdf:datatype=\"&xsd;dateTime\">"+df.format(cal.getTime())+"</hasDate>\n";
+        result += "<hasUnit>"+unit+"</hasUnit>\n";
+        result += "<hasMeasurement>"+value+"</hasMeasurement>\n";
+        result += "<hasElement>\n";
+        result += "<Element rdf:about=\"#"+elementName+"\"/>\n";
+        result += "</hasElement>\n";
+        result += "<hasTestNumber rdf:datatype=\"&xsd;nonNegativeInteger\">"+testNumber+"</hasTestNumber>\n";
+		result += "</FacilityMeasurement>\n";
+		return result;
+	}
+
+	int unitCol(int testNumber){
+		int col=0;
+		switch (testNumber){
+		case 1: col = 21; break;
+		case 2: col = 32; break;
+		case 3: col = 43; break;
+		case 4: col = 54; break;
+		case 5: col = 65; break;
+		default: System.err.println("unitCol, unkown testNumber"); break;			
+		}
+		
+		return col;		
+	}
+	
+	int valueCol(int testNumber){
+		int col=0;
+		switch (testNumber){
+		case 1: col = 20; break;
+		case 2: col = 31; break;
+		case 3: col = 42; break;
+		case 4: col = 53; break;
+		case 5: col = 64; break;
+		default: System.err.println("valueCol, unkown testNumber"); break;			
+		}
+		
+		return col;		
+	}
+	
+	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
+		int col = valueCol(testNumber);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+id, Ontology.FacilityMeasurement(owlModel));
+		OntProperty prop;
+		
+		Resource info;
+		Property hasUsage = pmlModel.createProperty(Ontology.PMLP.hasReferenceSourceUsage);
+		
+		// Time
+		prop = Ontology.inXSDDateTime(owlModel);
+		m.addLiteral(prop, df.format(date));
+		// PML
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, df.format(date));
+		info.addProperty(hasUsage, rowColRef(18, pmlModel));
+		
+		// Test Number
+		prop = Ontology.hasTestNumber(owlModel);
+		m.addLiteral(prop, testNumber);
+		// PML
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, testNumber);
+		info.addProperty(hasUsage, rowColRef(col, pmlModel));
+		
+		// Unit
+		prop = Ontology.hasUnit(owlModel);
+		m.addLiteral(prop, unit);
+		// PML
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, unit);
+		info.addProperty(hasUsage, rowColRef(col+1, pmlModel));
+		
+		// Value
+		prop = Ontology.hasValue(owlModel);
+		m.addLiteral(prop, value);
+		// PML
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, value);
+		info.addProperty(hasUsage, rowColRef(col, pmlModel));
+
+		// Element
+		prop = Ontology.hasElement(owlModel);
+		Individual elem = owlModel.createIndividual(asURI(), Ontology.Element(owlModel));
+		m.addProperty(prop, elementName);
+		// PML
+		info = pmlModel.createResource();
+		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
+		info.addProperty(RDF.subject, m);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, elem);
+		info.addProperty(hasUsage, rowColRef(14, pmlModel));
+
+		return m;
 	}
 	
 

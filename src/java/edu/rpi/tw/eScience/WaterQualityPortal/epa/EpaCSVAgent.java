@@ -8,6 +8,10 @@ import java.util.*;
 import com.csvreader.*;
 
 public class EpaCSVAgent {
+	static int idCount = 0;
+	static int consIdCount = 0;
+	static String csvTarget = "http://www.epa-echo.gov/cgi-bin/effluentdata.cgi";
+	
 
 	private int convertCmpType(String strCmpType){
 		if(strCmpType.compareTo("<")==0)
@@ -26,7 +30,7 @@ public class EpaCSVAgent {
 		}
 	}
 	
-	public void CSVRead(String inputfileName, Facility curFac, HashMap<String, MeasurementConstraint> constraintsMap){		
+	public void CSVRead(String inputfileName, String postContent, Facility curFac, HashMap<String, MeasurementConstraint> constraintsMap){		
 		CsvReader reader = null;
 		int recordNum = 0;
 		String focusedName = null;
@@ -55,8 +59,8 @@ public class EpaCSVAgent {
 
 			while (reader.readRecord())
 			{			
-				elementName = reader.get(13);
 				recordNum++;
+				elementName = reader.get(13);				
 				//System.out.println("Record " + recordNum + ": "+elementName);
 				//find the next element
 				if(coliformTag == true && elementName.compareTo("")!=0){
@@ -80,7 +84,8 @@ public class EpaCSVAgent {
 						}
 						
 						cmpUnit = reader.get("C1_LUNIT");
-						MeasurementConstraint cons1 = new MeasurementConstraint(focusedName, 1, cmpType, cmpValue, cmpUnit);
+						MeasurementConstraint cons1 = new MeasurementConstraint(consIdCount++, focusedName, 1, cmpType, cmpValue, cmpUnit);
+						cons1.setSourceDocument(csvTarget, postContent, recordNum);
 						constraintName = focusedName+1;
 						if(constraintsMap.get(constraintName)==null)
 							constraintsMap.put(constraintName, cons1);
@@ -93,7 +98,8 @@ public class EpaCSVAgent {
 						strCmpType = reader.get("C2_LSENSE");
 						cmpType = convertCmpType(strCmpType);
 						cmpUnit = reader.get("C2_LUNIT");					
-						MeasurementConstraint cons2 = new MeasurementConstraint(focusedName, 2, cmpType, cmpValue, cmpUnit);
+						MeasurementConstraint cons2 = new MeasurementConstraint(consIdCount++, focusedName, 2, cmpType, cmpValue, cmpUnit);
+						cons2.setSourceDocument(csvTarget, postContent, recordNum);
 						constraintName = focusedName+2;
 						if(constraintsMap.get(constraintName)==null)
 							constraintsMap.put(constraintName, cons2);
@@ -106,7 +112,8 @@ public class EpaCSVAgent {
 						strCmpType = reader.get("C3_LSENSE");
 						cmpType = convertCmpType(strCmpType);
 						cmpUnit = reader.get("C3_LUNIT");						
-						MeasurementConstraint cons3 = new MeasurementConstraint(focusedName, 3, cmpType, cmpValue, cmpUnit);
+						MeasurementConstraint cons3 = new MeasurementConstraint(consIdCount++, focusedName, 3, cmpType, cmpValue, cmpUnit);
+						cons3.setSourceDocument(csvTarget, postContent, recordNum);
 						constraintName = focusedName+3;
 						if(constraintsMap.get(constraintName)==null)
 							constraintsMap.put(constraintName, cons3);
@@ -119,7 +126,8 @@ public class EpaCSVAgent {
 						strCmpType = reader.get("Q1_LSENSE");
 						cmpType = convertCmpType(strCmpType);
 						cmpUnit = reader.get("Q1_LUNIT");
-						MeasurementConstraint cons4 = new MeasurementConstraint(focusedName, 4, cmpType, cmpValue, cmpUnit);
+						MeasurementConstraint cons4 = new MeasurementConstraint(consIdCount++, focusedName, 4, cmpType, cmpValue, cmpUnit);
+						cons4.setSourceDocument(csvTarget, postContent, recordNum);
 						constraintName = focusedName+4;
 						if(constraintsMap.get(constraintName)==null)
 							constraintsMap.put(constraintName, cons4);
@@ -132,7 +140,8 @@ public class EpaCSVAgent {
 						strCmpType = reader.get("Q2_LSENSE");
 						cmpType = convertCmpType(strCmpType);
 						cmpUnit = reader.get("Q2_LUNIT");
-						MeasurementConstraint cons5 = new MeasurementConstraint(focusedName, 5, cmpType, cmpValue, cmpUnit);
+						MeasurementConstraint cons5 = new MeasurementConstraint(consIdCount++, focusedName, 5, cmpType, cmpValue, cmpUnit);
+						cons5.setSourceDocument(csvTarget, postContent, recordNum);
 						constraintName = focusedName+5;
 						if(constraintsMap.get(constraintName)==null)
 							constraintsMap.put(constraintName, cons5);
@@ -147,7 +156,8 @@ public class EpaCSVAgent {
 					unit = reader.get("C1_UNIT"); 
 					if(value.compareTo("")!=0)
 					{
-						FacilityMeasurement fm1 = new FacilityMeasurement(focusedName, 1, date, value, unit);
+						FacilityMeasurement fm1 = new FacilityMeasurement(idCount++, focusedName, 1, date, value, unit);
+						fm1.setSourceDocument(csvTarget, postContent, recordNum);
 						coliformMeasurements.add(fm1);
 					}
 					//C2 == 2
@@ -155,7 +165,8 @@ public class EpaCSVAgent {
 					unit = reader.get("C2_UNIT"); 
 					if(value.compareTo("")!=0)
 					{
-						FacilityMeasurement fm2 = new FacilityMeasurement(focusedName, 2, date, value, unit);
+						FacilityMeasurement fm2 = new FacilityMeasurement(idCount++, focusedName, 2, date, value, unit);
+						fm2.setSourceDocument(csvTarget, postContent, recordNum);
 						coliformMeasurements.add(fm2);
 					}
 					//C3 == 3
@@ -163,7 +174,8 @@ public class EpaCSVAgent {
 					unit = reader.get("C3_UNIT"); 
 					if(value.compareTo("")!=0)
 					{
-						FacilityMeasurement fm3 = new FacilityMeasurement(focusedName, 3, date, value, unit);
+						FacilityMeasurement fm3 = new FacilityMeasurement(idCount++, focusedName, 3, date, value, unit);
+						fm3.setSourceDocument(csvTarget, postContent, recordNum);
 						coliformMeasurements.add(fm3);
 					}
 					//Q1 == 4
@@ -171,7 +183,8 @@ public class EpaCSVAgent {
 					unit = reader.get("Q1_UNIT"); 
 					if(value.compareTo("")!=0)
 					{
-						FacilityMeasurement fm4 = new FacilityMeasurement(focusedName, 4, date, value, unit);
+						FacilityMeasurement fm4 = new FacilityMeasurement(idCount++, focusedName, 4, date, value, unit);
+						fm4.setSourceDocument(csvTarget, postContent, recordNum);
 						coliformMeasurements.add(fm4);
 					}
 					//Q2 == 5
@@ -179,7 +192,8 @@ public class EpaCSVAgent {
 					unit = reader.get("Q2_UNIT"); 
 					if(value.compareTo("")!=0)
 					{
-						FacilityMeasurement fm5 = new FacilityMeasurement(focusedName, 5, date, value, unit);
+						FacilityMeasurement fm5 = new FacilityMeasurement(idCount++, focusedName, 5, date, value, unit);
+						fm5.setSourceDocument(csvTarget, postContent, recordNum);
 						coliformMeasurements.add(fm5);
 					}
 
@@ -214,7 +228,7 @@ public class EpaCSVAgent {
 		Facility fac1 = new Facility("100000000001");
 		//"home/ping/research/python/water/csv/128967058817850.csv
 		String fileName = "/home/ping/research/python/water/CgiSoupOutput/02809/CSV/110009444869.csv";
-		csvAgent.CSVRead(fileName, fac1, testConstraints);
+		//csvAgent.CSVRead(fileName, fac1, testConstraints);
 		
 		//epaUtil.printMeasurementConstraintArrayList(fac1.coliformConstraints, "/home/ping/research/python/water/csv/coliformConstraints");
 		//epaUtil.printFacilityMeasurmentArrayList(fac1.coliformMeasurements, "/home/ping/research/python/water/csv/coliformMeasurements");

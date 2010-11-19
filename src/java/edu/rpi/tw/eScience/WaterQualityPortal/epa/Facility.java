@@ -5,6 +5,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
+
+import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
+import edu.rpi.tw.eScience.WaterQualityPortal.usgs.Measurement;
+
 
 
 public class Facility {
@@ -22,34 +34,11 @@ public class Facility {
 	String OCVLink=null;
 	ArrayList<FacilityMeasurement> coliformMeasurements = null;
 	//ArrayList<MeasurementConstraint> coliformConstraints = null;
+	String src=null;
+	String postContent=null;
+	Integer row;
+	static String locationSrc =  "http://maps.googleapis.com/maps/api/geocode";
 
-	@Override
-	public String toString() {
-		String result = "";
-		result += "<Facility rdf:ID=\""+ID+"\">\n";
-		result += "<hasName>"+name+"</hasName>\n";
-		result += "<hasAddress>"+addressLine1+" "+addressLine2+"</hasAddress>\n";		
-		result += "<hasLocation>\n";
-		result += "<geo:Point>\n";
-		result += "<geo:lat rdf:datatype=\"&xsd;float\">"+lat+"</geo:lat>\n";
-		result += "<geo:long rdf:datatype=\"&xsd;float\">"+lng+"</geo:long>\n";
-		result += "</geo:Point>\n";
-		result += "</hasLocation>\n";
-		//result += "<hasNumInspection rdf:datatype=\"&xsd;float\">"+numInspection+"</hasNumInspection>\n";
-		//result += "<hasNumQtrNC rdf:datatype=\"&xsd;float\">"+numQtrNC+"</hasNumQtrNC>\n";
-		//result += "<hasNumEE rdf:datatype=\"&xsd;float\">"+numEE+"</hasNumEE>\n";
-		if(coliformMeasurements!=null){
-			for(FacilityMeasurement m : coliformMeasurements) {
-				result += "<hasMeasurement>\n";
-		    	result += m.toString();
-		        result += "</hasMeasurement>\n";
-		    }			
-		}
-		
-	    
-		result += "</Facility>\n";
-		return result;
-	}
 	
 	public Facility(String curID){
 		ID = curID;
@@ -159,6 +148,183 @@ public class Facility {
 			curFM = (FacilityMeasurement)itr.next();
 			curFM.printToFile(out);        	
 		} 
+	}
+	
+	public void setSourceDocument(String src, String postContent, int row) {
+		this.src = src;
+		this.postContent = postContent;
+		this.row = row;
+	}
+	
+	public Resource agentRef(Model pmlModel) {
+		Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA",pmlModel.createResource(Ontology.PMLP.Organization));
+		Resource source = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.SourceUsage));
+		
+		Property prop;
+		
+		prop = pmlModel.createProperty(Ontology.PMLP.hasSource);
+		source.addProperty(prop, epa);
+		
+		return source;
+	}
+	
+	public Resource geoRef(Model pmlModel) {
+		Resource google = pmlModel.createResource(Ontology.EPA.NS+"Google",pmlModel.createResource(Ontology.PMLP.Organization));
+		Resource source = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.SourceUsage));
+		Resource frag = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.DocumentFragmentByRowCol));
+		Resource document = pmlModel.createResource(locationSrc, pmlModel.createResource(Ontology.PMLP.Dataset));
+
+		Property prop;
+
+		// Relate source to fragment
+		prop = pmlModel.createProperty(Ontology.PMLP.hasSource);
+		source.addProperty(prop, frag);
+		
+		// Relate fragment to document
+		prop = pmlModel.createProperty(Ontology.PMLP.hasDocument);
+		frag.addProperty(prop, document);
+		
+		// Relate document to publisher
+		prop = pmlModel.createProperty(Ontology.PMLP.hasPublisher);
+		document.addProperty(prop, google);
+
+		return source;
+	}
+	
+	public Resource rowColRef(int col, Model pmlModel) {
+		Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA",pmlModel.createResource(Ontology.PMLP.Organization));
+		Resource source = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.SourceUsage));
+		Resource frag = pmlModel.createResource(pmlModel.createResource(Ontology.PMLP.DocumentFragmentByRowCol));
+		Resource document = pmlModel.createResource(src, pmlModel.createResource(Ontology.PMLP.Dataset));
+
+		Property prop;
+
+		// Relate source to fragment
+		prop = pmlModel.createProperty(Ontology.PMLP.hasSource);
+		source.addProperty(prop, frag);
+		
+		// Relate row/col information
+		prop = pmlModel.createProperty(Ontology.PMLP.hasFromCol);
+		frag.addLiteral(prop, col);
+		prop = pmlModel.createProperty(Ontology.PMLP.hasToCol);
+		frag.addLiteral(prop, col);
+		prop = pmlModel.createProperty(Ontology.PMLP.hasFromRow);
+		frag.addLiteral(prop, row);
+		prop = pmlModel.createProperty(Ontology.PMLP.hasToRow);
+		frag.addLiteral(prop, row);
+		
+		// Relate fragment to document
+		prop = pmlModel.createProperty(Ontology.PMLP.hasDocument);
+		frag.addProperty(prop, document);
+		
+		// Relate document to publisher
+		prop = pmlModel.createProperty(Ontology.PMLP.hasPublisher);
+		document.addProperty(prop, epa);
+
+		return source;
+	}
+
+	@Override
+	public String toString() {
+		String result = "";
+		result += "<Facility rdf:ID=\""+ID+"\">\n";
+		result += "<hasName>"+name+"</hasName>\n";
+		result += "<hasAddress>"+addressLine1+" "+addressLine2+"</hasAddress>\n";		
+		result += "<hasLocation>\n";
+		result += "<geo:Point>\n";
+		result += "<geo:lat rdf:datatype=\"&xsd;float\">"+lat+"</geo:lat>\n";
+		result += "<geo:long rdf:datatype=\"&xsd;float\">"+lng+"</geo:long>\n";
+		result += "</geo:Point>\n";
+		result += "</hasLocation>\n";
+		//result += "<hasNumInspection rdf:datatype=\"&xsd;float\">"+numInspection+"</hasNumInspection>\n";
+		//result += "<hasNumQtrNC rdf:datatype=\"&xsd;float\">"+numQtrNC+"</hasNumQtrNC>\n";
+		//result += "<hasNumEE rdf:datatype=\"&xsd;float\">"+numEE+"</hasNumEE>\n";
+		if(coliformMeasurements!=null){
+			for(FacilityMeasurement m : coliformMeasurements) {
+				result += "<hasMeasurement>\n";
+		    	result += m.toString();
+		        result += "</hasMeasurement>\n";
+		    }			
+		}
+		
+	    
+		result += "</Facility>\n";
+		return result;
+	}
+
+	
+	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
+		String uri = Ontology.EPA.NS+"facility-"+ID;
+		OntClass Facility = Ontology.Facility(owlModel);
+		Individual facility = owlModel.createIndividual(uri, Facility);
+		facility.addOntClass(Ontology.Point(owlModel));
+		
+		Resource info;
+		Property hasUsage = pmlModel.createProperty(Ontology.PMLP.hasReferenceSourceUsage);
+
+		// ID
+		OntProperty prop = Ontology.hasID(owlModel);
+		facility.addLiteral(prop, ID);
+		// PML
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, ID);
+		info.addProperty(hasUsage, rowColRef(2, pmlModel));
+		
+		// Name
+		prop = Ontology.hasName(owlModel);
+		facility.addLiteral(prop, name);
+		// PML
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, name);
+		info.addProperty(hasUsage, rowColRef(1, pmlModel));
+		
+		// Address
+		String address = addressLine1+" "+addressLine2;
+		prop = Ontology.hasAddress(owlModel);
+		facility.addLiteral(prop, address);
+		// PML
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, address);
+		info.addProperty(hasUsage, rowColRef(1, pmlModel));
+		
+		// Latitude
+		prop = Ontology.lat(owlModel);
+		facility.addLiteral(prop, lat);
+		// PML
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, lat);
+		info.addProperty(hasUsage, geoRef(pmlModel));
+		
+		// Longitude
+		prop = Ontology.lng(owlModel);
+		facility.addLiteral(prop, lng);
+		// PML
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, lng);
+		info.addProperty(hasUsage, geoRef(pmlModel));
+		
+		prop = Ontology.hasMeasurement(owlModel);
+		for(FacilityMeasurement m : coliformMeasurements) {
+			Individual item = m.asIndividual(owlModel, pmlModel);
+			facility.addProperty(prop, item);
+			// PML
+			info = pmlModel.createResource(Ontology.Information(pmlModel));
+			info.addProperty(RDF.subject, facility);
+			info.addProperty(RDF.predicate, prop);
+			info.addProperty(RDF.object, item);
+			info.addProperty(hasUsage, agentRef(pmlModel));
+		}
+		return facility;
 	}
 
 

@@ -6,6 +6,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDFS;
+
+import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
+import edu.rpi.tw.eScience.WaterQualityPortal.usgs.MeasurementSite;
+
 public class EpaDataAgent {
 	static int BUFFER_SIZE = 4096;
 	//You can change the up most directory
@@ -133,7 +141,7 @@ public class EpaDataAgent {
 				String csvResult = csvDir+IDNum+CSVFilePost;//
 				if(downloadCSVFile ==true)
 					commAgent.getCSVFile(csvTarget, csvPostContent, csvResult);				
-				csvAgent.CSVRead(csvResult, curFac, measurementConstraints);
+				csvAgent.CSVRead(csvResult, csvPostContent, curFac, measurementConstraints);
 			}
 		}
 	}
@@ -414,7 +422,7 @@ public class EpaDataAgent {
 		}
 		
 	}
-	private void getFacilityFromFile(String fileName){
+	private void getFacilityFromFile(String zipCode, String fileName){
 		String curLine;
 		String curID;
 		String curName;
@@ -429,7 +437,8 @@ public class EpaDataAgent {
 		String strNumInspection;
 		String strNumQtrNC;
 		String strNumEE;
-		Integer IDForMap=0;
+		Integer rowNum=0;
+		String postContent =null;
 		
 		try {
 			FileInputStream fIn =  new FileInputStream(fileName);
@@ -491,6 +500,9 @@ public class EpaDataAgent {
 				}//end of the inner while
 				Facility curFacility = new Facility(curID.trim(), curName, curAddressLine1, curAddressLine2,
 						curNumInspection, curNumQtrNC, curNumEE);
+				postContent = searchByZipContent+zipCode+zipPostFix+zipCode;
+				curFacility.setSourceDocument(searchByZipTarget, postContent, rowNum);
+				rowNum++;
 				facilities.add(curFacility);				
 			}//end of the outer while
 		}
@@ -607,7 +619,7 @@ public class EpaDataAgent {
 		//
 		String soupDataPath = curDir+soupDataFile;
 		//Step 3
-		getFacilityFromFile(soupDataPath);
+		getFacilityFromFile(zipCode, soupDataPath);
 		//
 		String addressPath = curDir+soupAddressFile;
 		String geoPath = curDir+geoDataFile;
@@ -643,6 +655,30 @@ public class EpaDataAgent {
 		utilAgent.saveFacilities(facilities, rdfFacilities);
 		String rdfMeasurementConstraints = upMostDir+zipCode+"/rdfMeasurementConstraints"; 
 		utilAgent.saveMeasurementConstraints(measurementConstraints, rdfMeasurementConstraints);
+	}
+	
+	public boolean getData(String zipCode, OntModel owlModel, Model pmlModel) {
+		MeasurementConstraint curC = null;
+		try {
+			Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA",pmlModel.createResource(Ontology.PMLP.Organization));
+			epa.addLiteral(RDFS.label, "Environmental Protection Agency");
+			startQuery(zipCode);
+			for(Facility m : facilities) {
+				m.asIndividual(owlModel, pmlModel);
+			}
+			
+			Iterator itrOut = measurementConstraints.entrySet().iterator();  
+	        while (itrOut.hasNext()) {  
+	            Map.Entry entryOut = (Map.Entry)itrOut.next();
+	            curC = (MeasurementConstraint)entryOut.getValue();
+	            curC.asIndividual(owlModel, pmlModel); 
+	        }
+			return true;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 
