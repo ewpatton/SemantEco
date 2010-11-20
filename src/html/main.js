@@ -176,6 +176,7 @@ function queryForWaterPollution(site, justQuery) {
 				}
 			    });
 		    });
+	    };
 		$.ajax({type: "GET",
 			    url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
 			    data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
