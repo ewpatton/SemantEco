@@ -60,8 +60,11 @@ public class Ontology {
 		
 		// Classes
 		public static final String MeasurementSite=NS+"MeasurementSite";
+		public static final String Facility=NS+"Facility";
 		public static final String FacilityMeasurement=NS+"FacilityMeasurement";
 		public static final String WaterMeasurement=NS+"WaterMeasurement";
+		public static final String ExceededThreshold=NS+"ExceededThreshold";
+		public static final String Violation=NS+"Violation";
 		
 		// Properties
 		public static final String hasCountryCode=NS+"hasCountryCode";
@@ -72,6 +75,9 @@ public class Ontology {
 		public static final String hasUnit=NS+"hasUnit";
 		public static final String hasValue=NS+"hasValue";
 		public static final String hasElement=NS+"hasElement";
+		public static final String hasAddress=NS+"hasAddress";
+		public static final String hasTestNumber=NS+"hasTestNumber";
+		
 	}
 	
 	public static class GEO {
@@ -174,5 +180,25 @@ public class Ontology {
 	
 	public static Resource Information(Model m) {
 		return m.createResource(PMLP.Information);
+	}
+	
+	public static OntClass Facility(OntModel m) {
+		return m.createClass(EPA.Facility);
+	}
+	
+	public static OntProperty hasAddress(OntModel m) {
+		return m.createDatatypeProperty(EPA.hasAddress);
+	}
+	
+	public static OntProperty hasTestNumber(OntModel m) {
+		return m.createDatatypeProperty(EPA.hasTestNumber);
+	}
+
+	public static OntClass ExceededThreshold(OntModel m) {
+		return m.createClass(EPA.ExceededThreshold);
+	}
+
+	public static OntClass Violation(OntModel m) {
+		return m.createClass(EPA.Violation);
 	}
 }

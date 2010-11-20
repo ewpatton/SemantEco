@@ -100,7 +100,7 @@ public class Measurement {
 
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+id2, Ontology.WaterMeasurement(owlModel));
+		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"usgs-measure-"+id2, Ontology.WaterMeasurement(owlModel));
 		OntProperty prop;
 		
 		Resource info;

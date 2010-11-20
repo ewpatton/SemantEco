@@ -2,15 +2,20 @@ package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFList;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.OWL2;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
@@ -180,71 +185,38 @@ public class MeasurementConstraint {
 		return result;
 	}
 	
-	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
-		int col = cmpOpCol(testNumber);
-		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+id, Ontology.MeasurementConstraint(owlModel));
-		OntProperty prop;
-		
-		Resource info;
-		Property hasUsage = pmlModel.createProperty(Ontology.PMLP.hasReferenceSourceUsage);
-		
-		// Test Number
-		prop = Ontology.hasTestNumber(owlModel);
-		m.addLiteral(prop, testNumber);
-		// PML
-		info = pmlModel.createResource();
-		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, testNumber);
-		info.addProperty(hasUsage, rowColRef(col, pmlModel));
-		
-		// Unit
-		prop = Ontology.hasUnit(owlModel);
-		m.addLiteral(prop, cmpUnit);
-		// PML
-		info = pmlModel.createResource();
-		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, cmpUnit);
-		info.addProperty(hasUsage, rowColRef(col+2, pmlModel));
-		
-		// Value
-		prop = Ontology.hasValue(owlModel);
-		m.addLiteral(prop, cmpValue);
-		// PML
-		info = pmlModel.createResource();
-		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, cmpValue);
-		info.addProperty(hasUsage, rowColRef(col+1, pmlModel));
+	public OntClass asOntClass(OntModel owlModel, Model pmlModel) {
+		//int col = cmpOpCol(testNumber);
 
-		// CMP Type???
-		prop = Ontology.hasCmpType(owlModel);
-		m.addLiteral(prop, cmpType);
-		// PML
-		info = pmlModel.createResource();
-		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, cmpType);
-		info.addProperty(hasUsage, rowColRef(col, pmlModel));
+		Individual elem = owlModel.createIndividual(Ontology.EPA.NS+elementName, Ontology.Element(owlModel)); 
+		OntClass elemRestrict = owlModel.createHasValueRestriction(null, Ontology.hasElement(owlModel), elem);
+		Literal test = owlModel.createTypedLiteral(Integer.toString(testNumber), XSDDatatype.XSDnonNegativeInteger);
+		OntClass testRestrict = owlModel.createHasValueRestriction(null, Ontology.hasTestNumber(owlModel), test);
+		Resource x = owlModel.createResource(Ontology.EPA.NS+"EPA-"+elementName+"-Threshold-"+testNumber);
+		String op=null;
+		switch(cmpType) {
+		case 0: op = "minInclusive"; break;
+		case 1: op = "minExclusive"; break;
+		case 3: op = "maxExclusive"; break;
+		case 4: op = "maxInclusive"; break;
+		default: System.err.println("unknown cmp type");
+		}
+		x.addLiteral(owlModel.createProperty(XSD.getURI()+op), Double.parseDouble(cmpValue));
+		RDFList withRestrict = owlModel.createList(new RDFNode[] { x });
+		Resource y = owlModel.createResource(RDFS.Datatype);
+		y.addProperty(OWL2.withRestrictions, withRestrict);
+		y.addProperty(OWL2.onDatatype, XSD.xdouble);
+		OntClass valueRestrict = owlModel.createSomeValuesFromRestriction(null, Ontology.hasValue(owlModel), y);
+		RDFNode[] components = new RDFNode[4];
+		components[0] = Ontology.FacilityMeasurement(owlModel);
+		components[1] = valueRestrict;
+		components[2] = elemRestrict;
+		components[3] = testRestrict;
+		RDFList intersect = owlModel.createList(components);
+		OntClass self = owlModel.createIntersectionClass(Ontology.EPA.NS+"EPA-Excessive-"+elementName+"-Measurement-"+testNumber, intersect);
+		self.addProperty(RDFS.subClassOf, Ontology.Violation(owlModel));
 		
-		// Element
-		prop = Ontology.hasElement(owlModel);
-		Individual elem = owlModel.createIndividual(asURI(), Ontology.Element(owlModel));
-		m.addProperty(prop, elementName);
-		// PML
-		info = pmlModel.createResource();
-		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, elem);
-		info.addProperty(hasUsage, rowColRef(14, pmlModel));
-
-		return m;
+		return self;
 	}
 
 }

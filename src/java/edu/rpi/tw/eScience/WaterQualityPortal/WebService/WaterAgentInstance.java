@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -20,6 +21,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
+import edu.rpi.tw.eScience.WaterQualityPortal.epa.EpaDataAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.usgs.DataService;
 
 import org.mindswap.pellet.jena.PelletReasonerFactory;
@@ -49,7 +51,8 @@ public class WaterAgentInstance implements HttpHandler {
 	public List<WaterDataProvider> getProviders() {
 		List<WaterDataProvider> providers = new ArrayList<WaterDataProvider>();
 		try {
-			providers.add(new DataService());
+			providers.add(new EpaDataAgent());
+			//providers.add(new DataService());
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -90,11 +93,11 @@ public class WaterAgentInstance implements HttpHandler {
 					e.printStackTrace();
 				}
 			}
-			/*
+			
 			FileOutputStream fos = new FileOutputStream("/usr/local/water/example.rdf");
 			owlModel.write(fos);
 			fos.close();
-			*/
+			
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
 			//get query result in xml format
@@ -128,10 +131,16 @@ public class WaterAgentInstance implements HttpHandler {
 			return result;
 		}
 		catch(Exception e) {
-			Model m2 = qe.execDescribe();
-			StringWriter sw = new StringWriter();
-			m2.write(sw);
-			return sw.toString();
+			if(queryString.indexOf("DESCRIBE")>-1) {
+				Model m2 = qe.execDescribe();
+				StringWriter sw = new StringWriter();
+				m2.write(sw);
+				return sw.toString();
+			}
+			else {
+				e.printStackTrace();
+			}
+			return "";
 		}
 	}
 

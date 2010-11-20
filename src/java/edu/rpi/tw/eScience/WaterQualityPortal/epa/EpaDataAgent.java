@@ -1,26 +1,26 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.Map.Entry;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
-import edu.rpi.tw.eScience.WaterQualityPortal.usgs.MeasurementSite;
 
-public class EpaDataAgent {
+public class EpaDataAgent implements WaterDataProvider {
 	static int BUFFER_SIZE = 4096;
 	//You can change the up most directory
-	static String upMostDir = "/home/ping/research/python/water/CgiSoupOutput/";	
+	static String upMostDir = "/tmp/";	
 	//You can change the locations of the python scripts
-	static String scriptExtractFac="/home/ping/research/python/water/epaFac.py";
-	static String scriptExtractSearchResult="/home/ping/research/python/water/epaCgi.py";
+	static String scriptExtractFac="src/python/epaFac.py";
+	static String scriptExtractSearchResult="src/python/epaCgi.py";
 	//
 	static String searchByZipTarget = "http://www.epa-echo.gov/cgi-bin/ideaotis.cgi";
 	static String searchByZipContent = "idea_active=Y&idea_database=PBL&media_tool=ECHOI&idea_client=otis_pba&idea_pcs_migrate=Y&func_nametype=CASE&func_nametype=FACILITY&idea_linkage=LINKED+NONLINKED&idea_db_filter=INC+AFS+ICI+FRS+PCS+ICP+RCR+TRI+DEM+NEI&idea_report=OTISECHO+PARM+SORTNAME_tricommas_pencommas_DEMRADIUS%3D3_violqtrsmax%3D12&otis_custom_col=7%2C21%2C12%2C24%2C13%2C19%2C18%2C23%2C15%2C29&idea_major=&idea_zip_any=";
@@ -72,7 +72,7 @@ public class EpaDataAgent {
 	
 	private void queryOCVPages(String zipCode){
 		Facility curFacility=null;		
-		Iterator itr = facilitiesWithViolations.iterator();  
+		Iterator<Facility> itr = facilitiesWithViolations.iterator();  
 		while (itr.hasNext()) {  
 			curFacility = (Facility)itr.next();
 			processOCVPage(zipCode, curFacility); 			
@@ -192,7 +192,7 @@ public class EpaDataAgent {
 			"&monlocn="+values.get(3)+"&period="+values.get(4)+"&outt="+values.get(5)+
 			"&date="+values.get(6).replace(orgCS, newCS)+"&charts="+values.get(7)+
 			"&tool="+values.get(8)+"&filetype=csv";
-			System.out.println("csvPostContent: "+csvPostContent);			
+			//System.out.println("csvPostContent: "+csvPostContent);			
 		} catch (Exception e) {
 				System.err.println("In getCSVLinkFromOCV, err");
 				e.printStackTrace();
@@ -202,7 +202,7 @@ public class EpaDataAgent {
 					if (reader!=null)
 						reader.close ();
 				} catch (IOException ex) {
-					System.out.println("In getCSVLinkFromOCV(), closing the reader and BufferedWriter");
+					System.err.println("In getCSVLinkFromOCV(), closing the reader and BufferedWriter");
 					ex.printStackTrace();
 				}
 			}
@@ -228,11 +228,11 @@ public class EpaDataAgent {
 			
 			curLine = reader.readLine();
 			if(curLine==null){
-				System.out.println("Facility "+curFac.ID+" has No Soup Data");
+				System.err.println("Facility "+curFac.ID+" has No Soup Data");
 				return;
 			}
 			if(curLine.indexOf("No CWA")!=-1){
-				System.out.println("Facility "+curFac.ID+" has No CWA");
+				System.err.println("Facility "+curFac.ID+" has No CWA");
 				return;
 			}
 			
@@ -242,7 +242,7 @@ public class EpaDataAgent {
 						curLine.indexOf('\'', httpIndex));
 				curFac.setOCVLink(linkChartsWithViolations);
 				//for test
-				System.out.println("linkChartsWithViolations: "+linkChartsWithViolations);
+				//System.out.println("linkChartsWithViolations: "+linkChartsWithViolations);
 			}
 			else if(curLine.compareTo("No Only Charts with Violations")==0){
 				linkChartsWithViolations = null;
@@ -252,7 +252,8 @@ public class EpaDataAgent {
 				System.err.println("linkChartsWithViolations: "+linkChartsWithViolations);
 				System.err.println("Current Facility:");
 				curFac.printFacility();
-				System.exit(0);						
+				//System.exit(0);
+				return;
 			}
 			
 			while ((curLine = reader.readLine()) != null) { 
@@ -323,7 +324,7 @@ public class EpaDataAgent {
 					bufferedWriter.close();
 				}
 			} catch (IOException ex) {
-				System.out.println("In getLocation(), closing the reader and BufferedWriter");
+				System.err.println("In getLocation(), closing the reader and BufferedWriter");
 				ex.printStackTrace();
 			}
 		}
@@ -343,8 +344,8 @@ public class EpaDataAgent {
 		if(!dir.exists()){
 			dirOK = dir.mkdir();
 			if(!dirOK){
-				System.out.println("Cannot create the directory '" + dir);
-				System.exit(0);
+				System.err.println("Cannot create the directory '" + dir);
+				//System.exit(0);
 			}
 		}		
 	}
@@ -376,7 +377,7 @@ public class EpaDataAgent {
 					else {
 						curStatus = curLine.substring(stsIndex+8, curLine.indexOf("</status>"));
 						if(curStatus.compareTo("OK") != 0){
-							System.out.println("In getGeoFromXML, abnormal XML status: "+curStatus);
+							System.err.println("In getGeoFromXML, abnormal XML status: "+curStatus);
 							continue;//go to the next XML
 						}
 					}
@@ -416,7 +417,7 @@ public class EpaDataAgent {
 				if (reader!=null)
 					reader.close ();
 			} catch (IOException ex) {
-				System.out.println("In getLocation(), closing the reader and BufferedWriter");
+				System.err.println("In getLocation(), closing the reader and BufferedWriter");
 				ex.printStackTrace();
 			}
 		}
@@ -517,14 +518,14 @@ public class EpaDataAgent {
 		Facility curFacility = null;
 		try {
 			out = new BufferedWriter(new FileWriter(fileName));
-			System.out.println("Facilities");
+			//System.err.println("Facilities");
 			Iterator<Facility> itr = facilities.iterator();  
 	        while (itr.hasNext()) {
 	        	curFacility = (Facility)itr.next();
 	        	curFacility.printToFile(out); 
 	        }	        
 		} catch (IOException e) {
-			System.out.println("printFacilitiesToFile, err");
+			System.err.println("printFacilitiesToFile, err");
 			e.printStackTrace();
 		} finally {
             //Close the BufferedWriter			
@@ -534,7 +535,7 @@ public class EpaDataAgent {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In printFacilitiesToFile, closing the BufferedWriter");
+            	System.err.println("In printFacilitiesToFile, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }		
@@ -608,13 +609,23 @@ public class EpaDataAgent {
 		String commContent = searchByZipContent+zipCode+zipPostFix+zipCode;
 		//output file
 		String searchByZipResult = curDir+"/searchByZipResult";
+		if(new File(searchByZipResult).exists()) {
+			downloadCSVFile = false;
+			downloadGeoData = false;
+			downloadFacPage = false;
+			downloadOCVPage = false;
+		}
 		//Step 1
+		if(this.downloadCSVFile) {
 		commAgent.doCommunication(1, searchByZipTarget, commContent, searchByZipResult);
+		}
 		//invoke python script
 		String curArgs[] = new String [2]; 
 		curArgs[0] = searchByZipResult;
 		curArgs[1] = curDir;
 		//Step 2
+		File dir = new File(curDir+"/");
+		dir.mkdirs();
 		pythonExe(scriptExtractSearchResult, curArgs, 2);
 		//
 		String soupDataPath = curDir+soupDataFile;
@@ -623,9 +634,10 @@ public class EpaDataAgent {
 		//
 		String addressPath = curDir+soupAddressFile;
 		String geoPath = curDir+geoDataFile;
-		if(downloadGeoData==true)
+		if(downloadGeoData==true) {
 			getLocation(addressPath, geoPath);		
-		getGeoFromXML(geoPath);
+			getGeoFromXML(geoPath);
+		}
 		//
 		queryFacilityPages(zipCode);
 		//
@@ -658,6 +670,10 @@ public class EpaDataAgent {
 	}
 	
 	public boolean getData(String zipCode, OntModel owlModel, Model pmlModel) {
+		this.downloadCSVFile=false;
+		this.downloadFacPage=false;
+		this.downloadGeoData=false;
+		this.downloadOCVPage=false;
 		MeasurementConstraint curC = null;
 		try {
 			Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA",pmlModel.createResource(Ontology.PMLP.Organization));
@@ -667,11 +683,11 @@ public class EpaDataAgent {
 				m.asIndividual(owlModel, pmlModel);
 			}
 			
-			Iterator itrOut = measurementConstraints.entrySet().iterator();  
+			Iterator<Entry<String, MeasurementConstraint>> itrOut = measurementConstraints.entrySet().iterator();  
 	        while (itrOut.hasNext()) {  
-	            Map.Entry entryOut = (Map.Entry)itrOut.next();
+	            Entry<String, MeasurementConstraint> entryOut = itrOut.next();
 	            curC = (MeasurementConstraint)entryOut.getValue();
-	            curC.asIndividual(owlModel, pmlModel); 
+	            curC.asOntClass(owlModel, pmlModel); 
 	        }
 			return true;
 		}
@@ -685,9 +701,9 @@ public class EpaDataAgent {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void old_main(String[] args) {
 		EpaDataAgent dataAgent = new EpaDataAgent();
-		EpaUtil util = new EpaUtil();
+		//EpaUtil util = new EpaUtil();
 		String zipCode = "02809";//12208 12180
 		//dataAgent.downloadFacPage = false;
 		//dataAgent.downloadGeoData = false;
@@ -786,6 +802,39 @@ public class EpaDataAgent {
 		"/home/ping/research/python/water/CgiSoupOutput/temp/changedfacList2");
 		 */
 
+	}
+
+	@Override
+	public boolean getData(OntModel owlModel, Model pmlModel) {
+		return getData(zip, owlModel, pmlModel);
+	}
+
+	@Override
+	public boolean getData(OntModel owlModel, Model pmlModel, Date start,
+			Date end) {
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "Environmental Protection Agency";
+	}
+
+	@Override
+	public URL getURL() {
+		try {
+			return new URL("http://www.epa-echo.gov/echo/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	String zip;
+	
+	@Override
+	public void setUserSource(String county, String state, String zip) {
+		this.zip = zip;
 	}
 
 }

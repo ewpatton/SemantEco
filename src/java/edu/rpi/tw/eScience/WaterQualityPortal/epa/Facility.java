@@ -1,7 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -15,9 +14,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
-import edu.rpi.tw.eScience.WaterQualityPortal.usgs.Measurement;
-
-
 
 public class Facility {
 	String ID;
@@ -261,19 +257,20 @@ public class Facility {
 		
 		Resource info;
 		Property hasUsage = pmlModel.createProperty(Ontology.PMLP.hasReferenceSourceUsage);
+		OntProperty prop;
 
 		// ID
-		OntProperty prop = Ontology.hasID(owlModel);
-		facility.addLiteral(prop, ID);
+		//prop = Ontology.hasID(owlModel);
+		//facility.addLiteral(prop, ID);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, facility);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, ID);
-		info.addProperty(hasUsage, rowColRef(2, pmlModel));
+		//info = pmlModel.createResource(Ontology.Information(pmlModel));
+		//info.addProperty(RDF.subject, facility);
+		//info.addProperty(RDF.predicate, prop);
+		//info.addLiteral(RDF.object, ID);
+		//info.addProperty(hasUsage, rowColRef(2, pmlModel));
 		
 		// Name
-		prop = Ontology.hasName(owlModel);
+		prop = Ontology.label(owlModel);
 		facility.addLiteral(prop, name);
 		// PML
 		info = pmlModel.createResource(Ontology.Information(pmlModel));
@@ -314,6 +311,7 @@ public class Facility {
 		info.addProperty(hasUsage, geoRef(pmlModel));
 		
 		prop = Ontology.hasMeasurement(owlModel);
+		if(coliformMeasurements != null) {
 		for(FacilityMeasurement m : coliformMeasurements) {
 			Individual item = m.asIndividual(owlModel, pmlModel);
 			facility.addProperty(prop, item);
@@ -323,6 +321,7 @@ public class Facility {
 			info.addProperty(RDF.predicate, prop);
 			info.addProperty(RDF.object, item);
 			info.addProperty(hasUsage, agentRef(pmlModel));
+		}
 		}
 		return facility;
 	}

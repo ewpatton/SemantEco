@@ -1,6 +1,5 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -8,8 +7,8 @@ import java.util.*;
 import com.csvreader.*;
 
 public class EpaCSVAgent {
-	static int idCount = 0;
-	static int consIdCount = 0;
+	int idCount = 0;
+	int consIdCount = 0;
 	static String csvTarget = "http://www.epa-echo.gov/cgi-bin/effluentdata.cgi";
 	
 

@@ -1,10 +1,11 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -15,7 +16,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
-
 
 public class FacilityMeasurement {
 	int id;
@@ -166,22 +166,29 @@ public class FacilityMeasurement {
 	
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
 		int col = valueCol(testNumber);
+		SimpleDateFormat srcFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"measure-"+id, Ontology.FacilityMeasurement(owlModel));
+		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"epa-measure-"+id, Ontology.FacilityMeasurement(owlModel));
 		OntProperty prop;
 		
 		Resource info;
 		Property hasUsage = pmlModel.createProperty(Ontology.PMLP.hasReferenceSourceUsage);
 		
 		// Time
+		Date theDate=null;
+		try {
+			theDate = srcFormat.parse(date+"120000");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		prop = Ontology.inXSDDateTime(owlModel);
-		m.addLiteral(prop, df.format(date));
+		m.addLiteral(prop, df.format(theDate));
 		// PML
 		info = pmlModel.createResource();
 		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
 		info.addProperty(RDF.subject, m);
 		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, df.format(date));
+		info.addLiteral(RDF.object, df.format(theDate));
 		info.addProperty(hasUsage, rowColRef(18, pmlModel));
 		
 		// Test Number
@@ -208,7 +215,7 @@ public class FacilityMeasurement {
 		
 		// Value
 		prop = Ontology.hasValue(owlModel);
-		m.addLiteral(prop, value);
+		m.addLiteral(prop, Double.parseDouble(value));
 		// PML
 		info = pmlModel.createResource();
 		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));
@@ -219,8 +226,8 @@ public class FacilityMeasurement {
 
 		// Element
 		prop = Ontology.hasElement(owlModel);
-		Individual elem = owlModel.createIndividual(asURI(), Ontology.Element(owlModel));
-		m.addProperty(prop, elementName);
+		Individual elem = owlModel.createIndividual(Ontology.EPA.NS+elementName, Ontology.Element(owlModel));
+		m.addProperty(prop, elem);
 		// PML
 		info = pmlModel.createResource();
 		info.addProperty(RDF.type, pmlModel.createResource(Ontology.PMLP.Information));

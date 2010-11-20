@@ -1,10 +1,10 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
 
 public class EpaUtil {
 	
@@ -46,9 +46,9 @@ public class EpaUtil {
 		try {
 			out = new BufferedWriter(new FileWriter(fileName));
 			
-			Iterator itrOut = constraints.entrySet().iterator();  
+			Iterator<Entry<String,MeasurementConstraint>> itrOut = constraints.entrySet().iterator();  
 	        while (itrOut.hasNext()) {  
-	            Map.Entry entryOut = (Map.Entry)itrOut.next();
+	            Entry<String, MeasurementConstraint> entryOut = itrOut.next();
 	            //curKey = (String)entryOut.getKey(); ;  
 	            curMC = (MeasurementConstraint)entryOut.getValue();
 	            rdfMC = curMC.toString();
@@ -83,9 +83,9 @@ public class EpaUtil {
 			out = new BufferedWriter(new FileWriter(fileName));
 			System.out.println("HashMap of Measurement Constraint");
 			
-			Iterator itrOut = constraints.entrySet().iterator();  
+			Iterator<Entry<String,MeasurementConstraint>> itrOut = constraints.entrySet().iterator();  
 	        while (itrOut.hasNext()) {  
-	            Map.Entry entryOut = (Map.Entry)itrOut.next();
+	            Entry<String,MeasurementConstraint> entryOut = itrOut.next();
 	            curKey = (String)entryOut.getKey(); ;  
 	            curMC = (MeasurementConstraint)entryOut.getValue();
 	            out.write("Key: "+curKey+"\n");
