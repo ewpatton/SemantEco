@@ -670,10 +670,6 @@ public class EpaDataAgent implements WaterDataProvider {
 	}
 	
 	public boolean getData(String zipCode, OntModel owlModel, Model pmlModel) {
-		this.downloadCSVFile=false;
-		this.downloadFacPage=false;
-		this.downloadGeoData=false;
-		this.downloadOCVPage=false;
 		MeasurementConstraint curC = null;
 		try {
 			Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA",pmlModel.createResource(Ontology.PMLP.Organization));
