@@ -182,7 +182,7 @@ function queryForWaterPollution(site, justQuery,lat,lng,map) {
 		nextElem = document.createElementNS(XHTML,"p");
 		nextElem.appendChild(document.createTextNode("According to all current regulations, this water supply is not polluted."));
 		contents.appendChild(nextElem);
-		return contentString;
+		return contents;
 	}
 	
 
