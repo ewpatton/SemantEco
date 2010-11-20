@@ -64,23 +64,19 @@ function showPollutedWater()
             	}
             });
             if(lat!=""&&lng!=""){
-		/*
+            	var site={'uri':sub,'label':label,'isPolluted':true};
             	var blueIcon = new GIcon(G_DEFAULT_ICON,"image/pollutedwater.png");
             	blueIcon.iconSize = new GSize(29,34);
-		*/
-            	var site={'uri':sub,'label':label,'isPolluted':true};
-		queryForWaterPollution(site,false,lat,lng,map);
-		/*
-		alert(info);
-		var latlng = new GLatLng(lat ,lng);
+            	var latlng = new GLatLng(lat ,lng);
             	markerOptions = { icon:blueIcon };
             	var marker=new GMarker(latlng, markerOptions);
             	GEvent.addListener(marker, "click",
             		function() {
+            			var info = queryForWaterQuality(site,false);
             			marker.openInfoWindowHtml(info);
             	 	}
             	);
-            	map.addOverlay(marker);	*/
+            	map.addOverlay(marker);
             }
 	    });
         showCleanWater();

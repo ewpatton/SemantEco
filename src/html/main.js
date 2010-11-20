@@ -34,78 +34,18 @@ function queryButton(site, func) {
 	return a;
 }
 
-function queryForWaterPollution(site, justQuery,lat,lng,map) {
-
-
-    var contents = document.createElementNS(XHTML,"div");
-    var contentString="";
-    var success = function(data) {
-	var nextElem, td;
-	contentString+="<h4>"+site.label+"</h4>";
-	contentString+="<p>Pollutants:</p>";
-	contentString+=queryButton(site,queryForWaterPollution);
-	contentString+="<table border='1'>";
-	contentString+="<tr>";
-	contentString+="<th>Pollutant</th>";
-	contentString+="<th>Time Measured</th>";
-	contentString+="<th>Value</th>";
-	contentString+="<th>Limit</th>";
-	contentString+="</tr>";
-
-        $(data).find('result').each(function(){
-		var time="",unit="",limit="",label="",value="";
-		$(this).find("binding").each(function(){
-			
-			
-			if($(this).attr("name")=="label")
-			    {
-				label=($(this).find("literal").text());
-			    }
-			if($(this).attr("name")=="value")
-			    {
-				value=($(this).find("literal").text());
-			    }
-			if($(this).attr("name")=="unit")
-			    {
-				unit=($(this).find("literal").text());
-			    }
-			if($(this).attr("name")=="limit")
-			    {
-				limit=($(this).find("literal").text());
-			    }
-			if($(this).attr("name")=="time")
-			    {
-				time=($(this).find("literal").text());
-			    }
-
-			if(label!=""&&value!=""&&unit!=""&&limit!=""&&time!=""){
-			    contentString+="<tr>";
-			    contentString+="<td>"+label+"</td>";
-			    contentString+="<td>"+time+"</td>";
-			    contentString+="<td>"+value+"</td>";
-			    contentString+="<td>"+limit+"</td>";
-			    contentString+="</tr>";
-			}
-		    });
-	    });
-	contentString+="</table>";
-	if(lat!=""&&lng!=""){
-	    var blueIcon = new GIcon(G_DEFAULT_ICON,"image/pollutedwater.png");
-	    blueIcon.iconSize = new GSize(29,34);
-	    var latlng = new GLatLng(lat ,lng);
-	    markerOptions = { icon:blueIcon };
-	    var marker=new GMarker(latlng, markerOptions);
-	    GEvent.addListener(marker, "click",
-			       function() {
-				   marker.openInfoWindowHtml(contentString);
-			       }
-			       );
-	    map.addOverlay(marker);
+function td(body, text) {
+	var td = document.createElementNS(XHTML,"td");
+	if(body) {
+		td.appendChild(body);
 	}
+	else {
+		td.appendChild(document.createTextNode(text));
+	}
+	return td;
+}
 
-    }
-    
-
+function queryForWaterPollution(site, justQuery) {
 	var query =
 	"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
 	"PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
@@ -153,11 +93,89 @@ function queryForWaterPollution(site, justQuery,lat,lng,map) {
 		"LIMIT 1";
 	
 
-	var nextElem = document.createElementNS(XHTML,"h4");
+    var contents = document.createElementNS(XHTML,"div");
+    var nextElem = document.createElementNS(XHTML,"h4");
 	nextElem.appendChild(document.createTextNode(site.label));
 	contents.appendChild(nextElem);
 	
 	if(site.isPolluted) {
+		nextElem = document.createElementNS(XHTML,"p");
+		nextElem.appendChild(document.createTextNode("Last test occurred on "));
+		nextElem.appendChild(spinner());
+		contents.appendChild(nextElem);
+		nextElem = document.createElementNS(XHTML,"p");
+		nextElem.appendChild(document.createTextNode("Pollutants:"));
+		nextElem.appendChild(queryButton(site, queryForWaterPollution));
+		contents.appendChild(nextElem);
+		nextElem = document.createElementNS(XHTML,"table");
+		var tbody = document.createElementNS(XHTML,"tbody");
+		nextElem.appendChild(tbody);
+		contents.appendChild(nextElem);
+		nextElem = document.createElementNS(XHTML,"tr");
+		var td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Pollutant"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Time Measured"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Value"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		td.appendChild(document.createTextNode("Limit"));
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"th");
+		nextElem = document.createElementNS(XHTML,"tr");
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		td = document.createElementNS(XHTML,"td");
+		td.appendChild(spinner());
+		nextElem.appendChild(td);
+		tbody.appendChild(nextElem);
+
+	    var success = function(data) {
+	    	tbody.removeChild(nextElem);
+	        $(data).find('result').each(function(){
+	        	var time="",unit="",limit="",label="",value="";
+	        	$(this).find("binding").each(function(){
+				if($(this).attr("name")=="label")
+				    {
+					label=($(this).find("literal").text());
+				    }
+				if($(this).attr("name")=="value")
+				    {
+					value=($(this).find("literal").text());
+				    }
+				if($(this).attr("name")=="unit")
+				    {
+					unit=($(this).find("literal").text());
+				    }
+				if($(this).attr("name")=="limit")
+				    {
+					limit=($(this).find("literal").text());
+				    }
+				if($(this).attr("name")=="time")
+				    {
+					time=($(this).find("literal").text());
+				    }
+
+				if(label!=""&&value!=""&&unit!=""&&limit!=""&&time!=""){
+			    	nextElem = document.createElementNS(XHTML,"tr");
+			    	nextElem.appendChild(td(label));
+			    	nextElem.appendChild(td(time));
+			    	nextElem.appendChild(td(value+" "+unit));
+			    	nextElem.appendChild(td(limit+" "+unit));
+			    	tbody.appendChild(nextElem);
+				}
+			    });
+		    });
 		$.ajax({type: "GET",
 			    url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
 			    data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
@@ -170,13 +188,13 @@ function queryForWaterPollution(site, justQuery,lat,lng,map) {
                         },
 			    dataType: "xml",
 			    error: function(xhr, text, err) {
-			    if(xhr.status == 200) {
-				succcess(xhr.responseXML);
-			    }
+                        	if(xhr.status == 200) {
+                        		succcess(xhr.responseXML);
+                        	}
                         },
 			    success: success
 			    });
-
+		return contents;
 	}
 	else {
 		nextElem = document.createElementNS(XHTML,"p");
