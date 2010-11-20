@@ -190,8 +190,9 @@ public class MeasurementConstraint {
 
 		Individual elem = owlModel.createIndividual(Ontology.EPA.NS+elementName, Ontology.Element(owlModel)); 
 		OntClass elemRestrict = owlModel.createHasValueRestriction(null, Ontology.hasElement(owlModel), elem);
-		Literal test = owlModel.createTypedLiteral(Integer.toString(testNumber), XSDDatatype.XSDnonNegativeInteger);
-		OntClass testRestrict = owlModel.createHasValueRestriction(null, Ontology.hasTestNumber(owlModel), test);
+		OntClass testRestrict = owlModel.createClass(Ontology.EPA.NS+"EPA-"+elementName+"-test-"+testNumber);
+		//Literal test = owlModel.createTypedLiteral(testNumber);
+		//OntClass testRestrict = owlModel.createHasValueRestriction(null, Ontology.hasTestNumber(owlModel), test);
 		Resource x = owlModel.createResource(Ontology.EPA.NS+"EPA-"+elementName+"-Threshold-"+testNumber);
 		String op=null;
 		switch(cmpType) {
@@ -209,9 +210,9 @@ public class MeasurementConstraint {
 		OntClass valueRestrict = owlModel.createSomeValuesFromRestriction(null, Ontology.hasValue(owlModel), y);
 		RDFNode[] components = new RDFNode[4];
 		components[0] = Ontology.FacilityMeasurement(owlModel);
-		components[1] = valueRestrict;
-		components[2] = elemRestrict;
-		components[3] = testRestrict;
+		components[2] = valueRestrict;
+		components[3] = elemRestrict;
+		components[1] = testRestrict;
 		RDFList intersect = owlModel.createList(components);
 		OntClass self = owlModel.createIntersectionClass(Ontology.EPA.NS+"EPA-Excessive-"+elementName+"-Measurement-"+testNumber, intersect);
 		self.addProperty(RDFS.subClassOf, Ontology.Violation(owlModel));

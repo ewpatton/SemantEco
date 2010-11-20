@@ -228,11 +228,11 @@ public class EpaDataAgent implements WaterDataProvider {
 			
 			curLine = reader.readLine();
 			if(curLine==null){
-				System.err.println("Facility "+curFac.ID+" has No Soup Data");
+				//System.err.println("Facility "+curFac.ID+" has No Soup Data");
 				return;
 			}
 			if(curLine.indexOf("No CWA")!=-1){
-				System.err.println("Facility "+curFac.ID+" has No CWA");
+				//System.err.println("Facility "+curFac.ID+" has No CWA");
 				return;
 			}
 			
@@ -248,10 +248,10 @@ public class EpaDataAgent implements WaterDataProvider {
 				linkChartsWithViolations = null;
 			}
 			else {
-				System.err.println("In getDataFromFacilitySoup, err in reading link");
-				System.err.println("linkChartsWithViolations: "+linkChartsWithViolations);
-				System.err.println("Current Facility:");
-				curFac.printFacility();
+				//System.err.println("In getDataFromFacilitySoup, err in reading link");
+				//System.err.println("linkChartsWithViolations: "+linkChartsWithViolations);
+				//System.err.println("Current Facility:");
+				//curFac.printFacility();
 				//System.exit(0);
 				return;
 			}
@@ -450,7 +450,6 @@ public class EpaDataAgent implements WaterDataProvider {
 				//ID
 				if(curLine.indexOf("FRS ID")==-1) {
 					System.err.println("In readDataFromFile, err in reading RFS ID");
-					System.exit(0);						
 				}
 				curID = curLine.substring(curLine.indexOf(':')+2, curLine.length()-1);
 				
@@ -458,21 +457,18 @@ public class EpaDataAgent implements WaterDataProvider {
 				curLine = reader.readLine();
 				if(curLine == null || curLine.indexOf("Name:")==-1) {
 					System.err.println("In readDataFromFile, err in reading Name");
-					System.exit(0);						
 				}
 				curName = curLine.substring(curLine.indexOf(':')+2, curLine.length()-1);
 				//Address line 1
 				curLine = reader.readLine();
 				if(curLine == null || curLine.indexOf("AL1:")==-1) {
 					System.err.println("In readDataFromFile, err in reading AddressLine1");
-					System.exit(0);						
 				}
 				curAddressLine1 = curLine.substring(curLine.indexOf(':')+2, curLine.length()-1);
 				//Address line 2
 				curLine = reader.readLine();
 				if(curLine == null || curLine.indexOf("AL2:")==-1) {
 					System.err.println("In readDataFromFile, err in reading AddressLine1");
-					System.exit(0);						
 				}
 				curAddressLine2 = curLine.substring(curLine.indexOf(':')+2, curLine.length()-1);
 				curNumInspection=0;
@@ -490,7 +486,6 @@ public class EpaDataAgent implements WaterDataProvider {
 					eeIndex = curLine.indexOf("E");
 					if(insIndex == -1 || qtrIndex == -1 || eeIndex == -1) {
 						System.err.println("In readDataFromFile, err in reading the number line");
-						System.exit(0);						
 					}
 					strNumInspection = curLine.substring(insIndex+1, qtrIndex);
 					strNumQtrNC = curLine.substring(qtrIndex+1, eeIndex);
@@ -626,7 +621,9 @@ public class EpaDataAgent implements WaterDataProvider {
 		//Step 2
 		File dir = new File(curDir+"/");
 		dir.mkdirs();
+		if(this.downloadCSVFile) {
 		pythonExe(scriptExtractSearchResult, curArgs, 2);
+		}
 		//
 		String soupDataPath = curDir+soupDataFile;
 		//Step 3
@@ -675,16 +672,19 @@ public class EpaDataAgent implements WaterDataProvider {
 			Resource epa = pmlModel.createResource(Ontology.EPA.NS+"EPA",pmlModel.createResource(Ontology.PMLP.Organization));
 			epa.addLiteral(RDFS.label, "Environmental Protection Agency");
 			startQuery(zipCode);
-			for(Facility m : facilities) {
-				m.asIndividual(owlModel, pmlModel);
-			}
 			
+			System.err.println("Constraints: "+measurementConstraints.size());
 			Iterator<Entry<String, MeasurementConstraint>> itrOut = measurementConstraints.entrySet().iterator();  
 	        while (itrOut.hasNext()) {  
 	            Entry<String, MeasurementConstraint> entryOut = itrOut.next();
 	            curC = (MeasurementConstraint)entryOut.getValue();
 	            curC.asOntClass(owlModel, pmlModel); 
 	        }
+	        
+			for(Facility m : facilities) {
+				m.asIndividual(owlModel, pmlModel);
+			}
+			
 			return true;
 		}
 		catch(Exception e) {

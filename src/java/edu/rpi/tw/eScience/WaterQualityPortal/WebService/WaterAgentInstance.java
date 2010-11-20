@@ -1,6 +1,5 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -30,6 +29,7 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 public class WaterAgentInstance implements HttpHandler {
 	
 	
+	
 	public WaterAgentInstance() {
 	}
 	
@@ -43,7 +43,10 @@ public class WaterAgentInstance implements HttpHandler {
 		
 		for(int i=0;i<request.length;i++) {
 			String[] pieces = request[i].split("=");
-			result.put(pieces[0], java.net.URLDecoder.decode(pieces[1],"UTF-8"));
+			if(pieces.length==2) {
+				result.put(pieces[0], java.net.URLDecoder.decode(pieces[1],"UTF-8"));
+			}
+			else System.err.println(pieces);
 		}
 		return result;
 	}
@@ -61,6 +64,8 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 
 	public void handle(HttpExchange arg0) throws IOException {
+		long start = System.currentTimeMillis();
+		long start2 = System.currentTimeMillis();
 		arg0.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		try {
 			//get query string
@@ -82,11 +87,14 @@ public class WaterAgentInstance implements HttpHandler {
 			catch(Exception e) {
 				System.err.println("Unable to find regulations for state "+state);
 			}
+			System.err.println("Created initial model in "+(System.currentTimeMillis()-start2)+" ms");
 			List<WaterDataProvider> providers = getProviders();
 			for(WaterDataProvider wdp : providers) {
 				try {
+					start2 = System.currentTimeMillis();
 					wdp.setUserSource(countyCode, stateCode, zip);
 					wdp.getData(owlModel, pmlModel);
+					System.err.println("Processed data from "+wdp.getName()+" in "+(System.currentTimeMillis()-start2)+" ms");
 				}
 				catch(Exception e) {
 					System.err.println("Exception thrown by "+wdp.getName());
@@ -94,14 +102,16 @@ public class WaterAgentInstance implements HttpHandler {
 				}
 			}
 			
-			FileOutputStream fos = new FileOutputStream("/usr/local/water/example.rdf");
-			owlModel.write(fos);
-			fos.close();
+			//FileOutputStream fos = new FileOutputStream("/usr/local/water/example.rdf");
+			//owlModel.write(fos);
+			//fos.close();
 			
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
 			//get query result in xml format
+			start2 = System.currentTimeMillis();
 			String response = getQueryResult(model,queryString);
+			System.err.println("Processed query in "+(System.currentTimeMillis()-start2)+" ms");
 			//String response = arg0.getRequestURI().getQuery();
 			//send response back
 			arg0.getResponseHeaders().set("Content-type", "text/xml");
@@ -117,6 +127,7 @@ public class WaterAgentInstance implements HttpHandler {
 			arg0.getResponseBody().write(response.getBytes("UTF-8"));
 			arg0.getResponseBody().close();
 		}
+		System.err.println("Processed request in "+(System.currentTimeMillis()-start)+" ms");
 	}
 
 	public String getQueryResult(Model model, String queryString)

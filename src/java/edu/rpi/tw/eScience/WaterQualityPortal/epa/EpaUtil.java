@@ -22,7 +22,7 @@ public class EpaUtil {
 	        	out.write(rdfFac);
 	        }	        
 		} catch (IOException e) {
-			System.out.println("saveFacilities, err");
+			//System.err.println("saveFacilities, err");
 			e.printStackTrace();
 		} finally {
             //Close the BufferedWriter			
@@ -32,7 +32,7 @@ public class EpaUtil {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In saveFacilities, closing the BufferedWriter");
+            	//System.err.println("In saveFacilities, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }		
@@ -57,7 +57,7 @@ public class EpaUtil {
 	            //curMC.printToFile(out);
 	        }//end of while        
 		} catch (IOException e) {
-			System.out.println("saveMeasurementConstraints, err");
+			//System.err.println("saveMeasurementConstraints, err");
 			e.printStackTrace();
 		} finally {
             //Close the BufferedWriter			
@@ -67,7 +67,7 @@ public class EpaUtil {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In saveMeasurementConstraints, closing the BufferedWriter");
+            	//System.err.println("In saveMeasurementConstraints, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }	
@@ -81,7 +81,7 @@ public class EpaUtil {
 		MeasurementConstraint curMC=null;
 		try {
 			out = new BufferedWriter(new FileWriter(fileName));
-			System.out.println("HashMap of Measurement Constraint");
+			//System.out.println("HashMap of Measurement Constraint");
 			
 			Iterator<Entry<String,MeasurementConstraint>> itrOut = constraints.entrySet().iterator();  
 	        while (itrOut.hasNext()) {  
@@ -92,7 +92,7 @@ public class EpaUtil {
 	            curMC.printToFile(out);
 	        }//end of while        
 		} catch (IOException e) {
-			System.out.println("printFacilitiesToFile, err");
+			//System.err.println("printFacilitiesToFile, err");
 			e.printStackTrace();
 		} finally {
             //Close the BufferedWriter			
@@ -102,7 +102,7 @@ public class EpaUtil {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In printFacilitiesToFile, closing the BufferedWriter");
+            	//System.err.println("In printFacilitiesToFile, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }	
@@ -131,7 +131,7 @@ public class EpaUtil {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In printMeasurementConstraintArrayList, closing the BufferedWriter");
+            	//System.err.println("In printMeasurementConstraintArrayList, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }
@@ -143,7 +143,7 @@ public class EpaUtil {
 		FacilityMeasurement curFM=null;
 		try {
 			out = new BufferedWriter(new FileWriter(fileName));
-			System.out.println("Facility Measurement ArrayList");
+			//System.out.println("Facility Measurement ArrayList");
 			Iterator<FacilityMeasurement> itr = facAL.iterator();  
 	        while (itr.hasNext()) {  
 	        	curFM = (FacilityMeasurement)itr.next();
@@ -151,7 +151,7 @@ public class EpaUtil {
 	        }
 	        
 		} catch (IOException e) {
-			System.out.println("printFacilityMeasurmentArrayList, err");
+			//System.err.println("printFacilityMeasurmentArrayList, err");
 			e.printStackTrace();
 		} finally {
             //Close the BufferedWriter			
@@ -161,7 +161,7 @@ public class EpaUtil {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In printFacilityMeasurmentArrayList, closing the BufferedWriter");
+            	//System.err.println("In printFacilityMeasurmentArrayList, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }
@@ -172,7 +172,7 @@ public class EpaUtil {
 		Facility curFacility=null;
 		try {
 			out = new BufferedWriter(new FileWriter(fileName));
-			System.out.println("Facility ArrayList");
+			//System.out.println("Facility ArrayList");
 			Iterator<Facility> itr = facAL.iterator();  
 	        while (itr.hasNext()) {  
 	        	curFacility = (Facility)itr.next();
@@ -180,7 +180,7 @@ public class EpaUtil {
 	        }
 	        
 		} catch (IOException e) {
-			System.out.println("printFacilityArrayList, err");
+			//System.err.println("printFacilityArrayList, err");
 			e.printStackTrace();
 		} finally {
             //Close the BufferedWriter			
@@ -190,7 +190,7 @@ public class EpaUtil {
                 	out.close();
                 }
             } catch (IOException ex) {
-            	System.out.println("In printFacilityArrayList, closing the BufferedWriter");
+            	//System.err.println("In printFacilityArrayList, closing the BufferedWriter");
                 ex.printStackTrace();
             }
         }		
