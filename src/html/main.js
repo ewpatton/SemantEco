@@ -18,19 +18,94 @@ function spinner() {
 }
 
 function queryButton(site, func) {
+    /*
 	var a = document.createElementNS(XHTML,"a");
 	var img = document.createElementNS(XHTML,"img");
 	img.setAttribute("src","query.png");
 	img.setAttribute("alt","Show underlying query");
 	a.appendChild(img);
+    */
+	var a="<a>"+"<img src='query.png' alt='show underlying query' /></a>";
+	/*
 	if(a.addEventListener) {
 	}
 	else {
-	}
+	}*/
 	return a;
 }
 
-function queryForWaterPollution(site, justQuery) {
+function queryForWaterPollution(site, justQuery,lat,lng,map) {
+
+
+    var contents = document.createElementNS(XHTML,"div");
+    var contentString="";
+    var success = function(data) {
+	var nextElem, td;
+	contentString+="<h4>"+site.label+"</h4>";
+	contentString+="<p>Pollutants:</p>";
+	contentString+=queryButton(site,queryForWaterPollution);
+	contentString+="<table border='1'>";
+	contentString+="<tr>";
+	contentString+="<th>Pollutant</th>";
+	contentString+="<th>Time Measured</th>";
+	contentString+="<th>Value</th>";
+	contentString+="<th>Limit</th>";
+	contentString+="</tr>";
+
+        $(data).find('result').each(function(){
+		var time="",unit="",limit="",label="",value="";
+		$(this).find("binding").each(function(){
+			
+			
+			if($(this).attr("name")=="label")
+			    {
+				label=($(this).find("literal").text());
+			    }
+			if($(this).attr("name")=="value")
+			    {
+				value=($(this).find("literal").text());
+			    }
+			if($(this).attr("name")=="unit")
+			    {
+				unit=($(this).find("literal").text());
+			    }
+			if($(this).attr("name")=="limit")
+			    {
+				limit=($(this).find("literal").text());
+			    }
+			if($(this).attr("name")=="time")
+			    {
+				time=($(this).find("literal").text());
+			    }
+
+			if(label!=""&&value!=""&&unit!=""&&limit!=""&&time!=""){
+			    contentString+="<tr>";
+			    contentString+="<td>"+label+"</td>";
+			    contentString+="<td>"+time+"</td>";
+			    contentString+="<td>"+value+"</td>";
+			    contentString+="<td>"+limit+"</td>";
+			    contentString+="</tr>";
+			}
+		    });
+	    });
+	contentString+="</table>";
+	if(lat!=""&&lng!=""){
+	    var blueIcon = new GIcon(G_DEFAULT_ICON,"image/pollutedwater.png");
+	    blueIcon.iconSize = new GSize(29,34);
+	    var latlng = new GLatLng(lat ,lng);
+	    markerOptions = { icon:blueIcon };
+	    var marker=new GMarker(latlng, markerOptions);
+	    GEvent.addListener(marker, "click",
+			       function() {
+				   marker.openInfoWindowHtml(contentString);
+			       }
+			       );
+	    map.addOverlay(marker);
+	}
+
+    }
+    
+
 	var query =
 	"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
 	"PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
@@ -77,60 +152,40 @@ function queryForWaterPollution(site, justQuery) {
 		"ORDER BY DESC(?time)\r\n"+
 		"LIMIT 1";
 	
-	var contents = document.createElementNS(XHTML,"div");
+
 	var nextElem = document.createElementNS(XHTML,"h4");
 	nextElem.appendChild(document.createTextNode(site.label));
 	contents.appendChild(nextElem);
 	
 	if(site.isPolluted) {
-		nextElem = document.createElementNS(XHTML,"p");
-		nextElem.appendChild(document.createTextNode("Last test occurred on "));
-		nextElem.appendChild(spinner());
-		contents.appendChild(nextElem);
-		nextElem = document.createElementNS(XHTML,"p");
-		nextElem.appendChild(document.createTextNode("Pollutants:"));
-		nextElem.appendChild(queryButton(site, queryForWaterPollution));
-		contents.appendChild(nextElem);
-		nextElem = document.createElementNS(XHTML,"table");
-		var tbody = document.createElementNS(XHTML,"tbody");
-		nextElem.appendChild(tbody);
-		contents.appendChild(nextElem);
-		nextElem = document.createElementNS(XHTML,"tr");
-		var td = document.createElementNS(XHTML,"th");
-		td.appendChild(document.createTextNode("Pollutant"));
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"th");
-		td.appendChild(document.createTextNode("Time Measured"));
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"th");
-		td.appendChild(document.createTextNode("Value"));
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"th");
-		td.appendChild(document.createTextNode("Limit"));
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"th");
-		nextElem = document.createElementNS(XHTML,"tr");
-		td = document.createElementNS(XHTML,"td");
-		td.appendChild(spinner());
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"td");
-		td.appendChild(spinner());
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"td");
-		td.appendChild(spinner());
-		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"td");
-		td.appendChild(spinner());
-		nextElem.appendChild(td);
-		tbody.appendChild(nextElem);
+		$.ajax({type: "GET",
+			    url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
+			    data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
+			    "&stateCode="+window.appState.stateCode+
+			    "&state="+window.appState.stateAbbr+
+			    "&zip="+window.appState.zipCode+			    
+			    "&query="+encodeURIComponent(query), // query parameter
+			    beforeSend: function(xhr) {
+                            xhr.setRequestHeader("Accept", "application/sparql-results+xml");
+                        },
+			    dataType: "xml",
+			    error: function(xhr, text, err) {
+			    if(xhr.status == 200) {
+				succcess(xhr.responseXML);
+			    }
+                        },
+			    success: success
+			    });
+
 	}
 	else {
 		nextElem = document.createElementNS(XHTML,"p");
 		nextElem.appendChild(document.createTextNode("According to all current regulations, this water supply is not polluted."));
 		contents.appendChild(nextElem);
+		return contentString;
 	}
 	
-	return contents;
+
 }
 
 function queryForWaterDataProvider(site, justQuery) {

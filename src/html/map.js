@@ -64,20 +64,25 @@ function showPollutedWater()
             	}
             });
             if(lat!=""&&lng!=""){
+		/*
             	var blueIcon = new GIcon(G_DEFAULT_ICON,"image/pollutedwater.png");
             	blueIcon.iconSize = new GSize(29,34);
-            	 
-            	var latlng = new GLatLng(lat ,lng);
+		*/
+            	var site={'uri':sub,'label':label,'isPolluted':true};
+		queryForWaterPollution(site,false,lat,lng,map);
+		/*
+		alert(info);
+		var latlng = new GLatLng(lat ,lng);
             	markerOptions = { icon:blueIcon };
             	var marker=new GMarker(latlng, markerOptions);
             	GEvent.addListener(marker, "click",
             		function() {
-            			marker.openInfoWindowHtml(label);
+            			marker.openInfoWindowHtml(info);
             	 	}
             	);
-            	map.addOverlay(marker);	
+            	map.addOverlay(marker);	*/
             }
-        });
+	    });
         showCleanWater();
 	};
 	$.ajax({type: "GET",
@@ -90,7 +95,7 @@ function showPollutedWater()
 			beforeSend: function(xhr) {
 			    xhr.setRequestHeader("Accept", "application/sparql-results+xml");
 			},
-            dataType: "xml",
+            dataType: "xml",	  
             error: function(xhr, text, err) {
 				if(xhr.status == 200) {
 					succcess(xhr.responseXML);
@@ -134,10 +139,14 @@ function showCleanWater()
 		thisIcon.iconSize = new GSize(30,34);
 		var latlng = new GLatLng(lat ,lng);
 		markerOptions = { icon:thisIcon };
+
+		var site={'uri':sub,'label':label,'isPolluted':false};
+		var info=queryForWaterPollution(site,false,"","","");
+
 		var marker=new GMarker(latlng, markerOptions);
 		GEvent.addListener(marker, "click",
 				   function() {
-				       marker.openInfoWindowHtml(label);
+				       marker.openInfoWindowHtml(info);
 				   }
 				  );
 		map.addOverlay(marker);	
