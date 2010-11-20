@@ -18,19 +18,16 @@ function spinner() {
 }
 
 function queryButton(site, func) {
-    /*
 	var a = document.createElementNS(XHTML,"a");
 	var img = document.createElementNS(XHTML,"img");
 	img.setAttribute("src","query.png");
 	img.setAttribute("alt","Show underlying query");
 	a.appendChild(img);
-    */
-	var a="<a>"+"<img src='query.png' alt='show underlying query' /></a>";
-	/*
+	//var a="<a>"+"<img src='query.png' alt='show underlying query' /></a>";
 	if(a.addEventListener) {
 	}
 	else {
-	}*/
+	}
 	return a;
 }
 

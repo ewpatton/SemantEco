@@ -72,7 +72,7 @@ function showPollutedWater()
             	var marker=new GMarker(latlng, markerOptions);
             	GEvent.addListener(marker, "click",
             		function() {
-            			var info = queryForWaterQuality(site,false);
+            			var info = queryForWaterPollution(site,false);
             			marker.openInfoWindowHtml(info);
             	 	}
             	);
