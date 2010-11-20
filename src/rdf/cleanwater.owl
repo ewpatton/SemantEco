@@ -74,6 +74,7 @@
 	
     <owl:Class rdf:about="#WaterMeasurement">
 		<rdfs:subClassOf rdf:resource="&repr;Measurement"/>
+		<owl:disjointWith rdf:resource="#FacilityMeasurement"/>
   	</owl:Class>
   
     <owl:Class rdf:about="#FacilityMeasurement">
