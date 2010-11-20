@@ -52,7 +52,7 @@ public class WaterAgentInstance implements HttpHandler {
 		List<WaterDataProvider> providers = new ArrayList<WaterDataProvider>();
 		try {
 			providers.add(new EpaDataAgent());
-			//providers.add(new DataService());
+			providers.add(new DataService());
 		}
 		catch(Exception e) {
 			e.printStackTrace();
