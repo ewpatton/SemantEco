@@ -470,7 +470,7 @@ public class EpaDataAgent implements WaterDataProvider {
 				if(curLine == null || curLine.indexOf("Name:")==-1) {
 					System.err.println("In readDataFromFile, err in reading Name");
 				}
-				curName = curLine.substring(curLine.indexOf(':')+2, curLine.length()-1);
+				curName = curLine.substring(curLine.indexOf(':')+2, curLine.length());
 				//Address line 1
 				curLine = reader.readLine();
 				if(curLine == null || curLine.indexOf("AL1:")==-1) {
