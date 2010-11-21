@@ -56,6 +56,7 @@ public class SessionManager implements HttpHandler, Runnable {
 			}
 			result = x.performQuery(request.get("query"));
 			code = 200;
+			arg0.getResponseHeaders().set("Content-type", "text/xml");
 			arg0.sendResponseHeaders(code, result.length());
 			arg0.getResponseBody().write(result.getBytes("UTF-8"));
 			arg0.getResponseBody().flush();
