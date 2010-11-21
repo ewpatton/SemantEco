@@ -123,72 +123,72 @@ public class MeasurementSite {
 		OntProperty prop = Ontology.hasCountryCode(owlModel);
 		site.addLiteral(prop, country_code);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, pmlsite);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, country_code);
-		info.addProperty(hasUsage, rowColRef(24, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, pmlsite);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, country_code);
+//		info.addProperty(hasUsage, rowColRef(24, pmlModel));
 		
 		// State code
 		prop = Ontology.hasStateCode(owlModel);
 		site.addLiteral(prop, state_code);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, pmlsite);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, state_code);
-		info.addProperty(hasUsage, rowColRef(25, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, pmlsite);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, state_code);
+//		info.addProperty(hasUsage, rowColRef(25, pmlModel));
 		
 		// County code
 		prop = Ontology.hasCountyCode(owlModel);
 		site.addLiteral(prop, county_code);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, pmlsite);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, county_code);
-		info.addProperty(hasUsage, rowColRef(26, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, pmlsite);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, county_code);
+//		info.addProperty(hasUsage, rowColRef(26, pmlModel));
 		
 		// Label
 		prop = Ontology.label(owlModel);
 		site.addLiteral(prop, label);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, pmlsite);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, label);
-		info.addProperty(hasUsage, rowColRef(3, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, pmlsite);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, label);
+//		info.addProperty(hasUsage, rowColRef(3, pmlModel));
 		
 		// Latitude
 		prop = Ontology.lat(owlModel);
 		site.addLiteral(prop, lat);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, pmlsite);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, lat);
-		info.addProperty(hasUsage, rowColRef(11, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, pmlsite);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, lat);
+//		info.addProperty(hasUsage, rowColRef(11, pmlModel));
 		
 		// Longitude
 		prop = Ontology.lng(owlModel);
 		site.addLiteral(prop, longitude);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, pmlsite);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, longitude);
-		info.addProperty(hasUsage, rowColRef(12, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, pmlsite);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, longitude);
+//		info.addProperty(hasUsage, rowColRef(12, pmlModel));
 		
 		prop = Ontology.hasMeasurement(owlModel);
 		for(Measurement m : data) {
 			Individual item = m.asIndividual(owlModel, pmlModel);
 			site.addProperty(prop, item);
 			// PML
-			info = pmlModel.createResource(Ontology.Information(pmlModel));
-			info.addProperty(RDF.subject, pmlsite);
-			info.addProperty(RDF.predicate, prop);
-			info.addProperty(RDF.object, item);
-			info.addProperty(hasUsage, agentRef(pmlModel));
+//			info = pmlModel.createResource(Ontology.Information(pmlModel));
+//			info.addProperty(RDF.subject, pmlsite);
+//			info.addProperty(RDF.predicate, prop);
+//			info.addProperty(RDF.object, item);
+//			info.addProperty(hasUsage, agentRef(pmlModel));
 		}
 		return site;
 	}

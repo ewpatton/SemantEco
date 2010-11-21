@@ -41,7 +41,7 @@ public class Session {
 		if(f.isDirectory()) {
 			File[] contents = f.listFiles();
 			for(int i=0;i<contents.length;i++) {
-				if(!deletePath(contents[i])) return false;
+				deletePath(contents[i]);
 			}
 		}
 		return f.delete();

@@ -185,52 +185,52 @@ public class FacilityMeasurement {
 		prop = Ontology.inXSDDateTime(owlModel);
 		m.addLiteral(prop, df.format(theDate));
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, df.format(theDate));
-		info.addProperty(hasUsage, rowColRef(18, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, m);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, df.format(theDate));
+//		info.addProperty(hasUsage, rowColRef(18, pmlModel));
 		
 		// Test Number
 		prop = Ontology.hasTestNumber(owlModel);
 		m.addLiteral(prop, testNumber);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, testNumber);
-		info.addProperty(hasUsage, rowColRef(col, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, m);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, testNumber);
+//		info.addProperty(hasUsage, rowColRef(col, pmlModel));
 		
 		// Unit
 		prop = Ontology.hasUnit(owlModel);
 		m.addLiteral(prop, unit);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, unit);
-		info.addProperty(hasUsage, rowColRef(col+1, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, m);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, unit);
+//		info.addProperty(hasUsage, rowColRef(col+1, pmlModel));
 		
 		// Value
 		prop = Ontology.hasValue(owlModel);
 		m.addLiteral(prop, Double.parseDouble(value));
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, value);
-		info.addProperty(hasUsage, rowColRef(col, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, m);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, value);
+//		info.addProperty(hasUsage, rowColRef(col, pmlModel));
 		
 		// Element
 		prop = Ontology.hasElement(owlModel);
 		Individual elem = owlModel.createIndividual(Ontology.EPA.NS+elementName, Ontology.Element(owlModel));
 		m.addProperty(prop, elem);
 		// PML
-		info = pmlModel.createResource(Ontology.Information(pmlModel));
-		info.addProperty(RDF.subject, m);
-		info.addProperty(RDF.predicate, prop);
-		info.addLiteral(RDF.object, elem);
-		info.addProperty(hasUsage, rowColRef(14, pmlModel));
+//		info = pmlModel.createResource(Ontology.Information(pmlModel));
+//		info.addProperty(RDF.subject, m);
+//		info.addProperty(RDF.predicate, prop);
+//		info.addLiteral(RDF.object, elem);
+//		info.addProperty(hasUsage, rowColRef(14, pmlModel));
 		
 		return m;
 	}
