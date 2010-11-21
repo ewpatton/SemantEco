@@ -68,7 +68,7 @@ public class SessionManager implements HttpHandler, Runnable {
 			try {
 				Session x = new Session(zip);
 				sessions.put(x.getId(), x);
-				result = "{\"session\":\""+x.getId()+"\"}";
+				result = "{\"session\":\""+x.getId()+"\",\"result\":{\"lat\":"+x.getZipCode().getLatitude()+",\"lng\":"+x.getZipCode().getLongitude()+"}}";
 				code = 200;
 			}
 			catch(ServerFailedToRespondException e) {
