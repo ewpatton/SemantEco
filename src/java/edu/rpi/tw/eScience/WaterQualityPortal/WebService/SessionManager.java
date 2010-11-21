@@ -54,9 +54,17 @@ public class SessionManager implements HttpHandler, Runnable {
 				arg0.getResponseBody().flush();
 				arg0.getResponseBody().close();
 			}
-			result = x.performQuery(request.get("query"));
-			code = 200;
-			arg0.getResponseHeaders().set("Content-type", "text/xml");
+			try {
+				result = x.performQuery(request.get("query"));
+				code = 200;
+				arg0.getResponseHeaders().set("Content-type", "text/xml");
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				code = 500;
+				result="A server-side error occurred.";
+				arg0.getResponseHeaders().set("Content-type", "text/plain");
+			}
 			arg0.sendResponseHeaders(code, result.length());
 			arg0.getResponseBody().write(result.getBytes("UTF-8"));
 			arg0.getResponseBody().flush();

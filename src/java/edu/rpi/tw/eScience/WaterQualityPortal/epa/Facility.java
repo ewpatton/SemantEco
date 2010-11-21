@@ -273,42 +273,42 @@ public class Facility {
 		prop = Ontology.label(owlModel);
 		facility.addLiteral(prop, name);
 		// PML
-//		info = pmlModel.createResource(Ontology.Information(pmlModel));
-//		info.addProperty(RDF.subject, facility);
-//		info.addProperty(RDF.predicate, prop);
-//		info.addLiteral(RDF.object, name);
-//		info.addProperty(hasUsage, rowColRef(1, pmlModel));
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, name);
+		info.addProperty(hasUsage, rowColRef(1, pmlModel));
 		
 		// Address
 		String address = addressLine1+" "+addressLine2;
 		prop = Ontology.hasAddress(owlModel);
 		facility.addLiteral(prop, address);
 		// PML
-//		info = pmlModel.createResource(Ontology.Information(pmlModel));
-//		info.addProperty(RDF.subject, facility);
-//		info.addProperty(RDF.predicate, prop);
-//		info.addLiteral(RDF.object, address);
-//		info.addProperty(hasUsage, rowColRef(1, pmlModel));
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, address);
+		info.addProperty(hasUsage, rowColRef(1, pmlModel));
 		
 		// Latitude
 		prop = Ontology.lat(owlModel);
 		facility.addLiteral(prop, lat);
 		// PML
-//		info = pmlModel.createResource(Ontology.Information(pmlModel));
-//		info.addProperty(RDF.subject, facility);
-//		info.addProperty(RDF.predicate, prop);
-//		info.addLiteral(RDF.object, lat);
-//		info.addProperty(hasUsage, geoRef(pmlModel));
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, lat);
+		info.addProperty(hasUsage, geoRef(pmlModel));
 		
 		// Longitude
 		prop = Ontology.lng(owlModel);
 		facility.addLiteral(prop, lng);
 		// PML
-//		info = pmlModel.createResource(Ontology.Information(pmlModel));
-//		info.addProperty(RDF.subject, facility);
-//		info.addProperty(RDF.predicate, prop);
-//		info.addLiteral(RDF.object, lng);
-//		info.addProperty(hasUsage, geoRef(pmlModel));
+		info = pmlModel.createResource(Ontology.Information(pmlModel));
+		info.addProperty(RDF.subject, facility);
+		info.addProperty(RDF.predicate, prop);
+		info.addLiteral(RDF.object, lng);
+		info.addProperty(hasUsage, geoRef(pmlModel));
 		
 		prop = Ontology.hasMeasurement(owlModel);
 		if(coliformMeasurements != null) {
@@ -316,13 +316,11 @@ public class Facility {
 			Individual item = m.asIndividual(owlModel, pmlModel);
 			facility.addProperty(prop, item);
 			// PML
-			/*
 			info = pmlModel.createResource(Ontology.Information(pmlModel));
 			info.addProperty(RDF.subject, facility);
 			info.addProperty(RDF.predicate, prop);
 			info.addProperty(RDF.object, item);
 			info.addProperty(hasUsage, agentRef(pmlModel));
-			*/
 		}
 		}
 		
