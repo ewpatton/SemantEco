@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -22,17 +23,48 @@ import com.sun.net.httpserver.HttpHandler;
 import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.EpaDataAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.usgs.DataService;
+import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 
 public class WaterAgentInstance implements HttpHandler {
 	
-	
-	
 	public WaterAgentInstance() {
 	}
 	
+	List<WaterDataProvider> providers;
+	OntModel owlModel;
+	Model pmlModel;
+	Model theModel;
+	
+	public WaterAgentInstance(ZipCodeLookup zipCode, File basePath) {
+		providers = getProviders(basePath);
+		owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		pmlModel = ModelFactory.createDefaultModel();
+		theModel = ModelFactory.createUnion(owlModel, pmlModel);
+		owlModel.read("http://was.tw.rpi.edu/water/rdf/cleanwater.owl");
+		String state = zipCode.getStateAbbreviation();
+		try {
+			owlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-owl.rdf");
+			pmlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-pml.rdf");
+		}
+		catch(Exception e) {
+			System.err.println("Unable to find regulations for state "+state);
+		}
+		for(WaterDataProvider wdp : providers) {
+			try {
+				wdp.setUserSource(zipCode.getCountyCode(),
+						zipCode.getStateCode(), zipCode.getZipCode());
+				wdp.getData(owlModel, pmlModel);
+			}
+			catch(Exception e) {
+				System.err.println("Exception thrown by "+wdp.getName());
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public Map<String,String> parseRequest(HttpExchange arg0) throws IOException
 	{
 		HashMap<String,String> result = new HashMap<String, String>();
@@ -51,11 +83,11 @@ public class WaterAgentInstance implements HttpHandler {
 		return result;
 	}
 	
-	public List<WaterDataProvider> getProviders() {
+	public List<WaterDataProvider> getProviders(File basePath) {
 		List<WaterDataProvider> providers = new ArrayList<WaterDataProvider>();
 		try {
-			providers.add(new EpaDataAgent());
-			providers.add(new DataService());
+			providers.add(new EpaDataAgent(basePath));
+			providers.add(new DataService(basePath));
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -88,7 +120,7 @@ public class WaterAgentInstance implements HttpHandler {
 				System.err.println("Unable to find regulations for state "+state);
 			}
 			System.err.println("Created initial model in "+(System.currentTimeMillis()-start2)+" ms");
-			List<WaterDataProvider> providers = getProviders();
+			List<WaterDataProvider> providers = getProviders(new File("/tmp/"));
 			for(WaterDataProvider wdp : providers) {
 				try {
 					start2 = System.currentTimeMillis();
@@ -167,4 +199,9 @@ public class WaterAgentInstance implements HttpHandler {
 		    System.out.println("No vcards were found in the database");
 		}
 	}
+
+	public String performQuery(String query) {
+		String response = getQueryResult(theModel,query);
+		return response;
 	}
+}

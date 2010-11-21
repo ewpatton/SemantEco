@@ -11,7 +11,7 @@ public class EpaCommAgent {
 		//String content = "permit=NY0261343&pipe=all&paramtr=all&monlocn=all&period=all&outt=all&date=20070701%7C20100630&charts=viol&tool=echo&filetype=csv";
 		
 		//Phase1: do the post
-		System.out.println("Starting getCSVFile");
+		//System.out.println("Starting getCSVFile");
 		URL url = null;
 		HttpURLConnection conn = null; 
 		
@@ -24,7 +24,7 @@ public class EpaCommAgent {
 			conn.setUseCaches (false);
 			// Make server believe we are form data...
 
-			System.out.println("About to post\nURL: "+target+ "content: " + content);
+			//System.out.println("About to post\nURL: "+target+ "content: " + content);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			conn.setRequestProperty("Content-Length", String.valueOf(content.length()));
@@ -98,7 +98,7 @@ public class EpaCommAgent {
 		String target = "http://www.epa-echo.gov/cgi-bin/ideaotis.cgi";
 		String content = "idea_active=Y&idea_database=PBL&media_tool=ECHOI&idea_client=otis_pba&idea_pcs_migrate=Y&func_nametype=CASE&func_nametype=FACILITY&idea_linkage=LINKED+NONLINKED&idea_db_filter=INC+AFS+ICI+FRS+PCS+ICP+RCR+TRI+DEM+NEI&idea_report=OTISECHO+PARM+SORTNAME_tricommas_pencommas_DEMRADIUS%3D3_violqtrsmax%3D12&otis_custom_col=7%2C21%2C12%2C24%2C13%2C19%2C18%2C23%2C15%2C29&idea_major=&idea_zip_any=12180&zip=12180";
 
-		System.out.println("About to post\nURL: "+target+ "content: " + content);
+		//System.out.println("About to post\nURL: "+target+ "content: " + content);
 		StringBuilder response = new StringBuilder();
 		URL url = null;
 
@@ -175,7 +175,7 @@ public class EpaCommAgent {
 	private void doGet(String outputFile) {
 		String target = "http://www.epa-echo.gov/cgi-bin/get1cReport.cgi?tool=echo&IDNumber=110012303854";
 		
-		System.out.println("About to get\nURL: "+target);
+		//System.out.println("About to get\nURL: "+target);
 		StringBuilder response = new StringBuilder();
 		URL url = null;
 
@@ -250,7 +250,7 @@ public class EpaCommAgent {
 	}
 	
 	protected void doCommunication(int commType,String target, String content, String outputFile) {
-		System.out.println("Starting doCommunication");
+		//System.out.println("Starting doCommunication");
 		//StringBuilder response = new StringBuilder();
 		URL url = null;
 		HttpURLConnection conn = null; 
@@ -264,12 +264,12 @@ public class EpaCommAgent {
 			conn.setUseCaches (false);
 			// Make server believe we are form data...
 			if(commType==0){
-				System.out.println("About to get\nURL: "+target);
+				//System.out.println("About to get\nURL: "+target);
 				conn.setRequestMethod("GET");			
 				conn.connect();
 			}
 			else if(commType==1){
-				System.out.println("About to post\nURL: "+target+ "content: " + content);
+				//System.out.println("About to post\nURL: "+target+ "content: " + content);
 				conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				conn.setRequestProperty("Content-Length", String.valueOf(content.length()));
@@ -351,7 +351,7 @@ public class EpaCommAgent {
 
 	
 	protected void doCommunication(int commType,String target, String content, BufferedWriter bufferedWriter) {
-		System.out.println("Starting doCommunication");
+		//System.out.println("Starting doCommunication");
 		//StringBuilder response = new StringBuilder();
 		URL url = null;
 		HttpURLConnection conn = null; 
@@ -365,12 +365,12 @@ public class EpaCommAgent {
 			conn.setUseCaches (false);
 			// Make server believe we are form data...
 			if(commType==0){
-				System.out.println("About to get\nURL: "+target);
+				//System.out.println("About to get\nURL: "+target);
 				conn.setRequestMethod("GET");			
 				conn.connect();
 			}
 			else if(commType==1){
-				System.out.println("About to post\nURL: "+target+ "content: " + content);
+				//System.out.println("About to post\nURL: "+target+ "content: " + content);
 				conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				conn.setRequestProperty("Content-Length", String.valueOf(content.length()));

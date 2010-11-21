@@ -171,7 +171,7 @@ public class FacilityMeasurement {
 		SimpleDateFormat srcFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"epa-measure-"+id, Ontology.FacilityMeasurement(owlModel));
-		m.addProperty(RDF.type, owlModel.createClass(Ontology.EPA.NS+"EPA-"+elementName+"-test-"+testNumber));
+		//m.addProperty(RDF.type, owlModel.createClass(Ontology.EPA.NS+"EPA-"+elementName+"-test-"+testNumber));
 		OntProperty prop;
 		
 		Resource info;
@@ -194,8 +194,8 @@ public class FacilityMeasurement {
 //		info.addProperty(hasUsage, rowColRef(18, pmlModel));
 		
 		// Test Number
-		//prop = Ontology.hasTestNumber(owlModel);
-		//m.addLiteral(prop, testNumber);
+		prop = Ontology.hasTestNumber(owlModel);
+		m.addLiteral(prop, testNumber);
 		// PML
 //		info = pmlModel.createResource(Ontology.Information(pmlModel));
 //		info.addProperty(RDF.subject, m);

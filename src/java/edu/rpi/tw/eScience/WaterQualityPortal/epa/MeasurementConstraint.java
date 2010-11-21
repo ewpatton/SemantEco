@@ -190,9 +190,9 @@ public class MeasurementConstraint {
 
 		Individual elem = owlModel.createIndividual(Ontology.EPA.NS+elementName, Ontology.Element(owlModel)); 
 		OntClass elemRestrict = owlModel.createHasValueRestriction(null, Ontology.hasElement(owlModel), elem);
-		OntClass testRestrict = owlModel.createClass(Ontology.EPA.NS+"EPA-"+elementName+"-test-"+testNumber);
-		//Literal test = owlModel.createTypedLiteral(testNumber);
-		//OntClass testRestrict = owlModel.createHasValueRestriction(null, Ontology.hasTestNumber(owlModel), test);
+		//OntClass testRestrict = owlModel.createClass(Ontology.EPA.NS+"EPA-"+elementName+"-test-"+testNumber);
+		Literal test = owlModel.createTypedLiteral(testNumber);
+		OntClass testRestrict = owlModel.createHasValueRestriction(null, Ontology.hasTestNumber(owlModel), test);
 		Resource x = owlModel.createResource(Ontology.EPA.NS+"EPA-"+elementName+"-Threshold-"+testNumber);
 		String op=null;
 		switch(cmpType) {

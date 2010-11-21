@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.usgs;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Date;
 
@@ -14,15 +15,20 @@ public class DataService implements WaterDataProvider {
 	String stateCode="";
 	String zipCode="";
 	final URL location = new URL("http://qwwebservices.usgs.gov/portal.html");
+	File basePath;
 	
 	public DataService() throws Exception {
 		
 	}
 	
+	public DataService(File basePath) throws Exception {
+		this.basePath = basePath;
+	}
+
 	@Override
 	public boolean getData(OntModel owlModel, Model pmlModel) {
 		USGSParser parser = new USGSParser();
-		return parser.getData(stateCode,countyCode,owlModel,pmlModel);
+		return parser.getData(basePath, stateCode,countyCode,owlModel,pmlModel);
 	}
 
 	@Override

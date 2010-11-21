@@ -26,25 +26,25 @@ public class EpaDataAgent implements WaterDataProvider {
 	static String searchByZipContent = "idea_active=Y&idea_database=PBL&media_tool=ECHOI&idea_client=otis_pba&idea_pcs_migrate=Y&func_nametype=CASE&func_nametype=FACILITY&idea_linkage=LINKED+NONLINKED&idea_db_filter=INC+AFS+ICI+FRS+PCS+ICP+RCR+TRI+DEM+NEI&idea_report=OTISECHO+PARM+SORTNAME_tricommas_pencommas_DEMRADIUS%3D3_violqtrsmax%3D12&otis_custom_col=7%2C21%2C12%2C24%2C13%2C19%2C18%2C23%2C15%2C29&idea_major=&idea_zip_any=";
 	//12180&zip=12180
 	static String zipPostFix="&zip=";
-	static String soupDataFile="/epaCgiSoupData";
+	static String soupDataFile="epaCgiSoupData";
 	static String geoTargetPre = "http://maps.googleapis.com/maps/api/geocode/xml?address=";
 	static String geoTargetPost ="&sensor=false";
 	static String getContent = "";
-	static String geoDataFile="/facilityGeo";
-	static String soupAddressFile="/epaCgiSoupAddress";
+	static String geoDataFile="facilityGeo";
+	static String soupAddressFile="epaCgiSoupAddress";
 	static String facilityPagePre = "http://www.epa-echo.gov/cgi-bin/get1cReport.cgi?tool=echo&IDNumber=";
-	static String facilityFolder = "/facPage/";
+	static String facilityFolder = "facPage/";
 	static String facilityHtmlPre = "epaFacHtml";
 	static String facilitySoupPre = "epaFacSoup";	
 	//OCV
-	static String OCVFolder = "/OCVPage/";
+	static String OCVFolder = "OCVPage/";
 	static String OCVHtmlPre = "epaOCVHtml";
 	//
 	static String csvTarget = "http://www.epa-echo.gov/cgi-bin/effluentdata.cgi";
-	static String CSVFolder = "/CSV/";
+	static String CSVFolder = "CSV/";
 	static String CSVFilePost = ".csv";
 	//Solids
-	static String SolidsFolder = "/Solids/";
+	static String SolidsFolder = "Solids/";
 	static String SolidsHtmlPre = "epaSolidsHtml";	
 	static int numQtr=12;
 	//
@@ -60,6 +60,7 @@ public class EpaDataAgent implements WaterDataProvider {
 	EpaCommAgent commAgent = null;
 	EpaCSVAgent csvAgent = null;
 	EpaUtil utilAgent = null;
+	File basePath = null;
 	
 	public EpaDataAgent(){
 		facilities = new ArrayList<Facility>();
@@ -68,8 +69,19 @@ public class EpaDataAgent implements WaterDataProvider {
 		commAgent = new EpaCommAgent();
 		csvAgent = new EpaCSVAgent();
 		utilAgent = new EpaUtil();
+		basePath = new File("/tmp/");
 	}
 	
+	public EpaDataAgent(File basePath) {
+		facilities = new ArrayList<Facility>();
+		facilitiesWithViolations = new ArrayList<Facility>();
+		measurementConstraints = new HashMap<String, MeasurementConstraint> ();
+		commAgent = new EpaCommAgent();
+		csvAgent = new EpaCSVAgent();
+		utilAgent = new EpaUtil();
+		basePath = basePath.getAbsoluteFile();
+	}
+
 	private void queryOCVPages(String zipCode){
 		Facility curFacility=null;		
 		Iterator<Facility> itr = facilitiesWithViolations.iterator();  
@@ -102,19 +114,19 @@ public class EpaDataAgent implements WaterDataProvider {
 		*/	
 	private void procFacilityPage(String zipCode, Facility curFac){
 		//mkDir
-		String facilityDir = upMostDir+zipCode+facilityFolder;
-		mkDir(facilityDir);
+		File facilityDir = new File(basePath,zipCode+"/"+facilityFolder);
+		facilityDir.mkdirs();
 		//download html
 		String IDNum = curFac.ID;
 		String getTarget = facilityPagePre + IDNum;
-		String facHtml = facilityDir + facilityHtmlPre + IDNum;
+		File facHtml = new File(facilityDir,facilityHtmlPre + IDNum);
 		if(downloadFacPage==true)
-			commAgent.doCommunication(0, getTarget, getContent, facHtml);
+			commAgent.doCommunication(0, getTarget, getContent, facHtml.getAbsolutePath());
 		//invoke python script
 		String curArgs[] = new String [2]; 
-		curArgs[0] = facHtml;
-		String facSoupPath = facilityDir + facilitySoupPre + IDNum;
-		curArgs[1] = facSoupPath;
+		curArgs[0] = facHtml.getAbsolutePath();
+		File facSoupPath = new File(facilityDir,facilitySoupPre + IDNum);
+		curArgs[1] = facSoupPath.getAbsolutePath();
 		pythonExe(scriptExtractFac, curArgs, 2);
 		//
 		getDataFromFacilitySoup(facSoupPath, curFac);
@@ -123,18 +135,18 @@ public class EpaDataAgent implements WaterDataProvider {
 	private void processOCVPage(String zipCode, Facility curFac){
 		String csvPostContent = null;
 		//mkDirs
-		String ocvDir = upMostDir+zipCode+OCVFolder;
-		mkDir(ocvDir);
-		String csvDir = upMostDir+zipCode+CSVFolder;
-		mkDir(csvDir);
+		File ocvDir = new File(basePath,zipCode+"/"+OCVFolder);
+		ocvDir.mkdirs();
+		File csvDir = new File(basePath,zipCode+"/"+CSVFolder);
+		csvDir.mkdirs();
 		//
 		String IDNum = curFac.ID;
-		String ocvHtml = ocvDir + OCVHtmlPre + IDNum;
+		File ocvHtml = new File(ocvDir,OCVHtmlPre + IDNum);
 		String getTarget = curFac.OCVLink;
 		if(getTarget!=null) {
 			//download the OVL HTML
 			if(downloadOCVPage==true)
-				commAgent.doCommunication(0, curFac.OCVLink, getContent, ocvHtml);
+				commAgent.doCommunication(0, curFac.OCVLink, getContent, ocvHtml.getAbsolutePath());
 			//download the CSV file
 			csvPostContent = getCSVPostContentFromOCV(ocvHtml);
 			if(csvPostContent != null){
@@ -158,7 +170,7 @@ public class EpaDataAgent implements WaterDataProvider {
  <input type="hidden" name="tool"	value="echo" />
  <input type="hidden" name="filetype" />
 	 * */
-	private String getCSVPostContentFromOCV(String ocvFile){
+	private String getCSVPostContentFromOCV(File ocvFile){
 		String curLine;	
 		FileInputStream fIn = null;
 		BufferedReader reader = null;
@@ -210,7 +222,7 @@ public class EpaDataAgent implements WaterDataProvider {
 		
 	}
 	
-	private void getDataFromFacilitySoup(String fileName, Facility curFac){
+	private void getDataFromFacilitySoup(File fileName, Facility curFac){
 		//link of Only Charts with Violations
 		String linkChartsWithViolations=null;
 		ArrayList<String> qtrDurList=null;
@@ -288,7 +300,7 @@ public class EpaDataAgent implements WaterDataProvider {
 		
 	}
 	
-	private void getLocation(String fileName, String resultFile){
+	private void getLocation(File fileName, File resultFile){
 		String curLine;
 		String getTarget = null;
 		FileInputStream fIn = null;
@@ -306,7 +318,7 @@ public class EpaDataAgent implements WaterDataProvider {
 				String address = curLine.replace(' ', '+');
 				getTarget = geoTargetPre+address+geoTargetPost;
 				//Pause for 2 seconds
-	            Thread.sleep(1000);
+	            Thread.sleep(200);
 				commAgent.doCommunication(0, getTarget, getContent, bufferedWriter);
 				bufferedWriter.write('\n');	
 			}		
@@ -339,10 +351,10 @@ public class EpaDataAgent implements WaterDataProvider {
 	*/
 	
 	void mkDir(String dirName){
-		File dir = new File(dirName);
+		File dir = new File(basePath, dirName);
 		boolean dirOK = false;
 		if(!dir.exists()){
-			dirOK = dir.mkdir();
+			dirOK = dir.mkdirs();
 			if(!dirOK){
 				System.err.println("Cannot create the directory '" + dir);
 				//System.exit(0);
@@ -350,7 +362,7 @@ public class EpaDataAgent implements WaterDataProvider {
 		}		
 	}
 	
-	private void getGeoFromXML(String fileName){
+	private void getGeoFromXML(File fileName){
 		String curLine;	
 		FileInputStream fIn = null;
 		BufferedReader reader = null;
@@ -423,7 +435,7 @@ public class EpaDataAgent implements WaterDataProvider {
 		}
 		
 	}
-	private void getFacilityFromFile(String zipCode, String fileName){
+	private void getFacilityFromFile(String zipCode, File fileName){
 		String curLine;
 		String curID;
 		String curName;
@@ -600,11 +612,11 @@ public class EpaDataAgent implements WaterDataProvider {
 	}
 
 	protected void startProcess(String zipCode) {		
-		String curDir = upMostDir+zipCode;
+		File curDir = new File(basePath,zipCode+"/");
 		String commContent = searchByZipContent+zipCode+zipPostFix+zipCode;
 		//output file
-		String searchByZipResult = curDir+"/searchByZipResult";
-		if(new File(searchByZipResult).exists()) {
+		File searchByZipResult = new File(curDir,"searchByZipResult");
+		if(searchByZipResult.exists()) {
 			downloadCSVFile = false;
 			downloadGeoData = false;
 			downloadFacPage = false;
@@ -612,25 +624,24 @@ public class EpaDataAgent implements WaterDataProvider {
 		}
 		//Step 1
 		if(this.downloadCSVFile) {
-		commAgent.doCommunication(1, searchByZipTarget, commContent, searchByZipResult);
+			commAgent.doCommunication(1, searchByZipTarget, commContent, searchByZipResult.getAbsolutePath());
 		}
 		//invoke python script
 		String curArgs[] = new String [2]; 
-		curArgs[0] = searchByZipResult;
-		curArgs[1] = curDir;
+		curArgs[0] = searchByZipResult.getAbsolutePath();
+		curArgs[1] = curDir.getAbsolutePath();
 		//Step 2
-		File dir = new File(curDir+"/");
-		dir.mkdirs();
+		curDir.mkdirs();
 		if(this.downloadCSVFile) {
-		pythonExe(scriptExtractSearchResult, curArgs, 2);
+			pythonExe(scriptExtractSearchResult, curArgs, 2);
 		}
 		//
-		String soupDataPath = curDir+soupDataFile;
+		File soupDataPath = new File(curDir,soupDataFile);
 		//Step 3
 		getFacilityFromFile(zipCode, soupDataPath);
 		//
-		String addressPath = curDir+soupAddressFile;
-		String geoPath = curDir+geoDataFile;
+		File addressPath = new File(curDir,soupAddressFile);
+		File geoPath = new File(curDir,geoDataFile);
 		if(downloadGeoData==true) {
 			getLocation(addressPath, geoPath);		
 			getGeoFromXML(geoPath);
@@ -647,14 +658,14 @@ public class EpaDataAgent implements WaterDataProvider {
 	
 	void startQuery(String zipCode){
 		//mkdir
-		mkDir(upMostDir+zipCode);
+		mkDir(zipCode);
 		//prepare to start the communication
 		startProcess(zipCode);
 		//
-		String facilitiesFile = upMostDir+zipCode+"/facilities";
+		String facilitiesFile = new File(basePath,zipCode+"/facilities").getAbsolutePath();
 		printFacilitiesToFile(facilitiesFile);	
 		//
-		String constraintsFile = upMostDir+zipCode+"/constraints";
+		String constraintsFile = new File(basePath,zipCode+"/constraints").getAbsolutePath();
 		utilAgent.printMeasurementConstraintMap(measurementConstraints, constraintsFile);
 		
 	}

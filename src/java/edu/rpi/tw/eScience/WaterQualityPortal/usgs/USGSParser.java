@@ -20,7 +20,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
 public final class USGSParser {
 	
-	static String downloadSiteInfo1(String state, String county) {
+	static String downloadSiteInfo1(File tmp, String state, String county) {
 		String firstPart="/Station/search?north=&west=&east=&south=&within=&lat=&long=&statecode=";
 		String secondPart="&countycode=";
 		String thirdPart="&siteType=&organization=&siteid=&huc=&sampleMedia=&characteristicType=&characteristicName=&pCode=&startDateLo=&startDateHi=&mimeType=tab&bBox=&zip=yes";
@@ -37,7 +37,7 @@ public final class USGSParser {
 		try {
 			URL command = new URL(finalQuery);
 			InputStream zipContents = command.openStream();
-			File temp = new File("/tmp/mydata.zip");
+			File temp = new File(tmp,"mydata.zip");
 			temp.createNewFile();
 			FileOutputStream out = new FileOutputStream(temp);
 			int x;
@@ -49,15 +49,15 @@ public final class USGSParser {
 			String cmdarray[] = new String[4];
 			cmdarray[0] = "/usr/bin/unzip";
 			cmdarray[1] = "-d";
-			cmdarray[2] = "/tmp/";
-			cmdarray[3] = "/tmp/mydata.zip";
+			cmdarray[2] = tmp.getAbsolutePath();
+			cmdarray[3] = temp.getAbsolutePath();
 			Process unzip = Runtime.getRuntime().exec(cmdarray);
 			unzip.waitFor();
 			temp.delete();
 			
 			// There should now be a file at /tmp/data.tsv
-			temp = new File("/tmp/data.tsv");
-			File sites = new File("/tmp/sites.txt");
+			temp = new File(tmp,"data.tsv");
+			File sites = new File(tmp,"sites.txt");
 			temp.renameTo(sites);
 		}
 		catch(Exception e) {
@@ -67,7 +67,7 @@ public final class USGSParser {
 		return finalQuery;
 	}
 	
-	static String downloadSiteInfo2(String state, String county) {
+	static String downloadSiteInfo2(File tmp, String state, String county) {
 		String firstPart="/Result/search?north=&west=&east=&south=&within=&lat=&long=&statecode=";
 		String secondPart="&countycode=";
 		String thirdPart="&siteType=&organization=&siteid=&huc=&sampleMedia=&characteristicType=&characteristicName=&pCode=&startDateLo=&startDateHi=&mimeType=tab&bBox=&zip=yes";
@@ -87,7 +87,7 @@ public final class USGSParser {
 		try{
 		URL command = new URL(finalQuery);
 		InputStream zipContents = command.openStream();
-		File temp = new File("/tmp/mydata.zip");
+		File temp = new File(tmp,"mydata.zip");
 		temp.createNewFile();
 		FileOutputStream out = new FileOutputStream(temp);
 		int x;
@@ -99,15 +99,15 @@ public final class USGSParser {
 		String cmdarray[] = new String[4];
 		cmdarray[0] = "/usr/bin/unzip";
 		cmdarray[1] = "-d";
-		cmdarray[2] = "/tmp/";
-		cmdarray[3] = "/tmp/mydata.zip";
+		cmdarray[2] = tmp.getAbsolutePath();
+		cmdarray[3] = temp.getAbsolutePath();
 		Process unzip = Runtime.getRuntime().exec(cmdarray);
 		unzip.waitFor();
 		temp.delete();
 		
 		// There should now be a file at /tmp/data.tsv
-		temp = new File("/tmp/data.tsv");
-		File data = new File("/tmp/data.txt");
+		temp = new File(tmp,"data.tsv");
+		File data = new File(tmp,"data.txt");
 		temp.renameTo(data);
 	}
 	catch(Exception e) {
@@ -151,7 +151,7 @@ public final class USGSParser {
         //@SuppressWarnings("unused")
 		HashMap<String,MeasurementSite> data = new HashMap<String,MeasurementSite>();
 		
-		downloadSiteInfo1("44", "44%3A001");
+		downloadSiteInfo1(new File("/tmp/"), "44", "44%3A001");
     	
     	BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/sites.txt"));
     	String line1;
@@ -177,7 +177,7 @@ public final class USGSParser {
     		}
     	
     
-    	downloadSiteInfo2("44", "44%3A001");
+    	downloadSiteInfo2(new File("/tmp/"), "44", "44%3A001");
         BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	String line2;
@@ -218,12 +218,12 @@ public final class USGSParser {
 	}
 
  	
-	Collection<MeasurementSite> process(String stateCode, String countyCode) throws Exception {
+	Collection<MeasurementSite> process(File tmp, String stateCode, String countyCode) throws Exception {
 		HashMap<String,MeasurementSite> data = new HashMap<String,MeasurementSite>();
 		
-		String source = downloadSiteInfo1(stateCode, countyCode.replaceAll(":", "%3A"));
+		String source = downloadSiteInfo1(tmp, stateCode, countyCode.replaceAll(":", "%3A"));
     	
-    	BufferedReader readbuffer1 = new BufferedReader(new FileReader("/tmp/sites.txt"));
+    	BufferedReader readbuffer1 = new BufferedReader(new FileReader(new File(tmp,"sites.txt")));
     	String line1;
     	boolean first1 = true;
     	int counter = 0;
@@ -247,8 +247,8 @@ public final class USGSParser {
     		data.put(x.getID(), x);
     	}
     	
-    	source = downloadSiteInfo2(stateCode, countyCode.replaceAll(":", "%3A"));
-        BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
+    	source = downloadSiteInfo2(tmp, stateCode, countyCode.replaceAll(":", "%3A"));
+        BufferedReader readbuffer2 = new BufferedReader(new FileReader(new File(tmp,"data.txt")));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	String line2;
     	boolean first2 = true;
@@ -277,12 +277,12 @@ public final class USGSParser {
     	return data.values();
 	}
 
-	public boolean getData(String stateCode, String countyCode,
+	public boolean getData(File tmp, String stateCode, String countyCode,
 			OntModel owlModel, Model pmlModel) {
 		try {
 			Resource usgs = pmlModel.createResource(Ontology.EPA.NS+"USGS",pmlModel.createResource(Ontology.PMLP.Organization));
 			usgs.addLiteral(RDFS.label, "United States Geological Survey");
-			Collection<MeasurementSite> data = process(stateCode, countyCode);
+			Collection<MeasurementSite> data = process(tmp, stateCode, countyCode);
 			for(MeasurementSite m : data) {
 				m.asIndividual(owlModel, pmlModel);
 			}

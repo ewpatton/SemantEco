@@ -42,7 +42,7 @@ function td(body, text) {
 	return td;
 }
 
-function queryForWaterPollution(site, justQuery) {
+function queryForWaterPollution(site, justQuery, icon) {
 	var query =
 	"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
 	"PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
@@ -121,7 +121,7 @@ function queryForWaterPollution(site, justQuery) {
 		td = document.createElementNS(XHTML,"th");
 		td.appendChild(document.createTextNode("Limit"));
 		nextElem.appendChild(td);
-		td = document.createElementNS(XHTML,"th");
+	    tbody.appendChild(nextElem);
 		nextElem = document.createElementNS(XHTML,"tr");
 		td = document.createElementNS(XHTML,"td");
 		td.appendChild(spinner());
@@ -164,15 +164,16 @@ function queryForWaterPollution(site, justQuery) {
 				    }
 
 				if(label!=""&&value!=""&&unit!=""&&limit!=""&&time!=""){
-			    	nextElem = document.createElementNS(XHTML,"tr");
-			    	nextElem.appendChild(td(label));
-			    	nextElem.appendChild(td(time));
-			    	nextElem.appendChild(td(value+" "+unit));
-			    	nextElem.appendChild(td(limit+" "+unit));
+			    	    nextElem = document.createElementNS(XHTML,"tr");
+			    	    nextElem.appendChild(window.td(null,label));
+			    	    nextElem.appendChild(window.td(null,time));
+			    	    nextElem.appendChild(window.td(null,value+" "+unit));
+			    	    nextElem.appendChild(window.td(null,limit+" "+unit));
 			    	tbody.appendChild(nextElem);
 				}
 			    });
 		    });
+		icon.openInfoWindow(contents);
 	    };
 		$.ajax({type: "GET",
 			    url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
