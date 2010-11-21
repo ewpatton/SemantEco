@@ -177,10 +177,7 @@ function queryForWaterPollution(site, justQuery, icon) {
 	    };
 		$.ajax({type: "GET",
 			    url: "http://was.tw.rpi.edu/water/service/agent", // SPARQL service URI
-			    data: "countyCode="+encodeURIComponent(window.appState.countyCode)+
-			    "&stateCode="+window.appState.stateCode+
-			    "&state="+window.appState.stateAbbr+
-			    "&zip="+window.appState.zipCode+			    
+			    data: "session="+window.sessionID+			    
 			    "&query="+encodeURIComponent(query), // query parameter
 			    beforeSend: function(xhr) {
                             xhr.setRequestHeader("Accept", "application/sparql-results+xml");
@@ -242,8 +239,8 @@ function submitZip(zip) {
             	var data = JSON.parse(xhttp.responseText);
             	if(data.error!=undefined) {
             	}
-            	else if(data.result!=undefined) {
-            		window.appState = data.result;
+            	else if(data.session!=undefined) {
+            		window.sessionID = data.session;
             		spinner.style.display = "block";
             		p = document.getElementById("display");
             		var mapContainer = document.createElementNS(XHTML,"div");

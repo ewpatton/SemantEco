@@ -79,7 +79,7 @@ public class EpaDataAgent implements WaterDataProvider {
 		commAgent = new EpaCommAgent();
 		csvAgent = new EpaCSVAgent();
 		utilAgent = new EpaUtil();
-		basePath = basePath.getAbsoluteFile();
+		this.basePath = basePath.getAbsoluteFile();
 	}
 
 	private void queryOCVPages(String zipCode){
