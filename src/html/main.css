@@ -163,6 +163,7 @@ div#sparql2 div {
     background-color: #fff;
     margin: -5pt;
     padding: 5pt;
+    padding-bottom: 25pt;
 }
 
 div#sparql-content {
@@ -189,6 +190,8 @@ div#sparql div.big {
 
 div#sparql div.big a {
     cursor: pointer;
+    color: #300000;
+    font-weight: bold;
 }
 
 a img {
@@ -197,6 +200,8 @@ a img {
 
 div.map-popup {
     font-size: 8pt;
+    max-height: 270px;
+    overflow: scroll;
 }
 
 div.map-popup table {

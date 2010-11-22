@@ -611,7 +611,8 @@ public class EpaDataAgent implements WaterDataProvider {
 		}		
 	}
 
-	protected void startProcess(String zipCode) {		
+	protected void startProcess(String zipCode) {
+		long start = System.currentTimeMillis();
 		File curDir = new File(basePath,zipCode+"/");
 		String commContent = searchByZipContent+zipCode+zipPostFix+zipCode;
 		//output file
@@ -626,6 +627,8 @@ public class EpaDataAgent implements WaterDataProvider {
 		if(this.downloadCSVFile) {
 			commAgent.doCommunication(1, searchByZipTarget, commContent, searchByZipResult.getAbsolutePath());
 		}
+		System.err.println("Downloaded CSV in "+(System.currentTimeMillis()-start)+" ms");
+		start = System.currentTimeMillis();
 		//invoke python script
 		String curArgs[] = new String [2]; 
 		curArgs[0] = searchByZipResult.getAbsolutePath();
@@ -635,24 +638,33 @@ public class EpaDataAgent implements WaterDataProvider {
 		if(this.downloadCSVFile) {
 			pythonExe(scriptExtractSearchResult, curArgs, 2);
 		}
+		System.err.println("Python analysis in "+(System.currentTimeMillis()-start)+" ms");
 		//
 		File soupDataPath = new File(curDir,soupDataFile);
 		//Step 3
+		start = System.currentTimeMillis();
 		getFacilityFromFile(zipCode, soupDataPath);
+		System.err.println("Read facilities in "+(System.currentTimeMillis()-start)+" ms");
 		//
 		File addressPath = new File(curDir,soupAddressFile);
 		File geoPath = new File(curDir,geoDataFile);
+		start = System.currentTimeMillis();
 		if(downloadGeoData==true) {
 			getLocation(addressPath, geoPath);		
 			getGeoFromXML(geoPath);
 		}
+		System.err.println("Geocoded facilites in "+(System.currentTimeMillis()-start)+" ms");
 		//
+		start = System.currentTimeMillis();
 		queryFacilityPages(zipCode);
+		System.err.println("Queried facilites in "+(System.currentTimeMillis()-start)+" ms");
 		//
 		//String facilitiesFileTest = upMostDir+zipCode+"/facilitiesTest";
 		//printFacilitiesToFile(facilitiesFileTest);	
 		//
+		start = System.currentTimeMillis();
 		queryOCVPages(zipCode);
+		System.err.println("Queried OCV in "+(System.currentTimeMillis()-start)+" ms");
 		
 	}
 	

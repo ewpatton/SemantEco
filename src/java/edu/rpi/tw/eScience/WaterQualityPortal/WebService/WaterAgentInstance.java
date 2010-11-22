@@ -39,6 +39,7 @@ public class WaterAgentInstance implements HttpHandler {
 	Model theModel;
 	
 	public WaterAgentInstance(ZipCodeLookup zipCode, File basePath) {
+		long start = System.currentTimeMillis();
 		providers = getProviders(basePath);
 		owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 		pmlModel = ModelFactory.createDefaultModel();
@@ -52,11 +53,14 @@ public class WaterAgentInstance implements HttpHandler {
 		catch(Exception e) {
 			System.err.println("Unable to find regulations for state "+state);
 		}
+		System.err.println("Initialized agent instance in "+(System.currentTimeMillis()-start)+" ms");
 		for(WaterDataProvider wdp : providers) {
 			try {
+				start = System.currentTimeMillis();
 				wdp.setUserSource(zipCode.getCountyCode(),
 						zipCode.getStateCode(), zipCode.getZipCode());
 				wdp.getData(owlModel, pmlModel);
+				System.err.println("Data from "+wdp.getName()+" in "+(System.currentTimeMillis()-start)+" ms");
 			}
 			catch(Exception e) {
 				System.err.println("Exception thrown by "+wdp.getName());

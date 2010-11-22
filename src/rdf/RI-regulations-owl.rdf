@@ -12,6 +12,7 @@
   <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
   <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#">
   <!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#">
+  <!ENTITY foaf "http://xmlns.com/foaf/0.1/">
 ]>
 <rdf:RDF
    xml:base="http://www.dem.ri.gov/pubs/regs/water.owl#"
@@ -26,6 +27,7 @@
    xmlns:elem="&elem;"
    xmlns:body="&body;"
    xmlns:comp="&comp;"
+   xmlns:foaf="&foaf;"
    xmlns:chem="&chem;"
    xmlns:xsd="&xsd;">
 
@@ -33,6 +35,7 @@
     <chem:hasChemical_1 rdf:resource="&elem;C"/>
     <chem:hasChemical_2 rdf:resource="&elem;N"/>
     <owl:sameAs rdf:resource="#Cyanide"/>
+    <foaf:page rdf:resource="http://en.wikipedia.org/wiki/Cyanide"/>
     <rdfs:label xml:lang="en">Cyanide</rdfs:label>
   </comp:InorganicCompound>
   <comp:InorganicCompound rdf:about="#Cyanide"/>
@@ -40,19 +43,27 @@
   <!-- OWL Sameas relations -->
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Arsenic">
     <owl:sameAs rdf:resource="&elem;As"/>
+    <foaf:page rdf:resource="http://en.wikipedia.org/wiki/Arsenic"/>
     <rdfs:label>Arsenic</rdfs:label>
   </owl:Thing>
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Antimony">
     <owl:sameAs rdf:resource="&elem;Sb"/>
+    <foaf:page rdf:resource="http://en.wikipedia.org/wiki/Antimony"/>
     <rdfs:label>Antimony</rdfs:label>
   </owl:Thing>
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Mercury">
     <owl:sameAs rdf:resource="&elem;Hg"/>
+    <foaf:page rdf:resource="http://en.wikipedia.org/wiki/Mercury_%28element%29"/>
     <rdfs:label>Mercury</rdfs:label>
   </owl:Thing>
   <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Cyanide">
     <owl:sameAs rdf:resource="&elem;CN"/>
+    <foaf:page rdf:resource="http://en.wikipedia.org/wiki/Cyanide"/>
     <rdfs:label>Cyanide</rdfs:label>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#Coliform,_fecal_general">
+    <foaf:page rdf:resource="http://en.wikipedia.org/wiki/Fecal_coliform"/>
+    <rdfs:label>Fecal coliform</rdfs:label>
   </owl:Thing>
 
   <owl:Class rdf:about="#ExcessiveArsenicMeasurement">

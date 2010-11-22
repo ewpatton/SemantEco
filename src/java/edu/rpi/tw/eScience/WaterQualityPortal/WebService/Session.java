@@ -15,9 +15,13 @@ public class Session {
 		id = Integer.toString(Long.toString(System.currentTimeMillis()).hashCode());
 		basePath = new File("/tmp/wqp/"+id+"/");
 		basePath.mkdirs();
+		long start=System.currentTimeMillis();
 		timeout = System.currentTimeMillis()+300000;
 		zipCode = ZipCodeLookup.execute(zip);
+		System.err.println("Performed zip code lookup in "+(System.currentTimeMillis()-start)+" ms");
+		start = System.currentTimeMillis();
 		instance = new WaterAgentInstance(zipCode,basePath);
+		System.err.println("Created water agent instance in "+(System.currentTimeMillis()-start)+" ms");
 	}
 	
 	public String getId() {

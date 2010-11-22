@@ -250,6 +250,7 @@ public class EpaCommAgent {
 	}
 	
 	protected void doCommunication(int commType,String target, String content, String outputFile) {
+		long start = System.currentTimeMillis();
 		//System.out.println("Starting doCommunication");
 		//StringBuilder response = new StringBuilder();
 		URL url = null;
@@ -347,10 +348,12 @@ public class EpaCommAgent {
 
 		//System.out.println("Server response:\n'" + response + "'");
 		//return response; 
+		System.err.println("Communication complete in "+(System.currentTimeMillis()-start)+" ms");
 	}
 
 	
 	protected void doCommunication(int commType,String target, String content, BufferedWriter bufferedWriter) {
+		long start = System.currentTimeMillis();
 		//System.out.println("Starting doCommunication");
 		//StringBuilder response = new StringBuilder();
 		URL url = null;
@@ -386,7 +389,6 @@ public class EpaCommAgent {
 			}
 			else {
 				System.err.println("In doCommunication, commType is unkown");
-				System.exit(0);
 			}
 
 		} catch (MalformedURLException e) {
@@ -436,6 +438,7 @@ public class EpaCommAgent {
                 ex.printStackTrace();
             }
         }
+		System.err.println("Communication complete in "+(System.currentTimeMillis()-start)+" ms");
 	}
 
 

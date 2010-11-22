@@ -92,7 +92,7 @@ function queryForWaterPollution(site, justQuery, icon) {
     "?desc2 list:member ?limiter .\r\n"+
     "?limiter xsd:minInclusive ?limit .\r\n"+
     "?measure time:inXSDDateTime ?time .\r\n"+
-    "}";
+    "} ORDER BY DESC(?time)";
   if(justQuery) return query;
   var timeQuery =
     "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
@@ -276,7 +276,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
     "?desc2 list:member ?limiter .\r\n"+
     "?limiter ?exclusion ?limit .\r\n"+
     "?measure time:inXSDDateTime ?time .\r\n"+
-    "}";
+    "} ORDER BY DESC(?time)";
   if(justQuery) return query;
   var timeQuery =
     "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
@@ -431,7 +431,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
   }
   else {
     nextElem = document.createElementNS(XHTML,"p");
-    nextElem.appendChild(document.createTextNode("According to all current regulations, this water supply is not polluted."));
+    nextElem.appendChild(document.createTextNode("This facility has not violated the Clean Water Act.."));
     contents.appendChild(nextElem);
     return contents;
   }

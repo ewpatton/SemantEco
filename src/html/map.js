@@ -191,7 +191,7 @@ function showViolatedFacility()
       });
       if(lat!=""&&lng!=""){
         var site={'uri':sub,'label':label,'isPolluted':true};
-        var blueIcon = new GIcon(G_DEFAULT_ICON,"image/facilitypollute.jpg");
+        var blueIcon = new GIcon(G_DEFAULT_ICON,"image/facilitypollute.png");
         blueIcon.iconSize = new GSize(29,34);
         var latlng = new GLatLng(lat ,lng);
         markerOptions = { icon:blueIcon };
@@ -254,7 +254,7 @@ function showFacility()
 	}
       });			
       if(lat!=""&&lng!=""&&show){
-	var thisIcon = new GIcon(G_DEFAULT_ICON,"image/facility.jpg");
+	var thisIcon = new GIcon(G_DEFAULT_ICON,"image/facility.png");
 	thisIcon.iconSize = new GSize(30,34);
 	var latlng = new GLatLng(lat ,lng);
 	markerOptions = { icon:thisIcon };
