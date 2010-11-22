@@ -71,6 +71,7 @@ function queryForWaterPollution(site, justQuery, icon) {
     "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
     "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
     "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
+    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\r\n"+
     "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
     "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
     "SELECT DISTINCT ?site ?measure ?element ?label ?value ?unit ?limit ?time WHERE {\r\n"+
@@ -80,6 +81,7 @@ function queryForWaterPollution(site, justQuery, icon) {
     "?measure epa:hasElement ?element .\r\n"+
     (justQuery ? "# Get element label for pretty-printing\r\n" : "")+
     "OPTIONAL { ?element rdfs:label ?label . }\r\n"+
+    "OPTIONAL { ?element foaf:page ?page . }\r\n"+
     "?measure epa:hasValue ?value .\r\n"+
     "?measure epa:hasUnit ?unit .\r\n"+
     (justQuery ? "# Retrieve threshold information from regulation ontology\r\n" : "")+
@@ -163,7 +165,7 @@ function queryForWaterPollution(site, justQuery, icon) {
     var success = function(data) {
       tbody.removeChild(nextElem);
       $(data).find('result').each(function(){
-	var time="",unit="",limit="",label="",value="";
+	var time="",unit="",limit="",label="",value="",page="";
 	$(this).find("binding").each(function(){
 	  if($(this).attr("name")=="label")
 	  {
@@ -185,10 +187,23 @@ function queryForWaterPollution(site, justQuery, icon) {
 	  {
 	    time=($(this).find("literal").text());
 	  }
+	  if($(this).attr("name")=="page")
+	  {
+		  page=($(this).find("uri").text());
+	  }
 	  
 	  if(label!=""&&value!=""&&unit!=""&&limit!=""&&time!=""){
 	    nextElem = document.createElementNS(XHTML,"tr");
-	    nextElem.appendChild(window.td(null,label));
+	    if(page!="") {
+	    	var a = document.createElementNS(XHTML,"a");
+	    	a.appendChild(document.createTextNode(label));
+	    	a.setAttribute("href",page);
+	    	a.setAttribute("target","_blank");
+	    	nextElem.appendChild(window.td(a));
+	    }
+	    else {
+	    	nextElem.appendChild(window.td(null,label));
+	    }
 	    nextElem.appendChild(window.td(null,time));
 	    nextElem.appendChild(window.td(null,value+" "+unit));
 	    nextElem.appendChild(window.td(null,limit+" "+unit));
@@ -255,6 +270,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
     "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
     "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
     "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
+    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\r\n"+
     "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
     "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
     "SELECT DISTINCT ?site ?measure ?element ?label ?value ?unit ?limit ?time WHERE {\r\n"+
@@ -264,6 +280,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
     "?measure epa:hasElement ?element .\r\n"+
     (justQuery ? "# Get element label for pretty-printing\r\n" : "")+
     "OPTIONAL { ?element rdfs:label ?label . }\r\n"+
+    "OPTIONAL { ?element foaf:page ?page . }\r\n"+
     "?measure epa:hasValue ?value .\r\n"+
     "?measure epa:hasUnit ?unit .\r\n"+
     (justQuery ? "# Retrieve threshold information from regulation ontology\r\n" : "")+
@@ -347,7 +364,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
     var success = function(data) {
       tbody.removeChild(nextElem);
       $(data).find('result').each(function(){
-	var time="",unit="",limit="",label="",value="";
+	var time="",unit="",limit="",label="",value="",page="";
 	$(this).find("binding").each(function(){
 	  if($(this).attr("name")=="label")
 	  {
@@ -369,6 +386,10 @@ function queryForFacilityPollution(site, justQuery, icon) {
 	  {
 	    time=($(this).find("literal").text());
 	  }
+	  if($(this).attr("name")=="page")
+	  {
+		  page=($(this).find("uri").text());
+	  }
 	  if($(this).attr("name")=="element"&&label=="") {
 	    label = $(this).find("uri").text();
 	    label = label.substr(label.indexOf("#")+1);
@@ -377,7 +398,16 @@ function queryForFacilityPollution(site, justQuery, icon) {
 	  
 	  if(label!=""&&value!=""&&unit!=""&&limit!=""&&time!=""){
 	    nextElem = document.createElementNS(XHTML,"tr");
-	    nextElem.appendChild(window.td(null,label));
+	    if(page!="") {
+	    	var a = document.createElementNS(XHTML,"a");
+	    	a.appendChild(document.createTextNode(label));
+	    	a.setAttribute("href",page);
+	    	a.setAttribute("target","_blank");
+	    	nextElem.appendChild(window.td(a));
+	    }
+	    else {
+	    	nextElem.appendChild(window.td(null,label));
+	    }
 	    nextElem.appendChild(window.td(null,time));
 	    nextElem.appendChild(window.td(null,value+" "+unit));
 	    nextElem.appendChild(window.td(null,limit+" "+unit));
