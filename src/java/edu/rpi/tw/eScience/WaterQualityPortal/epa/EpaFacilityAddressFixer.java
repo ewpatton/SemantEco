@@ -20,7 +20,7 @@ public class EpaFacilityAddressFixer {
 	public static boolean DEBUG = false;
 	//static String geoTargetPre = "http://maps.googleapis.com/maps/api/geocode/json?address=";
 	static String geocodingUrl = "http://maps.googleapis.com/maps/api/geocode/json?address=";
-	static String geoTargetPost ="&sensor=false";
+	static String geoTargetPost ="&sensor=true";
 	//static String getContent = "";
 	//http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=true_or_false
 	static String reverseGeocodingUrl = "http://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -36,13 +36,28 @@ public class EpaFacilityAddressFixer {
 		ctyLookup = new CountyLookup(stateAbbr, stateCode);
 		//System.out.print(ctyLookup);
 		outputFile = outputDir+stateAbbr+"/fixed-"+stateAbbr+"-ICP01.TXT";
+		init();
 	}
 	
-	private boolean tryOneResult(EpaFacilityAddress fclAdd, JSONObject result){
+	private void init(){
+		File outFile = new File(outputFile);
+		boolean exists = outFile.exists();
+		if (exists) {
+		    // File directory exists
+			boolean success = outFile.delete();
+		    if (!success){
+		      System.err.println("File Deletion failed for " + outputFile);
+		      System.exit(0);
+		    }else{
+		      System.out.println(outputFile + " deleted.");
+		    }
+		} 		
+	}
+	
+	private boolean tryOneLocationResult(EpaFacilityAddress fclAdd, JSONObject result){
 		double lat=0, lng=0;		
 		String curCtyName="", curCtyCode="", curState="", curZip="";
 
-		//System.out.println("Lat: "+lat+", Lng: "+lng);
 		//get the attributes like city, ctyName, ctyCode, state, zip
 		JSONArray components;
 		try {
@@ -56,31 +71,16 @@ public class EpaFacilityAddressFixer {
 				String type = null;
 				if(types.length()>0)
 					type = types.getString(0);
-				//			if(type.equals("administrative_area_level_3")){
-				//				if(fclAdd.fclCity.length()==0)
-				//					fclAdd.setCity(longName);
-				//			}
 				if(type.equals("administrative_area_level_2")){
 					if(fclAdd.fclCtyName.length()==0){
 						curCtyName = longName;
-						//fclAdd.setCtyName(longName);
-						//					if(fclAdd.fclCtyCode.length()==0){								
-						//						//fclAdd.fclCtyCode=ctyLookup.name2Code(longName);
-						//						fclAdd.setCtyCode(ctyLookup.name2Code(longName));
-						//					}
 					}
 				}
 				else if(type.equals("administrative_area_level_1")){
 					curState = shortName;
-					//				if(fclAdd.fclState.length()==0){
-					//					fclAdd.setState(shortName);
-					//				}
 				}
 				else if(type.equals("postal_code")){
 					curZip = longName;
-					//				if(fclAdd.fclZip.length()==0){
-					//					fclAdd.setZip(longName);
-					//				}	
 				}
 			}//end of for
 			//set the attributes like ctyName, ctyCode, state, zip
@@ -113,7 +113,7 @@ public class EpaFacilityAddressFixer {
 				fclAdd.setLng(lng);	
 			return true;
 		} catch (JSONException e) {
-			System.err.println("In tryOneResult, err");
+			System.err.println("In tryOneLocationResult, err");
 			e.printStackTrace();
 		}
 		return false;
@@ -148,22 +148,80 @@ public class EpaFacilityAddressFixer {
 				JSONObject result = results.getJSONObject(i);
 				if(DEBUG)
 					System.out.println(result);
-				if(tryOneResult(fclAdd, result))
+				if(tryOneLocationResult(fclAdd, result))
 					break;
 			}
 			if(DEBUG)
 				System.out.println(fclAdd);
 		}
 		catch(java.net.SocketTimeoutException e) {
-			System.err.println("In getLocation, SocketTimeoutException");
+			System.err.println("In lookupLocation, SocketTimeoutException");
 			e.printStackTrace();
 			//throw new ServerFailedToRespondException();
 		}
 		catch(Exception e) {
-			System.err.println("In getLocation, err");
+			System.err.println("In lookupLocation, err");
 			e.printStackTrace();
 		}
 	}
+	
+	private boolean tryOneAddressResult(EpaFacilityAddress fclAdd, JSONObject result){
+		//double lat=0, lng=0;		
+		String curCtyName="", curCtyCode="", curState="", curZip="";
+
+		//get the attributes like city, ctyName, ctyCode, state, zip
+		JSONArray components;
+		try {
+			components = result.getJSONArray("address_components");
+
+			for(int i=0; i< components.length(); i++){					
+				JSONObject curObj = components.getJSONObject(i);
+				String longName = curObj.getString("long_name");
+				String shortName = curObj.getString("short_name");
+				JSONArray types = curObj.getJSONArray("types");
+				String type = null;
+				if(types.length()>0)
+					type = types.getString(0);
+				if(type.equals("administrative_area_level_2")){
+					if(fclAdd.fclCtyName.length()==0){
+						curCtyName = longName;
+					}
+				}
+				else if(type.equals("administrative_area_level_1")){
+					curState = shortName;
+				}
+				else if(type.equals("postal_code")){
+					curZip = longName;
+				}
+			}//end of for
+			//set the attributes like ctyName, ctyCode, state, zip
+			//check 1: in the same state
+			if(!curState.equals(this.stateAbbr))
+				return false;
+			//check 2: can find the county code
+			if(curCtyName.length()!=0){
+				curCtyCode = ctyLookup.name2Code(curCtyName);
+				if(curCtyName.length()==0)
+					return false;	
+				if(fclAdd.fclCtyCode.length()==0)							
+					fclAdd.setCtyCode(curCtyCode);
+			}
+			//
+			if(curCtyName.length()!=0 && fclAdd.fclCtyName.length()==0)
+				fclAdd.setCtyName(curCtyName);
+
+			if(fclAdd.fclState.length()==0)
+				fclAdd.setState(curState);
+			if(curZip.length()!=0 && fclAdd.fclZip.length()==0)
+				fclAdd.setZip(curZip);
+			return true;
+		} catch (JSONException e) {
+			System.err.println("In tryOneAddressResult, err");
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	
 	public void lookupAddress(EpaFacilityAddress fclAdd){		
 		try {
@@ -186,55 +244,23 @@ public class EpaFacilityAddressFixer {
 			while((line=br.readLine())!=null) response += line;
 			JSONObject content = new JSONObject(response);
 			JSONArray results = content.getJSONArray("results");
-			if(results.length()>0) {
-				JSONObject result = results.getJSONObject(0);
+			for(int i=0; i< results.length(); i++){	
+				JSONObject result = results.getJSONObject(i);
 				if(DEBUG)
 					System.out.println(result);
-				//set attributes like city, ctyName, ctyCode, state, zip
-				JSONArray components = result.getJSONArray("address_components");
-				for(int i=0; i< components.length(); i++){					
-					JSONObject curObj = components.getJSONObject(i);
-					String longName = curObj.getString("long_name");
-					String shortName = curObj.getString("short_name");
-					JSONArray types = curObj.getJSONArray("types");
-					String type = null;
-					if(types.length()>0)
-						type = types.getString(0);
-					if(type.equals("administrative_area_level_3")){
-						if(fclAdd.fclCity.length()==0)
-							fclAdd.setCity(longName);
-					}
-					else if(type.equals("administrative_area_level_2")){
-						if(fclAdd.fclCtyName.length()==0){
-							fclAdd.setCtyName(longName);	
-							if(fclAdd.fclCtyCode.length()==0){
-								fclAdd.setCtyCode(ctyLookup.name2Code(longName));
-								//fclAdd.fclCtyCode=ctyLookup.name2Code(longName);
-							}
-						}
-					}
-					else if(type.equals("administrative_area_level_1")){
-						if(fclAdd.fclState.length()==0){
-							fclAdd.setState(shortName);
-						}
-					}
-					else if(type.equals("postal_code")){
-						if(fclAdd.fclZip.length()==0){
-							fclAdd.setZip(longName);
-						}	
-					}
-				}//end of for
-			}//
+				if(tryOneAddressResult(fclAdd, result))
+					break;
+			}
 			if(DEBUG)
 				System.out.println(fclAdd);
 		}
 		catch(java.net.SocketTimeoutException e) {
-			System.err.println("In getLocation, SocketTimeoutException");
+			System.err.println("In lookupAddress, SocketTimeoutException");
 			e.printStackTrace();
 			//throw new ServerFailedToRespondException();
 		}
 		catch(Exception e) {
-			System.err.println("In getLocation, err");
+			System.err.println("In lookupAddress, err");
 			e.printStackTrace();
 		}
 	}
@@ -427,7 +453,7 @@ public class EpaFacilityAddressFixer {
 		//missing ctyCode
 		String facData5="RIR5AA004|110032604901|BARKER STEEL COMPANY, INC.|30 LOCKBRIDGE STREET|PAWTUCKET||RI|02860|41.879166|-71.408325||";
 	
-		String inputFile = "/home/ping/Downloads/epa/fixer/RI/ri-test.txt";//RI-ICP01.TXT
+		String inputFile = "/home/ping/Downloads/epa/fixer/RI/RI-ICP01.TXT";//RI-ICP01.TXT//ri-test.txt
 		fixer.fixFile(inputFile);
 		//fixer.fixOneFacility(facData1, fixer.outputFile);
 		//zipCodeFinder.processCSVFile("/home/ping/Downloads/epa/fixer/CA-ICP01.TXT", "/home/ping/Downloads/epa/fixer/fixed-CA-ICP01.TXT");
