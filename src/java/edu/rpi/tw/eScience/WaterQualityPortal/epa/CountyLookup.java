@@ -38,10 +38,11 @@ public class CountyLookup {
 	}
 	
 	public String name2Code(String ctyName){
-		String ctyCode = countyName2Code.get(ctyName);
+		String ctyCode = countyName2Code.get(ctyName.toUpperCase());
 		if(ctyCode == null){
 			ctyCode = "";
 			System.err.println("In CountyCodeLookup, can't get the code for name: "+ctyName);
+			return "";
 		}
 		return ctyCode;	
 	}
