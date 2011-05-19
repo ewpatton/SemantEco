@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Usage:
+# This script depends on the input file: manual/state-code.txt
+# Enf of Usage--------------------------------
 stateCode=manual/state-code.txt
 countyCodeXml=source/county-code-xml/
 countyCodeTxt=manual/county-code-txt/

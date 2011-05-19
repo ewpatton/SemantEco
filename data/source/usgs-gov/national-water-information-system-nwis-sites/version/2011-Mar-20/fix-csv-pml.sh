@@ -1,10 +1,11 @@
 #!/bin/bash
 # Usage:
 # The script can process multiple states
-# You need to specify the states you would like to process in line 6
+# You need to specify the states you would like to process in line 7
 # Enf of Usage--------------------------------
 
-stateDirs="36" #44 25  06   
+stateDirs=$1
+#stateDirs="36" #44 25  06   
 baseDir=source
 expName=US-25-001-site
 strlen=${#expName}
