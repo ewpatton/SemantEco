@@ -9,7 +9,8 @@
 #and rename the csv files and the provenance files
  
 #only for the water sites in NY, CA, RI
-stateCode=25
+stateCode=$1
+#stateCode=25
 BaseDir=source/$stateCode
 FILES="./*"
 expName=US-$stateCode-001-result
