@@ -4,8 +4,19 @@
 # This script depends on the files in usgs-gov/national-water-information-system-nwis-sites/version/2011-Mar-20/manual/county-code-txt
 #End of usage
 
-state="CA" #RI
-stateCode="06" #44
+#check the number of command line arguments
+#echo $#;
+if [ $# -lt 1 ]; then
+	echo need to specify the state to process e.g. RI ; exit 0;
+fi
+
+#state="CA" #RI
+#stateCode="06" #44
+state=$1 #RI
+declare -A stateCodeTable=( ["CA"]="06" ["MA"]="25" ["NY"]="36" ["RI"]="44")
+stateCode="${stateCodeTable[$state]}"
+echo "State: $state; State code: $stateCode"
+
 ctyCodeFile="../../../../usgs-gov/national-water-information-system-nwis-sites/version/2011-Mar-20/manual/county-code-txt/US:"$stateCode"-county-code.txt"
 facFile="manual/fixed-"$state"-ICP01.TXT"
 baseDir="organized/"$state"/"	#this directory will be made automatically
