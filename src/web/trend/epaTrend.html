@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="./js/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="./js/douglascrockford-JSON-js-8e0b15c/json2.js"></script>
+    <script type="text/javascript">
+	// Load the Visualization API and the piechart package.
+      google.load('visualization', '1', {packages: ['linechart', 'table', 'annotatedtimeline']});
+    </script>
+ 		<script type="text/javascript" src="dateTimeFormat.js"></script>
+ 		<script type="text/javascript" src="util.js"></script>
+ 		<script type="text/javascript" src="countiesPerState.js"></script>
+ 		<script type="text/javascript" src="dataSources.js"></script>
+ 		<script type="text/javascript" src="getElementsPerSite.js"></script>
+ 		<script type="text/javascript" src="getWaterSitesPerCounty.js"></script>
+ 		<script type="text/javascript" src="getFacilitiesPerCounty.js"></script>
+ 		<script type="text/javascript" src="getFacilityPermits.js"></script>
+ 		<script type="text/javascript" src="getTestTypes.js"></script>
+ 		<script type="text/javascript" src="getWaterMeasurements.js"></script>
+ 		<script type="text/javascript" src="linkQuery.js"></script>
+  </head>
+<!--  <body style="font-family: Arial;border: 0 none;" onload="javascript:init_EPA_selection();">-->
+  <body style="font-family: Arial;border: 0 none;" onload="javascript:init_EPA_linked_query();">
+<table>
+
+<tr>
+<td style="vertical-align:top;width:400px">
+<!--<div>Data Source: <select name= "data_source_selection_canvas" id="data_source_selection_canvas" onchange="onchange_data_source_selection();"> 
+						</select>
+</div><BR>-->
+<div id="EPA_state_selection_div">State: <select name= "EPA_state_selection_canvas" id="EPA_state_selection_canvas" onchange="onchange_state_selection();"> </select>
+</div><BR>
+<div id="EPA_county_selection_div">County: <select name= "EPA_county_selection_canvas" id="EPA_county_selection_canvas" onchange="onchange_county_selection();"></select>
+</div><BR>
+<div id="EPA_site_selection_div">Facility: <select name= "EPA_site_selection_canvas" id="EPA_site_selection_canvas" onchange="onchange_site_selection();"> 
+</select>
+</div><BR>
+<div id="EPA_permit_selection_div">Facility Permit: <select name= "EPA_permit_selection_canvas" id="EPA_permit_selection_canvas" onchange="onchange_permit_selection();"></select>
+</div><BR>
+<div id="EPA_element_selection_div">Element: <select name= "EPA_element_selection_canvas" id="EPA_element_selection_canvas" onchange="onchange_element_selection();"></select>
+</div><BR>
+	<FORM NAME="test_type_form">
+<div class='checkboxes' name="EPA_test_type_checkbox" id="EPA_test_type_checkbox"></div><BR>
+ 	</FORM>
+	<FORM NAME="test_type_limt_form">
+<div class='checkboxes' name="EPA_test_type_limit_checkbox" id="EPA_test_type_limit_checkbox"></div><BR>
+ 	</FORM>
+<div id="EPA_test_link_div" style="display: none;">TestLink: <INPUT TYPE="button" NAME="testLink" id="testLinkId" Value="Click" onClick="linkedEPAQuery();">
+</div>
+Trend: <INPUT TYPE="button" NAME="showMeasurementTrend" id="showMeasurementTrend" Value="Click" onClick="showMeasurementTrend();">
+<br>
+<div id="EPA_visualization_outer" style="display: none;">
+<h4>EPA Measurement Trend</h4>
+<div id="EPA_visualization" style="height: 400px; width: 600px;"></div>
+</div>
+<!--<div id="test">test</div>-->
+</tr>
+</table> 
+  </body>
+</html>
