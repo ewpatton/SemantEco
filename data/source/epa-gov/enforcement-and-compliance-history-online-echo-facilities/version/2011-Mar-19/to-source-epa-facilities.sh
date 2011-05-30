@@ -12,12 +12,15 @@ process_one_state() {
 
 prepare() {
 	if [ ! -f $sourceFile ]; then
-		#download the source file that contains information about the EPA facilities
-		pcurl.sh http://www.epa-echo.gov/ideadownloads/2010/ICIS_NPDES.zip -n $DestDir/ICIS_NPDES -e zip
-		#go to the source directory and unzip the file
-		#cd $DestDir
-		punzip.sh $DestDir/ICIS_NPDES.zip
-		#cd ..
+      if [ ! -d source ]; then
+         mkdir source
+      fi
+      pushd source &> /dev/null
+         # Download the source file that contains information about the EPA facilities
+         pcurl.sh "http://www.epa-echo.gov/ideadownloads/2010/ICIS_NPDES.zip"
+         punzip.sh $DestDir/ICIS_NPDES.zip
+         #cd ..
+      popd &> /dev/null
 	fi
 }
 
