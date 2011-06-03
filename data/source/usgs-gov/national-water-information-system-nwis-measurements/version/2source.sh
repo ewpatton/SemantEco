@@ -13,8 +13,9 @@ if [ $# -lt 1 ]; then
 fi
 
 if [ ! -e $version -o "debug" == "debug" ]; then
-
-   mkdir $version
+	if [ ! -d $version ]; then
+   		mkdir $version
+	fi
    pushd $version &> /dev/null
 
       # Get the list of state codes (as XML): <Code value="US:01" desc="ALABAMA"/>
@@ -42,7 +43,7 @@ if [ ! -e $version -o "debug" == "debug" ]; then
       pushd source &> /dev/null
          for state in `cat ../manual/state-code.txt`; do
            echo $state;
-           if [ -f "$state-county-code.xml" -a "debug" == "pass" ]; then
+           if [ -f "$state-county-code.xml" ]; then
               echo "$state-county-code.xml already exists"
            else
               echo $state;
