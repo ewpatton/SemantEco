@@ -18,15 +18,25 @@ if [ ! -e $version -o "debug" == "debug" ]; then
    pushd $version &> /dev/null
 
       # Get the list of state codes (as XML): <Code value="US:01" desc="ALABAMA"/>
+	if [ ! -d source ]; then
       mkdir source &> /dev/null
+	fi
+
       pushd source &> /dev/null
-         pcurl.sh http://qwwebservices.usgs.gov/Codes/statecode -n statecode -e xml
+		 if [ ! -f "statecode.xml" ]; then
+         	pcurl.sh http://qwwebservices.usgs.gov/Codes/statecode -n statecode -e xml
+		 fi
       popd &> /dev/null
 
       # Convert XML to a single column of state identifiers: "US:01"
+	if [ ! -d manual ]; then
       mkdir manual &> /dev/null
+	fi
+
+	if [ ! -f "manual/state-code.txt" ]; then
 	  python ../../bin/extract-state-code-from-xml.py source/statecode.xml > manual/state-code.txt
       justify.sh source/statecode.xml manual/state-code.txt parse_field
+ 	fi
 
       # Use the state codes to ask for the county codes in that state: <Code value="US:01:001" desc="US, ALABAMA, AUTAUGA"/>
       pushd source &> /dev/null
@@ -83,5 +93,8 @@ if [ ! -e $version -o "debug" == "debug" ]; then
 else
    echo "$version already exists. Skipping."
 fi
+
+
+
 
 exit
