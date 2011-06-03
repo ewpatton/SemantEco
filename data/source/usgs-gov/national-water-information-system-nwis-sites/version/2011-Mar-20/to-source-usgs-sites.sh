@@ -22,22 +22,22 @@ PostFix=-sites
 
 crawl_one_state()
 {
-  statecode="US:"$1
+  statecode="US:"$1 # State code, e.g. 01, 44...
   echo $statecode
 
   #iterate through the county codes in the file
   counter=0
-  while read line
+  while read countycode
   do
-  echo $line
-  fname=${line//:/-}$PostFix
+  echo $countycode
+  fname=${countycode//:/-}$PostFix
   echo $fname
 
   if [ -f $OutputDir"/"$sCode"/"$fname".zip" ]
   then
     echo "$OutputDir/$sCode/$fname.zip exists"
   else
-    pcurl.sh $WebTarget$statecode"&countycode="$line"&mimeType=csv&zip=yes" -n $OutputDir/$sCode/$fname -e "zip"
+    pcurl.sh $WebTarget$statecode"&countycode="$countycode"&mimeType=csv&zip=yes" -n $OutputDir/$sCode/$fname -e "zip"
     #sleep 1
   fi
 
@@ -46,7 +46,7 @@ crawl_one_state()
    break;
  fi
 
-  done < $2
+  done < $2 # manual/$state-county-code.txt
 }
 
 crawl_states()
