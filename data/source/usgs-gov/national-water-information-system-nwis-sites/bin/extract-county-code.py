@@ -15,7 +15,7 @@ xmlSoup = BeautifulStoneSoup(countyCodeXml)
 curRow=xmlSoup.codes.code
 while curRow:
 	#countyCodeList.append(curRow.attrs[0][1])
-	print curRow.attrs[0][1]
+	print curRow.attrs[0][1].strip()
 	print '\n'
 	curRow=curRow.next
 
