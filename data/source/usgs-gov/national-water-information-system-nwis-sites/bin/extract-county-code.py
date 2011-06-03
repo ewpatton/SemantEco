@@ -5,7 +5,7 @@ import sys
 #countyCodeXml = file("/home/ping/research2009-2010/python/water2/36-countycode.xml")
 #stateCode=
 
-countyCodeXml = file('sys.argv[1]')
+countyCodeXml = file(sys.argv[1])
 xmlSoup = BeautifulStoneSoup(countyCodeXml)
 # open file for output
 #countyCodesFile = open('manual/county-code-txt/'+stateCode+'-county-code.txt', 'w')
