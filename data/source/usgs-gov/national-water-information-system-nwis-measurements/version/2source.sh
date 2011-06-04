@@ -3,48 +3,42 @@
 # Script to retrieve and convert a new version of the dataset.
 # See https://github.com/timrdf/csv2rdf4lod-automation/wiki/Automated-creation-of-a-new-Versioned-Dataset
 
-export CSV2RDF4LOD_CONVERT_OMIT_RAW_LAYER="true"
 
 version=`date +%Y-%b-%d`
 
 if [ $# -lt 1 ]; then
-	echo "need to specify the state to crawl e.g. 44 for RI" ; 
-	exit 0;
+   echo "usage: `basename $0` state-fips-code" ; 
+   echo "  state-fips-code: e.g. 44 for RI" 
+   exit 1;
 fi
 
+focus_state=$1
+
 if [ ! -e $version -o "debug" == "debug" ]; then
-	if [ ! -d $version ]; then
-   		mkdir $version
-	fi
+
+   mkdir $version &> /dev/null
    pushd $version &> /dev/null
 
       # Get the list of state codes (as XML): <Code value="US:01" desc="ALABAMA"/>
-	if [ ! -d source ]; then
       mkdir source &> /dev/null
-	fi
 
       pushd source &> /dev/null
-		 if [ ! -f "statecode.xml" ]; then
-         	pcurl.sh http://qwwebservices.usgs.gov/Codes/statecode -n statecode -e xml
-		 fi
+         pcurl.sh http://qwwebservices.usgs.gov/Codes/statecode -n state-code -e xml
       popd &> /dev/null
 
       # Convert XML to a single column of state identifiers: "US:01"
-	if [ ! -d manual ]; then
       mkdir manual &> /dev/null
-	fi
-
-	if [ ! -f "manual/state-code.txt" ]; then
-	  python ../../bin/extract-state-code-from-xml.py source/statecode.xml > manual/state-code.txt
-      justify.sh source/statecode.xml manual/state-code.txt parse_field
- 	fi
+      if [ ! -f "manual/state-code.txt" ]; then
+         python ../../bin/extract-state-code-from-xml.py source/state-code.xml > manual/state-code.txt
+         justify.sh source/state-code.xml manual/state-code.txt parse_field
+      fi
 
       # Use the state codes to ask for the county codes in that state: <Code value="US:01:001" desc="US, ALABAMA, AUTAUGA"/>
       pushd source &> /dev/null
          for state in `cat ../manual/state-code.txt`; do
            echo $state;
            if [ -f "$state-county-code.xml" ]; then
-              echo "$state-county-code.xml already exists"
+              echo "$state-county-code.xml already exists; no need to retrieve again."
            else
               echo $state;
               pcurl.sh "http://qwwebservices.usgs.gov/Codes/countycode?statecode=$state" -n $state-county-code -e xml
@@ -61,41 +55,42 @@ if [ ! -e $version -o "debug" == "debug" ]; then
             # punzip.sh the zip, ADD -n -e to punzip.sh
          done
 
-		#crawl the actual data files for the input state
-  		#each county has a file, so iterate through the county codes in the file
-		inputState="US:"$1
-        if [ ! -d $1 ]; then
-           mkdir $1;
-        fi
-  		counter=0
-  		while read countyCode
-  		do
-  			echo $countyCode
-  			fname=${countyCode//:/-}"-result"
-  			echo $fname
+         # Crawl the actual data files for the input state.
+         mkdir $focus_state &> /dev/null
+         pushd $focus_state &> /dev/null
+            counter=0                                                            # DEBUG
+            # Each county has a file, so iterate through the county codes in the file.
+            for county_code in `cat ../../manual/US:$focus_state-county-code.txt`; do
+               fname=${county_code//:/-}"-result"
+               echo "$county_code --> $fname"
 
-  			if [ -f "$1/$fname.zip" ]
-  			then
-    			echo "$1/$fname.zip exists"
-  			else
-    			pcurl.sh "http://qwwebservices.usgs.gov/Result/search?statecode=$inputState&countycode=$countyCode&mimeType=csv&zip=yes" -n $1/$fname -e "zip"
-			fi
+               if [ -f "$fname.zip" ]; then
+                  echo "$fname.zip exists; no need to retieve again."
+               else
+                  pcurl.sh "http://qwwebservices.usgs.gov/Result/search?statecode=US:$focus_state&countycode=$county_code&mimeType=csv&zip=yes" -n $fname -e "zip"
+                  punzip.sh -n $fname -e csv $fname.zip
+               fi
 
- 			let counter+=1 
- 			if [[ $SWQP_SAMPLE_ONLY && $counter -ge $SWQP_SAMPLE_NUM  ]] ; then
-   				break;
- 			fi
-  		done < "../manual/$inputState-county-code.txt"
-
+               let counter+=1                                                    # DEBUG
+               if [[ $SWQP_SAMPLE_ONLY && $counter -ge $SWQP_SAMPLE_NUM ]]; then # 
+                     break;                                                      #
+               fi                                                                #
+            done
+         popd &> /dev/null
 
       popd &> /dev/null
 
+      # Create the conversion trigger and pull it for each layer.
+      cr-create-convert-sh.sh -w `find source/* -name "*.csv"`
+      export CSV2RDF4LOD_CONVERT_OMIT_RAW_LAYER="true"
+      for layer in e1; do 
+         ./convert-*.sh
+      done
+
    popd &> /dev/null
+
 else
    echo "$version already exists. Skipping."
 fi
-
-
-
 
 exit
