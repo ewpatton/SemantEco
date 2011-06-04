@@ -11,11 +11,11 @@ if [ $# -lt 2 ]; then
 fi
 
 version=$1
-if [ $1 == "cr:today" ];
+if [ $1 == "cr:today" ]; then
    version=`date +%Y-%b-%d`
 fi
 
-focus_state=$1
+focus_state=$2
 
 mkdir $version &> /dev/null
 pushd $version &> /dev/null
