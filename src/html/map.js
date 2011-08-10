@@ -101,7 +101,8 @@ function showAddress(address,tstart,tlimit) {
 		  thisStateCode=data.result.stateCode;
 		  stateCode=thisStateCode.split(":")[1];
 		  countyCode=data.result.countyCode;
-		  countyCode=countyCode.split(":")[2];
+                  countyCode=countyCode.replace("US:","");//strip the "US:"
+		  countyCode=countyCode.split(":")[1];
 		  countyCode=countyCode.replace(/^0+/,"");
 
 		  /*		  waterquery="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type epa:PollutedWaterSource. ?s geo:lat ?lat. ?s geo:long ?long. ?s epa:hasCountyCode \""+countyCode+"\".}";
