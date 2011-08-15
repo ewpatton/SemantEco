@@ -16,6 +16,11 @@ var limit=5000;
 var stateCode="";
 var healthEffect="";
 var wqpMarkers = {"pollutedWater":[],"cleanWater":[],"pollutedFacility":[],"facility":[],"flood":[]} 
+var stateAbbr2Code=[];
+stateAbbr2Code["RI"]="44";
+stateAbbr2Code["CA"]="06";
+stateAbbr2Code["MA"]="25";
+stateAbbr2Code["NY"]="36";
 
 function showhide(str) {
  var check = document.getElementById(str);
@@ -99,6 +104,8 @@ function showAddress(address,tstart,tlimit) {
 		  //document.getElementById("test").innerHTML=data.result.stateAbbr+" "+data.result.stateCode+" "+data.result.countyCode;
 		  state=data.result.stateAbbr;
 		  thisStateCode=data.result.stateCode;
+                  if(thisStateCode==undefined)
+                     thisStateCode=stateAbbr2Code[state];
 		  stateCode=thisStateCode.split(":")[1];
 		  countyCode=data.result.countyCode;
                   countyCode=countyCode.replace("US:","");//strip the "US:"
