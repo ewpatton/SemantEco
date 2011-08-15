@@ -77,6 +77,8 @@ function requestElementsCounty(){
 		  //document.getElementById("test").innerHTML=data.result.stateAbbr+" "+data.result.stateCode+" "+data.result.countyCode;
 		  state=data.result.stateAbbr;
 		  thisStateCode=data.result.stateCode;
+                  if(thisStateCode==undefined)
+                     thisStateCode=stateAbbr2Code[state];
 		  stateCode=thisStateCode.split(":")[1];
 		  countyCode=data.result.countyCode;
                   countyCode=countyCode.replace("US:","");//strip the "US:"
@@ -478,6 +480,8 @@ function showAddress2(address,tstart,tlimit) {
 		  //document.getElementById("test").innerHTML=data.result.stateAbbr+" "+data.result.stateCode+" "+data.result.countyCode;
 		  state=data.result.stateAbbr;
 		  var stateCode=data.result.stateCode;
+                  if(thisStateCode==undefined)
+                     thisStateCode=stateAbbr2Code[state];
 		  stateCode=stateCode.split(":")[1];
 		  countyCode=data.result.countyCode;
                   countyCode=countyCode.replace("US:","");//strip the "US:"

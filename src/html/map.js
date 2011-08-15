@@ -17,10 +17,10 @@ var stateCode="";
 var healthEffect="";
 var wqpMarkers = {"pollutedWater":[],"cleanWater":[],"pollutedFacility":[],"facility":[],"flood":[]} 
 var stateAbbr2Code=[];
-stateAbbr2Code["RI"]="44";
-stateAbbr2Code["CA"]="06";
-stateAbbr2Code["MA"]="25";
-stateAbbr2Code["NY"]="36";
+stateAbbr2Code["RI"]="US:44";
+stateAbbr2Code["CA"]="US:06";
+stateAbbr2Code["MA"]="US:25";
+stateAbbr2Code["NY"]="US:36";
 
 function showhide(str) {
  var check = document.getElementById(str);
