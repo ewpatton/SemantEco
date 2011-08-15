@@ -9,6 +9,12 @@ var noFilterForCharacteristicFlag=true;
 var noFilterForHealthFlag=true;
 var thisserviceagent="http://was.tw.rpi.edu/swqp/trend/trendData.php";
 var healthagent="http://was.tw.rpi.edu/water/service/agent";
+var stateAbbr2Code=[];
+stateAbbr2Code["RI"]="US:44";
+stateAbbr2Code["CA"]="US:06";
+stateAbbr2Code["MA"]="US:25";
+stateAbbr2Code["NY"]="US:36";
+
 /*
 function requestElementsCounty(){
 	//alert("In requestElementsCounty");
@@ -85,7 +91,7 @@ function requestElementsCounty(){
 		  countyCode=countyCode.split(":")[1];
 		  countyCode=countyCode.replace(/^0+/,"");
 
-       // alert(state+", "+stateCode+", "+countyCode);
+        alert(state+", "+stateCode+", "+countyCode);
         if(data_source["EPA"]==1 && data_source["USGS"]==1)
                 num_source=2;
         if(data_source["USGS"]==1)
