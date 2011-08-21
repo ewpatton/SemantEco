@@ -12,6 +12,8 @@
   <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#">
   <!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#">
   <!ENTITY repr "http://sweet.jpl.nasa.gov/2.1/repr.owl#">
+  <!ENTITY unit "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#">
+  <!ENTITY dc "http://purl.org/dc/terms/">
 ]>
  
 <rdf:RDF 
@@ -29,6 +31,7 @@
    xmlns:comp="&comp;"
    xmlns:chem="&chem;"
    xmlns:repr="&repr;"
+   xmlns:unit="&unit;"
    xmlns:xsd="&xsd;">
 
   <owl:Ontology rdf:about="">
@@ -40,6 +43,36 @@
     <rdfs:label xml:lang="en">Measurement</rdfs:label>
     <rdfs:comment xml:lang="en">Measurement class is imported from SWEET 2.1.</rdfs:comment>
     <rdfs:seeAlso rdf:resource="&repr;"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="#hasCharacteristic"/>
+	<owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="#hasValue"/>
+	<owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="&unit;hasUnit"/>
+	<owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="&unit;hasUnit"/>
+	<owl:allValuesFrom rdf:resource="&unit;Unit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+	<owl:onProperty rdf:resource="&dc;source"/>
+	<owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
   </owl:Class>
 
   <owl:Class rdf:about="&geo;Point">
@@ -86,12 +119,12 @@
   <owl:Class rdf:ID="PollutedThing">
     <rdfs:label xml:lang="en">Polluted Thing</rdfs:label>
     <rdfs:comment xml:lang="en">The set of all things that are polluted</rdfs:comment>
-    <rdfs:subClassOf>
+    <owl:equivalentClass>
       <owl:Restriction>
 	<owl:onProperty rdf:resource="#hasMeasurement"/>
 	<owl:someValuesFrom rdf:resource="#RegulationViolation"/>
       </owl:Restriction>
-    </rdfs:subClassOf>
+    </owl:equivalentClass>
   </owl:Class>
 
   <owl:Class rdf:ID="PollutedSite">

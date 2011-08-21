@@ -72,6 +72,26 @@
     </owl:intersectionOf>
   </owl:Class>
 
+  <!--
+  <owl:Class rdf:ID="WaterRegulationViolation">
+    <rdfs:label xml:lang="en">Water regulation violation</rdfs:label>
+    <rdfs:comment xml:lang="en">Represents a violation of a water regulation (at any level)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&pol;RegulationViolation"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="DrinkingWaterViolation">
+    <rdfs:label xml:lang="en">Drinking water violation</rdfs:label>
+    <rdfs:comment xml:lang="en">Represents a violation of a water violation related to the potability of water</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&pol;WaterRegulationViolation"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="DrinkingWaterPollutingFacility">
+    <rdfs:label xml:lang="en">Drinking water polluting facility</rdfs:label>
+    <rdfs:comment xml:lang="en">A facility that violates regulations put in place to limit quanities of contaminents</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&pol;PollutingFacility"/>
+  </owl:Class>
+  -->
+
   <owl:Class rdf:ID="DrinkingWaterPlant">
     <rdfs:label xml:lang="en">Drinking water plant</rdfs:label>
     <rdfs:comment xml:lang="en">A sample of the hasUsage property, drinking water plants process water for human consumption</rdfs:comment>

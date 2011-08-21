@@ -75,7 +75,7 @@
     <rdfs:subClassOf rdf:resource="#AirFacility"/>
   </owl:Class>
 
-  <owl:Class rdF:ID="CASTNETSite">
+  <owl:Class rdf:ID="CASTNETSite">
     <rdfs:label xml:lang="en">CASTNET site</rdfs:label>
     <rdfs:comment xml:lang="en">A site that belongs in the Clean Air Status and Trends Network (CASTNET)</rdfs:comment>
     <rdfs:subClassOf rdf:resource="#AirSite"/>
