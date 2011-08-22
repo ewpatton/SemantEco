@@ -91,7 +91,7 @@ function requestElementsCounty(){
 		  countyCode=countyCode.split(":")[1];
 		  countyCode=countyCode.replace(/^0+/,"");
 
-        alert(state+", "+stateCode+", "+countyCode);
+        //alert(state+", "+stateCode+", "+countyCode);
         if(data_source["EPA"]==1 && data_source["USGS"]==1)
                 num_source=2;
         if(data_source["USGS"]==1)
