@@ -27,11 +27,11 @@ if(isset($_REQUEST['state'])&&$_REQUEST['state']!=""&&isset($_REQUEST['county'])
   $type=$_REQUEST['type'];
   $query="";
   if($type=="ViolatingFacility"){
-    $query="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> construct{?s a this:ViolatingFacility . ?s geo:lat ?lat . ?s geo:long ?log . } where{graph<http://tw2.tw.rpi.edu/water/".$state."/".$source.">{?s a this:ViolatingFacility . ?s geo:lat ?lat . ?s geo:long ?log . ?s this:hasCountyCode \"".$state.$county."\". ?s epa:hasMeasurement ?measure . ?measure rdf:type epa:Violation . ?measure epa:hasElement ?element . filter(?lat != 0 && ?log != 0)}}";
+    $query="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> construct{?s a this:ViolatingFacility. ?s this:hasPermit ?per. ?v this:hasPermit ?per. ?s this:hasMeasurement ?v. ?v rdf:type this:Violation. ?v this:hasElement ?e. ?s geo:lat ?lat. ?s geo:long ?log. ?s rdfs:label ?label. } where{graph<http://tw2.tw.rpi.edu/water/".$source."/".$state.">{?s a this:ViolatingFacility. ?s this:hasPermit ?per. ?v rdf:type this:Violation. ?v this:hasPermit ?per. ?v this:hasElement ?e. ?s geo:lat ?lat. ?s geo:long ?log. ?s rdfs:label ?label. ?s this:hasCountyCode \"".$state.$county."\". filter(?lat != 0 && ?log != 0)}}";
 
   }
   else if($type=="facility"){
-    $query="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> construct{?s a this:Facility. ?s geo:lat ?lat. ?s geo:long ?log. ?s rdfs:label ?label.} where{graph<http://tw2.tw.rpi.edu/water/".$state."/".$source.">{?s a this:Facility . ?s rdfs:label ?label . ?s geo:lat ?lat . ?s geo:long ?log . ?s this:hasCountyCode \"".$state.$county."\". filter(?lat != 0 && ?log != 0)}}";
+    $query="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> construct{?s a this:Facility. ?s geo:lat ?lat. ?s geo:long ?log. ?s rdfs:label ?label.} where{graph<http://tw2.tw.rpi.edu/water/".$source."/".$state.">{?s a this:Facility . ?s rdfs:label ?label . ?s geo:lat ?lat . ?s geo:long ?log . ?s this:hasCountyCode \"".$state.$county."\". filter(?lat != 0 && ?log != 0)}}";
   }
   else if($type=="measurement"){
      $query=   "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>".
@@ -44,6 +44,7 @@ if(isset($_REQUEST['state'])&&$_REQUEST['state']!=""&&isset($_REQUEST['county'])
    "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>".
    "PREFIX dcterms: <http://purl.org/dc/terms/>".
    "CONSTRUCT {".
+   "?s epa:hasPermit ?permit. ".
    "?s epa:hasMeasurement ?measurement. ".
    "?measurement rdf:type epa:Violation. ".
    "?measurement epa:hasLimitOperator ?operator. ".
@@ -52,8 +53,9 @@ if(isset($_REQUEST['state'])&&$_REQUEST['state']!=""&&isset($_REQUEST['county'])
    "?measurement epa:hasElement ?element. ".
    "?measurement epa:hasUnit ?unit. ".
    "?measurement dcterms:date ?date. ".
-   "} WHERE { GRAPH <http://tw2.tw.rpi.edu/water/".$state."/".$source.">".
+   "} WHERE { GRAPH <http://tw2.tw.rpi.edu/water/".$source."/".$state.">".
    "{?s epa:hasMeasurement ?measurement. ".
+   "?s epa:hasPermit ?permit. ".
    "?measurement rdf:type epa:Violation. ".
    "?measurement epa:hasLimitOperator ?operator. ".
    "?measurement rdf:value ?value. ".
@@ -61,13 +63,16 @@ if(isset($_REQUEST['state'])&&$_REQUEST['state']!=""&&isset($_REQUEST['county'])
    "?measurement epa:hasElement ?element. ".
    "?measurement epa:hasUnit ?unit. ".
    "?measurement dcterms:date ?date. ".
-       "}}";
+       "}}ORDER BY DESC(?date) ";
 
   }
 
+  $service="http://sparql.tw.rpi.edu/virtuoso/sparql";
+  $url=$service."?default-graph-uri=&should-sponge=&query=".urlencode($query)."&format=application%2Frdf%2Bxml&debug=on&timeout=";
 
-  $service="http://tw2.tw.rpi.edu/zhengj3/water_store/ARC2store/sparql.php";
-  $url=$service."?query=".urlencode($query)."&output=&jsonp=&key=";
+  //$service="http://tw2.tw.rpi.edu/zhengj3/water_store/ARC2store/sparql.php";
+  //$url=$service."?query=".urlencode($query)."&output=&jsonp=&key=";
+
   if(isset($_REQUEST['debug'])){
     $query=str_replace("<","&lt;",$query);
     $query=str_replace(">","&gt;",$query);

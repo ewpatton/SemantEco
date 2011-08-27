@@ -421,7 +421,7 @@ function buildPollutingFacilityQuery(){
 		return;
 	//
 	var sparqlBegin="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{";
-	var sparqlBefore="{?s rdf:type epa:ViolatingFacility. ?s geo:lat ?lat. ?s geo:long ?long. ?s  epa:hasMeasurement ?measure . ?measure rdf:type epa:Violation . ";
+	var sparqlBefore="{?s rdf:type epa:ViolatingFacility. ?s rdfs:label ?label. ?s geo:lat ?lat. ?s geo:long ?long. ?s  epa:hasMeasurement ?measure . ?measure rdf:type epa:Violation . ";
 	for(var i=0; i<selectedElements.length; i++){
 			sparqlPart = sparqlBefore+"?measure epa:hasElement <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"+selectedElements[i]+">.}" //<http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"+selectedElements[i]+">
 		if(i==0)
@@ -633,7 +633,7 @@ function showCleanWater2()
 	//var facilityquery="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type epa:ViolatingFacility. ?s geo:lat ?lat. ?s geo:long ?long.}";
 	var facilityquery="";
   if(noFilterForCharacteristicFlag)
-		facilityquery="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type epa:ViolatingFacility. ?s geo:lat ?lat. ?s geo:long ?long.}";
+		facilityquery="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type epa:ViolatingFacility. ?s rdfs:label ?label. ?s geo:lat ?lat. ?s geo:long ?long.}";
 	else
 		facilityquery=buildPollutingFacilityQuery();
 

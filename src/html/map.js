@@ -332,7 +332,7 @@ function showCleanWater()
      */
     var facilityquery="";
     if(noFilterForCharacteristicFlag)
-	facilityquery="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type epa:ViolatingFacility. ?s geo:lat ?lat. ?s geo:long ?long.}";
+	facilityquery="prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> select * where{?s rdf:type epa:ViolatingFacility. ?s rdfs:label ?label. ?s geo:lat ?lat. ?s geo:long ?long.}";
     else
 	facilityquery=buildPollutingFacilityQuery();
 
@@ -373,6 +373,10 @@ function showViolatedFacility(query)
 			lng="-"+lng;
 		  }
         }
+        if($(this).attr("name")=="label")
+        {
+          label=($(this).find("literal").text());
+        }
         if($(this).attr("name")=="s")
         {
           sub=($(this).find("uri").text());
@@ -380,7 +384,7 @@ function showViolatedFacility(query)
         }
       });
       if(lat!=""&&lng!=""){
-        var site={'uri':sub,'isPolluted':true};
+        var site={'uri':sub, 'label':label, 'isPolluted':true};
         var blueIcon = new GIcon(G_DEFAULT_ICON,"image/facilitypollute.png");
         blueIcon.iconSize = new GSize(29,34);
         var latlng = new GLatLng(lat ,lng);
@@ -388,7 +392,7 @@ function showViolatedFacility(query)
         var marker=new GMarker(latlng, markerOptions);
         GEvent.addListener(marker, "click",
             		   function() {
-            		     var info = queryForFacilityPollution(site,false,marker);
+            		     var info = queryForFacilityInfo(site,false,marker);
             		     marker.openInfoWindow(info);
             	 	   }
             		  );
@@ -473,7 +477,7 @@ function showFacility()
 	var marker=new GMarker(latlng, markerOptions);
 	GEvent.addListener(marker, "click",
 			   function() {
-			     var info=queryForFacilityPollution(site,false,marker);
+			     var info=queryForFacilityInfo(site,false,marker);
 			     marker.openInfoWindow(info);
 			   }
 			  );

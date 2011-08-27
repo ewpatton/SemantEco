@@ -7,6 +7,7 @@ data_source["EPA"]=1;
 data_source["USGS"]=1;
 //var visualizeBaseUrl="http://localhost/visualize.php";
 var zipagent="http://was.tw.rpi.edu/water/service/zip";
+var orgpediaAgent="http://was.tw.rpi.edu/swqp/orgpediaData.php";
 var visualizeEPABaseUrl="http://was.tw.rpi.edu/swqp/trend/epaTrend.html";
 var visualizeUSGSBaseUrl="http://was.tw.rpi.edu/swqp/trend/usgsTrend.html";
 
@@ -532,7 +533,55 @@ function queryForFlood(site, justQuery, icon) {
   }
 }
 
-function queryForFacilityPollution(site, justQuery, icon) {
+function queryForFacilityInfo(site, justQuery, icon) {
+  
+   var source=null;
+   if(data_source["EPA"]==0)
+   {
+    contents+="<p>To get data about facilities, you need to choose EPA as one of your data sources.</p>";
+    return contents;
+    }
+    //EPA is selected as a data source
+    source="EPA";
+    var UINBegin=site.uri.lastIndexOf("-")+1;
+    var facUIN=site.uri.substring(UINBegin);
+    var sparqlFacilityInfo="select distinct ?companyuri \r\n"+
+	"where{\r\n"+
+	"graph <http://tw.rpi.edu/orgpedia/source/epa-gov/facility-registry-system/version/2011-Jul-05>\r\n"+
+	"{ <http://tw.rpi.edu/orgpedia/source/epa-gov/id/facility/"+facUIN+"> owl:sameAs ?companyuri.}\r\n"+
+	"}";
+
+   alert(sparqlFacilityInfo);
+
+   var success = function(data) {
+        var facUri="";
+	$(data).find('result').each(function(){
+	   $(this).find("binding").each(function(){
+	   if($(this).attr("name")=="companyuri")
+	   {
+	    	facUri=($(this).find("uri").text());
+                alert(facUri);
+	   }
+	   });
+	});
+       queryForFacilityPollution(site, facUri, justQuery, icon);
+   };
+
+       $.ajax({type: "GET",
+          url: orgpediaAgent,
+          data: "query="+encodeURIComponent(sparqlFacilityInfo),
+          dataType: "xml", 
+          error: function(xhr, text, err) {
+              if(xhr.status == 200) {
+                success(xhr.responseXML);
+              }
+            },
+            success: success
+     });
+}
+
+function queryForFacilityPollution(site, orgpediaUri, justQuery, icon) {
+  alert("In queryForFacilityPollution");
   var query =
    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
@@ -557,7 +606,13 @@ function queryForFacilityPollution(site, justQuery, icon) {
 
 
   var contents = "";
-  
+  //contents+="<p>facility id "+site.label+"</p>";
+  if(orgpediaUri!="")
+   contents+="<p>Facility: <a href=\""+orgpediaUri+"\">"+site.label+"</a></p>";
+  else 
+   contents+="<p>Facility:  "+site.label+"</p>";
+
+ 
   if(site.isPolluted) {
 
     
@@ -609,7 +664,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
       });
 	  contents+="</table>";
 	  contents+="<p><a href='"+visualizeEPABaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
-          contents+="<p>facility id"+site.label+"</p>";
+          contents+="<p>facility id "+site.label+"</p>";
       icon.openInfoWindow(contents);
     };
 	   var source=null;
