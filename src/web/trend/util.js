@@ -1,3 +1,20 @@
+//var thisserviceagent="http://localhost/trend/trendData.php";
+//var trendAppBase ="http://localhost/trend/";
+var thisserviceagent="http://was.tw.rpi.edu/swqp/trend/trendData.php";
+var orgpediaAgent="http://was.tw.rpi.edu/swqp/orgpediaData.php";
+var trendAppBase ="http://was.tw.rpi.edu/swqp/trend/";
+
+var generalPopupWindow;
+
+
+//ref: http://qwwebservices.usgs.gov/portal.html#
+		function openPopup(URL, windowName){
+			if (generalPopupWindow) generalPopupWindow.close();
+			generalPopupWindow = window.open(trendAppBase + URL, windowName, "status=1,menubar=1,resizable=1,width=650,height=400,location=1,scrollbars=1");
+			return false;
+		}
+
+
 //ref: http://stackoverflow.com/questions/163563/javascript-date-constructor-doesnt-work
 //the input str is like: 1970-03-03T11:45:00
 function myDate(str){

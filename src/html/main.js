@@ -201,8 +201,6 @@ function showfacilitypml(permit,element, value, operator){
 }
 
 function queryForWaterPollution(site, justQuery, icon) {
-  
-  
 
   var query =
     "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
@@ -239,9 +237,13 @@ function queryForWaterPollution(site, justQuery, icon) {
     "?measure time:inXSDDateTime ?time .\r\n"+
     "} ORDER BY DESC(?time)";
 
-  //var contents="";
-  alert(site.label);
-  var contents="<p> hello"+site.label+"</p>";
+  var contents="";
+  //alert(site.label);
+ if(site.label!=undefined && site.label !="")   
+   contents+="<p>Site:  "+site.label+"</p>";
+  else
+   contents+="<p>Site: missing site name from source data </p>"
+
   if(site.isPolluted) {
     
     var success = function(data) {
@@ -444,10 +446,8 @@ function queryForFlood(site, justQuery, icon) {
     "ORDER BY DESC(?lastTime)\r\n"+
     "LIMIT 1";
 
-  //var contents="";
-  alert(site.label);
-  var contents="<p> hello"+site.label+"</p>";
- 
+  var contents="";
+  //alert(site.label);
  
   if(site.isPolluted) {
     
@@ -551,7 +551,7 @@ function queryForFacilityInfo(site, justQuery, icon) {
 	"{ <http://tw.rpi.edu/orgpedia/source/epa-gov/id/facility/"+facUIN+"> owl:sameAs ?companyuri.}\r\n"+
 	"}";
 
-   alert(sparqlFacilityInfo);
+  //alert(sparqlFacilityInfo);
 
    var success = function(data) {
         var facUri="";
@@ -560,7 +560,7 @@ function queryForFacilityInfo(site, justQuery, icon) {
 	   if($(this).attr("name")=="companyuri")
 	   {
 	    	facUri=($(this).find("uri").text());
-                alert(facUri);
+          //      alert(facUri);
 	   }
 	   });
 	});
@@ -581,7 +581,7 @@ function queryForFacilityInfo(site, justQuery, icon) {
 }
 
 function queryForFacilityPollution(site, orgpediaUri, justQuery, icon) {
-  alert("In queryForFacilityPollution");
+  //alert("In queryForFacilityPollution");
   var query =
    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
@@ -606,11 +606,12 @@ function queryForFacilityPollution(site, orgpediaUri, justQuery, icon) {
 
 
   var contents = "";
-  //contents+="<p>facility id "+site.label+"</p>";
   if(orgpediaUri!="")
    contents+="<p>Facility: <a href=\""+orgpediaUri+"\">"+site.label+"</a></p>";
-  else 
+  else if(site.label!=undefined && site.label !="") 
    contents+="<p>Facility:  "+site.label+"</p>";
+  else
+   contents+="<p>Facility: missing facility name from source data </p>"
 
  
   if(site.isPolluted) {
@@ -664,7 +665,6 @@ function queryForFacilityPollution(site, orgpediaUri, justQuery, icon) {
       });
 	  contents+="</table>";
 	  contents+="<p><a href='"+visualizeEPABaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
-          contents+="<p>facility id "+site.label+"</p>";
       icon.openInfoWindow(contents);
     };
 	   var source=null;

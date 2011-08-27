@@ -1,3 +1,11 @@
+curStateAbbr="";
+
+function init_EPA_linked_from_orgpedia() {
+        init_status();
+        curDataSource="EPA";
+        linkedEPAQueryFromOrgpedia();
+}
+
 function init_EPA_linked_query() {
 	init_status();
 	curDataSource="EPA";
@@ -10,38 +18,106 @@ function init_USGS_linked_query() {
 	linkedUSGSQuery();
 }
 
+
 function linkedEPAQuery() {
+        var url=location.href;
+        //alert(url);
+        var params = parseQuery(url);
+        curStateAbbr = params["state"];
+        var facUrl = params["site"];
+
+        if(curStateAbbr === 'undefined' || curStateAbbr ==""){
+                alert("The query url is not well formated! No state.");
+                return;
+        }
+        if(facUrl=== 'undefined'|| facUrl ==""){
+                alert("The query url is not well formated! No facility uri.");
+                return;
+        }
+
+        //alert(curStateAbbr+", "+facUrl);
+//        document.getElementById("EPA_state_selection_div").style.display = 'none';
+//        document.getElementById("EPA_county_selection_div").style.display = 'none';
+//        document.getElementById("EPA_site_selection_div").style.display = 'none';
+        //
+        sendFacilityLabelQuery(curStateAbbr, facUrl);
+}
+
+
+function linkedEPAQueryFromOrgpedia() {
 	var url=location.href;
 	//alert(url);
 	var params = parseQuery(url);
-	curStateAbbr = params["state"];
-	var facUrl = params["site"];
+	var facUIN = params["facility"];
 
-	if(curStateAbbr === 'undefined' || curStateAbbr ==""){
-		alert("The query url is not well formated! No state.");
-		return;
-	}
-	if(facUrl=== 'undefined'|| facUrl ==""){
-		alert("The query url is not well formated! No facility uri.");
+	if(facUIN== 'undefined'|| facUIN ==""){
+		alert("The query url is not well formated! No facility UIN.");
 		return;
 	}
 
-	//alert(curStateAbbr+", "+facUrl);
-	document.getElementById("EPA_state_selection_div").style.display = 'none';
-	document.getElementById("EPA_county_selection_div").style.display = 'none';
-	document.getElementById("EPA_site_selection_div").style.display = 'none';
+//	document.getElementById("EPA_state_selection_div").style.display = 'none';
+//	document.getElementById("EPA_county_selection_div").style.display = 'none';
+//	document.getElementById("EPA_site_selection_div").style.display = 'none';
 	//
-	sendFacilityLabelQuery(curStateAbbr, facUrl);
+	queryFacilityState(facUIN);
+}
+
+function queryFacilityState(facUIN){
+    //var facUIN="110000308523";
+    var sparqlFacilityState="prefix local_vocab: <http://tw.rpi.edu/orgpedia/source/epa-gov/dataset/facility-registry-system/vocab/>\r\n"+
+				"prefix e1: <http://tw.rpi.edu/orgpedia/source/epa-gov/dataset/facility-registry-system/vocab/enhancement/1/>\r\n"+
+				"select distinct ?facState \r\n"+
+        "where{\r\n"+
+        "graph <http://tw.rpi.edu/orgpedia/source/epa-gov/facility-registry-system/version/2011-Jul-05>\r\n"+
+        "{ <http://tw.rpi.edu/orgpedia/source/epa-gov/id/facility/"+facUIN+"> e1:state_code ?facState.\r\n"+
+        "}}";
+
+   //alert(sparqlFacilityState);
+
+   var success = function(data) {
+   	//var facState="";
+        $(data).find('result').each(function(){
+           $(this).find("binding").each(function(){
+           if($(this).attr("name")=="facState")
+           {
+              curStateAbbr=($(this).find("literal").text());
+	      //alert(curStateAbbr);
+           }
+           });
+        });
+       if(curStateAbbr==""){
+           alert("Sorry that we don't have enough information about the facility, in particular the state where the facility locates");
+       }
+       else{
+         var facUrl="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#facility-"+facUIN;
+         sendFacilityLabelQuery(curStateAbbr, facUrl);
+       }
+   };
+
+	$.ajax({type: "GET",
+          url: orgpediaAgent,
+          data: "query="+encodeURIComponent(sparqlFacilityState),
+          dataType: "xml",
+          error: function(xhr, text, err) {
+              if(xhr.status == 200) {
+                success(xhr.responseXML);
+              }
+            },
+            success: success
+	});
 }
 
 function sendFacilityLabelQuery(stateAbbr, facUrl){
-	var thisserviceagent="http://localhost/demoWater/trendData.php";
+        //var facUrl="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#facility-"+facUIN;
+	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlFacilityLabel="PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
         "SELECT DISTINCT ?facLabel\r\n"+ 
         "WHERE {\r\n"+        
-        "graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
         "{\r\n"+
-        "\""+facUrl+"\" rdfs:label ?facLabel .\r\n"+
+        //"\""+facUrl+"\" rdfs:label ?facLabel .\r\n"+
+        "<"+facUrl+"> rdfs:label ?facLabel .\r\n"+
         "}}";
 
 	//alert(sparqlFacilityLabel);
@@ -73,6 +149,7 @@ function processFacilityLabelData(data){
 	}
 	curSiteId=facLabel;
 	//alert(facLabel);
+        document.getElementById("EPA_facility_label").innerHTML += facLabel;
 	sendFacilityPermitQuery(curStateAbbr, curSiteId);
 }
 

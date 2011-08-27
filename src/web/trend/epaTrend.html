@@ -5,6 +5,8 @@
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script type="text/javascript" src="./js/jquery-1.4.4.min.js"></script>
 		<script type="text/javascript" src="./js/douglascrockford-JSON-js-8e0b15c/json2.js"></script>
+    <script type="text/javascript" src="js/protovis-3.2/protovis-r3.2.js"></script>
+    <script type="text/javascript" src="dot.js"></script>
     <script type="text/javascript">
 	// Load the Visualization API and the piechart package.
       google.load('visualization', '1', {packages: ['linechart', 'table', 'annotatedtimeline']});
@@ -30,32 +32,31 @@
 <!--<div>Data Source: <select name= "data_source_selection_canvas" id="data_source_selection_canvas" onchange="onchange_data_source_selection();"> 
 						</select>
 </div><BR>-->
-<div id="EPA_state_selection_div">State: <select name= "EPA_state_selection_canvas" id="EPA_state_selection_canvas" onchange="onchange_state_selection();"> </select>
+<div id="EPA_facility_label">Facility: </div></BR>
+<!--<div id="EPA_state_selection_div" style="display: none;">State: <select name= "EPA_state_selection_canvas" id="EPA_state_selection_canvas" onchange="onchange_state_selection();"> </select>
 </div><BR>
-<div id="EPA_county_selection_div">County: <select name= "EPA_county_selection_canvas" id="EPA_county_selection_canvas" onchange="onchange_county_selection();"></select>
+<div id="EPA_county_selection_div" style="display: none;">County: <select name= "EPA_county_selection_canvas" id="EPA_county_selection_canvas" onchange="onchange_county_selection();"></select>
 </div><BR>
-<div id="EPA_site_selection_div">Facility: <select name= "EPA_site_selection_canvas" id="EPA_site_selection_canvas" onchange="onchange_site_selection();"> 
-</select>
+<div id="EPA_site_selection_div" style="display: none;">Facility: <select name= "EPA_site_selection_canvas" id="EPA_site_selection_canvas" onchange="onchange_site_selection();"> </select>
 </div><BR>
+-->
 <div id="EPA_permit_selection_div">Facility Permit: <select name= "EPA_permit_selection_canvas" id="EPA_permit_selection_canvas" onchange="onchange_permit_selection();"></select>
 </div><BR>
-<div id="EPA_element_selection_div">Element: <select name= "EPA_element_selection_canvas" id="EPA_element_selection_canvas" onchange="onchange_element_selection();"></select>
+<div id="EPA_element_selection_div">Characteristic: <select name= "EPA_element_selection_canvas" id="EPA_element_selection_canvas" onchange="onchange_element_selection();"></select>
 </div><BR>
-	<FORM NAME="test_type_form">
-<div class='checkboxes' name="EPA_test_type_checkbox" id="EPA_test_type_checkbox"></div><BR>
- 	</FORM>
-	<FORM NAME="test_type_limt_form">
-<div class='checkboxes' name="EPA_test_type_limit_checkbox" id="EPA_test_type_limit_checkbox"></div><BR>
- 	</FORM>
-<div id="EPA_test_link_div" style="display: none;">TestLink: <INPUT TYPE="button" NAME="testLink" id="testLinkId" Value="Click" onClick="linkedEPAQuery();">
-</div>
+<div id="EPA_test_type_selection_div">Test Type: <select name= "EPA_test_type_selection_canvas" id="EPA_test_type_selection_canvas" onchange="onchange_test_type_selection();"> </select><a id="testTypeHelp" href="" onclick="openPopup('testTypeHelp.html', 'help')"> ?</a>
+</div><BR>
+<!--<div id="EPA_test_link_div" style="display: none;">TestLink: <INPUT TYPE="button" NAME="testLink" id="testLinkId" Value="Click" onClick="linkedEPAQuery();"></div> -->
 Trend: <INPUT TYPE="button" NAME="showMeasurementTrend" id="showMeasurementTrend" Value="Click" onClick="showMeasurementTrend();">
 <br>
 <div id="EPA_visualization_outer" style="display: none;">
 <h4>EPA Measurement Trend</h4>
-<div id="EPA_visualization" style="height: 400px; width: 600px;"></div>
+<BR><div id="EPA_visualization_info"></div><BR>
 </div>
-<!--<div id="test">test</div>-->
+<!--<div id="EPA_visualization" style="height: 400px; width: 600px;"></div>-->
+<div id="test1" style="display: none;">test1: </div>
+<div id="test2" style="display: none;">test2: </div>
+<!--<div id="test3">test3: </div>-->
 </tr>
 </table> 
   </body>
