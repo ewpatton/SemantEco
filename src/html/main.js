@@ -238,7 +238,9 @@ function queryForWaterPollution(site, justQuery, icon) {
     "?measure time:inXSDDateTime ?time .\r\n"+
     "} ORDER BY DESC(?time)";
 
-  var contents="";
+  //var contents="";
+  alert(site.label);
+  var contents="<p> hello"+site.label+"</p>";
   if(site.isPolluted) {
     
     var success = function(data) {
@@ -441,8 +443,11 @@ function queryForFlood(site, justQuery, icon) {
     "ORDER BY DESC(?lastTime)\r\n"+
     "LIMIT 1";
 
-  var contents="";
-  
+  //var contents="";
+  alert(site.label);
+  var contents="<p> hello"+site.label+"</p>";
+ 
+ 
   if(site.isPolluted) {
     
     var success = function(data) {
@@ -604,6 +609,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
       });
 	  contents+="</table>";
 	  contents+="<p><a href='"+visualizeEPABaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
+          contents+="<p>facility id"+site.label+"</p>";
       icon.openInfoWindow(contents);
     };
 	   var source=null;
