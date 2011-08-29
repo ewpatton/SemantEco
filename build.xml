@@ -3,7 +3,7 @@
 	<property name="src.dir" value="src"/>
 	<property name="bin.dir" value="bin"/>
 	<property name="lib.dir" value="lib"/>
-	<property name="www.dir" value="/var/www/water"/>
+	<property name="www.dir" value="/var/www/swqp"/>
 	<property name="html.dir" value="${src.dir}/html"/>
 	<property name="rdf.target.dir" value="${www.dir}/rdf"/>
 	<property name="rdf.src.dir" value="${src.dir}/rdf"/>

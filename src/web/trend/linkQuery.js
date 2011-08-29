@@ -86,7 +86,13 @@ function queryFacilityState(facUIN){
            });
         });
        if(curStateAbbr==""){
-           alert("Sorry that we don't have enough information about the facility, in particular the state where the facility locates");
+           //alert("Sorry that we don't have enough information about the facility, in particular the state where the facility locates");
+		document.getElementById(""EPA_facility_data_status"").innerHTML = "We don't have water quality data about the facility. Sorry about that.";
+	   	document.getElementById("EPA_facility_label").style.display = 'none';
+		document.getElementById("EPA_permit_selection_div").style.display = 'none';
+		document.getElementById("EPA_element_selection_div).style.display = 'none';
+		document.getElementById("EPA_test_type_selection_div").style.display = 'none';
+		document.getElementById("EPA_trend__button_div").style.display = 'none';
        }
        else{
          var facUrl="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#facility-"+facUIN;
