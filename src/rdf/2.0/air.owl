@@ -5,14 +5,14 @@
   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
   <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
   <!ENTITY time "http://www.w3.org/2006/time" >
-  <!ENTITY pol "http://escience.rpi.edu/ontology/swqp/2/0/pollution.owl#" >
+  <!ENTITY pol "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" >
   <!ENTITY elem "http://sweet.jpl.nasa.gov/2.1/matrElement.owl#" >
   <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#" >
   <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
   <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#">
   <!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#">
   <!ENTITY repr "http://sweet.jpl.nasa.gov/2.1/repr.owl#">
-  <!ENTITY air "http://escience.rpi.edu/ontology/swqp/2/0/air.owl#" >
+  <!ENTITY air "http://escience.rpi.edu/ontology/semanteco/2/0/air.owl#" >
 ]>
  
 <rdf:RDF 

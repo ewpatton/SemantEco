@@ -5,14 +5,14 @@
   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
   <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
   <!ENTITY time "http://www.w3.org/2006/time" >
-  <!ENTITY pol "http://escience.rpi.edu/ontology/swqp/2/0/pollution.owl#" >
+  <!ENTITY pol "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" >
   <!ENTITY elem "http://sweet.jpl.nasa.gov/2.1/matrElement.owl#" >
   <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#" >
   <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
   <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#">
   <!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#">
   <!ENTITY repr "http://sweet.jpl.nasa.gov/2.1/repr.owl#">
-  <!ENTITY water "http://escience.rpi.edu/ontology/swqp/2/0/water.owl#" >
+  <!ENTITY water "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" >
 ]>
  
 <rdf:RDF 
@@ -35,7 +35,7 @@
 
   <owl:Ontology rdf:about="">
     <rdfs:comment xml:lang="en">Proposed water-specific module of new SWQP ontology</rdfs:comment>
-    <owl:imports rdf:resource="&pol;"/>
+    <!--<owl:imports rdf:resource="&pol;"/>-->
   </owl:Ontology>
 
   <!-- Classes -->
@@ -48,6 +48,7 @@
   <owl:Class rdf:ID="WaterSite">
     <rdfs:label xml:lang="en">Water site</rdfs:label>
     <rdfs:comment xml:lang="en">A site where water quality was measured</rdfs:comment>
+<!--
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="&body;BodyOfWater"/>
       <owl:Class rdf:about="&pol;MeasurementSite"/>
@@ -56,13 +57,16 @@
 	<owl:someValuesFrom rdf:resource="#WaterMeasurement"/>
       </owl:Restriction>
     </owl:intersectionOf>
-    <rdfs:subClassOf>
-    </rdfs:subClassOf>
+-->
+    <rdfs:subClassOf rdf:resource="&body;BodyOfWater"/>
+    <rdfs:subClassOf rdf:resource="&pol;MeasurementSite"/>
   </owl:Class>
 
   <owl:Class rdf:ID="WaterFacility">
     <rdfs:label xml:lang="en">Water facility</rdfs:label>
     <rdfs:comment xml:lang="en">A facility where water quality data are recorded by the EPA or state agencies</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&pol;Facility"/>
+    <!--
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="&pol;Facility"/>
       <owl:Restriction>
@@ -70,6 +74,7 @@
 	<owl:someValuesFrom rdf:resource="#WaterMeasurement"/>
       </owl:Restriction>
     </owl:intersectionOf>
+    -->
   </owl:Class>
 
   <!--
@@ -90,7 +95,6 @@
     <rdfs:comment xml:lang="en">A facility that violates regulations put in place to limit quanities of contaminents</rdfs:comment>
     <rdfs:subClassOf rdf:resource="&pol;PollutingFacility"/>
   </owl:Class>
-  -->
 
   <owl:Class rdf:ID="DrinkingWaterPlant">
     <rdfs:label xml:lang="en">Drinking water plant</rdfs:label>
@@ -103,5 +107,6 @@
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
+  -->
 
 </rdf:RDF>

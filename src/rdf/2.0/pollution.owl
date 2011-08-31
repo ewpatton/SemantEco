@@ -5,7 +5,7 @@
   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
   <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
   <!ENTITY time "http://www.w3.org/2006/time" >
-  <!ENTITY pol "http://escience.rpi.edu/ontology/swqp/2/0/pollution.owl#" >
+  <!ENTITY pol "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" >
   <!ENTITY elem "http://sweet.jpl.nasa.gov/2.1/matrElement.owl#" >
   <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#" >
   <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
@@ -61,12 +61,14 @@
 	<owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
       </owl:Restriction>
     </rdfs:subClassOf>
+    <!--
     <rdfs:subClassOf>
       <owl:Restriction>
 	<owl:onProperty rdf:resource="&unit;hasUnit"/>
 	<owl:allValuesFrom rdf:resource="&unit;Unit"/>
       </owl:Restriction>
     </rdfs:subClassOf>
+    -->
     <rdfs:subClassOf>
       <owl:Restriction>
 	<owl:onProperty rdf:resource="&dc;source"/>
@@ -156,6 +158,15 @@
     <rdfs:comment xml:lang="en">Links a site to potential uses for it</rdfs:comment>
     <rdfs:range rdf:resource="#SiteUsage"/>
   </owl:ObjectProperty>
+
+
+  <!-- Datatype Properties -->
+  <owl:DatatypeProperty rdf:ID="hasValue">
+    <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="&unit;hasUnit">
+    <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+  </owl:DatatypeProperty>
 
   <!-- Individuals -->
   <SiteUsage rdf:ID="RecreationalUse">
