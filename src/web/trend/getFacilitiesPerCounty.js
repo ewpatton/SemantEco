@@ -1,7 +1,5 @@
-
-
 function sendFacilityQuery(stateAbbr, countyCode){
-	var thisserviceagent="http://localhost/demoWater/trendData.php";
+	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var paddedCountyCode=stateAbbr+PadNumber(countyCode, 3);
 	//alert(paddedCountyCode);
 	var sparqlFacilities="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+

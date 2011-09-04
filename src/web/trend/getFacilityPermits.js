@@ -55,13 +55,14 @@ function onchange_permit_selection(){
 }
 
 function sendFacilityPermitQuery(stateAbbr, facLabel){
-	var thisserviceagent="http://localhost/demoWater/trendData.php";
+	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlFacilityPermits="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
         "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
         "\r\n"+
         "SELECT DISTINCT ?permit\r\n"+
         "WHERE {\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
         "{\r\n"+
         "?fac rdf:type epa:Facility .\r\n"+
         "?fac epa:hasPermit ?permit .\r\n"+

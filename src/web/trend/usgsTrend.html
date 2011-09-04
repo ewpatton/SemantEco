@@ -5,6 +5,8 @@
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script type="text/javascript" src="./js/jquery-1.4.4.min.js"></script>
 		<script type="text/javascript" src="./js/douglascrockford-JSON-js-8e0b15c/json2.js"></script>
+    <script type="text/javascript" src="js/protovis-3.2/protovis-r3.2.js"></script>
+    <script type="text/javascript" src="dot.js"></script>
     <script type="text/javascript">
 	// Load the Visualization API and the piechart package.
       google.load('visualization', '1', {packages: ['linechart', 'table', 'annotatedtimeline']});
@@ -30,27 +32,29 @@
 <!--<div>Data Source: <select name= "data_source_selection_canvas" id="data_source_selection_canvas" onchange="onchange_data_source_selection();"> 
 						</select>
 </div><BR>-->
-<div id="USGS_state_selection_div">State: <select name= "USGS_state_selection_canvas" id="USGS_state_selection_canvas" onchange="onchange_state_selection();"> 
+<div id="USGS_state_selection_div" style="display: none;">State: <select name= "USGS_state_selection_canvas" id="USGS_state_selection_canvas" onchange="onchange_state_selection();"> 
 						</select>
 </div><BR>
-<div id="USGS_county_selection_div">County: <select name= "USGS_county_selection_canvas" id="USGS_county_selection_canvas" onchange="onchange_county_selection();"> 
+<div id="USGS_county_selection_div" style="display: none;">County: <select name= "USGS_county_selection_canvas" id="USGS_county_selection_canvas" onchange="onchange_county_selection();"> 
 						</select>
 </div><BR>
-<div id="USGS_site_selection_div">Site: <select name= "USGS_site_selection_canvas" id="USGS_site_selection_canvas" onchange="onchange_site_selection();"> 
+<div id="USGS_site_selection_div" style="display: none;">Site: <select name= "USGS_site_selection_canvas" id="USGS_site_selection_canvas" onchange="onchange_site_selection();"> 
 						</select>
 </div><BR>
-<div id="USGS_element_selection_div">Element: <select name= "USGS_element_selection_canvas" id="USGS_element_selection_canvas" onchange="onchange_element_selection();"> 
+<div id="USGS_element_selection_div">Characteristic: <select name= "USGS_element_selection_canvas" id="USGS_element_selection_canvas" onchange="onchange_element_selection();"> 
 						</select>
 </div><BR>
-<div id="USGS_test_link_div" style="display: none;">TestLink: <INPUT TYPE="button" NAME="testLink" id="testLinkId" Value="Click" onClick="linkedUSGSQuery();"></div>
+<!--<div id="USGS_test_link_div" style="display: none;">TestLink: <INPUT TYPE="button" NAME="testLink" id="testLinkId" Value="Click" onClick="linkedUSGSQuery();"></div>-->
 Trend: <INPUT TYPE="button" NAME="showMeasurementTrend" id="showMeasurementTrend" Value="Click" onClick="showMeasurementTrend();">	
 <br>
-<div id="EPA_visualization_outer" style="display: none;">
+<div id="USGS_visualization_outer" style="display: none;">
 <h4>USGS Measurement Trend</h4>
-<div id="USGS_visualization" style="height: 400px; width: 800px;"></div>
+<BR><div id="USGS_visualization_info"></div><BR>
 </div>
-<!--<div id="test">test</div>-->
-
+<!--<div id="USGS_visualization" style="height: 400px; width: 600px;"></div>-->
+<div id="test1" style="display: none;">test1: </div>
+<div id="test2" style="display: none;">test2: </div>
+<!--<div id="test3">test3: </div>-->
 </tr>
 </table> 
   </body>

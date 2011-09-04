@@ -12,15 +12,15 @@ function onchange_site_selection(){
 }
 */
 
-
 function sendUSGSElementQuery(stateAbbr, siteId){
-	var thisserviceagent="http://localhost/demoWater/trendData.php";
+	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlUSGSElements = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
         "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
         "\r\n"+
         "SELECT DISTINCT ?element\r\n"+
         "WHERE {\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
         "{\r\n"+
         "?measure rdf:type epa:WaterMeasurement .\r\n"+
         "?measure epa:hasUSGSSiteId <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#SiteId-" + siteId + "> .\r\n"+
@@ -41,12 +41,13 @@ function sendUSGSElementQuery(stateAbbr, siteId){
 } 
 
 function sendEPAElementQuery(stateAbbr, permit){
-	var thisserviceagent="http://localhost/demoWater/trendData.php";
+	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlEPAElements="PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
         "\r\n"+
         "SELECT DISTINCT ?element\r\n"+
         "WHERE {\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
+        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
         "{\r\n"+
         "?measure epa:hasPermit <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#FacilityPermit-"+permit+"> .\r\n"+
         "?measure epa:hasElement ?element .\r\n"+

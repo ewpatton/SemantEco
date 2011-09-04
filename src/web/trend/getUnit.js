@@ -1,6 +1,6 @@
 
 function sendWaterSiteQuery(stateCode, countyCode){
-	var thisserviceagent="http://localhost/demoWater/trendData.php";
+	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlWaterSites="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
         "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
         "\r\n"+
