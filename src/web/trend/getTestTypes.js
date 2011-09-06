@@ -4,7 +4,6 @@
 
 
 function onchange_element_selection() {
-	//var element_selection=document.getElementById('element_selection_canvas');
 	var elementSelectionId=curDataSource+'_element_selection_canvas';
 	var element_selection=document.getElementById(elementSelectionId);
 	var curElementIndex=element_selection.selectedIndex;
@@ -37,21 +36,22 @@ function onchange_element_selection() {
 }
 
 function sendEPATestTypeQuery(stateAbbr, permit, elementName){
-	//var thisserviceagent="http://localhost/demoWater/trendData.php";
-	var sparqlEPATestType="PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
-        "PREFIX e1: <http://logd.tw.rpi.edu/source/epa-gov/dataset/enforcement-and-compliance-history-online-echo-measurements/vocab/enhancement/1/>\r\n"+
+	var sparqlEPATestType= "PREFIX e1: <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/vocab/enhancement/1/>\r\n"+
+//"PREFIX e1: <http://logd.tw.rpi.edu/source/epa-gov/dataset/enforcement-and-compliance-history-online-echo-measurements/vocab/enhancement/1/>\r\n"+
+//@prefix e1: <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-ri/vocab/enhancement/1/> .
+        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
         "\r\n"+
         "SELECT DISTINCT ?testType\r\n"+
         "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
         "{\r\n"+
-        "?measure epa:hasPermit <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#FacilityPermit-"+permit+"> .\r\n"+
-        "?measure epa:hasElement <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#" + elementName + "> .\r\n"+
+        "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
+        "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
         "?measure e1:test_type ?testType\r\n"+
         "}}"
 	
-	//alert(sparqlEPATestType);
+	alert(sparqlEPATestType);
 
        $.ajax({type: "GET",
           url: thisserviceagent,

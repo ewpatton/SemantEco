@@ -1,8 +1,12 @@
-//var thisserviceagent="http://localhost/trend/trendData.php";
-//var trendAppBase ="http://localhost/trend/";
-var thisserviceagent="http://was.tw.rpi.edu/swqp/trend/trendData.php";
-var orgpediaAgent="http://was.tw.rpi.edu/swqp/orgpediaData.php";
-var trendAppBase ="http://was.tw.rpi.edu/swqp/trend/";
+var host="http://localhost";
+var host="http://was.tw.rpi.edu";
+var thisserviceagent=host+"/swqp/trend/trendData.php";
+var orgpediaAgent=host+"/swqp/orgpediaData.php";
+var trendAppBase =host+"/swqp/trend/";
+var graphNamePrefix="http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-facilities-";
+var EPAGraphNamePostfix="/version/2011-Mar-19";
+var datahost="http://sparql.tw.rpi.edu";
+
 
 var generalPopupWindow;
 
@@ -112,7 +116,7 @@ function init_state_selection() {
   {
 		state_s_index = new Array();
 		stateNames = new Array("CALIFORNIA", "MASSACHUSETTS", "RHODE ISLAND");
-		stateAbbrs = new Array("CA", "MA", "RI");
+		stateAbbrs = new Array("ca", "ma", "ri");
 		stateCodes = new Array("6", "25", "44");
 
     for (var i = 0; i < stateNames.length; i++ ){

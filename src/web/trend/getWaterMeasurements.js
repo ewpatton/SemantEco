@@ -35,20 +35,22 @@ function showMeasurementTrend(){
 function sendUSGSMeasurementQuery(stateAbbr, siteId, elementName){
 	//alert(stateAbbr);
 	var sparqlWaterMeasurements="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
-        "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
+        "PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>\r\n"+
+        "PREFIX repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#>\r\n"+
         "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
         "\r\n"+
         "SELECT DISTINCT ?date ?value ?unit\r\n"+
         "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-				"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+				//"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/usgs-gov/dataset/nwis-measurements-"+stateAbbr+"/version/2011-Mar-20>\r\n"+
         "{\r\n"+
-        "?measure rdf:type epa:WaterMeasurement .\r\n"+
-        "?measure epa:hasUSGSSiteId <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#SiteId-" + siteId + "> .\r\n"+
-        "?measure epa:hasElement <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#" + elementName + "> .\r\n"+
+        "?measure rdf:type water:WaterMeasurement .\r\n"+
+        "?measure pol:hasSiteId \"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" + siteId + "\" .\r\n"+
+        "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
         "?measure time:inXSDDateTime ?date .\r\n"+
-        "?measure epa:hasValue ?value .\r\n"+
-        "?measure epa:hasUnit ?unit .\r\n"+
+        "?measure pol:hasValue ?value .\r\n"+
+        "?measure repr:hasUnit ?unit .\r\n"+
         "}} ORDER BY ?date"
 
        $.ajax({type: "GET",
@@ -69,28 +71,27 @@ function sendEPAMeasurementQuery(stateAbbr, permit, elementName){
 		return;
 	}
 
-	var sparqlEPAMeasurements="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
-        "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+	var sparqlEPAMeasurements="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+        
         "PREFIX dcterms: <http://purl.org/dc/terms/>\r\n"+ 
-        "PREFIX e1: <http://logd.tw.rpi.edu/source/epa-gov/dataset/enforcement-and-compliance-history-online-echo-measurements/vocab/enhancement/1/>\r\n"+
-        "\r\n"+
+        "PREFIX e1: <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/vocab/enhancement/1/>\r\n"+
+        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
+        "PREFIX repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#>\r\n"+
         "SELECT DISTINCT ?date ?value ?unit ?limit_value ?limit_operator ?limit_type \r\n"+ 
         "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/RI/EPA>\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
         "{\r\n"+
-        "?measure epa:hasPermit <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#FacilityPermit-"+permit+"> .\r\n"+
-        "?measure epa:hasElement <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#" + elementName + "> .\r\n"+
+        "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
+        "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
         "?measure dcterms:date ?date .\r\n"+
         "?measure rdf:value ?value .\r\n"+
-        "?measure epa:hasUnit ?unit .\r\n"+
-        "?measure epa:hasLimitValue ?limit_value .\r\n"+
-        "?measure epa:hasLimitOperator ?limit_operator .\r\n"+
-        "?measure epa:hasLimitType ?limit_type .\r\n"+
-        "?measure e1:test_type <http://logd.tw.rpi.edu/source/epa-gov/dataset/enforcement-and-compliance-history-online-echo-measurements/typed/test/"+selectedTestType+"> .}} ORDER BY ?date\r\n";
+        "?measure repr:hasUnit ?unit .\r\n"+
+        "?measure pol:hasLimitValue ?limit_value .\r\n"+
+        "?measure pol:hasLimitOperator ?limit_operator .\r\n"+
+        "?measure pol:hasLimitType ?limit_type .\r\n"+
+        "?measure e1:test_type <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/typed/test/"+selectedTestType+"> .}} ORDER BY ?date\r\n";
 
-	//alert(sparqlEPAMeasurements);	
+	alert(sparqlEPAMeasurements);	
 	//document.getElementById("test").innerHTML+=sparqlEPAMeasurements;
        $.ajax({type: "GET",
           url: thisserviceagent,

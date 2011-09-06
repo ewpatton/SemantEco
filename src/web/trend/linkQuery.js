@@ -39,7 +39,7 @@ function linkedEPAQuery() {
 //        document.getElementById("EPA_state_selection_div").style.display = 'none';
 //        document.getElementById("EPA_county_selection_div").style.display = 'none';
 //        document.getElementById("EPA_site_selection_div").style.display = 'none';
-        //
+
         sendFacilityLabelQuery(curStateAbbr, facUrl);
 }
 
@@ -95,7 +95,8 @@ function queryFacilityState(facUIN){
 		document.getElementById("EPA_trend__button_div").style.display = 'none';
        }
        else{
-         var facUrl="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#facility-"+facUIN;
+         var facUrl="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#facility-"+facUIN;
+				 curStateAbbr=curStateAbbr.toLowerCase();
          sendFacilityLabelQuery(curStateAbbr, facUrl);
        }
    };
@@ -115,12 +116,12 @@ function queryFacilityState(facUIN){
 
 function sendFacilityLabelQuery(stateAbbr, facUrl){
         //var facUrl="http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#facility-"+facUIN;
-	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlFacilityLabel="PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
         "SELECT DISTINCT ?facLabel\r\n"+ 
         "WHERE {\r\n"+        
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+//http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-facilities-ri/version/2011-Mar-19
+        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-facilities-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
         "{\r\n"+
         //"\""+facUrl+"\" rdfs:label ?facLabel .\r\n"+
         "<"+facUrl+"> rdfs:label ?facLabel .\r\n"+
@@ -174,7 +175,7 @@ function linkedUSGSQuery() {
 		return;
 	}
 
-	curSiteId=USGSSiteUri2Id(curSiteUri, "site-");
+	curSiteId=USGSSiteUri2Id(curSiteUri, "Site-");
 	//alert(curStateAbbr+", "+curSiteId);
 	document.getElementById("USGS_state_selection_div").style.display = 'none';
 	document.getElementById("USGS_county_selection_div").style.display = 'none';

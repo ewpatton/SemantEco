@@ -13,21 +13,21 @@ function onchange_site_selection(){
 */
 
 function sendUSGSElementQuery(stateAbbr, siteId){
-	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlUSGSElements = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
-        "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
+        "PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>\r\n"+
         "\r\n"+
-        "SELECT DISTINCT ?element\r\n"+
+        "SELECT DISTINCT ?characteristic\r\n"+
         "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+//        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/usgs-gov/dataset/nwis-measurements-"+stateAbbr+"/version/2011-Mar-20>\r\n"+
         "{\r\n"+
-        "?measure rdf:type epa:WaterMeasurement .\r\n"+
-        "?measure epa:hasUSGSSiteId <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#SiteId-" + siteId + "> .\r\n"+
-        "?measure epa:hasElement ?element .\r\n"+
+        "?measure rdf:type water:WaterMeasurement .\r\n"+
+        "?measure pol:hasSiteId \"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" + siteId + "\" .\r\n"+
+        "?measure pol:hasCharacteristic ?characteristic .\r\n"+
         "}}"
 
-	//alert(sparqlUSGSElements);
+	alert(sparqlUSGSElements);
  
        $.ajax({type: "GET",
           url: thisserviceagent,
@@ -41,19 +41,18 @@ function sendUSGSElementQuery(stateAbbr, siteId){
 } 
 
 function sendEPAElementQuery(stateAbbr, permit){
-	//var thisserviceagent="http://localhost/demoWater/trendData.php";
-	var sparqlEPAElements="PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+	var sparqlEPAElements="PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
         "\r\n"+
-        "SELECT DISTINCT ?element\r\n"+
+        "SELECT DISTINCT ?characteristic\r\n"+
         "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
         "{\r\n"+
-        "?measure epa:hasPermit <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#FacilityPermit-"+permit+"> .\r\n"+
-        "?measure epa:hasElement ?element .\r\n"+
+        "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
+        "?measure pol:hasCharacteristic ?characteristic .\r\n"+
         "}}";
 
-	//alert(sparqlEPAElements);
+	alert(sparqlEPAElements);
 
        $.ajax({type: "GET",
           url: thisserviceagent,
@@ -77,7 +76,7 @@ function processElementData(data) {
 	$(data).find('result').each(function(){
 	var elementUri="", elementName="";
 	$(this).find("binding").each(function(){
-	  if($(this).attr("name")=="element")
+	  if($(this).attr("name")=="characteristic")
 	  {
 	    elementUri=($(this).find("uri").text());
 			elementName=elementUri.substring(elementUri.indexOf("#")+1)

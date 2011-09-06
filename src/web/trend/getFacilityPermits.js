@@ -57,17 +57,17 @@ function onchange_permit_selection(){
 function sendFacilityPermitQuery(stateAbbr, facLabel){
 	//var thisserviceagent="http://localhost/demoWater/trendData.php";
 	var sparqlFacilityPermits="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
-        "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
+        "PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>\r\n"+
         "\r\n"+
         "SELECT DISTINCT ?permit\r\n"+
         "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+stateAbbr+"/"+curDataSource+">\r\n"+
-        "graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-facilities-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
         "{\r\n"+
-        "?fac rdf:type epa:Facility .\r\n"+
-        "?fac epa:hasPermit ?permit .\r\n"+
+        "?fac rdf:type water:WaterFacility .\r\n"+
+        "?fac pol:hasPermit ?permit .\r\n"+
         "?fac rdfs:label \""+facLabel+"\" .\r\n"+
-        //"?fac rdfs:label \"BRISTOL WPCF\" .\r\n"+
         "}}";
 
 	//alert(sparqlFacilityPermits);
