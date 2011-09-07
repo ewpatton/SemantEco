@@ -22,9 +22,9 @@ public class WaterAgent {
 			return;
 		}
 		server.setExecutor(exec);
-		//server.createContext("/zip").setHandler(new ZipCodeDecoder());
-		//server.createContext("/agent").setHandler(new WaterAgentInstance());
-		server.createContext("/").setHandler(new SessionManager());
+		server.createContext("/zip").setHandler(new ZipCodeDecoder());
+		server.createContext("/agent").setHandler(new WaterAgentInstance());		
+		//server.createContext("/").setHandler(new SessionManager());
 		server.start();
 		System.out.println("Web service started...");
 		

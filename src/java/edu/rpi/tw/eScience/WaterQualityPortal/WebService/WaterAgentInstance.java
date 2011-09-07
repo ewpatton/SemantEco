@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -20,9 +18,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.EpaDataAgent;
-import edu.rpi.tw.eScience.WaterQualityPortal.usgs.DataService;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
 import org.mindswap.pellet.jena.PelletReasonerFactory;
@@ -30,43 +25,33 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 public class WaterAgentInstance implements HttpHandler {
 	
-	public WaterAgentInstance() {
-	}
-	
-	List<WaterDataProvider> providers;
-	OntModel owlModel;
+	OntModel owlModel=ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);;
 	Model pmlModel;
 	Model theModel;
 	
+	public WaterAgentInstance() {
+		owlModel.read("file:///C:/Users/zhengj3/Documents/java_projects/WaterHealth/epa.owl");
+		listStatements(owlModel);
+	}
+	
+	
 	public WaterAgentInstance(ZipCodeLookup zipCode, File basePath) {
+		
 		long start = System.currentTimeMillis();
-		providers = getProviders(basePath);
 		owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 		pmlModel = ModelFactory.createDefaultModel();
 		theModel = ModelFactory.createUnion(owlModel, pmlModel);
 		owlModel.read("http://was.tw.rpi.edu/water/rdf/cleanwater.owl");
 		String state = zipCode.getStateAbbreviation();
 		try {
-			owlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-owl.rdf");
+			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/EPA-regulation.owl");
 			pmlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-pml.rdf");
 		}
 		catch(Exception e) {
 			System.err.println("Unable to find regulations for state "+state);
 		}
 		System.err.println("Initialized agent instance in "+(System.currentTimeMillis()-start)+" ms");
-		for(WaterDataProvider wdp : providers) {
-			try {
-				start = System.currentTimeMillis();
-				wdp.setUserSource(zipCode.getCountyCode(),
-						zipCode.getStateCode(), zipCode.getZipCode());
-				wdp.getData(owlModel, pmlModel);
-				System.err.println("Data from "+wdp.getName()+" in "+(System.currentTimeMillis()-start)+" ms");
-			}
-			catch(Exception e) {
-				System.err.println("Exception thrown by "+wdp.getName());
-				e.printStackTrace();
-			}
-		}
+
 	}
 
 	public Map<String,String> parseRequest(HttpExchange arg0) throws IOException
@@ -78,6 +63,7 @@ public class WaterAgentInstance implements HttpHandler {
 		
 		
 		for(int i=0;i<request.length;i++) {
+			System.out.println(request[i]);
 			String[] pieces = request[i].split("=");
 			if(pieces.length==2) {
 				result.put(pieces[0], java.net.URLDecoder.decode(pieces[1],"UTF-8"));
@@ -87,17 +73,7 @@ public class WaterAgentInstance implements HttpHandler {
 		return result;
 	}
 	
-	public List<WaterDataProvider> getProviders(File basePath) {
-		List<WaterDataProvider> providers = new ArrayList<WaterDataProvider>();
-		try {
-			providers.add(new EpaDataAgent(basePath));
-			providers.add(new DataService(basePath));
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return providers;
-	}
+
 
 	public void handle(HttpExchange arg0) throws IOException {
 		long start = System.currentTimeMillis();
@@ -107,43 +83,64 @@ public class WaterAgentInstance implements HttpHandler {
 			//get query string
 			Map<String,String> params = parseRequest(arg0);
 			String countyCode = params.get("countyCode");
-			String stateCode = params.get("stateCode");
 			String state = params.get("state");
-			String zip = params.get("zip");
 			String queryString=params.get("query");
+			String regulation=params.get("regulation");
+			String start_index=params.get("start");
+			String limit=params.get("limit");
+			String data=params.get("data");
+			String type=params.get("type");
+			String source=params.get("source");
+			owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl");
+			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/health.owl");
+			//OntModel towlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			
+			pmlModel = ModelFactory.createDefaultModel();
 			
 			//load ontology model
-			OntModel owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			Model pmlModel = ModelFactory.createDefaultModel();
-			owlModel.read("http://was.tw.rpi.edu/water/rdf/cleanwater.owl");
+			//OntModel owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+			
+			try{
+			
+			if(data.compareTo("water")==0){
+			owlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/"+regulation+".owl");
+			System.err.println("http://was.tw.rpi.edu/swqp/waterData.php?state="+state+"&county="+countyCode+"&start="+start_index+"&limit="+limit+"&source="+source);
+			pmlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/"+regulation+".pml");
+			owlModel.read("http://was.tw.rpi.edu/swqp/waterData.php?state="+state+"&county="+countyCode+"&start="+start_index+"&limit="+limit+"&source="+source);
+			}
+			else if(data.compareTo("facility")==0){
+				//owlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/"+regulation+".owl");
+				System.err.println("http://was.tw.rpi.edu/swqp/facilityData.php?state="+state+"&county="+countyCode+"&start="+start_index+"&limit="+limit+"&type="+type);
+				owlModel.read("http://was.tw.rpi.edu/swqp/facilityData.php?state="+state+"&county="+countyCode+"&start="+start_index+"&limit="+limit+"&type="+type+"&source="+source);			
+				
+			}
+	
+			}
+			catch(Exception e){System.err.println("Unable to load data");}
+			
+			//owlModel.read("http://tw2.tw.rpi.edu/zhengj3/water_store/ARC2store/sparql.php?query=+%0D%0A%0D%0APREFIX+epa%3A<http%3A%2F%2Ftw2.tw.rpi.edu%2Fzhengj3%2Fowl%2Fepa.owl%23>%0D%0APREFIX+time%3A<http%3A%2F%2Fwww.w3.org%2F2006%2Ftime%23>%0D%0Aprefix+wgs%3A+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23>+%0D%0A%0D%0ACONSTRUCT+{%0D%0A++++%3Fs+rdf%3Atype+epa%3AMeasurementSite+.+%0D%0A++++%3Fs+epa%3AhasMeasurement+%3Fmeasurement.%0D%0A++++%3Fs+epa%3AhasCountyCode+\"3\".%0D%0A++++%3Fs+wgs%3Alat+%3Flat.%0D%0A++++%3Fs+wgs%3Along+%3Flong.%0D%0A++++%3Fmeasurement+epa%3AhasElement+%3Felement.%0D%0A++++%3Fmeasurement+epa%3AhasValue+%3Fvalue.%0D%0A++++%3Fmeasurement+epa%3AhasUnit+%3Funit.%0D%0A++++%3Fmeasurement+time%3AinXSDDateTime+%3Ftime.%0D%0A}%0D%0AWHERE+{%0D%0A++GRAPH+<http%3A%2F%2Ftw2.tw.rpi.edu%2Fwater%2FRI>+{+%0D%0A++++%3Fs+rdf%3Atype+epa%3AMeasurementSite+.+%0D%0A++++%3Fs+epa%3AhasUSGSSiteId+%3Fid.%0D%0A++++%3Fs+epa%3AhasCountyCode+\"3\".%0D%0A++++%3Fs+wgs%3Alat+%3Flat.%0D%0A++++%3Fs+wgs%3Along+%3Flong.%0D%0A++++%3Fmeasurement+epa%3AhasUSGSSiteId+%3Fid.%0D%0A++++%3Fmeasurement+epa%3AhasElement+%3Felement.%0D%0A++++%3Fmeasurement+epa%3AhasValue+%3Fvalue.%0D%0A++++%3Fmeasurement+epa%3AhasUnit+%3Funit.%0D%0A++++%3Fmeasurement+time%3AinXSDDateTime+%3Ftime.%0D%0A++}%0D%0A}%0D%0A%0D%0A&output=&jsonp=&key=");
+			//owlModel.read("http://tw2.tw.rpi.edu/zhengj3/owl/test2.rdf");
+			//System.err.println("http://tw2.tw.rpi.edu/zhengj3/demo/waterData.php?state="+state+"&county="+countyCode);
+			
+		    
+			/*
 			try {
-				owlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-owl.rdf");
-				pmlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-pml.rdf");
+				//owlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-owl.rdf");
+				//pmlModel.read("http://was.tw.rpi.edu/water/rdf/"+state+"-regulations-pml.rdf");
 			}
 			catch(Exception e) {
 				System.err.println("Unable to find regulations for state "+state);
 			}
+			*/
 			System.err.println("Created initial model in "+(System.currentTimeMillis()-start2)+" ms");
-			List<WaterDataProvider> providers = getProviders(new File("/tmp/"));
-			for(WaterDataProvider wdp : providers) {
-				try {
-					start2 = System.currentTimeMillis();
-					wdp.setUserSource(countyCode, stateCode, zip);
-					wdp.getData(owlModel, pmlModel);
-					System.err.println("Processed data from "+wdp.getName()+" in "+(System.currentTimeMillis()-start2)+" ms");
-				}
-				catch(Exception e) {
-					System.err.println("Exception thrown by "+wdp.getName());
-					e.printStackTrace();
-				}
-			}
-			
-			//FileOutputStream fos = new FileOutputStream("/usr/local/water/example.rdf");
-			//owlModel.write(fos);
-			//fos.close();
+
 			
 			Model model = ModelFactory.createUnion(owlModel, pmlModel);
 			
+			//System.out.println("============");
+			//listStatements(towlModel);
 			//get query result in xml format
 			start2 = System.currentTimeMillis();
 			String response = getQueryResult(model,queryString);

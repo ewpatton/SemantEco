@@ -62,7 +62,7 @@ public class SessionManager implements HttpHandler, Runnable {
 			catch(Exception e) {
 				e.printStackTrace();
 				code = 500;
-				result="A server-side error occurred.";
+				result="{\"error\":\"A server-side error occurred.\"}";
 				arg0.getResponseHeaders().set("Content-type", "text/plain");
 			}
 			arg0.sendResponseHeaders(code, result.length());
