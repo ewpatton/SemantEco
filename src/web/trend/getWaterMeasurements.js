@@ -64,32 +64,47 @@ function sendUSGSMeasurementQuery(stateAbbr, siteId, elementName){
      });
 }
 
+function genEPAMeasurementQuery(stateAbbr, permit, elementName){
+	var sparqlEPAMeasurements="";
+	if(EPADataset=="foia")
+		sparqlEPAMeasurements+="PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>\r\n";
+  else//echo
+		sparqlEPAMeasurements+="PREFIX e1: <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/vocab/enhancement/1/>\r\n";
+	//the common body
+	sparqlEPAMeasurements+="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+        
+        "PREFIX dcterms: <http://purl.org/dc/terms/>\r\n"+ 
+        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
+        "PREFIX repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#>\r\n"+
+        "SELECT DISTINCT ?date ?value ?unit ?limit_value ?limit_operator ?limit_type \r\n"+ 
+        "WHERE {\r\n"+
+        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/"+EPADataset+"-measurements-"+stateAbbr+"/version/"+EPADataVersion+">\r\n"+
+        "{\r\n"+
+        "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
+        "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
+        "?measure dcterms:date ?date .\r\n"+
+        "?measure repr:hasUnit ?unit .\r\n"+
+        "?measure pol:hasLimitValue ?limit_value .\r\n"+
+        "?measure pol:hasLimitOperator ?limit_operator .\r\n";
+	//the final
+	if(EPADataset=="foia")
+		sparqlEPAMeasurements+="?measure pol:hasStatisticalBaseDesc ?limit_type.\r\n"+
+					"OPTIONAL {?measure pol:hasValue ?value .\r\n"+
+					"?measure water:hasValueTypeCode \""+selectedTestType+"\" .}}} ORDER BY ?date\r\n";
+  else//echo
+		sparqlEPAMeasurements+= "?measure pol:hasLimitType ?limit_type .\r\n"+
+"?measure rdf:value ?value .\r\n"+
+"?measure e1:test_type <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/typed/test/"+selectedTestType+"> .}} ORDER BY ?date\r\n";
+
+	return sparqlEPAMeasurements;
+}
+
 function sendEPAMeasurementQuery(stateAbbr, permit, elementName){
 	//alert(stateAbbr);
 	if(selectedTestType===undefined){
 		alert("Please select a test type");
 		return;
 	}
-
-	var sparqlEPAMeasurements="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+        
-        "PREFIX dcterms: <http://purl.org/dc/terms/>\r\n"+ 
-        "PREFIX e1: <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/vocab/enhancement/1/>\r\n"+
-        "PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>\r\n"+
-        "PREFIX repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#>\r\n"+
-        "SELECT DISTINCT ?date ?value ?unit ?limit_value ?limit_operator ?limit_type \r\n"+ 
-        "WHERE {\r\n"+
-        //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
-        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
-        "{\r\n"+
-        "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
-        "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
-        "?measure dcterms:date ?date .\r\n"+
-        "?measure rdf:value ?value .\r\n"+
-        "?measure repr:hasUnit ?unit .\r\n"+
-        "?measure pol:hasLimitValue ?limit_value .\r\n"+
-        "?measure pol:hasLimitOperator ?limit_operator .\r\n"+
-        "?measure pol:hasLimitType ?limit_type .\r\n"+
-        "?measure e1:test_type <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/typed/test/"+selectedTestType+"> .}} ORDER BY ?date\r\n";
+	var sparqlEPAMeasurements=genEPAMeasurementQuery(stateAbbr, permit, elementName);
 
 	alert(sparqlEPAMeasurements);	
 	//document.getElementById("test").innerHTML+=sparqlEPAMeasurements;
@@ -188,7 +203,8 @@ function processEPAMeasurementData(data) {
 	  }
 	  if($(this).attr("name")=="unit")
 	  {
-	    unit=($(this).find("literal").text()); 
+	    //unit=($(this).find("literal").text()); 
+			unit=($(this).find("uri").text()); 
 	  }
 	  if($(this).attr("name")=="limit_value")
 	  {

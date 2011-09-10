@@ -40,7 +40,12 @@ function linkedEPAQuery() {
 //        document.getElementById("EPA_county_selection_div").style.display = 'none';
 //        document.getElementById("EPA_site_selection_div").style.display = 'none';
 
-        sendFacilityLabelQuery(curStateAbbr, facUrl);
+			if(curStateAbbr in echoStates){
+				EPADataset="echo";
+				EPADataVersion="2011-Mar-19";
+			}
+
+			sendFacilityLabelQuery(curStateAbbr, facUrl);
 }
 
 

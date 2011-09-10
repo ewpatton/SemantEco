@@ -46,7 +46,8 @@ function sendEPAElementQuery(stateAbbr, permit){
         "SELECT DISTINCT ?characteristic\r\n"+
         "WHERE {\r\n"+
         //"graph <http://tw2.tw.rpi.edu/water/"+curDataSource+"/"+stateAbbr+">\r\n"+
-        "graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
+        //"graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/version/2011-Mar-19>\r\n"+
+				"graph <http://sparql.tw.rpi.edu/source/epa-gov/dataset/"+EPADataset+"-measurements-"+stateAbbr+"/version/"+EPADataVersion+">\r\n"+
         "{\r\n"+
         "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
         "?measure pol:hasCharacteristic ?characteristic .\r\n"+

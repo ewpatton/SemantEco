@@ -1,12 +1,14 @@
 var host="http://localhost";
-var host="http://was.tw.rpi.edu";
+//var host="http://was.tw.rpi.edu";
 var thisserviceagent=host+"/swqp/trend/trendData.php";
 var orgpediaAgent=host+"/swqp/orgpediaData.php";
 var trendAppBase =host+"/swqp/trend/";
 var graphNamePrefix="http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-facilities-";
 var EPAGraphNamePostfix="/version/2011-Mar-19";
 var datahost="http://sparql.tw.rpi.edu";
-
+var EPADataset="foia";
+var EPADataVersion="2011-Jul-23";
+var echoStates;
 
 var generalPopupWindow;
 
@@ -95,6 +97,8 @@ function init_status() {
 	curSiteId="";
 	curPermit="";
 	curElementName="";
+	echoStateArr = new Array("ca", "ma", "ri", "ny");
+	echoStates = oc(echoStateArr);
 }
 
 function init_state_selection() {
@@ -115,9 +119,9 @@ function init_state_selection() {
   //state_select = document.getElementById("usgs_state_selection_canvas");
   {
 		state_s_index = new Array();
-		stateNames = new Array("CALIFORNIA", "MASSACHUSETTS", "RHODE ISLAND");
-		stateAbbrs = new Array("ca", "ma", "ri");
-		stateCodes = new Array("6", "25", "44");
+		stateNames = new Array("CALIFORNIA", "MASSACHUSETTS", "RHODE ISLAND", "New York", "New Hampshire");
+		stateAbbrs = new Array("ca", "ma", "ri", "ny", "nh");
+		stateCodes = new Array("6", "25", "44", "36", "33");
 
     for (var i = 0; i < stateNames.length; i++ ){
 		append_selection_element(state_select, stateNames[i] , stateNames[i] );
@@ -126,4 +130,15 @@ function init_state_selection() {
     state_select.selectedIndex = 0;
   }
 	onchange_state_selection();
+}
+
+//from http://snook.ca/archives/javascript/testing_for_a_v
+function oc(a)
+{
+  var o = {};
+  for(var i=0;i<a.length;i++)
+  {
+    o[a[i]]='';
+  }
+  return o;
 }
