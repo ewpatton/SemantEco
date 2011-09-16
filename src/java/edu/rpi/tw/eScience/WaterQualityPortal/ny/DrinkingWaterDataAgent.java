@@ -16,7 +16,16 @@ public class DrinkingWaterDataAgent {
 	}*/
 	String [] rangeNames = {"AsMaxRange", "AsMeanRange", "HAA5MaxRange", "HAA5MeanRange",
 			"NitrateMaxRange", "NitrateMeanRange", "TTHMMaxRange", "TTHMMeanRange"};
-
+	String [] contamNames = {"Arsenic", "Arsenic", "Haloacetic acid 5", "Haloacetic acid 5",
+			"Nitrate", "Nitrate", "TTHM", "TTHM"};
+	String []concNames = {"AsMaxConc", "AsMeanConc", "HAA5MaxConc", "HAA5MeanConc",
+			"NitrateMaxConc","NitrateMeanConc","TTHMMaxConc","TTHMMeanConc"};
+	String []statTypes = {"Max", "Mean"};
+//AsMaxRange AsMaxConc	AsMeanRange	AsMeanConc	
+//HAA5MaxRange	HAA5MaxConc	HAA5MeanRange	HAA5MeanConc	
+//NitrateMaxRange	NitrateMaxConc	NitrateMeanRange	NitrateMeanConc	
+//TTHMMaxRange	TTHMMaxConc	TTHMMeanRange	TTHMMeanConc
+	
 	private void convertRangeName(String rangeName, StringBuilder sb){
 		int index=-1;
 		String pre="";
@@ -78,8 +87,10 @@ public class DrinkingWaterDataAgent {
 			bufferedWriter = new BufferedWriter(new FileWriter(outputfileName));
 			if(serviceType==0)
 				getPWS(inputfileName, bufferedWriter);
+			else if (serviceType==1)
+				getRegulations(inputfileName, bufferedWriter);
 			else
-				processCSV(inputfileName, bufferedWriter);
+				getConc(inputfileName, bufferedWriter);
 		}
 
 		catch (Exception e) {
@@ -129,8 +140,8 @@ public class DrinkingWaterDataAgent {
 					if(pwsIDMap.get(PWSIDNumber)==null){
 						pwsIDMap.put(PWSIDNumber, PWSIDNumber);			
 						//only write the 1st time seen
-						bufferedWriter.write(principalcounty+","+PWSIDNumber+","+
-							PWSName+","+systemPopulation+"\n");
+						bufferedWriter.write("\""+principalcounty+"\",\""+PWSIDNumber+"\",\""+
+							PWSName+"\",\""+systemPopulation+"\"\n");
 					}
 
 				}//end of while
@@ -147,48 +158,95 @@ public class DrinkingWaterDataAgent {
 			finally{
 				reader.close();
 			}
-
 		}
-
-	public void processCSV(String inputfileName, BufferedWriter bufferedWriter){		
+	
+	public void getRegulations(String inputfileName, BufferedWriter bufferedWriter){
 		CsvReader reader = null;
 		int recordNum = 0;
+		HashMap<String, String> regulationsMap = new HashMap<String, String> ();
 		String curRange;
-		StringBuilder sb = new StringBuilder();
+		//StringBuilder sb = new StringBuilder();
+		String year, county;
 
 		try {			
 			reader = new CsvReader(inputfileName);		
 
 			reader.readHeaders();
-			String[] headers=reader.getHeaders();
-			int lenHeaders=headers.length;
-			int i=0;
-			for(i=0;i<lenHeaders-1;i++)
-				bufferedWriter.write(headers[i]+",");
-			bufferedWriter.write(headers[i]);
-			//more column heads
-			sb.setLength(0);
-			for(int j=0;j<rangeNames.length;j++)			
-				convertRangeName(rangeNames[j], sb);
-
-			bufferedWriter.write(sb.toString());
+			//String[] headers=reader.getHeaders();
+			bufferedWriter.write("Contaminant, County, Year, LowerComparator, LowerBound, UpperComparator, UpperBound");
 			bufferedWriter.write("\n");
 			recordNum++;
 
 			while (reader.readRecord())
 			{			
 				recordNum++;
+				//System.out.println("Record " + recordNum);
+				county=reader.get("principalcounty");
+				year=reader.get("Year");
+				for(int j=0;j<rangeNames.length;j++){
+					curRange = reader.get(rangeNames[j]);
+					StringBuilder sb = new StringBuilder();
+					//sb.setLength(0);
+					convertRange(curRange, sb);
+					String hashKey=contamNames[j]+year+county;
+					if(regulationsMap.get(hashKey)==null){
+						regulationsMap.put(hashKey, contamNames[j]);			
+						//only write the 1st time seen
+						bufferedWriter.write(contamNames[j]+","+county+","+year+sb.toString()+"\n");
+					}
+				}
+			}//end of while
 
+		} catch (FileNotFoundException e) {
+			System.err.println("In CSVRead(), file name: " + inputfileName);
+			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("In CSVRead(), file name: " + inputfileName);
+			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
+		}
+		finally{
+			reader.close();
+		}
+
+	}
+
+	public void getConc(String inputfileName, BufferedWriter bufferedWriter){		
+		CsvReader reader = null;
+		int recordNum = 0;
+		String pwsId, year, curConc;
+		StringBuilder sb = new StringBuilder();
+
+		try {			
+			reader = new CsvReader(inputfileName);		
+
+			reader.readHeaders();
+			//String[] headers=reader.getHeaders();
+			bufferedWriter.write("PWSIDNumber, Contaminant, Concentration, StatType, Year");
+			bufferedWriter.write("\n");
+			recordNum++;
+
+			while (reader.readRecord())
+			{			
+				recordNum++;
 				//System.out.println("Record " + recordNum);
 				//System.out.println(reader.getRawRecord());
 				//bufferedWriter.write(reader.getRawRecord()+'\n');
-				sb.setLength(0);
-				for(int j=0;j<rangeNames.length;j++){
-					curRange = reader.get(rangeNames[j]);					
-					convertRange(curRange, sb);
-				}
-				bufferedWriter.write(reader.getRawRecord()+sb.toString()+"\n");
+				pwsId=reader.get("PWSIDNumber");
+				year=reader.get("Year");
 
+				sb.setLength(0);
+				for(int j=0;j<concNames.length;j++){
+					curConc = reader.get(concNames[j]);		
+					if(curConc.equals("ND"))
+						curConc="0";
+					bufferedWriter.write(pwsId+","+
+							contamNames[j]+","+
+							curConc+","+
+							statTypes[j%2]+","+
+							year+"\n");	
+				}
 			}//end of while
 
 		} catch (FileNotFoundException e) {
@@ -217,10 +275,15 @@ public class DrinkingWaterDataAgent {
 		//String inputFile="/media/DATA/epaMetaData/head3000FOIA_DMRs_NH.csv";
 		String dir="/media/DATA/source/ny-gov/drinking-water-contaminants/version/2011-Sep-15";
 		String inputFile = dir+"/test/drinking_water.csv";
-		String outputFile = dir+"/test/proc_water_system.csv";
 		
+		String wsFile = dir+"/test/proc_water_system.csv";		
+		agent.process(inputFile, wsFile, 0);
 		
-		agent.process(inputFile, outputFile, 0);
+		String regFile = dir+"/test/proc_ny_health_reg.csv";		
+		//agent.process(inputFile, regFile, 1);
+		
+		String concFile = dir+"/test/proc_drinking_water.csv";		
+		agent.process(inputFile, concFile, 2);
 	}
 
 
