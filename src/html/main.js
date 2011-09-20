@@ -242,7 +242,7 @@ function queryForWaterPollution(site, justQuery, icon) {
  if(site.label!=undefined && site.label !="")   
    contents+="<p>Site:  "+site.label+"</p>";
   else
-   contents+="<p>Site: missing site name from source data </p>"
+   contents+="";//"<p>Site: missing site name from source data </p>"
 
   if(site.isPolluted) {
     
@@ -611,7 +611,7 @@ function queryForFacilityPollution(site, orgpediaUri, justQuery, icon) {
   else if(site.label!=undefined && site.label !="") 
    contents+="<p>Facility:  "+site.label+"</p>";
   else
-   contents+="<p>Facility: missing facility name from source data </p>"
+   contents+="";//"<p>Facility: missing facility name from source data </p>"
 
  
   if(site.isPolluted) {
