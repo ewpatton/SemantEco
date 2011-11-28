@@ -31,7 +31,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chlorite"/> 
       </owl:Restriction> 
     </owl:intersectionOf>
@@ -47,7 +47,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Haloaceticacids(HAA5)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -81,7 +81,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Turbidity"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -127,7 +127,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Polychlorinatedbiphenyls(PCBs)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -149,7 +149,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Benzo(a)pyrene(PAHs)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -171,7 +171,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection">
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/>
       <owl:Restriction>
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/>
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/>
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chlorinedioxide(asClO"/>
       </owl:Restriction>
     </owl:intersectionOf>
@@ -199,7 +199,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Copper"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -215,7 +215,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Dalapon"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -237,7 +237,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Trichloroethylene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -253,7 +253,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Oxamyl(Vydate)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -269,7 +269,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chromium(total)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -297,7 +297,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Arsenic"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -313,7 +313,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,2-Dichloroethane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -329,7 +329,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Beryllium"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -357,7 +357,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Di(2-ethylhexyl)phthalate"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -379,7 +379,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Heptachlor"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -395,7 +395,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Vinylchloride"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -411,7 +411,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Simazine"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -427,7 +427,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Barium"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -455,7 +455,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Pentachlorophenol"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -477,7 +477,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,2-Dibromo-3-chloropropane(DBCP)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -493,7 +493,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Cadmium"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -539,7 +539,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Alachlor"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -555,7 +555,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Asbestos(fiber_10micrometers)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -577,7 +577,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Dichloromethane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -599,7 +599,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Lindane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -639,7 +639,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Ethylenedibromide"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -661,7 +661,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chlorobenzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -695,7 +695,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chloramines(asCl"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -711,7 +711,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Mercury(inorganic)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -745,7 +745,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Giardialamblia"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -785,7 +785,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 <owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Thallium"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -813,7 +813,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#2,4-D"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -841,7 +841,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Toluene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -869,7 +869,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chlorine(asCl"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -885,7 +885,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#cis-1,2-Dichloroethylene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -907,7 +907,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Heptachlorepoxide"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -941,7 +941,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Viruses(enteric)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -963,7 +963,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:someValuesFrom>
 	  <owl:Class>
 	    <owl:oneOf rdf:parseType="Collection">
@@ -987,7 +987,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,1-Dichloroethylene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1021,7 +1021,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Cryptosporidium"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1037,7 +1037,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Endrin"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1059,7 +1059,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Dioxin(2,3,7,8-TCDD)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1081,7 +1081,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Lead"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1115,7 +1115,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Selenium"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1137,7 +1137,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Glyphosate"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1159,7 +1159,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Ethylbenzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1175,7 +1175,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Bromate"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1203,7 +1203,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,1,2-Trichloroethane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1219,7 +1219,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Xylenes(total)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1241,7 +1241,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Fluoride"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1263,7 +1263,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Nitrate(measuredasNitrogen)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1279,7 +1279,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#2,4,5-TP(Silvex)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1301,7 +1301,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 <owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Atrazine"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1329,7 +1329,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Chlordane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1345,7 +1345,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,2-Dichloropropane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1373,7 +1373,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,1,1-Trichloroethane"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1395,7 +1395,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Legionella"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1435,7 +1435,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#p-Dichlorobenzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1451,7 +1451,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Methoxychlor"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1485,7 +1485,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Hexachlorobenzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1501,7 +1501,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Picloram"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1517,7 +1517,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#1,2,4-Trichlorobenzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf>
@@ -1539,7 +1539,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Carbontetrachloride"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1567,7 +1567,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Acrylamide"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1601,7 +1601,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#TotalTrihalomethanes(TTHMs)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1623,7 +1623,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Tetrachloroethylene"/> 
       </owl:Restriction> 
     </owl:intersectionOf>
@@ -1645,7 +1645,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Endothall"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1661,7 +1661,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Diquat"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1689,7 +1689,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#o-Dichlorobenzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1717,7 +1717,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Di(2-ethylhexyl)adipate"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1733,7 +1733,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#trans-1,2-Dichloroethylene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1761,7 +1761,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Carbofuran"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1789,7 +1789,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Benzene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1805,7 +1805,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Dinoseb"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1827,7 +1827,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Epichlorohydrin"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1849,7 +1849,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Antimony"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1883,7 +1883,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Toxaphene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1905,7 +1905,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Cyanide(asfreecyanide)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1933,7 +1933,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Styrene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1955,7 +1955,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Nitrite(measuredasNitrogen)"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
@@ -1977,7 +1977,7 @@ xmlns:xsd="&xsd;">
     <owl:intersectionOf rdf:parseType="Collection"> 
       <owl:Class rdf:about="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"/> 
       <owl:Restriction> 
-	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasElement"/> 
+	<owl:onProperty rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic"/> 
 	<owl:hasValue rdf:resource="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#Hexachlorocyclopentadiene"/> 
       </owl:Restriction> 
     </owl:intersectionOf> 
