@@ -11,8 +11,8 @@
 <!ENTITY body "http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#" >
 <!ENTITY pmlp "http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#">
 <!ENTITY comp "http://sweet.jpl.nasa.gov/2.1/matrCompound.owl#"><!ENTITY chem "http://sweet.jpl.nasa.gov/2.1/matr.owl#"><!ENTITY foaf "http://xmlns.com/foaf/0.1/">]><rdf:RDF 
-xml:base="http://www.dem.ri.gov/pubs/regs/water.owl#"
-xmlns="http://www.dem.ri.gov/pubs/regs/water.owl#"
+xml:base="http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl#"
+xmlns="http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl#"
 xmlns:pol="&pol;"
 xmlns:owl="&owl;"
 xmlns:rdfs="&rdfs;"
