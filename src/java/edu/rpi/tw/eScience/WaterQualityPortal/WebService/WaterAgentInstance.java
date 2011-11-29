@@ -35,6 +35,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.CountInstanceQuery;
+import edu.rpi.tw.eScience.WaterQualityPortal.model.EPAHack;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.ListCharacteristicsQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
@@ -279,11 +280,15 @@ public class WaterAgentInstance implements HttpHandler {
 		for(int i=0;i<sources.length();i++) {
 			long start = System.currentTimeMillis();
 			log.debug("Loading data for source <"+sources.getString(i)+">");
-			LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
-			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov"))
+			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
+				//LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
+				EPAHack q = new EPAHack(params);
 				q.execute(Configuration.TRIPLE_STORE, owlModel);
-			else
+			}
+			else {
+				LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
 				q.execute(Configuration.TRIPLE_STORE, owlModel);
+			}
 			log.debug("Load finished in "+(System.currentTimeMillis()-start)+" ms");
 		}
 		log.info("Data load finished in "+(System.currentTimeMillis()-loadStart)+" ms");
@@ -360,6 +365,24 @@ public class WaterAgentInstance implements HttpHandler {
 		Model model;
 		try {
 			model = loadData(params);
+			String queryString;
+			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix health: <http://escience.rpi.edu/ontology/semanteco/2/0/health.owl#> " +
+					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"select ?s where { ?s a pol:RegulationViolation }";
+			QueryExecution qe;
+			ResultSet queryResults;
+			qe = QueryExecutionFactory.create(QueryFactory.create(queryString, Syntax.syntaxSPARQL_11), model);
+			queryResults = qe.execSelect();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ResultSetFormatter.outputAsJSON(baos, queryResults);
+			log.debug(baos.toString("UTF-8"));
+			qe.close();
 			
 			// Query
 			long start = System.currentTimeMillis();

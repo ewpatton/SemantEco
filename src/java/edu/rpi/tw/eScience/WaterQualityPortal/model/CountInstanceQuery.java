@@ -34,11 +34,13 @@ public class CountInstanceQuery extends Query {
 			while(county.length()<3) county = "0"+county;
 			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
 					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " + 
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 					"prefix dc: <http://purl.org/dc/terms/> " +
 					"select (count(distinct ?s) as ?cnt) where { graph <"+sites+"> { "+
 					"?s a water:WaterFacility ; pol:hasCountyCode \""+state+county+"\" ; "+
-					"pol:hasPermit ?p . } graph <"+measures+"> { "+
-					"?m pol:hasPermit ?p ; dc:date ?t ; pol:hasCharacteristic ?e . " +
+					"pol:hasPermit ?p ; wgs:lat ?lat ; wgs:long ?long } graph <"+measures+"> { "+
+					"?m pol:hasPermit ?p ; dc:date ?t ; pol:hasCharacteristic ?e ; repr:hasUnit ?unit . " +
 					(time==null?"":"FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
 					" } }";
 		}
