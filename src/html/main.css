@@ -6,6 +6,7 @@ html,body {
   padding: 0;
   margin: 0;
   font-family: helvetica, arial, sans-serif;
+  font-size: 10pt;
 }
 
 body {
@@ -16,11 +17,31 @@ body {
   background-color:#96b4cc;
 }
 
+body.selector {
+  background-image: none;
+  background-color: white;
+}
+
+p {
+/*  padding-bottom: 1em;*/
+  margin-bottom: 1em;
+}
+
 div.container {
   width: 100%;
   height: 100%;
   position: absolute;
   top: -16px;
+}
+
+p#reportSite {
+  text-align: center;
+  width: 100%;
+}
+
+div.table-wrapper {
+  height: 300px;
+  overflow: scroll;
 }
 
 div#header {
@@ -29,7 +50,7 @@ div#header {
   width: 70%;
   margin-left: auto;
   margin-right: auto;
-  height: 150px;
+  height: 100px;
   padding-left: 16pt;
   padding-right: 16pt;
   padding-top: 16pt;
@@ -37,6 +58,25 @@ div#header {
   -webkit-box-shadow: 0px 3px 16px #000;
   -moz-box-shadow: 0px 3px 16px #000;
   text-align: center;
+}
+
+div#header img {
+  height: 100%;
+}
+
+table {
+  border: 1px solid black;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+table th {
+  border-bottom: 1px solid black;
+  font-weight: bold;
+}
+
+table th, table td {
+  padding: 4pt;
 }
 
 div#content {
@@ -75,10 +115,9 @@ p.prompt {
 input#zip {
   border: 2px solid #999922;
   background-color: #ffffdd;
-  width: 8em;
-  height: 2em;
+  width: 5em;
+  height: 1.6em;
   text-align: center;
-  font-size: 12pt;
 }
 
 div#footer {
@@ -194,6 +233,11 @@ div#sparql div.big a {
     font-weight: bold;
 }
 
+div#page {
+    text-align: center;
+    width: 100%;
+}
+
 a img {
     cursor: pointer;
 }
@@ -206,4 +250,76 @@ div.map-popup {
 
 div.map-popup table {
     border: 1px solid black;
+}
+
+div#page a.selected {
+    text-decoration: none;
+    color: black;
+    cursor: text;
+}
+
+div.modal-display {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: none;
+    z-index: 5000;
+}
+
+div.modal-fadeout {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    opacity: 0.8;
+    background-color: #888;
+}
+
+div#modal-window {
+    -moz-box-shadow: 0 0 10px #444;
+    -webkit-box-shadow: 0 0 10px #444;
+    box-shadow 0 0 10px #444;
+    width: 800px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    bottom: 37.5%;
+    position: relative;
+}
+
+div#modal-title-bar {
+    z-index: 5001;
+}
+
+div.modal-window-container {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+}
+
+div#modal-window div#modal-title-bar a {
+    float: right;
+    display: block;
+    clear: right;
+    padding: 6pt;
+    text-decoration: none;
+    color: black;
+}
+
+div#modal-content-container {
+    width: 100%;
+    height: 100%;
+}
+
+div#modal-content {
+    width: 776px;
+    height: 546px;
+    padding: 12px;
+    top: 32px;
+    position: absolute;
 }

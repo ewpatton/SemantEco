@@ -17,6 +17,115 @@ if(document.createElementNS===undefined) {
   };
 }
 
+function closeModal() {
+  $(".modal-display").css("display","none");
+}
+
+function showModal() {
+  $(".modal-display").css("display","block");
+}
+
+function showSelectDialogHelper(id) {
+  var sources = JSON.stringify($.map($('[name="source"]:checked'), function(x) { return x.value; }));
+  var callback = function() {
+    var list = $("#modal-content input[type=\"checkbox\"]:checked").map(function(x,y) { return $(y).val(); });
+    $("#"+id).val(list.toArray().join(";"));
+    closeModal();
+  };
+  $.ajax({type:"GET",
+	  url: thisserviceagent,
+	  data: {"sources": sources,
+		 "countyCode": countyCode,
+		 "state": state,
+		 "method": (id=="health"?
+			    "listHealthEffects":
+			    "listCharacteristics")},
+	  dataType: "json",
+	  success: function(data) {
+	    var oldItems = $("#"+id).val().split(";");
+	    var content = $("#modal-content");
+	    content.empty();
+	    content.css("overflow","scroll");
+	    var div = document.createElement("div");
+	    $(div).css("border-bottom","solid black 1px");
+	    var checkAll = document.createElement("input");
+	    checkAll.type = "checkbox";
+	    $(div).append(checkAll);
+	    $(checkAll).click(function() {
+	      $("#modal-content input[type=\"checkbox\"]").map(function (x,y) {
+		y.checked = checkAll.checked; });
+	      return true;
+	    });
+	    $(div).append(document.createTextNode("Check The Box To Select All Items"));
+	    content.append(div);
+	    var ok = document.createElement("input");
+	    ok.type = "button";
+	    $(ok).val("OK");
+	    $(ok).click(callback);
+	    content.append(ok);
+	    content.append("<br/>");
+	    var bindings = data.results.bindings;
+	    var list = [];
+	    for(var i=0;i<bindings.length;i++) {
+	      var binding = bindings[i];
+	      var item = binding["item"].value;
+	      var text = item.substr(item.indexOf("#")+1);
+	      var check = document.createElement("input");
+	      check.type="checkbox";
+	      $(check).val(text);
+	      if($.inArray(text, oldItems)>-1)
+		check.checked = true;
+	      content.append(check);
+	      content.append(document.createTextNode(text.replace(/_/g," ")));
+	      content.append("<br/>");
+	    }
+	    ok = document.createElement("input");
+	    ok.type = "button";
+	    $(ok).val("OK");
+	    $(ok).click(callback);
+	    content.append(ok);
+	    
+	    showModal();
+	  }});
+}
+
+function showSelectDialog(id) {
+  var address = document.forms[0].zip.value;
+  if(address.length != 5) return;
+  if(state==null && countyCode == null) {
+    $.ajax({type: "GET",
+            url: thiszipagent, // SPARQL service URI
+            data:"code="+address, // query parameter
+            dataType: "json",	  
+            success: function(data){
+	      window.state=data.result.stateAbbr;
+	      thisStateCode=data.result.stateCode;
+              if(thisStateCode==undefined)
+                thisStateCode=stateAbbr2Code[state];
+	      window.stateCode=thisStateCode.split(":")[1];
+	      countyCode=data.result.countyCode;
+              countyCode=countyCode.replace("US:","");//strip the "US:"
+	      countyCode=countyCode.split(":")[1];
+	      window.countyCode=countyCode.replace(/^0+/,"");
+
+	      showSelectDialogHelper(id);
+	    },
+	    error: function(data) {
+	      window.alert("Unable to determine enough information about your location.");
+	      $("#spinner").css("display","none");
+	    }
+	   });
+  }
+  else {
+    showSelectDialogHelper(id);
+  }
+}
+
+function submit_zip(zip){
+document.getElementById("zip").value=zip;
+showAddress(zip,'0','5000');
+}
+
 function submitQuery(value,name){
 
 if(name=="data_source"){ 
@@ -200,7 +309,84 @@ function showfacilitypml(permit,element, value, operator){
 	alert(contents);
 }
 
-function queryForWaterPollution(site, justQuery, icon) {
+function queryForWaterPollution(marker /*site, justQuery, icon*/) {
+  sources = JSON.stringify($.map($('[name="source"]:checked'), function(x) { return x.value; }));
+  regulation = $('[name="regulation"]:checked').val();
+  contaminants = $("#characteristicName").val();
+  effects = $("#health").val();
+  time = $("#time").val();
+  site = marker.siteData.uri;
+  $("#spinner").css("display","block");
+  $.ajax({type: "GET",
+	  url: thisserviceagent,
+	  data: {"sources":sources,
+		 "regulation":regulation,
+		 "contaminants":contaminants,
+		 "effects":effects,
+		 "time":time,
+		 "countyCode":countyCode,
+		 "state":state,
+		 "site":site,
+		 "method":"queryForWaterPollution",
+		 "limit":JSON.stringify(window.limits)},
+	  dataType: "json",
+	  success: function(data) {
+	    $("#spinner").css("display","none");
+	    var contents = "";
+	    if(marker.siteData.label != '')
+	      contents += "<p>Site: "+marker.siteData.label+"</p>";
+	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
+	    var bindings = data.results.bindings;
+	    var found = {};
+	    var effects = {};
+	    var table = $(document.createElement("table"));
+	    for(var i=0;i<bindings.length;i++) {
+	      try {
+		var result = bindings[i];
+		var element = result["element"].value;
+		var effect = result["effect"].value;
+		if(effects[element] == null)
+		  effects[element] = {};
+		if(!effects[element][effect])
+		  effects[element][effect] = effect.substr(effect.indexOf("#")+1).replace(/_/g," ");
+	      }
+	      catch(e) { }
+	    }
+	    for(var i=0;i<bindings.length;i++) {
+	      try {
+		var result = bindings[i];
+		var element = result["element"].value;
+		var time = result["time"].value;
+		if(found[element+time]) continue;
+		found[element+time] = true;
+		var value = result["value"].value;
+		var unit = result["unit"].value;
+		var op = result["op"].value;
+		var limit = result["limit"].value;
+		var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
+		contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td>";
+		contents += label+"</td><td>"+value+" "+unit+"</td><td>";
+		contents += op+" "+limit+" "+unit+"</td><td>"+time+"</td>";
+		contents += "<td>";
+		var first = true;
+		for(var effect in effects[element]) {
+		  if(!first) contents += ", ";
+		  contents += effects[element][effect];
+		  first = false;
+		}
+	      }
+	      catch(e) { }
+	    }
+	    contents += "</td></tr></table></div>";
+	    contents += "<p><a href='visualize.html?state="+state+"&county="+countyCode+"&facility=&site="+encodeURIComponent(marker.siteData.uri)+"'>Visualize Characteristics</a></p>";
+	    marker.openInfoWindow(contents);
+	  },
+	  error: function(data) {
+	    window.alert("Unable to retrieve data about this location.");
+	    $("#spinner").css("display","none");
+	  }
+	 });
+  return;
 
   var query =
     "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+

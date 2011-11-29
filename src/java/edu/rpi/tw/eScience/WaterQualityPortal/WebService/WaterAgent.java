@@ -6,16 +6,19 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+
 import com.sun.net.httpserver.HttpServer;
 
 public class WaterAgent {
+	static Logger log = Logger.getRootLogger();
+	
 	public static void main(String[] args) {
-
-		System.out.println("Starting web service...");
+		log.info("Starting web service...");
 		HttpServer server=null;
-		Executor exec = Executors.newFixedThreadPool(30);
+		Executor exec = Executors.newFixedThreadPool(Configuration.WORKERS);
 		try {
-			server = HttpServer.create(new InetSocketAddress(14490), 0);
+			server = HttpServer.create(new InetSocketAddress(Configuration.LISTEN_ADDR, Configuration.LISTEN_PORT), 0);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
@@ -24,9 +27,7 @@ public class WaterAgent {
 		server.setExecutor(exec);
 		server.createContext("/zip").setHandler(new ZipCodeDecoder());
 		server.createContext("/agent").setHandler(new WaterAgentInstance());		
-		//server.createContext("/").setHandler(new SessionManager());
 		server.start();
-		System.out.println("Web service started...");
-		
+		log.info("Started web service.");
 	}
 }
