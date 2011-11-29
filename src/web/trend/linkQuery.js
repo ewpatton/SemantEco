@@ -132,7 +132,7 @@ function sendFacilityLabelQuery(stateAbbr, facUrl){
         "<"+facUrl+"> rdfs:label ?facLabel .\r\n"+
         "}}";
 
-	//alert(sparqlFacilityLabel);
+	alert(sparqlFacilityLabel);
 
 	       $.ajax({type: "GET",
           url: thisserviceagent,
