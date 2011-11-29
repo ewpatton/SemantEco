@@ -14,7 +14,7 @@ xmlns:rdf="&rdf;"
 xmlns:xsd="&xsd;"> 
   <owl:Class rdf:ID="HealthEffect"/>
   <owl:ObjectProperty rdf:ID="hasHealthEffect"/>
-
+<!--
   <owl:Class rdf:about="#ChloriteHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -176,7 +176,23 @@ xmlns:xsd="&xsd;">
       </owl:Restriction>
     </owl:intersectionOf>
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Copper_total_as_Cu">
+    <hasHealthEffect rdf:resource="#Gastrointestinal_distress"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Copper_total_recoverable">
+    <hasHealthEffect rdf:resource="#Gastrointestinal_distress"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Copper">
+    <hasHealthEffect rdf:resource="#Gastrointestinal_distress"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#CopperHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -846,7 +862,18 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chloride">
+    <hasHealthEffect rdf:resource="#Eye_irritation"/>
+    <hasHealthEffect rdf:resource="#Nose_irritation"/>
+    <hasHealthEffect rdf:resource="#Stomach_discomfort"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Chlorine_total_residual">
+    <hasHealthEffect rdf:resource="#Eye_irritation"/>
+    <hasHealthEffect rdf:resource="#Nose_irritation"/>
+    <hasHealthEffect rdf:resource="#Stomach_discomfort"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Chlorine(asClHealthCause">    
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -976,7 +1003,20 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Total_Coliforms">
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Dysentery"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Fecal_Coliforms">
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Dysentery"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Coliform_fecal_general">
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Dysentery"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,1-DichloroethyleneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1224,7 +1264,19 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
+-->
+  <owl:Thing rdf:about="&pol;Fluoride">
+    <hasHealthEffect rdf:resource="#Bone"/>
+    <hasHealthEffect rdf:resource="#Teeth"/>
+  </owl:Thing>
 
+  <owl:Thing rdf:about="&pol;Manganese">
+    <hasHealthEffect rdf:resource="#Motor_skills"/>
+    <hasHealthEffect rdf:resource="#Cognitive_disorders"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#FluorideHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1982,4 +2034,5 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
+-->
 </rdf:RDF>
