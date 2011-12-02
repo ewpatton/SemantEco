@@ -21,11 +21,11 @@ public class EPAHack extends Query {
 	}
 
 	public Object execute(String endpoint, Model model) throws IOException {
-		String url = "http://was.tw.rpi.edu/swqp/facilityData2.php?state="+state;
+		String url = "http://aquarius.tw.rpi.edu/projects/semantaqua/facilityData2.php?state="+state;
 		url += "&county="+county;
 		url += "&start=0&limit=5000&source=EPA&type=facility";
 		model.read(url);
-		url = "http://was.tw.rpi.edu/swqp/facilityData2.php?state="+state;
+		url = "http://aquarius.tw.rpi.edu/projects/semantaqua/facilityData2.php?state="+state;
 		url += "&county="+county;
 		url += "&start=0&limit=5000&source=EPA&type=ViolatingFacility";
 		model.read(url);
