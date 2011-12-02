@@ -10,7 +10,7 @@ var facilityMarker=new Array();
 var state;
 var countyCode;
 var start;
-var limit=10;
+var limit=5;
 var stateCode="";
 var healthEffect="";
 var curPage = 0;

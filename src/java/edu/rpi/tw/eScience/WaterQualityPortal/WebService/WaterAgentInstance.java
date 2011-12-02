@@ -76,6 +76,7 @@ public class WaterAgentInstance implements HttpHandler {
 		states.put("PA", "http://logd.tw.rpi.edu/id/us/state/Pennsylvania");
 		states.put("RI", "http://logd.tw.rpi.edu/id/us/state/Rhode_Island");
 		states.put("WA", "http://logd.tw.rpi.edu/id/us/state/Washington");
+		/*
 		try {
 			cache = new MysqlCache(Configuration.CACHEDB_URL,Configuration.CACHEDB_USER,
 					Configuration.CACHEDB_PASS,Configuration.CACHEDB_DB,Configuration.CACHEDB_PREFIX);
@@ -84,6 +85,7 @@ public class WaterAgentInstance implements HttpHandler {
 			System.err.println("Error occurred creating cache: ");
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 	public WaterAgentInstance() {
