@@ -62,7 +62,7 @@ function showReportSite(state) {
 	    $(data).find("Organization").each(function() {
 	      if($(this).find("hasState").text()==state) {
 		var site = $(this).find("hasReportSite").text();
-		$("#reportSite").html("Report Environmental Crimes: <a href=\""+site+"\">"+site+"</a>");
+		$("#reportSite").html("Report Environmental Problems: <a href=\""+site+"\">"+site+"</a>");
 		return;
 	      }
 	    });
@@ -309,6 +309,7 @@ function getData(sources, regulation, contaminants, effects, time) {
 	      found[uri] = true;
 	      var lat = result["lat"].value;
 	      var lng = result["long"].value;
+	      if(lng > 0) lng = -lng;
 	      var label = result["label"] ? result["label"].value : "";
 	      var facility = eval(result["facility"].value);
 	      var polluted = eval(result["polluted"].value);

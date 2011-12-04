@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,6 +64,7 @@ public class CountInstanceQuery extends Query {
 
 	@Override
 	public Object execute(String endpoint) throws IOException {
+		Logger.getRootLogger().trace("Counting sites with query: "+queryString);
 		URL url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")+"&format=json");
 		InputStream is = url.openStream();
 		String content = CharStreams.toString(new InputStreamReader(is));

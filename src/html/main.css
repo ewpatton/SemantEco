@@ -40,7 +40,7 @@ p#reportSite {
 }
 
 div.table-wrapper {
-  height: 300px;
+  max-height: 300px;
   overflow: scroll;
 }
 
@@ -323,3 +323,7 @@ div#modal-content {
     top: 32px;
     position: absolute;
 }
+
+p.top { margin: 0; }
+div.top { height: 2em; }
+div.bottom { height: 2em; }

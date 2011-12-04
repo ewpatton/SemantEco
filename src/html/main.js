@@ -46,7 +46,9 @@ function showSelectDialogHelper(id) {
 	    var content = $("#modal-content");
 	    content.empty();
 	    content.css("overflow","scroll");
-	    var div = document.createElement("div");
+	    var helper = $(document.createElement("span"));
+	    content.append(helper);
+	    var div = document.createElement("span");
 	    $(div).css("border-bottom","solid black 1px");
 	    var checkAll = document.createElement("input");
 	    checkAll.type = "checkbox";
@@ -57,13 +59,13 @@ function showSelectDialogHelper(id) {
 	      return true;
 	    });
 	    $(div).append(document.createTextNode("Check The Box To Select All Items"));
-	    content.append(div);
+	    helper.append(div);
 	    var ok = document.createElement("input");
 	    ok.type = "button";
 	    $(ok).val("OK");
 	    $(ok).click(callback);
-	    content.append(ok);
-	    content.append("<br/>");
+	    helper.append(ok);
+	    helper.append("<br/>");
 	    var bindings = data.results.bindings;
 	    var list = [];
 	    for(var i=0;i<bindings.length;i++) {
@@ -75,17 +77,25 @@ function showSelectDialogHelper(id) {
 	      $(check).val(text);
 	      if($.inArray(text, oldItems)>-1)
 		check.checked = true;
-	      content.append(check);
-	      content.append(document.createTextNode(text.replace(/_/g," ")));
-	      content.append("<br/>");
+	      helper.append(check);
+	      helper.append(document.createTextNode(text.replace(/_/g," ")));
+	      helper.append("<br/>");
 	    }
 	    ok = document.createElement("input");
 	    ok.type = "button";
 	    $(ok).val("OK");
 	    $(ok).click(callback);
-	    content.append(ok);
+	    helper.append(ok);
 	    
 	    showModal();
+	    
+	    var width = Math.min(helper.width()+32,776);
+	    content.width(width);
+	    var height = Math.min(helper.height()+48,546);
+	    content.height(height);
+	    $("#modal-window").width(width+24);
+	    $("#modal-window").height(height+54);
+	    $(div).css("display","block").css("width","100%");
 	  }});
 }
 
@@ -334,7 +344,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	    $("#spinner").css("display","none");
 	    var contents = "";
 	    if(marker.siteData.label != '')
-	      contents += "<p>Site: "+marker.siteData.label+"</p>";
+	      contents += "<div class='top'>Site: "+marker.siteData.label+"</div>";
 	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
 	    var bindings = data.results.bindings;
 	    var found = {};
@@ -378,7 +388,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	      catch(e) { }
 	    }
 	    contents += "</td></tr></table></div>";
-	    contents += "<p><a href='visualize.html?state="+state+"&county="+countyCode+"&facility=&site="+encodeURIComponent(marker.siteData.uri)+"'>Visualize Characteristics</a></p>";
+	    contents += "<div class='bottom'><a href='"+(marker.siteData.isFacility?"trend/epaTrend.html":"trend/usgsTrend.html")+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(marker.siteData.uri)+"' target='_new'>Visualize Characteristics</a></div><div class='bottom'></div>";
 	    marker.openInfoWindow(contents);
 	  },
 	  error: function(data) {

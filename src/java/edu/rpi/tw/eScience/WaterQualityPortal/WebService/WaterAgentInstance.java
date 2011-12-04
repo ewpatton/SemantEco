@@ -67,7 +67,7 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 	
 	static {
-		log.setLevel(Level.ALL);
+		log.setLevel(Level.INFO);
 		//PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.NONE;
 		PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.CONSOLE;
 		states.put("CA", "http://logd.tw.rpi.edu/id/us/state/California");
@@ -285,7 +285,7 @@ public class WaterAgentInstance implements HttpHandler {
 			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
 				//LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
 				EPAHack q = new EPAHack(params);
-				q.execute(Configuration.TRIPLE_STORE, owlModel);
+				q.execute(Configuration.TRIPLE_STORE, rdfModel);
 			}
 			else {
 				LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
@@ -331,10 +331,10 @@ public class WaterAgentInstance implements HttpHandler {
 				"prefix time: <http://www.w3.org/2006/time#> " +
 				"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
 				"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
-				"select ?s (sample(?lt) as ?lat) (sample(?lg) as ?long) (sample(?lbl) as ?label) ";
+				"select ?s ?lat ?long ?label ";
 		queryString +=
 				"where {"+
-				"?s a " + type + " ; geo:lat ?lt ; geo:long ?lg ";
+				"?s a " + type + " ; geo:lat ?lat ; geo:long ?long ";
 		if(polluted) {
 		if(t!=null || !charClause.equals("") || !healthClause.equals(""))
 			queryString += "; pol:hasMeasurement ?m . ?m a pol:RegulationViolation . " ;
@@ -348,9 +348,10 @@ public class WaterAgentInstance implements HttpHandler {
 			queryString += " ?elem health:hasHealthEffect ?effect "+healthClause+" ";
 		}
 		queryString += 
-				" OPTIONAL { ?s rdfs:label ?lbl } "+
-				"FILTER(?lt != 0 && ?lg != 0) " +
-				"} group by ?s ";
+				" OPTIONAL { ?s rdfs:label ?label } "+
+				"FILTER(?lat != 0 && ?long != 0) " +
+		    //"} group by ?s ";
+		    "}";
 		qe = QueryExecutionFactory.create(QueryFactory.create(queryString, Syntax.syntaxSPARQL_11), model);
 		queryResults = qe.execSelect();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -376,7 +377,7 @@ public class WaterAgentInstance implements HttpHandler {
 					"prefix time: <http://www.w3.org/2006/time#> " +
 					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
 					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
-					"select ?s where { ?s a pol:RegulationViolation }";
+					"select ?s ?lat ?lng where { ?s a pol:MeasurementSite ; geo:lat ?lat ; geo:long ?lng }";
 			QueryExecution qe;
 			ResultSet queryResults;
 			qe = QueryExecutionFactory.create(QueryFactory.create(queryString, Syntax.syntaxSPARQL_11), model);
@@ -518,11 +519,11 @@ public class WaterAgentInstance implements HttpHandler {
 					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
 					"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
 					"prefix health: <http://escience.rpi.edu/ontology/semanteco/2/0/health.owl#> "+
-					"select ?element ?value ?unit ?limit ?op ?time ?effect " +
+					"select ?element ?permit ?type ?value ?unit ?limit ?op ?time ?effect " +
 					"where {" +
-					"<"+site+"> pol:hasMeasurement ?m . " +
+					"<"+site+"> pol:hasMeasurement ?m OPTIONAL { ?S pol:hasPermit ?permit } " +
 					"?m a pol:RegulationViolation ; pol:hasCharacteristic ?element ; pol:hasValue ?value ; "+
-					"unit:hasUnit ?unit ; time:inXSDDateTime ?time . ";
+					"unit:hasUnit ?unit ; time:inXSDDateTime ?time .OPTIONAL { ?m a ?type . ?type rdfs:subClassOf pol:RegulationViolation } ";
 				//if(t!=null)
 				//	queryString += "FILTER(?time > xsd:dateTime(\""+sdf.format(t.getTime())+"\"))";
 				if(!charClause.equals(""))

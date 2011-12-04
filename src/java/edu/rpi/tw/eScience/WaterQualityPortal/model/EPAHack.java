@@ -1,7 +1,12 @@
+
 package edu.rpi.tw.eScience.WaterQualityPortal.model;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -13,6 +18,7 @@ public class EPAHack extends Query {
 		super(null);
 		state = params.get("state");
 		county = params.get("countyCode");
+		while(county.length() < 3) county = "0"+county;
 	}
 	
 	@Override

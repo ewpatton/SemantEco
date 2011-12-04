@@ -168,11 +168,8 @@ public class LoadDataQuery extends Query {
 					"}"
 					;
 				Logger.getRootLogger().trace(queryString);
-				URL url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
-						/*+"&format="+URLEncoder.encode("text/rdf+n3","UTF-8")*/);
-				String content = CharStreams.toString(new InputStreamReader(url.openStream()));
-				//Logger.getRootLogger().trace(content);
-				model.read(new StringReader(content), "", null);
+				model.read(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
+					   +"&format="+URLEncoder.encode("application/rdf+xml","UTF-8"), "", null);
 			}
 			else if(source.equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
 				String inClause = null;
