@@ -1304,14 +1304,7 @@ xmlns:xsd="&xsd;">
     <hasHealthEffect rdf:resource="#Liver"/>
   </owl:Thing>
   <owl:Thing rdf:about="&epa;Manganese">
-    <owl:sameAs rdf:resource="&epa;Fluoride"/>
-  </owl:Thing>
-<!--
-  <owl:Thing rdf:about="&pol;Manganese">
-    <hasHealthEffect rdf:resource="#Motor_skills"/>
-    <hasHealthEffect rdf:resource="#Cognitive_disorders"/>
-    <hasHealthEffect rdf:resource="#Kidney"/>
-    <hasHealthEffect rdf:resource="#Liver"/>
+    <owl:sameAs rdf:resource="&epa;Manganese"/>
   </owl:Thing>
 <!--
   <owl:Class rdf:about="#FluorideHealthCause"> 
@@ -2072,7 +2065,6 @@ xmlns:xsd="&xsd;">
     </owl:intersectionOf> 
   </owl:Class>
 -->
-
   <owl:Thing rdf:about="&pol;Tributyltin">
     <hasHealthEffect rdf:resource="#Skin"/>
     <hasHealthEffect rdf:resource="#Eye_irritation"/>
