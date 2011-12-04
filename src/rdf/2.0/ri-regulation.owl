@@ -118,7 +118,7 @@ xmlns:xsd="&xsd;">
 <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
 <owl:withRestrictions rdf:parseType="Collection">
 <rdf:Description rdf:about="#ArsenicugThreshold-Drinking">
-<xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.18000000000000002</xsd:minInclusive>
+<xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.18</xsd:minInclusive>
 </rdf:Description>
 </owl:withRestrictions>
 </rdfs:Datatype>
