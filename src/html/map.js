@@ -21,6 +21,7 @@ stateAbbr2Code["CA"]="US:06";
 stateAbbr2Code["MA"]="US:25";
 stateAbbr2Code["NY"]="US:36";
 var pagedData = [];
+var lat,lng;
 
 function isChecked(str) {
   var el = document.getElementById(str);
@@ -107,6 +108,8 @@ function showAddress(address) {
               countyCode=countyCode.replace("US:","");//strip the "US:"
 	      countyCode=countyCode.split(":")[1];
 	      countyCode=countyCode.replace(/^0+/,"");
+	      lat = data.result.lat;
+	      lng = data.result.lng;
 
 	      var contaminants = $("#characteristicName").val();
 	      var effects = $("#health").val();
@@ -291,6 +294,8 @@ function getData(sources, regulation, contaminants, effects, time) {
 		 "time":time,
 		 "countyCode":countyCode,
 		 "state":state,
+		 "lat":lat,
+		 "lng":lng,
 		 "method":"getData",
 		 "limit":JSON.stringify(window.limits)},
 	  dataType: "json",

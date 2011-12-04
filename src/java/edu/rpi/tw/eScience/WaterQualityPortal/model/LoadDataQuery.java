@@ -27,7 +27,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
 
 public class LoadDataQuery extends Query {
 
-	String state,county,stateURI,source,site;
+	String state,county,stateURI,source,site,lat,lng;
 	int offset,limit;
 	Calendar time;
 	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -45,6 +45,8 @@ public class LoadDataQuery extends Query {
 		county = params.get("countyCode");
 		time = WaterAgentInstance.processTimeParam(params.get("time"));
 		site = params.get("site");
+		lat = params.get("lat");
+		lng = params.get("lng");
 		try {
 			JSONObject limits = new JSONObject(params.get("limit"));
 			if(source.equals("http://sparql.tw.rpi.edu/source/usgs-gov")) {
@@ -97,12 +99,13 @@ public class LoadDataQuery extends Query {
 							"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
 							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 							"prefix dc: <http://purl.org/dc/terms/> " +
-							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterSite ; pol:hasCountyCode "+county+" ; dc:identifier ?x . } " +
+							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterSite ; pol:hasCountyCode "+county+
+							" ; dc:identifier ?x ; wgs:lat ?lat ; wgs:long ?long } " +
 							"graph <" + measures + "> { ?m pol:hasSiteId ?x . " +
 							"FILTER(bif:exists((SELECT (1) WHERE { ?m time:inXSDDateTime ?t "+
 							(time==null? "" : "FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
 							" }))) "+
-							"} } order by ?s offset " + offset + " limit "+limit;
+							"} } order by ((?lat - "+lat+")*(?lat - "+lat+")+(?long - "+lng+")*(?long - "+lng+")) offset " + offset + " limit "+limit;
 					JSONObject ans = WaterAgentInstance.executeJSONQuery(endpoint, queryString);
 					JSONArray ids = new JSONArray();
 					JSONArray bindings = ans.getJSONObject("results").getJSONArray("bindings");
@@ -184,12 +187,13 @@ public class LoadDataQuery extends Query {
 							"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
 							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 							"prefix dc: <http://purl.org/dc/terms/> " +
-							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" ; pol:hasPermit ?x . } " +
+							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" ; " +
+									"pol:hasPermit ?x ; wgs:lat ?lat ; wgs:long ?long } " +
 							"graph <" + measures + "> { ?m pol:hasPermit ?x . " +
 							"FILTER(bif:exists((SELECT (1) WHERE { ?m dc:date ?t " +
 							(time==null?"":"FILTER( ?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
 							"}))) "+
-							"} } order by ?s offset " + offset + " limit "+limit;
+							"} } order by ((?lat - "+lat+")*(?lat - "+lat+")+(?long - "+lng+")*(?long - "+lng+")) offset " + offset + " limit "+limit;
 					JSONObject ans = WaterAgentInstance.executeJSONQuery(endpoint, queryString);
 					JSONArray ids = new JSONArray();
 					JSONArray bindings = ans.getJSONObject("results").getJSONArray("bindings");
@@ -247,9 +251,9 @@ public class LoadDataQuery extends Query {
 					"graph <"+measures+"> {" +
 					"?measurement pol:hasPermit ?id ; " +
 					"pol:hasCharacteristic ?element ; "+
-					"rdf:value ?value ; " +
 					"repr:hasUnit ?unit ; " +
 					"dc:date ?time . " +
+					"{ ?measurement rdf:value ?value } UNION { ?measurement pol:hasValue ?value } " +
 					(time==null?"":"FILTER( ?time > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
 					"OPTIONAL {"+
 					"?measurement pol:hasLimitOperator ?op ; "+
@@ -278,7 +282,7 @@ public class LoadDataQuery extends Query {
 						"?s pol:hasPermit ?x ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" " +
 						"FILTER( ?s "+inClause+" ) }" +
 						"graph <"+measures+"> { "+
-						"?m rdf:value ?value ; pol:hasPermit ?x ; pol:hasLimitOperator ?op ; pol:hasLimitValue ?lval . "+
+						"{ ?m rdf:value ?value } UNION { ?m pol:hasValue ?value } ?m pol:hasPermit ?x ; pol:hasLimitOperator ?op ; pol:hasLimitValue ?lval . "+
 						"FILTER((?op = \"<=\" && ?value > ?lval) || " +
 						"(?op = \">=\" && ?value < ?lval) || " +
 						"(?op = \">\" && ?value <= ?lval))"+

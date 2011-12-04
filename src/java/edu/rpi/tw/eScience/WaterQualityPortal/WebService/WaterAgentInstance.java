@@ -10,7 +10,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 	
 	static {
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.ALL);
 		//PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.NONE;
 		PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.CONSOLE;
 		states.put("CA", "http://logd.tw.rpi.edu/id/us/state/California");
@@ -285,7 +284,13 @@ public class WaterAgentInstance implements HttpHandler {
 			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
 				//LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
 				EPAHack q = new EPAHack(params);
-				q.execute(Configuration.TRIPLE_STORE, rdfModel);
+				try {
+					q.execute(Configuration.TRIPLE_STORE, rdfModel);
+				}
+				catch(Exception e) {
+					LoadDataQuery q1 = new LoadDataQuery(sources.getString(i), params);
+					q1.execute(Configuration.TRIPLE_STORE, rdfModel);
+				}
 			}
 			else {
 				LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
@@ -304,7 +309,6 @@ public class WaterAgentInstance implements HttpHandler {
 		QueryExecution qe;
 		ResultSet queryResults;
 		Calendar t = processTimeParam(params.get("time"));
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		String charClause = "", healthClause = "";
 		ArrayList<String> uris = processCharacteristicParam(params.get("contaminants"));
 		if(uris != null && uris.size()>0) {
@@ -489,8 +493,6 @@ public class WaterAgentInstance implements HttpHandler {
 			String queryString;
 			QueryExecution qe;
 			ResultSet queryResults;
-			Calendar t = processTimeParam(params.get("time"));
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			String site = params.get("site");
 			String charClause = "", healthClause = "";
 			ArrayList<String> uris = processCharacteristicParam(params.get("contaminants"));
