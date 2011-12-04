@@ -23,11 +23,11 @@ function sendUSGSElementQuery(stateAbbr, siteId){
         "graph <http://sparql.tw.rpi.edu/source/usgs-gov/dataset/nwis-measurements-"+stateAbbr+"/version/2011-Mar-20>\r\n"+
         "{\r\n"+
         "?measure rdf:type water:WaterMeasurement .\r\n"+
-        "?measure pol:hasSiteId \"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" + siteId + "\" .\r\n"+
+        "?measure pol:hasSiteId <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" + siteId + "> .\r\n"+
         "?measure pol:hasCharacteristic ?characteristic .\r\n"+
         "}}"
 
-	alert(sparqlUSGSElements);
+	//alert(sparqlUSGSElements);
  
        $.ajax({type: "GET",
           url: thisserviceagent,
@@ -53,7 +53,7 @@ function sendEPAElementQuery(stateAbbr, permit){
         "?measure pol:hasCharacteristic ?characteristic .\r\n"+
         "}}";
 
-	alert(sparqlEPAElements);
+	//alert(sparqlEPAElements);
 
        $.ajax({type: "GET",
           url: thisserviceagent,

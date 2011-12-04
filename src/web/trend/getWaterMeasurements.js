@@ -46,12 +46,14 @@ function sendUSGSMeasurementQuery(stateAbbr, siteId, elementName){
         "graph <http://sparql.tw.rpi.edu/source/usgs-gov/dataset/nwis-measurements-"+stateAbbr+"/version/2011-Mar-20>\r\n"+
         "{\r\n"+
         "?measure rdf:type water:WaterMeasurement .\r\n"+
-        "?measure pol:hasSiteId \"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" + siteId + "\" .\r\n"+
+        "?measure pol:hasSiteId <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#" + siteId + "> .\r\n"+
         "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
         "?measure time:inXSDDateTime ?date .\r\n"+
         "?measure pol:hasValue ?value .\r\n"+
         "?measure repr:hasUnit ?unit .\r\n"+
         "}} ORDER BY ?date"
+
+	//alert(sparqlWaterMeasurements);
 
        $.ajax({type: "GET",
           url: thisserviceagent,
@@ -82,16 +84,19 @@ function genEPAMeasurementQuery(stateAbbr, permit, elementName){
         "?measure pol:hasPermit <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-"+permit+"> .\r\n"+
         "?measure pol:hasCharacteristic <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#" + elementName + "> .\r\n"+
         "?measure dcterms:date ?date .\r\n"+
-        "?measure repr:hasUnit ?unit .\r\n"+
+        //"?measure repr:hasUnit ?unit .\r\n"+
         "?measure pol:hasLimitValue ?limit_value .\r\n"+
         "?measure pol:hasLimitOperator ?limit_operator .\r\n";
 	//the final
 	if(EPADataset=="foia")
-		sparqlEPAMeasurements+="?measure pol:hasStatisticalBaseDesc ?limit_type.\r\n"+
+		sparqlEPAMeasurements+="?measure repr:hasUnit ?unitURI .\r\n"+
+					"?unitURI rdfs:label ?unit .\r\n"+
+					"?measure pol:hasStatisticalBaseDesc ?limit_type.\r\n"+
 					"OPTIONAL {?measure pol:hasValue ?value .\r\n"+
 					"?measure water:hasValueTypeCode \""+selectedTestType+"\" .}}} ORDER BY ?date\r\n";
   else//echo
-		sparqlEPAMeasurements+= "?measure pol:hasLimitType ?limit_type .\r\n"+
+		sparqlEPAMeasurements+= "?measure repr:hasUnit ?unit .\r\n"+
+"?measure pol:hasLimitType ?limit_type .\r\n"+
 "?measure rdf:value ?value .\r\n"+
 "?measure e1:test_type <"+datahost+"/source/epa-gov/dataset/echo-measurements-"+stateAbbr+"/typed/test/"+selectedTestType+"> .}} ORDER BY ?date\r\n";
 
@@ -106,7 +111,7 @@ function sendEPAMeasurementQuery(stateAbbr, permit, elementName){
 	}
 	var sparqlEPAMeasurements=genEPAMeasurementQuery(stateAbbr, permit, elementName);
 
-	alert(sparqlEPAMeasurements);	
+	//alert(sparqlEPAMeasurements);	
 	//document.getElementById("test").innerHTML+=sparqlEPAMeasurements;
        $.ajax({type: "GET",
           url: thisserviceagent,
@@ -203,8 +208,7 @@ function processEPAMeasurementData(data) {
 	  }
 	  if($(this).attr("name")=="unit")
 	  {
-	    //unit=($(this).find("literal").text()); 
-			unit=($(this).find("uri").text()); 
+				unit=($(this).find("literal").text()); 
 	  }
 	  if($(this).attr("name")=="limit_value")
 	  {
