@@ -385,7 +385,7 @@ xmlns:xsd="&xsd;">
   <owl:Thing rdf:about="&pol;Arsenic">
     <hasHealthEffect rdf:resource="#Skin"/>
     <hasHealthEffect rdf:resource="#Circulatory_systems"/>
-    <hasHealthEffect rdf:Resource="#Increased_risk_of_cancer"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
   </owl:Thing>
   <owl:Thing rdf:about="&epa;Arsenic">
     <owl:sameAs rdf:resource="&pol;Arsenic"/>
@@ -753,7 +753,7 @@ xmlns:xsd="&xsd;">
     <hasHealthEffect rdf:resource="#Benign_intestinal_polyps"/>
   </owl:Thing>
   <owl:Thing rdf:about="&epa;Asbestos(fiber_10micrometers)">
-    <owl:sameAs rdf:Resource="&pol;Asbestos(fiber_10micrometers)"/>
+    <owl:sameAs rdf:resource="&pol;Asbestos(fiber_10micrometers)"/>
   </owl:Thing>
 <!--
   <owl:Class rdf:about="#Asbestos(fiber_10micrometers)HealthCause"> 
