@@ -354,11 +354,13 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	      try {
 		var result = bindings[i];
 		var element = result["element"].value;
+		var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
+
 		var effect = result["effect"].value;
-		if(effects[element] == null)
-		  effects[element] = {};
-		if(!effects[element][effect])
-		  effects[element][effect] = effect.substr(effect.indexOf("#")+1).replace(/_/g," ");
+		if(effects[label] == null)
+		  effects[label] = {};
+		if(!effects[label][effect])
+		  effects[label][effect] = effect.substr(effect.indexOf("#")+1).replace(/_/g," ");
 	      }
 	      catch(e) { }
 	    }
@@ -366,22 +368,22 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	      try {
 		var result = bindings[i];
 		var element = result["element"].value;
+		var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
 		var time = result["time"].value;
-		if(found[element+time]) continue;
-		found[element+time] = true;
+		if(found[label+time]) continue;
+		found[label+time] = true;
 		var value = result["value"].value;
 		var unit = result["unit"].value;
 		var op = result["op"].value;
 		var limit = result["limit"].value;
-		var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
 		contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td>";
 		contents += label+"</td><td>"+value+" "+unit+"</td><td>";
 		contents += op+" "+limit+" "+unit+"</td><td>"+time+"</td>";
 		contents += "<td>";
 		var first = true;
-		for(var effect in effects[element]) {
+		for(var effect in effects[label]) {
 		  if(!first) contents += ", ";
-		  contents += effects[element][effect];
+		  contents += effects[label][effect];
 		  first = false;
 		}
 	      }
