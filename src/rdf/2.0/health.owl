@@ -37,7 +37,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf>
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chlorite">
+    <hasHealthEffect rdf:resource="#Anemia"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Chlorite">
+    <owl:sameAs rdf:resource="&pol;Chlorite"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Haloaceticacids(HAA5)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -53,7 +61,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Haloaceticacids(HAA5)">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Haloaceticacids(HAA5)">
+    <owl:sameAs rdf:resource="&pol;Haloaceticacids(HAA5)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#TurbidityHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -87,7 +102,28 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Turbidity">
+    <hasHealthEffect rdf:resource="#Nausea"/>
+    <hasHealthEffect rdf:resource="#Cramps"/>
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Headaches"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Turbidity">
+    <owl:sameAs rdf:resource="&pol;Turbidity"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Polychlorinatedbiphenyls(PCBs)">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Immune_deficiencies"/>
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+    <hasHealthEffect rdf:resource="#Thymus_gland"/>
+    <hasHealthEffect rdf:resource="#Skin"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Polychlorinatedbiphenyls(PCBs)">
+    <owl:sameAs rdf:resource="&pol;Polychlorinatedbiphenyls(PCBs)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Polychlorinatedbiphenyls(PCBs)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -133,7 +169,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Benzo(a)pyrene(PAHs)">
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Benzo(a)pyrene(PAHs)">
+    <owl:sameAs rdf:resource="&pol;Benzo(a)pyrene(PAHs)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Benzo(a)pyrene(PAHs)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -155,7 +199,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chlorinedioxide(asClO">
+    <hasHealthEffect rdf:resource="#Anemia"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Chlorinedioxide(asClO">
+    <owl:sameAs rdf:resource="&pol;Chlorinedioxide(asClO"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Chlorinedioxide(asClOHealthEffect">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -230,7 +282,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Dalapon">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Dalapon">
+    <owl:sameAs rdf:resource="&pol;Dalapon"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#DalaponHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -246,7 +305,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Trichloroethylene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Trichloroethylene">
+    <owl:sameAs rdf:resource="&pol;Trichloroethylene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#TrichloroethyleneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -268,7 +335,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Oxamyl(Vydate)">
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Oxamyl(Vydate)">
+    <owl:sameAs rdf:resource="&pol;Oxamyl(Vydate)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Oxamyl(Vydate)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -284,7 +358,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chromium(total)">
+    <hasHealthEffect rdf:resource="#Allergic_dermatitis"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Chromium(total)">
+    <hasHealthEffect rdf:resource="&pol;Chromium(total)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Chromium(total)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -300,7 +381,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Arsenic">
+    <hasHealthEffect rdf:resource="#Skin"/>
+    <hasHealthEffect rdf:resource="#Circulatory_systems"/>
+    <hasHealthEffect rdf:Resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Arsenic">
+    <owl:sameAs rdf:resource="&pol;Arsenic"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#ArsenicHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -328,7 +418,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;1,2-Dichloroethane">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,2-Dichloroethane">
+    <owl:sameAs rdf:resource="&pol;1,2-Dichloroethane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,2-DichloroethaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -344,7 +441,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Beryllium">
+    <hasHealthEffect rdf:resource="#Intestinal_lesions"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Beryllium">
+    <owl:sameAs rdf:resource="&pol;Beryllium"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#BerylliumHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -360,7 +464,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Di(2-ethylhexyl)phthalate">
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Di(2-ethylhexyl)phthalate">
+    <owl:sameAs rdf:resource="&pol;Di(2-ethylhexyl)phthalate"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Di(2-ethylhexyl)phthalateHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -388,7 +501,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Heptachlor">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Heptachlor">
+    <owl:sameAs rdf:resource="&pol;Heptachlor"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#HeptachlorHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -410,7 +531,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Vinylchloride">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Vinylchloride">
+    <owl:sameAs rdf:resource="&pol;Vinylchloride"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#VinylchlorideHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -426,7 +554,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Simazine">
+    <hasHealthEffect rdf:resource="#Blood_problems"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Simazine">
+    <owl:sameAs rdf:resource="&pol;Simazine"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#SimazineHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -442,7 +577,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Barium">
+    <hasHealthEffect rdf:resource="#Increase_in_blood_pressure"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Barium">
+    <owl:sameAs rdf:resource="&pol;Barium"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#BariumHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -458,7 +600,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Pentachlorophenol">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Pentachlorophenol">
+    <owl:sameAs rdf:resource="&pol;Pentachlorophenol"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#PentachlorophenolHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -486,7 +637,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;1,2-Dibromo-3-chloropropane(DBCP)">
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,2-Dibromo-3-chloropropane(DBCP)">
+    <owl:sameAs rdf:resource="&pol;1,2-Dibromo-3-chloropropane(DBCP)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,2-Dibromo-3-chloropropane(DBCP)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -508,7 +667,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Cadmium">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Cadmium">
+    <owl:sameAs rdf:resource="&pol;Cadmium"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#CadmiumHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -524,7 +690,19 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Alachlor">
+    <hasHealthEffect rdf:resource="#Eye_irritation"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Spleen"/>
+    <hasHealthEffect rdf:resource="#Anemia"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Alachlor">
+    <owl:sameAs rdf:resource="&pol;Alachlor"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#AlachlorHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -570,7 +748,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Asbestos(fiber_10micrometers)">
+    <hasHealthEffect rdf:resource="#Benign_intestinal_polyps"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Asbestos(fiber_10micrometers)">
+    <owl:sameAs rdf:Resource="&pol;Asbestos(fiber_10micrometers)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Asbestos(fiber_10micrometers)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -586,7 +771,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Dichloromethane">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Dichloromethane">
+    <owl:sameAs rdf:resource="&pol;Dichloromethane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#DichloromethaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -608,7 +801,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Lindane">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Lindane">
+    <owl:sameAs rdf:resource="&pol;Lindane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#LindaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -630,7 +831,18 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Ethylenedibromide">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Stomach"/>
+    <hasHealthEffect rdf:resource="#Reproductive_system"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Ethylenedibromide">
+    <owl:sameAs rdf:resource="&pol;Ethylenedibromide"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#EthylenedibromideHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -670,7 +882,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chlorobenzene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Chlorobenzene">
+    <owl:sameAs rdf:resource="&pol;Chlorobenzene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#ChlorobenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -692,7 +912,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chloramines(asCl">
+    <hasHealthEffect rdf:resource="#Eye_irritation"/>
+    <hasHealthEffect rdf:resource="#Nose_irritation"/>
+    <hasHealthEffect rdf:resource="#Stmoach_discomfort"/>
+    <hasHealthEffect rdf:resource="#Anemia"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Chloramines(asCl">
+    <owl:sameAs rdf:resource="&pol;Chloramines(asCl"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Chloramines(asClHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -726,7 +956,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Mercury(inorganic)">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Mercury(inorganic)">
+    <owl:sameAs rdf:resource="&pol;Mercury(inorganic)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Mercury(inorganic)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -742,7 +979,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Giardialamblia">
+    <hasHealthEffect rdf:resource="#Gastrointestinal_illness"/>
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Vomiting"/>
+    <hasHealthEffect rdf:resource="#Cramps"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Giardialamblia">
+    <owl:sameAs rdf:resource="&pol;Giardialamblia"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#GiardialambliaHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -776,7 +1023,18 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Thallium">
+    <hasHealthEffect rdf:resource="#Hair_loss"/>
+    <hasHealthEffect rdf:resource="#Changes_in_blood"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Intestine"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Thallium">
+    <owl:sameAs rdf:resource="&pol;Thallium"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#ThalliumHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -816,7 +1074,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;2,4-D">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Adrenal_glands"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;2,4-D">
+    <owl:sameAs rdf:resource="&pol;2,4-D"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#2,4-DHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -844,7 +1111,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Toluene">
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Toluene">
+    <owl:sameAs rdf:resource="&pol;Toluene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#TolueneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -917,7 +1193,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;cis-1,2-Dichloroethylene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;cis-1,2-Dichloroethylene">
+    <owl:sameAs rdf:resource="&pol;cis-1,2-Dichloroethylene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#cis-1,2-DichloroethyleneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -933,7 +1216,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Heptachlorepoxide">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Heptachlorepoxide">
+    <owl:sameAs rdf:resource="&pol;Heptachlorepoxide"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#HeptachlorepoxideHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -955,7 +1246,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Viruses(enteric)">
+    <hasHealthEffect rdf:resource="#Gastrointestinal_illness"/>
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Vomiting"/>
+    <hasHealthEffect rdf:resource="#Cramps"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Viruses(enteric)">
+    <owl:sameAs rdf:resource="&pol;Viruses(enteric)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Viruses(enteric)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -989,7 +1290,8 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+<!--
   <owl:Class rdf:about="#ColiformHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1041,6 +1343,13 @@ xmlns:xsd="&xsd;">
   <owl:Thing rdf:about="&epa;Coliform_fecal_general">
     <owl:sameAs rdf:resource="&pol;Coliform_fecal_general"/>
   </owl:Thing>
+
+  <owl:Thing rdf:about="&pol;1,1-Dichloroethylene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,1-Dichloroethylene">
+    <owl:sameAs rdf:resource="&pol;1,1-Dichloroethylene"/>
+  </owl:Thing>
 <!--
   <owl:Class rdf:about="#1,1-DichloroethyleneHealthCause"> 
     <rdfs:subClassOf>
@@ -1057,7 +1366,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Cryptosporidium">
+    <hasHealthEffect rdf:resource="#Gastrointestinal_illness"/>
+    <hasHealthEffect rdf:resource="#Diarrhea"/>
+    <hasHealthEffect rdf:resource="#Vomiting"/>
+    <hasHealthEffect rdf:resource="#Cramps"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Cryptosporidium">
+    <owl:sameAs rdf:resource="&pol;Cryptosporidium"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#CryptosporidiumHealthCause"> 
     <rdfs:subClassOf>
      <owl:Restriction>
@@ -1091,7 +1410,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Endrin">
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Endrin">
+    <owl:sameAs rdf:resource="&pol;Endrin"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#EndrinHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1107,7 +1433,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Dioxin(2,3,7,8-TCDD)">
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Dioxin(2,3,7,8-TCDD)">
+    <owl:sameAs rdf:resource="&pol;Dioxin(2,3,7,8-TCDD)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Dioxin(2,3,7,8-TCDD)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1129,7 +1463,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Lead">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#High_blood_pressure"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Lead">
+    <owl:sameAs rdf:resource="&pol;Lead"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#LeadHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1151,7 +1493,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Selenium">
+    <hasHealthEffect rdf:resource="#Hair_loss"/>
+    <hasHealthEffect rdf:resource="#Fingernail_loss"/>
+    <hasHealthEffect rdf:resource="#Numbness"/>
+    <hasHealthEffect rdf:resource="#Circulatory_systems"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Selenium">
+    <owl:sameAs rdf:resource="&pol;Selenium"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#SeleniumHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1185,7 +1537,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Glyphosate">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Glyphosate">
+    <owl:sameAs rdf:resource="&pol;Glyphosate"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#GlyphosateHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1207,7 +1567,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Ethylbenzene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Ethylbenzene">
+    <owl:sameAs rdf:resource="&pol;Ethylbenzene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#EthylbenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1229,7 +1597,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Bromate">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Bromate">
+    <owl:sameAs rdf:resource="&pol;Bromate"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#BromateHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1245,7 +1620,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;1,1,2-Trichloroethane">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Immune_system"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,1,2-Trichloroethane">
+    <owl:sameAs rdf:resource="&pol;1,1,2-Trichloroethane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,1,2-TrichloroethaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1273,7 +1657,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Xylenes(total)">
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Xylenes(total)">
+    <owl:sameAs rdf:resource="&pol;Xylenes(total)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Xylenes(total)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1328,7 +1719,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Nitrate(measuredasNitrogen)">
+    <hasHealthEffect rdf:resource="#Shortness_of_breath"/>
+    <hasHealthEffect rdf:resource="#Blue-baby_syndrome"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Nitrate(measuredasNitrogen)">
+    <owl:sameAs rdf:resource="&pol;Nitrate(measuredasNitrogen)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Nitrate(measuredasNitrogen)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1350,7 +1749,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;2,4,5-TP(Silvex)">
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;2,4,5-TP(Silvex)">
+    <owl:sameAs rdf:resource="&pol;2,4,5-TP(Silvex)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#2,4,5-TP(Silvex)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1366,7 +1772,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Atrazine">
+    <hasHealthEffect rdf:resource="#Cardiovascular_system"/>
+    <hasHealthEffect rdf:resource="#Reproductive_problems"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Atrazine">
+    <owl:sameAs rdf:resource="&pol;Atrazine"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#AtrazineHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1388,7 +1802,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Chlordane">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Chlordane">
+    <owl:sameAs rdf:resource="&pol;Chlordane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#ChlordaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1416,7 +1839,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;1,2-Dichloropropane">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,2-Dichloropropane">
+    <owl:sameAs rdf:resource="&pol;1,2-Dichloropropane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,2-DichloropropaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1432,7 +1862,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;1,1,1-Trichloroethane">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Circulatory_problems"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,1,1-Trichloroethane">
+    <owl:sameAs rdf:resource="&pol;1,1,1-Trichloroethane"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,1,1-TrichloroethaneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1460,7 +1899,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Legionella">
+    <hasHealthEffect rdf:resource="#Legionnaire's_Disease"/>
+    <hasHealthEffect rdf:resource="#Pneumonia"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Legionella">
+    <owl:sameAs rdf:resource="&pol;Legionella"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#LegionellaHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1482,7 +1929,18 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+ <owl:Thing rdf:about="&pol;p-Dichlorobenzene">
+   <hasHealthEffect rdf:resource="#Anemia"/>
+   <hasHealthEffect rdf:resource="#Liver"/>
+   <hasHealthEffect rdf:resource="#Kidney"/>
+   <hasHealthEffect rdf:resource="#Spleen"/>
+   <hasHealthEffect rdf:resource="#Changes_in_blood"/>
+ </owl:Thing>
+ <owl:Thing rdf:about="&epa;p-Dichlorobenzene">
+   <owl:sameAs rdf:resource="&pol;p-Dichlorobenzene"/>
+ </owl:Thing>
+<!--
   <owl:Class rdf:about="#p-DichlorobenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1522,7 +1980,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Methoxychlor">
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Methoxychlor">
+    <owl:sameAs rdf:resource="&pol;Methoxychlor"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#MethoxychlorHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1538,7 +2003,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Hexachlorobenzene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Hexachlorobenzene">
+    <owl:sameAs rdf:resource="&pol;Hexachlorobenzene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#HexachlorobenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1572,7 +2047,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Picloram">
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Picloram">
+    <owl:sameAs rdf:resource="&pol;Picloram"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#PicloramHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1588,7 +2070,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;1,2,4-Trichlorobenzene">
+    <hasHealthEffect rdf:resource="#Adrenal_glands"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;1,2,4-Trichlorobenzene">
+    <owl:sameAs rdf:resource="&pol;1,2,4-Trichlorobenzene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#1,2,4-TrichlorobenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1604,7 +2093,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf>
   </owl:Class> 
-
+-->
+  <owl:Thing rdf:about="&pol;Carbontetrachloride">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Carbontetrachloride">
+    <owl:sameAs rdf:resource="&pol;Carbontetrachloride"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#CarbontetrachlorideHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1626,7 +2123,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Acrylamide">
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Blood_problems"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Acrylamide">
+    <owl:sameAs rdf:resource="&pol;Acrylamide"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#AcrylamideHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1654,7 +2160,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;TotalTrihalomethanes(TTHMs)">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;TotalTrihalomethanes(TTHMs)">
+    <owl:sameAs rdf:resource="&pol;TotalTrihalomethanes(TTHMs)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#TotalTrihalomethanes(TTHMs)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1688,7 +2204,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Tetrachloroethylene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Tetrachloroethylene">
+    <owl:sameAs rdf:resource="&pol;Tetrachloroethylene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#TetrachloroethyleneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1710,7 +2234,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf>
   </owl:Class> 
-
+-->
+  <owl:Thing rdf:about="&pol;Endothall">
+    <hasHealthEffect rdf:resource="#Stomach"/>
+    <hasHealthEffect rdf:resource="#Intestinal"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Endothall">
+    <owl:sameAs rdf:resource="&pol;Endothall"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#EndothallHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1732,7 +2264,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Diquat">
+    <hasHealthEffect rdf:resource="#Cataracts"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Diquat">
+    <owl:sameAs rdf:resource="&pol;Diquat"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#DiquatHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1748,7 +2287,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;o-Dichlorobenzene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Circulatory_systems"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;o-Dichlorobenzene">
+    <owl:sameAs rdf:resource="&pol;o-Dichlorobenzene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#o-DichlorobenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1776,7 +2324,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Di(2-ethylhexyl)adipate">
+    <hasHealthEffect rdf:resource="#Weight_loss"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Di(2-ethylhexyl)adipate">
+    <owl:sameAs rdf:resource="&pol;Di(2-ethylhexyl)adipate"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Di(2-ethylhexyl)adipateHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1804,7 +2361,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;trans-1,2-Dichloroethylene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;trans-1,2-Dichloroethylene">
+    <owl:sameAs rdf:resource="&pol;trans-1,2-Dichloroethylene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#trans-1,2-DichloroethyleneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1820,7 +2384,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Carbofuran">
+    <hasHealthEffect rdf:resource="#Blood_problems"/>
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Reproductive_system"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Carbofuran">
+    <owl:sameAs rdf:resource="&pol;Carbofuran"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#CarbofuranHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1848,7 +2421,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Benzene">
+    <hasHealthEffect rdf:resource="#Anemia"/>
+    <hasHealthEffect rdf:resource="#Decrease_in_blood_platelets"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Benzene">
+    <owl:sameAs rdf:resource="&pol;Benzene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#BenzeneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1876,7 +2458,14 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Dinoseb">
+    <hasHealthEffect rdf:resource="#Reproductive_difficulties"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Dinoseb">
+    <owl:sameAs rdf:resource="&pol;Dinoseb"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#DinosebHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1892,7 +2481,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Epichlorohydrin">
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+    <hasHealthEffect rdf:resource="#Stomach"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Epichlorohydrin">
+    <owl:sameAs rdf:resource="&pol;Epichlorohydrin"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#EpichlorohydrinHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1914,7 +2511,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Antimony">
+    <hasHealthEffect rdf:resource="#Increase_in_blood_cholesterol"/>
+    <hasHealthEffect rdf:resource="#Decrease_in_blood_sugar"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Antimony">
+    <owl:sameAs rdf:resource="&pol;Antimony"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#AntimonyHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1936,7 +2541,17 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Toxaphene">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Thyroid"/>
+    <hasHealthEffect rdf:resource="#Increased_risk_of_cancer"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Toxaphene">
+    <owl:sameAs rdf:resource="&pol;Toxaphene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#ToxapheneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1970,7 +2585,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Cyanide(asfreecyanide)">
+    <hasHealthEffect rdf:resource="#Nervous_system"/>
+    <hasHealthEffect rdf:resource="#Thyroid"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Cyanide(asfreecyanide)">
+    <owl:sameAs rdf:resource="&pol;Cyanide(asfreecyanide)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Cyanide(asfreecyanide)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -1992,7 +2615,16 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Styrene">
+    <hasHealthEffect rdf:resource="#Liver"/>
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Circulatory_systems"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Styrene">
+    <owl:sameAs rdf:resource="&pol;Styrene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#StyreneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -2020,7 +2652,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Nitrite(measuredasNitrogen)">
+    <hasHealthEffect rdf:resource="#Shortness_of_breath"/>
+    <hasHealthEffect rdf:resource="#Blue-baby_syndrome"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Nitrite(measuredasNitrogen)">
+    <owl:sameAs rdf:resource="&pol;Nitrite(measuredasNitrogen)"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#Nitrite(measuredasNitrogen)HealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -2042,7 +2682,15 @@ xmlns:xsd="&xsd;">
       </owl:Restriction> 
     </owl:intersectionOf> 
   </owl:Class>
-
+-->
+  <owl:Thing rdf:about="&pol;Hexachlorocyclopentadiene">
+    <hasHealthEffect rdf:resource="#Kidney"/>
+    <hasHealthEffect rdf:resource="#Stomach"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Hexachlorocyclopentadiene">
+    <owl:sameAs rdf:resource="&pol;Hexachlorocyclopentadiene"/>
+  </owl:Thing>
+<!--
   <owl:Class rdf:about="#HexachlorocyclopentadieneHealthCause"> 
     <rdfs:subClassOf>
       <owl:Restriction>
