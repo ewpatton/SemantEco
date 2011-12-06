@@ -1727,6 +1727,13 @@ xmlns:xsd="&xsd;">
   <owl:Thing rdf:about="&epa;Nitrate(measuredasNitrogen)">
     <owl:sameAs rdf:resource="&pol;Nitrate(measuredasNitrogen)"/>
   </owl:Thing>
+  <owl:Thing rdf:about="&pol;Nitrate">
+    <hasHealthEffect rdf:resource="#Shortness_of_breath"/>
+    <hasHealthEffect rdf:resource="#Blue-baby_syndrome"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Nitrate">
+    <owl:sameAs rdf:resource="&pol;Nitrate"/>
+  </owl:Thing>
 <!--
   <owl:Class rdf:about="#Nitrate(measuredasNitrogen)HealthCause"> 
     <rdfs:subClassOf>
@@ -2659,6 +2666,13 @@ xmlns:xsd="&xsd;">
   </owl:Thing>
   <owl:Thing rdf:about="&epa;Nitrite(measuredasNitrogen)">
     <owl:sameAs rdf:resource="&pol;Nitrite(measuredasNitrogen)"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&pol;Nitrite">
+    <hasHealthEffect rdf:resource="#Shortness_of_breath"/>
+    <hasHealthEffect rdf:resource="#Blue-baby_syndrome"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="&epa;Nitrite">
+    <owl:sameAs rdf:resource="&pol;Nitrite"/>
   </owl:Thing>
 <!--
   <owl:Class rdf:about="#Nitrite(measuredasNitrogen)HealthCause"> 
