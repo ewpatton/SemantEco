@@ -345,6 +345,9 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	    var contents = "";
 	    if(marker.siteData.label != '')
 	      contents += "<div class='top'>Site: "+marker.siteData.label+"</div>";
+	    if(bindings.length==0) {
+	      contents += "<div class='bottom'>This site has no known pollution based on the regulation you selected.</div>";
+	    }
 	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
 	    var bindings = data.results.bindings;
 	    var found = {};
@@ -382,7 +385,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		contents += "<td>";
 		var first = true;
 		for(var effect in effects[label]) {
-		  if(!first) contents += ", ";
+		  if(!first) contents += "<br/>";
 		  contents += effects[label][effect];
 		  first = false;
 		}
