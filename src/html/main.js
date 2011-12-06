@@ -345,15 +345,15 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	    var contents = "";
 	    if(marker.siteData.label != '')
 	      contents += "<div class='top'>Site: "+marker.siteData.label+"</div>";
+	    var bindings = data.results.bindings;
+	    var found = {};
+	    var effects = {};
 	    if(bindings.length==0) {
 	      contents += "<div class='bottom'>This site has no known pollution based on the regulation you selected.</div>";
 	      marker.openInfoWindow(contents);
 	      return;
 	    }
 	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
-	    var bindings = data.results.bindings;
-	    var found = {};
-	    var effects = {};
 	    var table = $(document.createElement("table"));
 	    for(var i=0;i<bindings.length;i++) {
 	      try {
@@ -387,7 +387,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		contents += "<td>";
 		var first = true;
 		for(var effect in effects[label]) {
-		  if(!first) contents += "<br/>";
+		  if(!first) contents += ",<br/>";
 		  contents += effects[label][effect];
 		  first = false;
 		}
