@@ -379,6 +379,9 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		found[label+time] = true;
 		var value = result["value"].value;
 		var unit = result["unit"].value;
+		if(unit.indexOf("http://")>=0) {
+		  unit = unit.substr(unit.lastIndexOf("/")+1);
+		}
 		var op = result["op"].value;
 		var limit = result["limit"].value;
 		contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td>";

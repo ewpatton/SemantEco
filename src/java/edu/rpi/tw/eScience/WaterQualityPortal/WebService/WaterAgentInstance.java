@@ -66,7 +66,7 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 	
 	static {
-		log.setLevel(Level.ALL);
+		log.setLevel(Level.INFO);
 		//PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.NONE;
 		PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.CONSOLE;
 		states.put("CA", "http://logd.tw.rpi.edu/id/us/state/California");

@@ -2,7 +2,11 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.model;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
