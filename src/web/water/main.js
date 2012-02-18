@@ -6,13 +6,134 @@ var data_type=new Array();
 data_source["EPA"]=1;
 data_source["USGS"]=1;
 //var visualizeBaseUrl="http://localhost/visualize.php";
-var visualizeEPABaseUrl="http://localhost/demoWater/epaTrend.html";
-var visualizeUSGSBaseUrl="http://localhost/demoWater/usgsTrend.html";
+var zipagent="http://was.tw.rpi.edu/water/service/zip";
+var orgpediaAgent="http://was.tw.rpi.edu/swqp/orgpediaData.php";
+var visualizeEPABaseUrl="http://was.tw.rpi.edu/swqp/trend/epaTrend.html";
+var visualizeUSGSBaseUrl="http://was.tw.rpi.edu/swqp/trend/usgsTrend.html";
 
 if(document.createElementNS===undefined) {
   document.createElementNS = function(a,b) {
     return document.createElement(b);
   };
+}
+
+function closeModal() {
+  $(".modal-display").css("display","none");
+}
+
+function showModal() {
+  $(".modal-display").css("display","block");
+}
+
+function showSelectDialogHelper(id) {
+  var sources = JSON.stringify($.map($('[name="source"]:checked'), function(x) { return x.value; }));
+  var callback = function() {
+    var list = $("#modal-content input[type=\"checkbox\"]:checked").map(function(x,y) { return $(y).val(); });
+    $("#"+id).val(list.toArray().join(";"));
+    closeModal();
+  };
+  $.ajax({type:"GET",
+	  url: thisserviceagent,
+	  data: {"sources": sources,
+		 "countyCode": countyCode,
+		 "state": state,
+		 "method": (id=="health"?
+			    "listHealthEffects":
+			    "listCharacteristics")},
+	  dataType: "json",
+	  success: function(data) {
+	    var oldItems = $("#"+id).val().split(";");
+	    var content = $("#modal-content");
+	    content.empty();
+	    content.css("overflow","scroll");
+	    var helper = $(document.createElement("span"));
+	    content.append(helper);
+	    var div = document.createElement("span");
+	    $(div).css("border-bottom","solid black 1px");
+	    var checkAll = document.createElement("input");
+	    checkAll.type = "checkbox";
+	    $(div).append(checkAll);
+	    $(checkAll).click(function() {
+	      $("#modal-content input[type=\"checkbox\"]").map(function (x,y) {
+		y.checked = checkAll.checked; });
+	      return true;
+	    });
+	    $(div).append(document.createTextNode("Check The Box To Select All Items"));
+	    helper.append(div);
+	    var ok = document.createElement("input");
+	    ok.type = "button";
+	    $(ok).val("OK");
+	    $(ok).click(callback);
+	    helper.append(ok);
+	    helper.append("<br/>");
+	    var bindings = data.results.bindings;
+	    var list = [];
+	    for(var i=0;i<bindings.length;i++) {
+	      var binding = bindings[i];
+	      var item = binding["item"].value;
+	      var text = item.substr(item.indexOf("#")+1);
+	      var check = document.createElement("input");
+	      check.type="checkbox";
+	      $(check).val(text);
+	      if($.inArray(text, oldItems)>-1)
+		check.checked = true;
+	      helper.append(check);
+	      helper.append(document.createTextNode(text.replace(/_/g," ")));
+	      helper.append("<br/>");
+	    }
+	    ok = document.createElement("input");
+	    ok.type = "button";
+	    $(ok).val("OK");
+	    $(ok).click(callback);
+	    helper.append(ok);
+	    
+	    showModal();
+	    
+	    var width = Math.min(helper.width()+32,776);
+	    content.width(width);
+	    var height = Math.min(helper.height()+48,546);
+	    content.height(height);
+	    $("#modal-window").width(width+24);
+	    $("#modal-window").height(height+54);
+	    $(div).css("display","block").css("width","100%");
+	  }});
+}
+
+function showSelectDialog(id) {
+  var address = document.forms[0].zip.value;
+  if(address.length != 5) return;
+  if(state==null && countyCode == null) {
+    $.ajax({type: "GET",
+            url: thiszipagent, // SPARQL service URI
+            data:"code="+address, // query parameter
+            dataType: "json",	  
+            success: function(data){
+	      window.state=data.result.stateAbbr;
+	      thisStateCode=data.result.stateCode;
+              if(thisStateCode==undefined)
+                thisStateCode=stateAbbr2Code[state];
+	      window.stateCode=thisStateCode.split(":")[1];
+	      countyCode=data.result.countyCode;
+              countyCode=countyCode.replace("US:","");//strip the "US:"
+	      countyCode=countyCode.split(":")[1];
+	      window.countyCode=countyCode.replace(/^0+/,"");
+
+	      showSelectDialogHelper(id);
+	    },
+	    error: function(data) {
+	      window.alert("Unable to determine enough information about your location.");
+	      $("#spinner").css("display","none");
+	    }
+	   });
+  }
+  else {
+    showSelectDialogHelper(id);
+  }
+}
+
+function submit_zip(zip){
+document.getElementById("zip").value=zip;
+showAddress(zip,'0','5000');
 }
 
 function submitQuery(value,name){
@@ -36,15 +157,9 @@ else if(name=="data_type"){
 	   data_type[value]="0";
     }	
 }
-printQuery();
 }
 
 
-function printQuery()
-{
- for(var i in data_source){document.getElementById("test").innerHTML+=i+" "+data_source[i];}
-  for(var i in data_type){document.getElementById("test").innerHTML+=i+" "+data_type[i];}
-}
 
 function parent(x) {
   return x.parentElement ? x.parentElement : x.parentNode;
@@ -124,8 +239,8 @@ var contents="";
 var original="",csv="";
 	   var success = function(data) {
 	contents += "Water Regulation Provenance: http://tw2.tw.rpi.edu/zhengj3/owl/"+regulation+".pml\n";
-	contents += "element: "+element+"\n";
-	contents += "value: "+value+"\n";
+	contents += "characteristic: "+element+"\n";
+	contents += "limit: "+value+"\n";
 	contents += "From:\n";
 	contents += "RDF Source: "+threshold+"\n";
 	
@@ -184,7 +299,7 @@ function showwaterdatapml(){
 		countyCode="0"+countyCode;
 	else if(countyCode.length==1)
 		countyCode="00"+countyCode;
-	contents += "Water Data Provenance: http://tw2.tw.rpi.edu/zhengj3/owl/"+state+"-"+stateCode+"-"+countyCode+"-result.zip.pml.ttl\n";
+	contents += "Water Data Provenance: http://tw2.tw.rpi.edu/zhengj3/pml/US-"+stateCode+"-"+countyCode+"-result.zip.pml.ttl\n";
 	contents += "From:\n";
 	contents += "RDF Source: http://tw2.tw.rpi.edu/zhengj3/demo/waterData.php?state="+state+"&county="+countyCode+"&start="+start+"&limit="+limit+"&source=USGS\r\n";
 	contents +="Original Source: http://qwwebservices.usgs.gov/Result/search?statecode=US:44&countycode=US:44:001&mimeType=csv&zip=yes";
@@ -193,9 +308,9 @@ function showwaterdatapml(){
 function showfacilitypml(permit,element, value, operator){
 
     var contents="";
-	contents += "Facility Regulation & Data Provenance: http://tw2.tw.rpi.edu/zhengj3/owl/"+permit+"csv.pml.ttl\n";
-	contents += "element: "+element+"\n";
-	contents += "value: "+value+"\n";
+	contents += "Facility Regulation & Data Provenance: http://tw2.tw.rpi.edu/zhengj3/pml/"+permit+".csv.pml.ttl\n";
+	contents += "characteristic: "+element+"\n";
+	contents += "limit: "+value+"\n";
 	contents += "Comparator: "+operator+"\n";
 	contents += "From:\n";
 	contents += "RDF Source: http://tw2.tw.rpi.edu/zhengj3/demo/facilityData.php?state"+state+"&county="+countyCode+"&start="+start+"&limit="+limit+"\n";
@@ -204,9 +319,97 @@ function showfacilitypml(permit,element, value, operator){
 	alert(contents);
 }
 
-function queryForWaterPollution(site, justQuery, icon) {
-  
-  
+function queryForWaterPollution(marker /*site, justQuery, icon*/) {
+  sources = JSON.stringify($.map($('[name="source"]:checked'), function(x) { return x.value; }));
+  regulation = $('[name="regulation"]:checked').val();
+  contaminants = $("#characteristicName").val();
+  effects = $("#health").val();
+  time = $("#time").val();
+  site = marker.siteData.uri;
+  $("#spinner").css("display","block");
+  $.ajax({type: "GET",
+	  url: thisserviceagent,
+	  data: {"sources":sources,
+		 "regulation":regulation,
+		 "contaminants":contaminants,
+		 "effects":effects,
+		 "time":time,
+		 "countyCode":countyCode,
+		 "state":state,
+		 "site":site,
+		 "method":"queryForWaterPollution",
+		 "limit":JSON.stringify(window.limits)},
+	  dataType: "json",
+	  success: function(data) {
+	    $("#spinner").css("display","none");
+	    var contents = "";
+	    if(marker.siteData.label != '')
+	      contents += "<div class='top'>Site: "+marker.siteData.label+"</div>";
+	    var bindings = data.results.bindings;
+	    var found = {};
+	    var effects = {};
+	    if(bindings.length==0) {
+	      contents += "<div class='bottom'>This site has no known pollution based on the regulation you selected.</div>";
+	      marker.openInfoWindow(contents);
+	      return;
+	    }
+	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
+	    var table = $(document.createElement("table"));
+	    for(var i=0;i<bindings.length;i++) {
+	      try {
+		var result = bindings[i];
+		var element = result["element"].value;
+		var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
+
+		var effect = result["effect"].value;
+		if(effects[label] == null)
+		  effects[label] = {};
+		if(!effects[label][effect])
+		  effects[label][effect] = effect.substr(effect.indexOf("#")+1).replace(/_/g," ");
+	      }
+	      catch(e) { }
+	    }
+	    for(var i=0;i<bindings.length;i++) {
+	      try {
+		var result = bindings[i];
+		var element = result["element"].value;
+		var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
+		var time = result["time"].value;
+		if(found[label+time]) continue;
+		found[label+time] = true;
+		var value = result["value"].value;
+		var unit = result["unit"].value;
+		if(unit.indexOf("http://")>=0) {
+		  unit = unit.substr(unit.lastIndexOf("/")+1);
+		}
+		var op = result["op"].value;
+		var limit = result["limit"].value;
+		contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td>";
+		//contents += label+"</td><td>"+value+" "+unit+"</td><td>";
+		//contents += label+"</td><td>"+value+" "+unit+"<a href=\"javascript:openProvWindow("+element+", "+value+", "+unit+")\">?</a></td><td>";
+		contents += label+"</td><td>"+value+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ false+","+marker.siteData.isFacility+",\'"+encodeURIComponent(marker.siteData.uri)+"\')\">?</a></td><td>";
+		contents += op+" "+limit+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ true+")\">?</a></td><td>"+time+"</td>";
+		contents += "<td>";
+		//if(i<3) alert(marker.siteData.uri);
+		var first = true;
+		for(var effect in effects[label]) {
+		  if(!first) contents += ",<br/>";
+		  contents += effects[label][effect];
+		  first = false;
+		}
+	      }
+	      catch(e) { }
+	    }
+	    contents += "</td></tr></table></div>";
+	    contents += "<div class='bottom'><a href='"+(marker.siteData.isFacility?"trend/epaTrend.html":"trend/usgsTrend.html")+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(marker.siteData.uri)+"' target='_new'>Visualize Characteristics</a></div><div class='bottom'></div>";
+	    marker.openInfoWindow(contents);
+	  },
+	  error: function(data) {
+	    window.alert("Unable to retrieve data about this location.");
+	    $("#spinner").css("display","none");
+	  }
+	 });
+  return;
 
   var query =
     "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
@@ -233,7 +436,7 @@ function queryForWaterPollution(site, justQuery, icon) {
     "?desc list:member ?restriction .\r\n"+
     "?restriction owl:onProperty epa:hasValue .\r\n"+
     "?restriction owl:someValuesFrom ?valueRestriction .\r\n"+
-    "?valueRestriction owl:withRestrictions ?desc2 .\r\n"+
+     "?valueRestriction owl:withRestrictions ?desc2 .\r\n"+
     "?desc2 list:member ?limiter .\r\n"+
     "?limiter xsd:minInclusive ?valuelimit .\r\n"+
 	"?threshold owl:intersectionOf ?desc4 .\r\n"+
@@ -244,10 +447,16 @@ function queryForWaterPollution(site, justQuery, icon) {
     "} ORDER BY DESC(?time)";
 
   var contents="";
+  //alert(site.label);
+ if(site.label!=undefined && site.label !="")   
+   contents+="<p>Site:  "+site.label+"</p>";
+  else
+   contents+="";//"<p>Site: missing site name from source data </p>"
+
   if(site.isPolluted) {
     
     var success = function(data) {
-	contents += "<table border=1><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
+	contents += "<table border=1><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health</th></tr>";
       $(data).find('result').each(function(){
 	var th="",time="",unit="",limit="",label="",value="",page="",element="";
 	$(this).find("binding").each(function(){
@@ -282,10 +491,193 @@ function queryForWaterPollution(site, justQuery, icon) {
 		//alert(th+"222");
 	  }	  
 	  if(element!=""&&value!=""&&(unit!=""||value=="0")&&limit!=""&&time!=""&&th!=""){
+
+		contents += "<tr><td>"+element+"</td><td>"+value+" "+unit+"<a href=\"javascript:showwaterdatapml()\">?</a></td><td>"+limit+" "+unitlimit+"<a href=\"javascript:showwaterregulationpml('"+th+"','"+element+"','"+limit+"')\">?</a></td><td>"+time+"</td><td>";
+		//		contents += "<a href=\"javascript:healthEffectDesc(\""+element+"\")\">Health Effect?</a>";
+		contents += healthEffectDesc(element);
+	      contents +="</td></tr>";
+
 	    //alert(th+"333");
 		//threshold="http://tw2.tw.rpi.edu/zhengj3/owl/EPA-regulation.owl#ExcessiveGiardialambliaMeasurement";
-		contents += "<tr><td>"+element+"</td><td>"+value+" "+unit+"<a href=\"javascript:showwaterdatapml()\">?</a></td><td>"+limit+" "+unitlimit+"<a href=\"javascript:showwaterregulationpml('"+th+"','"+element+"','"+limit+"')\">?</a></td><td>"+time+"</td></tr>";
+
 		
+	  }
+	});
+      });
+	  contents +="</table>";
+	  contents+="<p><a href='"+visualizeUSGSBaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize Characteristics</a></p>";
+      icon.openInfoWindow(contents);
+    };
+	   var source=null;
+   if(data_source["USGS"]==1)  
+      source="USGS";
+  var parameter="data=water&state="+state+"&countyCode="+countyCode+"&query="+encodeURIComponent(query)+"&start=0&limit="+limit+"&source="+source;
+  if(regulation!=""){
+  parameter+="&regulation="+regulation;
+  }
+    $.ajax({type: "GET",
+	    url: thisserviceagent, // SPARQL service URI		    
+	    data: parameter, // query parameter
+		async: false,
+	    beforeSend: function(xhr) {
+              xhr.setRequestHeader("Accept", "application/sparql-results+xml");
+            },
+	    dataType: "xml",
+	    error: function(xhr, text, err) {
+              if(xhr.status == 200) {
+                success(xhr.responseXML);
+              }
+            },
+	    success: success
+	   });
+	   /*
+	      var success2 = function(data) {
+      $(data).find('result').each(function() {
+	$(this).find("binding").each(function() {
+	  if($(this).attr("name")=="lastTime") {
+	    mostRecent.removeChild(mostRecentSpinner);
+	    mostRecent.appendChild(document.createTextNode($(this).find("literal").text()));
+	  }
+	});
+      });
+    };
+    $.ajax({type: "GET",
+	    url: "http://was.tw.rpi.edu/water/service/agent",
+	    data: "session="+window.sessionID+
+	    "&query="+encodeURIComponent(timeQuery),
+	    beforeSend: function(xhr) {
+	      xhr.setRequestHeader("Accept", "application/sparql-results+xml");
+	    },
+	    dataType: "xml",
+	    error: function(xhr, text, err) {
+	      if(xhr.status == 200) {
+		success2(xhr.responseXML);
+	      }
+	    },
+	    success: success2
+	   });
+	   */
+    return contents;
+  }
+  else {
+    contents += "<p>According to all current regulations, this water supply is not polluted</p>";
+	  contents+="<p><a href='"+visualizeUSGSBaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize Characteristics</a></p>";
+    return contents;
+  }
+}
+function healthEffectDesc(element){
+
+	      var healthsparql = "prefix epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#> prefix owl:<http://www.w3.org/2002/07/owl#> PREFIX list: <http://jena.hpl.hp.com/ARQ/list#> select distinct ?effect where{?healthEffect epa:hasCause ?cause. ?cause owl:intersectionOf ?restrictions. ?restrictions list:member ?restriction. ?restriction owl:onProperty epa:hasElement. ?restriction owl:hasValue <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"+element+">. ?healthEffect epa:hasEffect ?effect.}";
+
+	      var params = "data=water&state=RI&countyCode=3&start=0&limit=1&source=USGS&regulation=EPA-regulation&query="+encodeURIComponent(healthsparql);
+
+
+	      var healthString ="";
+
+	      $.ajax({type:"GET",
+			  url:thisserviceagent,
+			  data:params,
+			  async: false,
+			  beforeSend: function(xhr) {
+			  xhr.setRequestHeader("Accept", "application/sparql-results+xml");
+		      },
+			  dataType: "xml",
+			  error: function(xhr, text, err) {
+			  if(xhr.status == 200) {
+			      success(xhr.responseXML);
+			  }
+		      },
+			  success: function(data){
+			  $(data).find('result').each(function(){
+				  $(this).find("binding").each(function(){
+					  if($(this).attr("name")=="effect"){
+					      var effectUri =  $(this).find("uri").text();
+					      healthString += effectUri.substring(effectUri.indexOf("#")+1)+", ";
+					      
+					  }
+				      }
+				      )}
+			      )}			     				     
+		  });
+	      return healthString;
+
+}
+
+function queryForFlood(site, justQuery, icon) {
+  
+  
+
+  var query =
+    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
+    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
+    "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
+    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
+    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\r\n"+
+    "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
+    "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
+    "SELECT DISTINCT ?measure ?value ?valuelimit WHERE {\r\n"+
+	//"Describe ?threshold WHERE{"+
+	
+    (justQuery ? "# Find measurements that exceed threshold\r\n" : "")+
+    "<"+site.uri+"> epa:hasLevelMeasurement ?measure .\r\n"+
+    "?measure rdf:type epa:FloodThreshold .\r\n"+
+	"?measure epa:hasValue ?value .\r\n"+	
+    (justQuery ? "# Retrieve threshold information from regulation ontology\r\n" : "")+
+    "?measure rdf:type ?threshold .\r\n"+	
+    "?threshold owl:intersectionOf ?desc .\r\n"+
+    "?desc list:member ?restriction .\r\n"+
+    "?restriction owl:onProperty epa:hasValue .\r\n"+
+    "?restriction owl:someValuesFrom ?valueRestriction .\r\n"+
+    "?valueRestriction owl:withRestrictions ?desc2 .\r\n"+
+    "?desc2 list:member ?limiter .\r\n"+
+    "?limiter xsd:minInclusive ?valuelimit .\r\n"+
+    "} ORDER BY DESC(?time)";
+
+	
+	
+	//document.getElementById("test").innerHTML=query.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  if(justQuery) return query;
+  var timeQuery =
+    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
+    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
+    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
+    "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
+    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
+    "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
+    "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
+    "PREFIX pmlp: <http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#>\r\n"+
+    "\r\n"+
+    "SELECT DISTINCT ?lastTime WHERE {\r\n"+
+    "  <"+site.uri+"> epa:hasMeasurement ?measure .\r\n"+
+    "  ?measure time:inXSDDateTime ?lastTime .\r\n"+
+    "}\r\n"+
+    "ORDER BY DESC(?lastTime)\r\n"+
+    "LIMIT 1";
+
+  var contents="";
+  //alert(site.label);
+ 
+  if(site.isPolluted) {
+    
+    var success = function(data) {
+	contents += "<table border=1><tr><th>Current Level</th><th>Limited Level</th>></tr>";
+      $(data).find('result').each(function(){
+	var time="",unit="",limit="",label="",value="",page="",element="";
+	$(this).find("binding").each(function(){
+	  if($(this).attr("name")=="value")
+	  {
+	    value=($(this).find("literal").text());
+	  }
+
+	  if($(this).attr("name")=="valuelimit")
+	  {
+	    limit=($(this).find("literal").text());
+	  }
+	  
+	  if(value!=""&&limit!=""){
+		
+		contents += "<tr><td>"+value+"</td><td>"+limit+"</td></tr>";
 	  }
 	});
       });
@@ -345,151 +737,60 @@ function queryForWaterPollution(site, justQuery, icon) {
   }
   else {
     contents += "<p>According to all current regulations, this water supply is not polluted</p>";
-	  contents+="<p><a href='"+visualizeBaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
+	  contents+="<p><a href='"+visualizeEPABaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
     return contents;
   }
 }
 
-
-function queryForFlood(site, justQuery, icon) {
+function queryForFacilityInfo(site, justQuery, icon) {
   
-  
+   var source=null;
+   if(data_source["EPA"]==0)
+   {
+    contents+="<p>To get data about facilities, you need to choose EPA as one of your data sources.</p>";
+    return contents;
+    }
+    //EPA is selected as a data source
+    source="EPA";
+    var UINBegin=site.uri.lastIndexOf("-")+1;
+    var facUIN=site.uri.substring(UINBegin);
+    var sparqlFacilityInfo="select distinct ?companyuri \r\n"+
+	"where{\r\n"+
+	"graph <http://tw.rpi.edu/orgpedia/source/epa-gov/facility-registry-system/version/2011-Jul-05>\r\n"+
+	"{ <http://tw.rpi.edu/orgpedia/source/epa-gov/id/facility/"+facUIN+"> owl:sameAs ?companyuri.}\r\n"+
+	"}";
 
-  var query =
-    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
-    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
-    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
-    "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
-    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
-    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\r\n"+
-    "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
-    "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
-    "SELECT DISTINCT ?measure ?value ?valuelimit WHERE {\r\n"+
-	//"Describe ?threshold WHERE{"+
-	
-    (justQuery ? "# Find measurements that exceed threshold\r\n" : "")+
-    "<"+site.uri+"> epa:hasLevelMeasurement ?measure .\r\n"+
-    "?measure rdf:type epa:FloodThreshold .\r\n"+
-	"?measure epa:hasValue ?value .\r\n"+	
-    (justQuery ? "# Retrieve threshold information from regulation ontology\r\n" : "")+
-    "?measure rdf:type ?threshold .\r\n"+	
-    "?threshold owl:intersectionOf ?desc .\r\n"+
-    "?desc list:member ?restriction .\r\n"+
-    "?restriction owl:onProperty epa:hasValue .\r\n"+
-    "?restriction owl:someValuesFrom ?valueRestriction .\r\n"+
-    "?valueRestriction owl:withRestrictions ?desc2 .\r\n"+
-    "?desc2 list:member ?limiter .\r\n"+
-    "?limiter xsd:minInclusive ?valuelimit .\r\n"+
-    "} ORDER BY DESC(?time)";
+  //alert(sparqlFacilityInfo);
 
-	
-	
-	//document.getElementById("test").innerHTML=query.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  if(justQuery) return query;
-  var timeQuery =
-    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
-    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
-    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n"+
-    "PREFIX time: <http://www.w3.org/2006/time#>\r\n"+
-    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n"+
-    "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n"+
-    "PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>\r\n"+
-    "PREFIX pmlp: <http://inferenceweb.stanford.edu/2006/06/pml-provenance.owl#>\r\n"+
-    "\r\n"+
-    "SELECT DISTINCT ?lastTime WHERE {\r\n"+
-    "  <"+site.uri+"> epa:hasMeasurement ?measure .\r\n"+
-    "  ?measure time:inXSDDateTime ?lastTime .\r\n"+
-    "}\r\n"+
-    "ORDER BY DESC(?lastTime)\r\n"+
-    "LIMIT 1";
-
-  var contents="";
-  
-  if(site.isPolluted) {
-    
-    var success = function(data) {
-	contents += "<table border=1><tr><th>Current Level</th><th>Limited Level</th>></tr>";
-      $(data).find('result').each(function(){
-	var time="",unit="",limit="",label="",value="",page="",element="";
-	$(this).find("binding").each(function(){
-	  if($(this).attr("name")=="value")
-	  {
-	    value=($(this).find("literal").text());
-	  }
-
-	  if($(this).attr("name")=="valuelimit")
-	  {
-	    limit=($(this).find("literal").text());
-	  }
-	  
-	  if(value!=""&&limit!=""){
-		
-		contents += "<tr><td>"+value+"</td><td>"+limit+"</td></tr>";
-	  }
+   var success = function(data) {
+        var facUri="";
+	$(data).find('result').each(function(){
+	   $(this).find("binding").each(function(){
+	   if($(this).attr("name")=="companyuri")
+	   {
+	    	facUri=($(this).find("uri").text());
+          //      alert(facUri);
+	   }
+	   });
 	});
-      });
-	  contents +="</table>";
-	  contents+="<p><a href='"+visualizeBaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
-      icon.openInfoWindow(contents);
-    };
-	   var source=null;
-   if(data_source["USGS"]==1)  
-      source="USGS";
-  var parameter="data=water&state="+state+"&countyCode="+countyCode+"&query="+encodeURIComponent(query)+"&start=0&limit="+limit+"&source="+source;
-  if(regulation!=""){
-  parameter+="&regulation="+regulation;
-  }
-    $.ajax({type: "GET",
-	    url: thisserviceagent, // SPARQL service URI		    
-	    data: parameter, // query parameter
-	    beforeSend: function(xhr) {
-              xhr.setRequestHeader("Accept", "application/sparql-results+xml");
-            },
-	    dataType: "xml",
-	    error: function(xhr, text, err) {
+       queryForFacilityPollution(site, facUri, justQuery, icon);
+   };
+
+       $.ajax({type: "GET",
+          url: orgpediaAgent,
+          data: "query="+encodeURIComponent(sparqlFacilityInfo),
+          dataType: "xml", 
+          error: function(xhr, text, err) {
               if(xhr.status == 200) {
                 success(xhr.responseXML);
               }
             },
-	    success: success
-	   });
-	   /*
-	      var success2 = function(data) {
-      $(data).find('result').each(function() {
-	$(this).find("binding").each(function() {
-	  if($(this).attr("name")=="lastTime") {
-	    mostRecent.removeChild(mostRecentSpinner);
-	    mostRecent.appendChild(document.createTextNode($(this).find("literal").text()));
-	  }
-	});
-      });
-    };
-    $.ajax({type: "GET",
-	    url: "http://was.tw.rpi.edu/water/service/agent",
-	    data: "session="+window.sessionID+
-	    "&query="+encodeURIComponent(timeQuery),
-	    beforeSend: function(xhr) {
-	      xhr.setRequestHeader("Accept", "application/sparql-results+xml");
-	    },
-	    dataType: "xml",
-	    error: function(xhr, text, err) {
-	      if(xhr.status == 200) {
-		success2(xhr.responseXML);
-	      }
-	    },
-	    success: success2
-	   });
-	   */
-    return contents;
-  }
-  else {
-    contents += "<p>According to all current regulations, this water supply is not polluted</p>";
-	  contents+="<p><a href='"+visualizeBaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
-    return contents;
-  }
+            success: success
+     });
 }
 
-function queryForFacilityPollution(site, justQuery, icon) {
+function queryForFacilityPollution(site, orgpediaUri, justQuery, icon) {
+  //alert("In queryForFacilityPollution");
   var query =
    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\n"+
    "PREFIX epa: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>\r\n"+
@@ -514,7 +815,14 @@ function queryForFacilityPollution(site, justQuery, icon) {
 
 
   var contents = "";
-  
+  if(orgpediaUri!="")
+   contents+="<p>Facility: <a href=\""+orgpediaUri+"\">"+site.label+"</a></p>";
+  else if(site.label!=undefined && site.label !="") 
+   contents+="<p>Facility:  "+site.label+"</p>";
+  else
+   contents+="";//"<p>Facility: missing facility name from source data </p>"
+
+ 
   if(site.isPolluted) {
 
     
@@ -606,7 +914,7 @@ function queryForFacilityPollution(site, justQuery, icon) {
   }
   else {
     contents+="<p>This facility has not violated the Clean Water Act..</p>";
-	  contents+="<p><a href='"+visualizeBaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
+	  contents+="<p><a href='"+visualizeEPABaseUrl+"?state="+state+"&county="+countyCode+"&site="+encodeURIComponent(site.uri)+"'>Visualize contaminants</a></p>";
     return contents;
   }
 }
@@ -642,7 +950,7 @@ function submitZip(zip) {
   var p = parent(elem);
   var spinner = document.getElementById("spinner");
   spinner.style.display = "block";
-  xhttp.open("GET","http://localhost:14490/zip?code="+zip,true);
+  xhttp.open("GET",zipagent+"?code="+zip,true);
   
   xhttp.onreadystatechange = function() {
     if(xhttp.readyState==4) {
