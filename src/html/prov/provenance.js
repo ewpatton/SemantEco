@@ -628,7 +628,7 @@ function popup(url, width, height)
  params += ', status=no';
  params += ', toolbar=no';
  provWin=window.open(url,'', params);
- if (window.focus) {newwin.focus()}
+ if (window.focus) {provWin.focus()}
  return false;
 }
 
