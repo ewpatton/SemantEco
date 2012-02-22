@@ -22,6 +22,7 @@ stateAbbr2Code["MA"]="US:25";
 stateAbbr2Code["NY"]="US:36";
 var pagedData = [];
 var lat,lng;
+var zipcode;
 
 function isChecked(str) {
   var el = document.getElementById(str);
