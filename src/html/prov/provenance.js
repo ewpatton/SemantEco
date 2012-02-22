@@ -18,7 +18,8 @@ var pmlRawDataUrl;
 
 var provAppBase =parseParent(window.location.href); 
 var provWin; //refers to the pop out provenance window
-var provServiceagent="http://localhost/trend/trendData.php";
+var provServer="aquarius.tw.rpi.edu/projects/semantaqua";
+var provServiceagent="http://"+provServer+"/prov/trendData.php";
 var provEchoStates = {"CA": true, "MA": true, "NY": true, "RI": true};
 var publishUrl='http://sparql.tw.rpi.edu/';
 
