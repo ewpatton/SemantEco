@@ -19,7 +19,7 @@ public class FoiaTranslator {
 	static String unitTable = "./ICISPCS_UnitCodes.csv";
 	//Statistical Base Codes
 	static String sbCodeTable = "./ICISTable_StatisticalBaseCodes.csv";
-	static DecimalFormat decFormat = new DecimalFormat("0.0000");
+
 	HashMap<String, String> paraCode2Name;	
 	HashMap<String, String> unitCode2ShortName;
 	HashMap<String, String> unitCode2LongName;
@@ -32,7 +32,7 @@ public class FoiaTranslator {
 		sbCode2LongName= new HashMap<String, String>();
 		buildParaLookupTable();
 		buildUnitLookupTablesFromCSV();
-		buildSBCodeLookupTablesFromCSV();
+		buildSBCodeLookupTablesFromCSV();		
 	}
 	
 	
@@ -59,17 +59,18 @@ public class FoiaTranslator {
 	private void buildParaLookupTable(){
 		FileInputStream fIn = null;
 		BufferedReader reader = null;
-		String code=null, name;
 		
 		try{
 			fIn =  new FileInputStream(paraTable);
 			reader = new BufferedReader(new InputStreamReader(fIn));		
 			String strLine;
-
+			String code=null, name=null;
 			while ((strLine = reader.readLine()) != null)   {
 				if(strLine.startsWith("1Page")){
-					for(int i=0;i<3&&strLine!=null;i++)
+					for(int i=0;i<4&&strLine!=null;i++){
 						strLine = reader.readLine();
+						//System.out.println("line "+ i + strLine);
+					}
 				}
 				code=strLine.substring(1, 6);
 				name=strLine.substring(6).trim().replaceAll(" +", " ");				
@@ -217,44 +218,44 @@ public class FoiaTranslator {
 		}
 	}
 	
-	public String procValue(String src){			
-		if(src==null || src.length()==0)
-			return "";
-		double value=0;
-		try{
-			value=Double.parseDouble(src);
-			return decFormat.format(value);
-		}
-		catch(NumberFormatException e){
-			return "";
-		}		
-	}
+//	public String procValue(String src){			
+//		if(src==null || src.length()==0)
+//			return "";
+//		double value=0;
+//		try{
+//			value=Double.parseDouble(src);
+//			return decFormat.format(value);
+//		}
+//		catch(NumberFormatException e){
+//			return "";
+//		}		
+//	}
 	
-	//if(src.equals("DELMON")||src.equals("OPTMON")||src.equals("ADDMON"))
-	public String procLimit(String src){	
-		if(src==null || src.length()==0)
-			return "";
-		try{
-			Double.parseDouble(src);
-			if(src.charAt(0)=='.')
-				return "0"+src;
-			else
-				return src;
-		}
-		catch(NumberFormatException e){
-			return "";
-		}		
-	}
-	
+//	//if(src.equals("DELMON")||src.equals("OPTMON")||src.equals("ADDMON"))
+//	public String procLimit(String src){
+//		if(src==null || src.length()==0)
+//			return "";
+//		try{
+//			Double.parseDouble(src);
+//			if(src.charAt(0)=='.')
+//				return "0"+src;
+//			else
+//				return src;
+//		}
+//		catch(NumberFormatException e){
+//			return "";
+//		}	
+//	}
+		
 	public static void main(String[] args) {
 		FoiaTranslator translator = new FoiaTranslator();		
-		//translator.printKeyOfHashMap(translator.paraCode2Name);
+		FoiaUtil.printKeyOfHashMap(translator.paraCode2Name);
+		//System.out.println(translator.paraCode2Name("-----"));
 		//translator.printValueOfHashMap(translator.paraCode2Name);
 		//translator.printHashMap(translator.paraCode2Name);
 		//System.out.println(translator.paraCode2Name("71900"));
 		//translator.printHashMap(translator.sbCode2LongName);
-		System.out.println(translator.sbCode2LongName("DB"));
+		//System.out.println(translator.sbCode2LongName("DB"));	
 	}
-	
 
 }

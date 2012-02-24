@@ -9,24 +9,25 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class FoiaOverrideAgent {
-	HashMap<String, Object> minMap;
-	HashMap<String, Object> avgMap;
-	static Object overrideObj = new Object();
+	HashMap<String, String> minMap;
+	HashMap<String, String> avgMap;
+	static String overrideObj = "";
 
-	FoiaOverrideAgent(){
-		minMap = new HashMap<String, Object>();
-		avgMap = new HashMap<String, Object>();
+	FoiaOverrideAgent(String dir, String inputFileName){
+		minMap = new HashMap<String, String>();
+		avgMap = new HashMap<String, String>();
+		buildOverrideTable(dir, inputFileName);
 	}
 
-	public void processFile(String inputFileName, String outputFile){
+	public void buildOverrideTable(String dir, String inputFileName){
 		FileInputStream fIn = null;
 		BufferedReader reader = null;
 		BufferedWriter bufferedWriter = null;
-
+		String outputFileName = "proc-"+inputFileName;
 		try{
-			fIn =  new FileInputStream(inputFileName);
+			fIn =  new FileInputStream(dir+inputFileName);
 			reader = new BufferedReader(new InputStreamReader(fIn));
-			bufferedWriter = new BufferedWriter(new FileWriter(outputFile));			
+			bufferedWriter = new BufferedWriter(new FileWriter(dir+outputFileName));			
 			String strLine;
 
 			while ((strLine = reader.readLine()) != null)   {
@@ -64,20 +65,54 @@ public class FoiaOverrideAgent {
 			}
 		}
 	}
+	
+	public boolean isOverriden(int orType, String rcd){		
+/*		NPID     009        1-   9     Facility ID Number          
+	    PDSG     004       10-  13     Limit Discharge/Rep Designator    
+	    LIPQ     001       14-  14     Pipe Set Qualifier
+	    PRAM     005       15-  19     Paramater Name       
+	    MLOC     001       20-  20     Monitoring Location       
+	    SEAN     001       21-  21     Season Number   
+	    LTYP     001       22-  22     Limit Type         
+	    MODN     001       23-  23     Modification Number            
+	    ELSD     006       24-  29     Mod Period Start Date */	
+		
+		String curKey=rcd.substring(0, 29).trim();
+		switch (orType){
+		case 0://minFlag
+			if(minMap.get(curKey)!=null){
+				System.err.println("The min override flag for "+curKey+" has been set.");
+				return true;
+			}
+			else
+				return false;
+		case 1://avgFlag
+			if(avgMap.get(curKey)!=null){
+				System.err.println("The avg override flag for "+curKey+" has been set.");
+				return true;
+			}
+			else
+				return false;
+		default:
+			System.err.println("In processOneRecordPerType, unknown type: "+orType);
+			System.exit(-1);
+		}
+		return false;
+	}
 
-	public void processOneRecordPerType(int type, String rcd){
-//	    NPID     009        1-   9     Facility ID Number          
-//	    PDSG     004       10-  13     Limit Discharge/Rep Designator    
-//	    LIPQ     001       14-  14     Pipe Set Qualifier
-//	    PRAM     005       15-  19     Parameter Name  
-//	    MLOC     001       20-  20     Monitoring Location       
-//	    SEAN     001       21-  21     Season Number
-//	    LTYP     001       22-  22     Limit Type         
-//	    MODN     001       23-  23     Modification Number  
-//		ELSD     006       24-  29     Mod Period Start Date 			
+	public void processOneRecordPerType(int orType, String rcd){
+/*	    NPID     009        1-   9     Facility ID Number          
+	    PDSG     004       10-  13     Limit Discharge/Rep Designator    
+	    LIPQ     001       14-  14     Pipe Set Qualifier
+	    PRAM     005       15-  19     Parameter Name  
+	    MLOC     001       20-  20     Monitoring Location       
+	    SEAN     001       21-  21     Season Number
+	    LTYP     001       22-  22     Limit Type         
+	    MODN     001       23-  23     Modification Number  
+		ELSD     006       24-  29     Mod Period Start Date */			
 	 
 		String curKey=rcd.substring(0, 29).trim();
-		switch (type){
+		switch (orType){
 		case 0://minFlag
 			if(minMap.get(curKey)!=null)
 				System.err.println("The min override flag for "+curKey+" has been set before.");
@@ -91,7 +126,7 @@ public class FoiaOverrideAgent {
 				avgMap.put(curKey, overrideObj);
 			break;
 		default:
-			System.err.println("In processOneRecordPerType, unknown type!");
+			System.err.println("In processOneRecordPerType, unknown type: "+orType);
 			System.exit(-1);
 			break;
 		}
@@ -101,9 +136,9 @@ public class FoiaOverrideAgent {
 	public static void main(String[] args) {        
 		String dir="input/override/";
 		String inputFile = "WA-F01613P-Ping-Wang-Overrides.txt";
-		String outputFile = "proc-"+inputFile;
-		FoiaOverrideAgent orAgent = new FoiaOverrideAgent();
-		orAgent.processFile(dir+inputFile, dir+outputFile);
+		//String outputFile = "proc-"+inputFile;
+		FoiaOverrideAgent orAgent = new FoiaOverrideAgent(dir, inputFile);
+		//orAgent.processFile(dir+inputFile, dir+outputFile);
 		System.out.println("Min Map");
 		FoiaUtil.printKeyOfHashMap(orAgent.minMap);
 		System.out.println("Avg Map");

@@ -27,21 +27,23 @@ public class FoiaUtil {
 	}
 	
 	static public Double numStr2Double(String src){
+		Double value=null;
 		try{
 			if(src==null || src.length()==0)
-				throw new NumberFormatException();
+				value=null;
 			int pos=src.indexOf('E')+1;
 			String befE=src.substring(0, pos);
 			String afterE=src.substring(pos);
 			String prcSrc=befE.trim()+afterE.trim();			
-			double value=Double.parseDouble(prcSrc);
+			value=Double.parseDouble(prcSrc);
 			return value;
 		}
 		catch(NumberFormatException e){
 			System.err.println("In FoiaUtil.numStr2Double, can't get a double value for "+src);
-			System.exit(-1);
+			//System.exit(-1);
+			value=null;
 		}
-		return null;		
+		return value;		
 	}
 	
 	static public void printHashMap(HashMap<String, Object> curMap){

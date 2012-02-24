@@ -10,9 +10,13 @@ import java.io.InputStreamReader;
 
 public class FoiaDmrAgent {
 	private FoiaTranslator translator=null;
+	private FoiaUnitConverter unitConv=null;
+	private FoiaOverrideAgent overrideAgt=null;
 
-	FoiaDmrAgent(){
+	FoiaDmrAgent(String dir, String overrideFile){
 		translator = new FoiaTranslator();
+		unitConv = new FoiaUnitConverter();		
+		overrideAgt = new FoiaOverrideAgent(dir, overrideFile);
 	}
 
 	public void processOneRecord1(String rcd, BufferedWriter bufWriter){
@@ -68,11 +72,11 @@ public class FoiaDmrAgent {
 		strBuilder.append("\",");
 		//		    LQAV     008       38-  45     Quantity Average Limit  
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(37, 45).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(37, 45).trim()));
 		strBuilder.append("\",");
 		//		    LQMX     008       46-  53     Quantity Max Limit
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(45, 53).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(45, 53).trim()));
 		strBuilder.append("\",");
 		//		    LQAS     002       54-  55     Quantity Average Base Code    
 		strBuilder.append("\""); 		
@@ -81,7 +85,7 @@ public class FoiaDmrAgent {
 		strBuilder.append("\",");
 		//		    LCMN     008       56-  63     Concentration Min Limit     
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(55, 63).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(55, 63).trim()));
 		strBuilder.append("\",");
 		//		    LCMS     002       64-  65     Concentration Min Base Code
 		strBuilder.append("\""); 		
@@ -90,7 +94,7 @@ public class FoiaDmrAgent {
 		strBuilder.append("\",");
 		//		    LCAV     008       66-  73     Concentration Average Limit
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(65, 73).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(65, 73).trim()));
 		strBuilder.append("\",");
 		//		    LCAS     002       74-  75     Concentration Avg Base Code
 		strBuilder.append("\""); 		
@@ -99,30 +103,30 @@ public class FoiaDmrAgent {
 		strBuilder.append("\",");
 		//		    LCMX     008       76-  83     Concentration Limit Max  		
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(75, 83).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(75, 83).trim()));
 		strBuilder.append("\",");
 		//		    LCSX     021       84- 104     Concentration Max Limit Standard  
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(83, 104).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(83, 104).trim()));
 		strBuilder.append("\",");
 		//		    RUNT     002      105- 106     Reported Quantity Unit
 		//		strBuilder.append("\""); 		strBuilder.append(rcd.substring(104, 106).trim());
 		//		strBuilder.append("\",");
 		//		    MQAV     008      107- 114     MeasVio Quantity Average  
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(106, 114).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(106, 114).trim()));
 		strBuilder.append("\",");
 		//		    VQAV     005      115- 119     MeasVio Percent Quantity Avg
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(114, 119).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(114, 119).trim()));
 		strBuilder.append("\",");
 		//		    MQMX     008      120- 127     MeasVio Quantity Max
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(119, 127).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(119, 127).trim()));
 		strBuilder.append("\",");
 		//		    VQMX     005      128- 132     MeasVio Percent – Quantity Max 
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(127, 132).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(127, 132).trim()));
 		strBuilder.append("\",");
 		//		    RCUN     002      133- 134     Reported Concentration Unit
 		//		strBuilder.append("\""); 		strBuilder.append(rcd.substring(132, 134).trim());
@@ -134,27 +138,27 @@ public class FoiaDmrAgent {
 		strBuilder.append("\",");
 		//		    MCMN     008      137- 144     MeasVio Concentration Min
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(136, 144).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(136, 144).trim()));
 		strBuilder.append("\",");
 		//		    VCMN     005      145- 149     MeasVio Percent Concentra Min
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(144, 149).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(144, 149).trim()));
 		strBuilder.append("\",");
 		//		    MCAV     008      150- 157     MeasVio Concentration Avg
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(149, 157).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(149, 157).trim()));
 		strBuilder.append("\",");
 		//		    VCAV     005      158- 162     MeasVio Percent Concen Avg
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(157, 162).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(157, 162).trim()));
 		strBuilder.append("\",");
 		//		    MCMX     008      163- 170     MeasVio Concentration Max
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(162, 170).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(162, 170).trim()));
 		strBuilder.append("\",");
 		//		    VCMX     005      171- 175     MeasVio Percent Concen Max
 		strBuilder.append("\""); 		
-		strBuilder.append(translator.procValue(rcd.substring(170, 175).trim()));
+		strBuilder.append(FoiaUtil.procNumStr(rcd.substring(170, 175).trim()));
 		strBuilder.append("\",");
 		//		    NODI     001      176- 176     No Data Indicator
 		strBuilder.append("\""); 		strBuilder.append(rcd.substring(175, 176).trim());
@@ -188,25 +192,44 @@ public class FoiaDmrAgent {
 			e.printStackTrace();
 		}	
 	}
-
+	
 	public void processMeasurementPerType(int type, String rcd, StringBuilder strBuilder){
+//Firstly, process unit to see if we need to convert the measurement value  
+		String unit=null, repUnit=null;
+		if(type<=2){
+			//	    LQUC     002       36-  37     Quantity Unit Code   
+			//    	RUNT     002      105- 106     Reported Quantity Unit
+			unit=rcd.substring(35, 37).trim();
+			repUnit=rcd.substring(104, 106).trim();
+		}
+		else{
+			//		LCUC     002      186- 187     Concentration Unit Code
+			//	    RCUN     002      133- 134     Reported Concentration Unit
+			unit=rcd.substring(185, 187).trim();
+			repUnit=rcd.substring(132, 134).trim();
+		}				
+		
 		//		"\"ValueTypeCode\", \"MeasVio Value\", \"MeasVio Percent\"," +
 		//		"\"Limit Value\", \"LimitOperator\", \"Limit Standard\"," +	
-		//		"\"Statistical Base Code\", \"Statistical Base Desc\"," +		
+		//		"\"Statistical Base Code\", \"Statistical Base Desc\"," +
+		
 		switch (type) {
 		case 1://		Q1 is Quantity Average 
 			strBuilder.append("\"Q1\", "); 	
 			//		    MQAV     008      107- 114     MeasVio Quantity Average  
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(106, 114).trim()));
+			if(!repUnit.isEmpty())
+				strBuilder.append(unitConv.convert(repUnit, unit, rcd.substring(106, 114).trim()));
+			else
+				strBuilder.append(FoiaUtil.procNumStr(rcd.substring(106, 114).trim()));
 			strBuilder.append("\",");	
 			//		    VQAV     005      115- 119     MeasVio Percent Quantity Avg
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(114, 119).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(114, 119).trim()));
 			strBuilder.append("\",");
 			//		    LQAV     008       38-  45     Quantity Average Limit  
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(37, 45).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(37, 45).trim()));
 			strBuilder.append("\",");
 			//		    LimitOperator  
 			strBuilder.append("\"<=\", "); 		
@@ -224,16 +247,19 @@ public class FoiaDmrAgent {
 		case 2://		Q2 is Quantity Maximum 
 			strBuilder.append("\"Q2\",");
 			//		    MQMX     008      120- 127     MeasVio Quantity Max
-			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(119, 127).trim()));
+			strBuilder.append("\""); 	
+			if(!repUnit.isEmpty())
+				strBuilder.append(unitConv.convert(repUnit, unit, rcd.substring(119, 127).trim()));
+			else
+				strBuilder.append(FoiaUtil.procNumStr(rcd.substring(119, 127).trim()));
 			strBuilder.append("\",");
 			//			VQMX     005      128- 132     MeasVio Percent – Quantity Max 
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(127, 132).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(127, 132).trim()));
 			strBuilder.append("\",");
 			//		    LQMX     008       46-  53     Quantity Max Limit
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(45, 53).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(45, 53).trim()));
 			strBuilder.append("\",");
 			//		    LimitOperator  
 			strBuilder.append("\"<=\", "); 	
@@ -247,19 +273,26 @@ public class FoiaDmrAgent {
 		case 3://		C1 - Concentration Minimum 
 			strBuilder.append("\"C1\","); 	
 			//		    MCMN     008      137- 144     MeasVio Concentration Min
-			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(136, 144).trim()));
+			strBuilder.append("\""); 
+			if(!repUnit.isEmpty())
+				strBuilder.append(unitConv.convert(repUnit, unit, rcd.substring(136, 144).trim()));
+			else
+				strBuilder.append(FoiaUtil.procNumStr(rcd.substring(136, 144).trim()));
 			strBuilder.append("\",");
 			//			VCMN     005      145- 149     MeasVio Percent Concentra Min
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(144, 149).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(144, 149).trim()));
 			strBuilder.append("\",");
 			//		    LCMN     008       56-  63     Concentration Min Limit     
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(55, 63).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(55, 63).trim()));
 			strBuilder.append("\",");
 			//		    LimitOperator  
-			strBuilder.append("\">=\", "); 	
+			//orType 0 is for Conc Lim Min
+			if(overrideAgt.isOverriden(0, rcd))
+				strBuilder.append("\"<=\", "); 
+			else
+				strBuilder.append("\">=\", "); 	
 			//		    Limit Standard  
 			strBuilder.append("\"\","); 
 			//		    LCMS     002       64-  65     Concentration Min Base Code	
@@ -274,19 +307,26 @@ public class FoiaDmrAgent {
 		case 4://		C2 - Concentration Average 
 			strBuilder.append("\"C2\","); 
 			//		    MCAV     008      150- 157     MeasVio Concentration Avg
-			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(149, 157).trim()));
+			strBuilder.append("\""); 	
+			if(!repUnit.isEmpty())
+				strBuilder.append(unitConv.convert(repUnit, unit, rcd.substring(149, 157).trim()));
+			else
+				strBuilder.append(FoiaUtil.procNumStr(rcd.substring(149, 157).trim()));
 			strBuilder.append("\",");
 			//			VCAV     005      158- 162     MeasVio Percent Concen Avg
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(157, 162).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(157, 162).trim()));
 			strBuilder.append("\",");
 			//		    LCAV     008       66-  73     Concentration Average Limit
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(65, 73).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(65, 73).trim()));
 			strBuilder.append("\",");
 			//		    LimitOperator  
-			strBuilder.append("\"<=\", "); 	
+			//orType 1 is for Conc Lim Avg
+			if(overrideAgt.isOverriden(1, rcd))
+				strBuilder.append("\">=\", "); 
+			else
+				strBuilder.append("\"<=\", "); 	
 			//		    Limit Standard  
 			strBuilder.append("\"\","); 
 			//		    LCAS     002       74-  75     Concentration Avg Base Code	
@@ -302,21 +342,24 @@ public class FoiaDmrAgent {
 			strBuilder.append("\"C3\","); 	
 			//		    MCMX     008      163- 170     MeasVio Concentration Max
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(162, 170).trim()));
+			if(!repUnit.isEmpty())
+				strBuilder.append(unitConv.convert(repUnit, unit, rcd.substring(162, 170).trim()));
+			else
+				strBuilder.append(FoiaUtil.procNumStr(rcd.substring(162, 170).trim()));
 			strBuilder.append("\",");
 			//			VCMX     005      171- 175     MeasVio Percent Concen Max
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(170, 175).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(170, 175).trim()));
 			strBuilder.append("\",");
 			//		    LCMX     008       76-  83     Concentration Limit Max  		
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(75, 83).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(75, 83).trim()));
 			strBuilder.append("\",");
 			//		    LimitOperator  
 			strBuilder.append("\"<=\", "); 
 			//		    LCSX     021       84- 104     Concentration Max Limit Standard  
 			strBuilder.append("\""); 		
-			strBuilder.append(translator.procValue(rcd.substring(83, 104).trim()));
+			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(83, 104).trim()));
 			strBuilder.append("\",");
 			//		    LCXS     002      135- 136     Stat-Lim Conc Max Base Code	
 			String LCXS=rcd.substring(134, 136).trim();
@@ -330,7 +373,17 @@ public class FoiaDmrAgent {
 		default:
 			System.err.println("processMeasurementPerType: Unknown invoking value type.");
 			break;
-		}		
+		}	
+		
+		strBuilder.append("\""); 						
+		strBuilder.append(unit);
+		strBuilder.append("\",");
+		strBuilder.append("\""); 						
+		strBuilder.append(translator.unitCode2ShortName(unit));
+		strBuilder.append("\",");
+		strBuilder.append("\""); 						
+		strBuilder.append(translator.unitCode2LongName(unit));
+		strBuilder.append("\", ");
 	}
 	
 	/*
@@ -387,7 +440,7 @@ public class FoiaDmrAgent {
 		//		"\"Statistical Base Code\", \"Statistical Base Desc\"," +			
 		processMeasurementPerType(type, rcd, strBuilder);
 		
-		//		"\"UNIT_CODE\", \"Unit Short Name\", \"Unit Long Name\","+
+/*		//		"\"UNIT_CODE\", \"Unit Short Name\", \"Unit Long Name\","+
 		String unit=null, repUnit=null, curUnit=null;
 		if(type<=2){
 			//	    LQUC     002       36-  37     Quantity Unit Code   
@@ -401,11 +454,11 @@ public class FoiaDmrAgent {
 			unit=rcd.substring(185, 187).trim();
 			repUnit=rcd.substring(132, 134).trim();
 
-		}
+		}		
 		if(repUnit.isEmpty())
 			curUnit=unit;
 		else
-			curUnit=repUnit;
+			curUnit=repUnit;	
 		strBuilder.append("\""); 						
 		strBuilder.append(curUnit);
 		strBuilder.append("\",");
@@ -414,7 +467,7 @@ public class FoiaDmrAgent {
 		strBuilder.append("\",");
 		strBuilder.append("\""); 						
 		strBuilder.append(translator.unitCode2LongName(curUnit));
-		strBuilder.append("\", ");
+		strBuilder.append("\", ");*/
 		
 		//	    NODI     001      176- 176     No Data Indicator
 		strBuilder.append("\""); 		strBuilder.append(rcd.substring(175, 176).trim());
@@ -509,19 +562,22 @@ public class FoiaDmrAgent {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) {
-		FoiaDmrAgent dmrAgent = new FoiaDmrAgent();
+		///media/DATA/epaMetaData/dmr/h2000WA-F-01613M
+		if (args.length <= 0) {
+			System.out.println("Usage: ./FoiaDmrAgent inputFileName");
+			System.exit(0);
+		}
+		
+		String dir="input/override/";
+		String overrideFile = "WA-F01613P-Ping-Wang-Overrides.txt";
+		FoiaDmrAgent dmrAgent = new FoiaDmrAgent(dir, overrideFile);
 		//String dir="/media/DATA/epaMetaData/dmr/";
 		//String inputFile="h2000WA-F-01613M"; //h2000WA-F-01613M "head1000F#01613M"
 		//String procFile="proc"+inputFile;
 		//String outputFile=inputFile.replace('#', '-')+".csv";
 		//facAgent.preprocessFile(dir+inputFile, dir+procFile);
 		//facAgent.processFile(dir+inputFile, dir+outputFile);
-
-		///media/DATA/epaMetaData/dmr/h2000WA-F-01613M
-		if (args.length <= 0) {
-			System.out.println("Usage: ./FoiaDmrAgent inputFileName");
-			System.exit(0);
-		}		
+		
 		String inputFile = args[0];
 		String outputFile=inputFile.replace('#', '-')+".csv";
 		dmrAgent.processFile(inputFile, outputFile);
