@@ -289,7 +289,8 @@ public class LoadDataQuery extends Query {
 						"} }";
 				url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
 						+"&format="+URLEncoder.encode("application/sparql-results+xml", "UTF-8"));
-				content = CharStreams.toString(new InputStreamReader(url.openStream()));
+				System.err.println("LoadDataQuery.execute, url: "+url);//added by ping
+				content = CharStreams.toString(new InputStreamReader(url.openStream()));				
 				ResultSet rs = ResultSetFactory.fromXML(content);
 				HashSet<String> seen = new HashSet<String>();
 				while(rs.hasNext()) {
