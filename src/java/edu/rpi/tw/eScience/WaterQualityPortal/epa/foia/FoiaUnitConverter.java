@@ -4,12 +4,15 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 
 public class FoiaUnitConverter {
 	static int BUFFER_SIZE = 4096;
 	static String convTableFile = "./TABLE430.txt"; 
 	HashMap<String, Double> convMap =null;
-
+	static public Logger unitLogger = Logger.getLogger("UnitConvLogging");
+	
 	FoiaUnitConverter(){
 		convMap = new HashMap<String, Double>();
 		buildConvTable();
@@ -95,18 +98,23 @@ public class FoiaUnitConverter {
 			 rate=1.0;
 		 else
 			 rate=convMap.get(from+to);
+		 //can't find the conversion rate, so give up the record
 		 if(rate == null){
+			 unitLogger.error("In getConvRate, can't get the name for unit code pair, from: "+from+", to: "+to);
 			 System.err.println("\nIn getConvRate, can't get the name for unit code pair: "+from+" "+to);
-			 System.exit(-1);
+			 //System.exit(-1);
+			 rate=null;
 		 }
 		 return rate;	
 	 }
 
 	 public String convert(String from, String to, Double value){
-		 //Double value = FoiaUtil.numStr2Double(src);
+		 //Double value = FoiaUtil.numStr2Double(src);		 
 		 if(value!=null){
-			 value*=getConvRate(from, to);
-			 return FoiaUtil.decFormat.format(value);
+			 Double rate=getConvRate(from, to);
+			 if(rate==null)
+				 return "";
+			 return FoiaUtil.decFormat.format(value*rate);
 		 }
 		 else
 			 return "";

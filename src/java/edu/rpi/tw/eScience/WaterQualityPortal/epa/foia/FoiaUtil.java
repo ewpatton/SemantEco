@@ -44,13 +44,13 @@ public class FoiaUtil {
 		else
 			return decFormat.format(value);
 	}
-	
+
 	static public Double numStr2Double(String src, String rcd, boolean isLimit){
 		Double value=null;
 		try{
 			if(src==null || src.length()==0)
 				return null;
-/*
+			/*
 Delmon - No Monitoring required
 Optmon - Optional monitoring
 addmon - value requared, but not limited*/
@@ -88,7 +88,13 @@ addmon - value requared, but not limited*/
 			return value;
 		}
 		catch(NumberFormatException e){
-			System.err.println("In FoiaUtil.numStr2Double, can't get a double value for "+src);
+			if(isLimit){
+				lValueLogger.error("In FoiaUtil.numStr2Double, can't get a double for the limit value"+src);
+				System.err.println("In FoiaUtil.numStr2Double, can't get a double for the limit value"+src);
+			}else{
+				mValueLogger.error("In FoiaUtil.numStr2Double, can't get a double for the non limit value"+src);
+				System.err.println("In FoiaUtil.numStr2Double, can't get a double for the non limit value"+src);
+			}
 			//System.exit(-1);
 			value=null;
 		}
