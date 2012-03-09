@@ -40,7 +40,7 @@ public class FoiaUnitConverter {
 			}
 		}
 		catch (Exception e) {
-			System.err.println("In buildConvTable, err");
+			System.err.println("In FoiaUnitConverter.buildConvTable, err");
 			e.printStackTrace();
 		}finally {
 			//Close the BufferedReader 			
@@ -48,7 +48,7 @@ public class FoiaUnitConverter {
 				if (reader!=null)
 					reader.close ();
 			} catch (IOException ex) {
-				System.err.println("In buildConvTable, closing the reader");
+				System.err.println("In FoiaUnitConverter.buildConvTable, closing the reader");
 				ex.printStackTrace();
 			}
 		}
