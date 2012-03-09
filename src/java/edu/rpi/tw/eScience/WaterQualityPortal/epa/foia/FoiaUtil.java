@@ -19,35 +19,15 @@ import org.apache.log4j.Logger;
 
 public class FoiaUtil {
 	static DecimalFormat decFormat = new DecimalFormat("0.00000000");
+	static public Logger mValueLogger = Logger.getLogger("MeasuredValueLogging");
+	static public Logger lValueLogger = Logger.getLogger("LimitValueLogging");
 	/* Get actual class name to be printed on */
 	//static public Logger dmrLogger = Logger.getLogger("FoiaDmrAgent");
 
 	/*convert the number string in scientific format, e.g +.180000000000001E-01
 	 * to float point format, e.g. 0.01800000*/
-	static public String procNumStr(String src){		
-		/*		if(src==null || src.length()==0)
-			return "";
-		//-1 if the character does not occur, then pos is 0
-		int pos=src.indexOf('E')+1;
-		String prcSrc=null;
-		if(pos==0)
-			prcSrc=src.trim();
-		else{
-			String befE=src.substring(0, pos);
-			String afterE=src.substring(pos);
-			prcSrc=befE.trim()+afterE.trim();	
-		}
-
-		double value=0;
-		try{			
-			value=Double.parseDouble(prcSrc);
-			return decFormat.format(value);
-		}
-		catch(NumberFormatException e){
-			return "";
-		}	*/
-
-		Double value=numStr2Double(src);
+	static public String procNumStr(String src, String rcd, boolean isLimit){	
+		Double value=numStr2Double(src, rcd, isLimit);
 		if(value==null){			
 			//System.err.println("In FoiaUtil.procNumStr, can't get a double value for "+src);
 			return "";
@@ -65,7 +45,7 @@ public class FoiaUtil {
 			return decFormat.format(value);
 	}
 	
-	static public Double numStr2Double(String src){
+	static public Double numStr2Double(String src, String rcd, boolean isLimit){
 		Double value=null;
 		try{
 			if(src==null || src.length()==0)
@@ -78,8 +58,23 @@ addmon - value requared, but not limited*/
 					|| src.compareToIgnoreCase("OPTMON")==0 
 					|| src.compareToIgnoreCase("ADDMON")==0 )
 				return null;
-				//-1 if the character does not occur, then pos is 0
-				int pos=src.indexOf('E')+1;
+			//start with < or >
+			if(src.charAt(0)=='<'||src.charAt(0)=='>'){
+				if(isLimit){
+					lValueLogger.info("record has a limit value with > or <");
+					lValueLogger.info("limit value string: "+src);
+					lValueLogger.info("record: "+rcd);
+					src=src.substring(1);
+				}
+				else{
+					mValueLogger.info("record has a measured value with > or <");
+					mValueLogger.info("measured value string: "+src);
+					mValueLogger.info("record: "+rcd);
+					return null;
+				}
+			}
+			//-1 if the character does not occur, then pos is 0
+			int pos=src.indexOf('E')+1;
 			String prcSrc=null;
 			if(pos==0)
 				prcSrc=src.trim();

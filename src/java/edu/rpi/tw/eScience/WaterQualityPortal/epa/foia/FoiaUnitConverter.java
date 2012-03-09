@@ -36,7 +36,7 @@ public class FoiaUnitConverter {
 				num=strLine.substring(5).trim();	
 				//System.out.println(codePair+" "+num);
 				if(convMap.get(codePair)==null)
-					convMap.put(codePair, FoiaUtil.numStr2Double(num));
+					convMap.put(codePair, FoiaUtil.numStr2Double(num, strLine, false));
 			}
 		}
 		catch (Exception e) {
@@ -102,8 +102,8 @@ public class FoiaUnitConverter {
 		 return rate;	
 	 }
 
-	 public String convert(String from, String to, String src){
-		 Double value = FoiaUtil.numStr2Double(src);
+	 public String convert(String from, String to, Double value){
+		 //Double value = FoiaUtil.numStr2Double(src);
 		 if(value!=null){
 			 value*=getConvRate(from, to);
 			 return FoiaUtil.decFormat.format(value);

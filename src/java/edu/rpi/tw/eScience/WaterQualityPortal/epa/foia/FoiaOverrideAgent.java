@@ -16,7 +16,7 @@ public class FoiaOverrideAgent {
 	HashMap<String, String> avgMap;
 	static String overrideObj = "";
 	//static public Logger dmrLogger = Logger.getLogger(FoiaDmrAgent.class.getName());
-	static public Logger orLogger = Logger.getLogger("AppLogging");
+	static public Logger orLogger = Logger.getLogger("OverrideLogging");
 
 	FoiaOverrideAgent(String dir, String inputFileName){
 		minMap = new HashMap<String, String>();
@@ -84,7 +84,7 @@ public class FoiaOverrideAgent {
 	    MODN     001       23-  23     Modification Number    */        
 		//skip ELSD
 		//ELSD     006       24-  29     Mod Period Start Date */		
-		orLogger.info("calling isOverriden for "+rcd);
+		//orLogger.info("calling isOverriden for "+rcd);
 		String curKey=rcd.substring(0, 23).trim();
 		switch (orType){
 		case 0://minFlag
