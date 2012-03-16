@@ -69,6 +69,7 @@ public class WaterAgentInstance implements HttpHandler {
 		log.setLevel(Level.INFO);
 		//PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.NONE;
 		PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.CONSOLE;
+		states.put("AZ", "http://logd.tw.rpi.edu/id/us/state/Arizona");
 		states.put("CA", "http://logd.tw.rpi.edu/id/us/state/California");
 		states.put("MA", "http://logd.tw.rpi.edu/id/us/state/Massachusetts");
 		states.put("NY", "http://logd.tw.rpi.edu/id/us/state/New_York");
@@ -195,13 +196,17 @@ public class WaterAgentInstance implements HttpHandler {
 				String query = "PREFIX sioc: <http://rdfs.org/sioc/ns#> PREFIX dc: <http://purl.org/dc/terms/> "+
 				"SELECT ?graph WHERE { GRAPH <http://sparql.tw.rpi.edu/semanteco/data-source> { ?graph sioc:topic <"+state+"> "+
 				"; dc:source <"+source+"> } }";
+				System.out.print(query);
 				JSONObject graphs = executeJSONQuery(Configuration.TRIPLE_STORE, query);
 				JSONArray arr = graphs.getJSONObject("results").getJSONArray("bindings");
 				ArrayList<String> list = new ArrayList<String>();
 				for(int j=0;j<arr.length();j++) {
 					list.add(arr.getJSONObject(j).getJSONObject("graph").getString("value"));
 				}
+				System.out.print(list);
 				String sites,measures;
+				if(list.size()==0)
+					continue;
 				if(list.get(0).contains("measurements")) {
 					measures = list.get(0);
 					sites = list.get(1);
