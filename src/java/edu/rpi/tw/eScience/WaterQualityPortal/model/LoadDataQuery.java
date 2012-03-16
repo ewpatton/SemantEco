@@ -77,7 +77,7 @@ public class LoadDataQuery extends Query {
 			@SuppressWarnings("unchecked")
 			ArrayList<String> graphs = (ArrayList<String>)q.execute(endpoint);
 			if(graphs==null) throw new IOException("Unable to obtain list of graphs from triple store.");
-			String sites, measures;
+			String sites, measures;	
 			if(graphs.get(0).contains("measurements")) {
 				measures = graphs.get(0);
 				sites = graphs.get(1);
@@ -86,6 +86,7 @@ public class LoadDataQuery extends Query {
 				sites = graphs.get(0);
 				measures = graphs.get(1);
 			}
+			
 			if(source.equals("http://sparql.tw.rpi.edu/source/usgs-gov")) {
 				String inClause = null;
 				if(site==null) {
@@ -262,6 +263,7 @@ public class LoadDataQuery extends Query {
 					"} " +
 					"}"
 					;
+				//System.out.println(queryString);
 				Logger.getRootLogger().trace(queryString);
 				URL url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
 						+"&format="+URLEncoder.encode("text/rdf+n3","UTF-8"));

@@ -44,6 +44,7 @@ public class CountInstanceQuery extends Query {
 					"?m pol:hasPermit ?p ; dc:date ?t ; pol:hasCharacteristic ?e ; repr:hasUnit ?unit . " +
 					(time==null?"":"FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
 					" } }";
+			//System.out.println(queryString);
 		}
 		else if(source.equals("http://sparql.tw.rpi.edu/source/usgs-gov")) {
 			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
