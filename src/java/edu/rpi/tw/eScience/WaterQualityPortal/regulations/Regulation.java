@@ -136,7 +136,10 @@ public class Regulation {
 		output +=  "<!ENTITY xsd \"http://www.w3.org/2001/XMLSchema#\" >\n";
 		output +=  "<!ENTITY rdfs \"http://www.w3.org/2000/01/rdf-schema#\" >\n";
 		output +=  "<!ENTITY time \"http://www.w3.org/2006/time\" >\n";
-		output +=  "<!ENTITY epa \"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#\" >\n";
+		//output +=  "<!ENTITY epa \"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#\" >\n";
+		output += "<!ENTITY pol \"http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#\">\n";
+		output += "<!ENTITY water \"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#\">\n";
+		//
 		output +=  "<!ENTITY elem \"http://sweet.jpl.nasa.gov/2.1/matrElement.owl#\" >\n";
 		output +=  "<!ENTITY body \"http://sweet.jpl.nasa.gov/2.1/realmHydroBody.owl#\" >\n";
 
@@ -146,9 +149,14 @@ public class Regulation {
 		output +=  "<!ENTITY foaf \"http://xmlns.com/foaf/0.1/\">";
 		output +=  "]>";
 		output += "<rdf:RDF \n";
-		output +=  "xml:base=\"http://tw2.tw.rpi.edu/zhengj3/owl/"+file+"\"\n";
-		output +=  "xmlns=\"http://tw2.tw.rpi.edu/zhengj3/owl/"+file+"\"\n";
-		output +=  "xmlns:epa=\"&epa;\"\n";
+		//output +=  "xml:base=\"http://tw2.tw.rpi.edu/zhengj3/owl/"+file+"\"\n";
+		//output +=  "xmlns=\"http://tw2.tw.rpi.edu/zhengj3/owl/"+file+"\"\n";
+		//output +=  "xmlns:epa=\"&epa;\"\n";
+        output += "xml:base=\"http://escience.rpi.edu/ontology/semanteco/2/0/regulation/"+file+"\"\n";
+        output += "xmlns=\"http://escience.rpi.edu/ontology/semanteco/2/0/regulation/"+file+"\"\n";
+        output +=  "xmlns:pol=\"&pol;\"\n";
+        output +=  "xmlns:water=\"&water;\"\n";	
+        //
 		output +=  "xmlns:owl=\"&owl;\"\n";
 		output +=  "xmlns:rdfs=\"&rdfs;\"\n";
 		output +=  "xmlns:time=\"&time;\"\n";
@@ -201,7 +209,8 @@ public class Regulation {
 		String thisProvenance="";
 		thisProvenance += "<pmlp:Information>\n";
 		thisProvenance += "<pmlp:hasURL rdf:datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">";
-		thisProvenance += "http://tw2.tw.rpi.edu/zhengj3/owl/"+filename+"#Excessive"+element+"Measurement";
+		//thisProvenance += "http://tw2.tw.rpi.edu/zhengj3/owl/"+filename+"#Excessive"+element+"Measurement";
+		thisProvenance += "http://escience.rpi.edu/ontology/semanteco/2/0/regulation/"+filename+"#Excessive"+element+"Measurement";
 		thisProvenance += "</pmlp:hasURL>\n";
 		thisProvenance += "<pmlp:hasReferenceSourceUsage rdf:resource=\"#"+name+"-WQR\" />\n";
 		thisProvenance += "</pmlp:Information>\n";
@@ -226,11 +235,13 @@ public class Regulation {
 		}
 		String thisRegulation="";
 		thisRegulation += "<owl:Class rdf:about=\"#Excessive"+name+"Measurement\">\n";
-		thisRegulation += "<rdfs:subClassOf rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#ExceededThreshold\"/>\n";
+		//thisRegulation += "<rdfs:subClassOf rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#ExceededThreshold\"/>\n";
+		thisRegulation += "<rdfs:subClassOf rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#ExceededThreshold\"/>\n";
 		thisRegulation += "<owl:intersectionOf rdf:parseType=\"Collection\">\n";
-		thisRegulation += "<owl:Class rdf:about=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#WaterMeasurement\"/>\n";
+		//thisRegulation += "<owl:Class rdf:about=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#WaterMeasurement\"/>\n";
+		thisRegulation += "<owl:Class rdf:about=\"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#WaterMeasurement\"/>\n";
 		thisRegulation += "<owl:Restriction>\n";
-		thisRegulation += "<owl:onProperty rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#hasValue\"/>\n";
+		thisRegulation += "<owl:onProperty rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasValue\"/>\n";
 		thisRegulation += "<owl:someValuesFrom>\n";
 		thisRegulation += "<rdfs:Datatype>\n";
 		thisRegulation += "<owl:onDatatype rdf:resource=\"http://www.w3.org/2001/XMLSchema#decimal\"/>\n";
@@ -243,12 +254,15 @@ public class Regulation {
 		thisRegulation += "</owl:someValuesFrom>\n";
 		thisRegulation += "</owl:Restriction>\n";	
 		thisRegulation += "<owl:Restriction>\n";
-		thisRegulation += "<owl:onProperty rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#hasElement\"/>\n";
-		thisRegulation += "<owl:hasValue rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"+element+"\"/>\n";
+//		thisRegulation += "<owl:onProperty rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#hasElement\"/>\n";
+		thisRegulation += "<owl:onProperty rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#hasCharacteristic\"/>\n";
+///		thisRegulation += "<owl:hasValue rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#"+element+"\"/>\n";
+		thisRegulation += "<owl:hasValue rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#"+element+"\"/>\n";
 		thisRegulation += "</owl:Restriction>\n";
 		if(unit.compareTo("")!=0){
 		thisRegulation += "<owl:Restriction>\n";
-		thisRegulation += "<owl:onProperty rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#hasUnit\"/>\n";
+//		thisRegulation += "<owl:onProperty rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#hasUnit\"/>\n";
+		thisRegulation += "<owl:onProperty rdf:resource=\"http://sweet.jpl.nasa.gov/2.1/repr.owl#hasUnit\"/>\n";
 		thisRegulation += "<owl:hasValue>"+unit+"</owl:hasValue>\n";
 		thisRegulation += "</owl:Restriction>\n";
 		}
