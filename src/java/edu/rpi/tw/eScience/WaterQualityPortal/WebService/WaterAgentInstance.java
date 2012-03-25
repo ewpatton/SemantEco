@@ -40,6 +40,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.FacilityDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.WaterDataQuery;
+import edu.rpi.tw.eScience.WaterQualityPortal.species.DistributionWebService;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.GeonameIdLookup;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
@@ -582,69 +583,7 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 
 	
-	protected void getSpeciesDistributionByCounty(HttpExchange req, Map<String,String> params){
-		//String result = null;
-		boolean err = false;
-		OutputStream os = req.getResponseBody();
-		JSONObject res=null;
-		String response=null;
-		try {
-			String stateAbbr = params.get("state");
-			String stateGeoNameId=GeonameIdLookup.execute(stateAbbr);			
-			Model model = ModelFactory.createDefaultModel();
-			
-			// Query
-			long start = System.currentTimeMillis();
-			log.debug("Querying SpeciesDistributionByCounty...");
-			String queryString;
-			//QueryExecution qe;
-			//ResultSet queryResults;
 
-			
-			queryString = "PREFIX geospecies:  <http://rdf.geospecies.org/ont/geospecies#> "  +
-					"PREFIX "+stateAbbr+": <http://sws.geonames.org/"+stateGeoNameId+"/> " +
-					"SELECT DISTINCT ?countyName "+
-					"WHERE {graph <http://sparql.tw.rpi.edu/source/geospecies-org/dataset/geospecies/version/2010-Apr-11>{ "+
-					" ?x geospecies:hasCommonName ?commonName; "+
-					"    geospecies:hasObservation ?obv; "+
-					"geospecies:isExpectedIn "+stateAbbr+":. "+
-					" ?obv geospecies:hasCountyName ?countyName. "+
-					"}} order by asc(?countyName)";
-			
-			System.out.println(queryString);
-			res = executeJSONQuery(Configuration.TRIPLE_STORE, queryString);
-			response = res.toString();
-			System.out.println(response);
-/*			JSONArray arr = graphs.getJSONObject("results").getJSONArray("bindings");
-			ArrayList<String> list = new ArrayList<String>();
-			for(int j=0;j<arr.length();j++) {
-				list.add(arr.getJSONObject(j).getJSONObject("countyName").getString("value"));
-			}
-			System.out.print(list);*/
-			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
-			//result = res.toString("UTF-8");
-			log.info("Query finished in "+(System.currentTimeMillis()-start)+" ms");
-		}
-		catch(Exception e) {
-			err = true;
-			e.printStackTrace();
-			response = "An error occurred on the server. Please contact the system administrator.";			
-		}		
-		try {
-			req.sendResponseHeaders(err ? 500 : 200, response.length());			
-			os.write(response.getBytes());
-		}
-		catch(IOException e1) {
-			e1.printStackTrace();
-		}
-		finally {
-			try {
-				os.flush();
-				os.close();
-			}
-			catch(Exception e) {}
-		}		
-	}
 	
 	protected void listCharacteristics(HttpExchange req, Map<String,String> params) {
 		String result = null;
@@ -810,9 +749,13 @@ public class WaterAgentInstance implements HttpHandler {
 				else if(method.equalsIgnoreCase("listHealthEffects")) {
 					listHealthEffects(arg0, params);
 				}
+				else if(method.equalsIgnoreCase("getSpeciesNames")) {
+					System.err.println("getSpeciesNames");
+					DistributionWebService.getSpeciesNames(arg0, params, log);
+				}
 				else if(method.equalsIgnoreCase("getSpeciesDistributionByCounty")) {
-					System.err.println("getSpeciesDistributionByCounty");
-					getSpeciesDistributionByCounty(arg0, params);
+					//System.err.println("getSpeciesDistributionByCounty");
+					DistributionWebService.getSpeciesDistributionByCounty(arg0, params, log);
 				}
 				return;
 			}
