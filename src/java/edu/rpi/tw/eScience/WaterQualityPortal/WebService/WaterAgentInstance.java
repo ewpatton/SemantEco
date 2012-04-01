@@ -118,16 +118,18 @@ public class WaterAgentInstance implements HttpHandler {
 		String query = arg0.getRequestURI().getQuery();
 		//parse request
 		String [] request=query.split("&");
-		
+		//debug
+		System.out.println(query);
 		
 		for(int i=0;i<request.length;i++) {
 			log.trace(request[i]);
 			String[] pieces = request[i].split("=");
 			if(pieces.length==2) {
 				result.put(pieces[0], java.net.URLDecoder.decode(pieces[1],"UTF-8"));
+				//debug
+				System.out.println(pieces[0]+", "+java.net.URLDecoder.decode(pieces[1],"UTF-8"));
 			}
-			//else System.err.println(pieces);
-		}
+			}
 		return result;
 	}
 	
