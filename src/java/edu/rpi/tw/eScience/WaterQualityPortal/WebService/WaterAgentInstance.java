@@ -41,6 +41,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.FacilityDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.WaterDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.DistributionWebService;
+import edu.rpi.tw.eScience.WaterQualityPortal.species.WaterEntityAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.GeonameIdLookup;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
@@ -748,6 +749,14 @@ public class WaterAgentInstance implements HttpHandler {
 				}
 				else if(method.equalsIgnoreCase("listHealthEffects")) {
 					listHealthEffects(arg0, params);
+				}
+				else if(method.equalsIgnoreCase("getHUC8Codes")) {
+					//System.err.println("getHUC8Codes");
+					WaterEntityAgent.getHUC8Codes(arg0, params, log);
+				}
+				else if(method.equalsIgnoreCase("getHUC8CodesOneState")) {
+					//System.err.println("getHUC8CodesOneState");
+					WaterEntityAgent.getHUC8CodesOneState(arg0, params, log);
 				}
 				else if(method.equalsIgnoreCase("getSpeciesNames")) {
 					System.err.println("getSpeciesNames");
