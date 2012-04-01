@@ -169,7 +169,7 @@ function deCodeZip(){
 	      countyCode=data.result.countyCode;
               countyCode=countyCode.replace("US:","");//strip the "US:"
               countyFips=countyCode.replace(":","");//strip the ":"
-              //alert(countyFips);
+              alert(countyFips);
 	      countyCode=countyCode.split(":")[1];
 	      countyCode=countyCode.replace(/^0+/,"");
 	      lat = data.result.lat;
@@ -186,11 +186,11 @@ function deCodeZip(){
 }
 
 function showHUC(){  
-  //alert(countyFips);
+  alert(countyFips);
   $.ajax({type: "GET",
 	  url: thisserviceagent,
 	  //data: "fips="+countyFips+"&method=getHUC8Codes",
-	  data: {"fips": countyFips,
+	  data: {"fips": "\"" + countyFips + "\"",
 		 "method": "getHUC8Codes"},
 	  dataType: "json",
 	  success: function(data) {
