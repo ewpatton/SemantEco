@@ -41,7 +41,7 @@ public class WaterEntityAgent {
 		try {
 			String fips = params.get("fips");
 			System.out.println("getHUC8Codes for "+fips);
-			JSONObject hucObj= getHUC(fips);		
+			JSONObject hucObj= getHUC(fips.substring(1, fips.length()-1));		
 			response = hucObj.toString();
 			System.out.println(response);
 			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
@@ -142,6 +142,7 @@ public class WaterEntityAgent {
 	}
 	
 	static public JSONObject getHUC(String fipsCode){
+		System.out.println("getHUC for "+fipsCode);
 		JSONObject obj = new JSONObject();
 		
 		JSONArray hucArr = null;		
