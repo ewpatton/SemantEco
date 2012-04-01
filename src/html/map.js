@@ -23,6 +23,7 @@ stateAbbr2Code["NY"]="US:36";
 var pagedData = [];
 var lat,lng;
 var zipcode;
+var countyFips;
 
 function isChecked(str) {
   var el = document.getElementById(str);
@@ -109,6 +110,8 @@ function showAddress(address) {
 	      stateCode=thisStateCode.split(":")[1];
 	      countyCode=data.result.countyCode;
               countyCode=countyCode.replace("US:","");//strip the "US:"
+              countyFips=countyCode.replace(":","");//strip the ":"
+              alert(countyFips);
 	      countyCode=countyCode.split(":")[1];
 	      countyCode=countyCode.replace(/^0+/,"");
 	      lat = data.result.lat;
@@ -128,6 +131,85 @@ function showAddress(address) {
 	    }
 	   });
   }
+}
+
+function deCodeZip(){
+  var address=document.getElementById("zip").value;
+  if(address.length!=5){
+    alert("The input zip code is not valid! Please check and input again.");
+    return;
+  }
+  window.curPage = 0;
+  var waterquery="";
+  var facilityquery="";
+  if (geocoder) {
+    geocoder.getLatLng(
+      address,
+      function(point) {
+	if (!point) {
+	  alert(address + " not found");
+	} else {
+	  map.setCenter(point, 10);
+	}
+      }
+    );
+    
+    $("#spinner").css("display","block");
+    $.ajax({type: "GET",
+            url: thiszipagent, // SPARQL service URI
+            data:"code="+address, // query parameter
+            dataType: "json",	  
+            success: function(data){
+	      state=data.result.stateAbbr;
+	      showReportSite(state);
+	      thisStateCode=data.result.stateCode;
+              if(thisStateCode==undefined)
+                thisStateCode=stateAbbr2Code[state];
+	      stateCode=thisStateCode.split(":")[1];
+	      countyCode=data.result.countyCode;
+              countyCode=countyCode.replace("US:","");//strip the "US:"
+              countyFips=countyCode.replace(":","");//strip the ":"
+              alert(countyFips);
+	      countyCode=countyCode.split(":")[1];
+	      countyCode=countyCode.replace(/^0+/,"");
+	      lat = data.result.lat;
+	      lng = data.result.lng;
+	      
+	      showHUC();
+	    },
+	    error: function(data) {
+	      window.alert("Unable to determine enough information about your location.");
+	      $("#spinner").css("display","none");
+	    }
+	   });
+  }
+}
+
+function showHUC(){  
+  alert(countyFips);
+  $.ajax({type: "GET",
+	  url: thisserviceagent,
+	  //data: "fips="+countyFips+"&method=getHUC8Codes",
+	  data: {"fips": countyFips,
+		 "method": "getHUC8Codes"},
+	  dataType: "json",
+	  success: function(data) {
+	    if(data.error) {
+	      window.alert("An error occurred: "+data.errorString);
+	      return;
+	    }	    
+	    var hucArr = data.HUC_8;
+	    if(hucArr.length==0) {
+	      window.alert("No data are available for this county at this time.");
+	    }
+	    //for(var i=0;i<hucArr.length;i++) { 
+	    var hucStr=hucArr.join();
+	    window.alert(hucStr);
+	  },
+	  error: function(err) {
+	    window.alert("Unable to retrieve data from the server.");
+	    $("#spinner").css("display","none");
+	  }});
 }
 
 function getLimitData(sources, regulation, contaminants, effects, time) {
@@ -726,3 +808,5 @@ function showFacility()
     }
   });
 }	  
+
+
