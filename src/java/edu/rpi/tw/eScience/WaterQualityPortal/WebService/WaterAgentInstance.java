@@ -757,6 +757,7 @@ public class WaterAgentInstance implements HttpHandler {
 				}
 				else if(method.equalsIgnoreCase("getHUC8CodesOneState")) {
 					//System.err.println("getHUC8CodesOneState");
+					log.info("getHUC8CodesOneState");
 					WaterEntityAgent.getHUC8CodesOneState(arg0, params, log);
 				}
 				else if(method.equalsIgnoreCase("getSpeciesNames")) {
