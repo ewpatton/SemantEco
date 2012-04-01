@@ -751,7 +751,7 @@ public class WaterAgentInstance implements HttpHandler {
 					listHealthEffects(arg0, params);
 				}
 				else if(method.equalsIgnoreCase("getHUC8Codes")) {
-					//System.err.println("getHUC8Codes");
+					System.err.println("getHUC8Codes");
 					WaterEntityAgent.getHUC8Codes(arg0, params, log);
 				}
 				else if(method.equalsIgnoreCase("getHUC8CodesOneState")) {
