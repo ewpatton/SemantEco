@@ -88,7 +88,7 @@ public class FipsCodeAgent {
 	public static void main(String[] args) {
 		String input="./53-county-code.txt";
 		FipsCodeAgent agent = new FipsCodeAgent(input);		
-		FoiaUtil.printHashMap(agent.fipsCode2Name);
+		//FoiaUtil.printHashMap(agent.fipsCode2Name);
 		//FoiaUtil.printValueOfHashMap(agent.fipsCode2Name);
 		//FoiaUtil.printHashMap(agent.fipsName2Code);
 

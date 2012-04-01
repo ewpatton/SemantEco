@@ -141,6 +141,7 @@ public class WaterEntityAgent {
 	}
 	
 	static public JSONObject getHUC(String fipsCode){
+		System.out.println("getHUC for "+fipsCode);
 		JSONObject obj = new JSONObject();
 		
 		JSONArray hucArr = null;		
@@ -149,7 +150,8 @@ public class WaterEntityAgent {
 			hucArr = new JSONArray();
 			for(String curHuc:hucSet)
 				hucArr.add(curHuc);		
-		}		
+		}	
+		System.out.println("hucArr "+hucArr);
 		obj.put("HUC_8", hucArr);
 		
 		return obj;		

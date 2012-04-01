@@ -139,7 +139,7 @@ public class DistributionByCountyAgent {
 		int recordNum = 0;
 		BufferedWriter bufferedWriter = null;
 
-		String subject = null, unitShortName=null, unitLongName=null;
+		String subject = null;
 		String[] spcNames=null;
 		String[] sciNames=null;
 		String[] stateStatus=null, fedStatus=null;
@@ -195,6 +195,13 @@ public class DistributionByCountyAgent {
 				if(recordNum>=10){
 					for(int i=21;i<numHeaders;i++){
 						//System.out.println("Column " + i);
+						String distributionFlag=reader.get(i).trim();
+						//System.out.println("Distribution Flag "+distributionFlag);
+						//no distribution for the county							
+						if(distributionFlag.compareTo("x")!=0){
+							//System.out.println("No distribution for county "+subject);
+							continue;
+						}
 						String countyCode=fipsAgent.name2Code(subject);
 						String spc = spcNamesList.get(i);
 						String spcClass=null;
