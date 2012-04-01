@@ -26,7 +26,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class WaterEntityAgent {
-	static String hucFile = "./wa_huc_0.001.json";
+	static String hucFile = "data/huc/wa_huc_0.001.json";
 
 	static HashMap<String, HashSet<String>> countyCode2huc = new HashMap<String, HashSet<String>>();
 	
@@ -116,8 +116,8 @@ public class WaterEntityAgent {
 				JSONObject prop = (JSONObject) curFeature.get("properties");
 				String huc8 = (String) prop.get("HUC_8");
 				String fipsCodeList = (String) prop.get("FIPS_C");
-				//System.out.println(huc8);
-				//System.out.println(fipsCodeList);						
+				System.out.println(huc8);
+				System.out.println(fipsCodeList);						
 				String[] fipsCodeArr = fipsCodeList.split(" ");
 				for(String curFips:fipsCodeArr){
 					HashSet<String> hucSet = countyCode2huc.get(curFips);
