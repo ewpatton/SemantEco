@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CP=bin
+
 JARS=`ls lib/`
 
 for JAR in $JARS; do
