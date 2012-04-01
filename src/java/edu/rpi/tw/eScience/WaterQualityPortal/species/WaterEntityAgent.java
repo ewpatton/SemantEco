@@ -40,9 +40,10 @@ public class WaterEntityAgent {
 		String response=null;
 		try {
 			String fips = params.get("fips");
+			System.out.println("getHUC8Codes for "+fips);
 			JSONObject hucObj= getHUC(fips);		
 			response = hucObj.toString();
-			//System.out.println(response);
+			System.out.println(response);
 			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
 		}
 		catch(Exception e) {
@@ -116,8 +117,8 @@ public class WaterEntityAgent {
 				JSONObject prop = (JSONObject) curFeature.get("properties");
 				String huc8 = (String) prop.get("HUC_8");
 				String fipsCodeList = (String) prop.get("FIPS_C");
-				System.out.println(huc8);
-				System.out.println(fipsCodeList);						
+				//System.out.println(huc8);
+				//System.out.println(fipsCodeList);						
 				String[] fipsCodeArr = fipsCodeList.split(" ");
 				for(String curFips:fipsCodeArr){
 					HashSet<String> hucSet = countyCode2huc.get(curFips);
@@ -141,7 +142,6 @@ public class WaterEntityAgent {
 	}
 	
 	static public JSONObject getHUC(String fipsCode){
-		System.out.println("getHUC for "+fipsCode);
 		JSONObject obj = new JSONObject();
 		
 		JSONArray hucArr = null;		
