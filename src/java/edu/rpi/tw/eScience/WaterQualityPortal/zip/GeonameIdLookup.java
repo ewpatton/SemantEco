@@ -26,7 +26,7 @@ public class GeonameIdLookup {
 		stateGeonameIdCache = new HashMap<String, String>();
 		stateCode2Name=new HashMap<String, String>();
 		buildStateCode2Name();
-		FoiaUtil.printHashMap(stateCode2Name);
+		//FoiaUtil.printHashMap(stateCode2Name);
 	}
 	
 	public static String execute(String stateAbbr) throws Exception {
@@ -117,7 +117,7 @@ public class GeonameIdLookup {
 	
 	public static void main(String[] args) {
 		GeonameIdLookup.buildStateCode2Name();
-		FoiaUtil.printHashMap(GeonameIdLookup.stateCode2Name);
+		//FoiaUtil.printHashMap(GeonameIdLookup.stateCode2Name);
 		try {
 			System.out.println(GeonameIdLookup.execute("MI"));
 		} catch (Exception e) {
