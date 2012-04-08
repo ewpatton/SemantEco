@@ -23,7 +23,6 @@ var provServiceagent="http://"+provServer+"/prov/trendData.php";
 var provEchoStates = {"CA": true, "MA": true, "NY": true, "RI": true};
 var publishUrl='http://sparql.tw.rpi.edu/';
 
-
 //Array that contains the name of the regulations
 var regNames= new Array();
 regNames['EPA'] = "EPA_Drinking_Water_Regulations";
@@ -32,6 +31,14 @@ regNames['ny'] = "New_York_Drinking_Water_Regulations";
 regNames['ma'] = "2011_Standards_and_Guidelines_for_Contaminants_in_Massachusetts_Drinking_Water";
 regNames['ca'] = "California_Code_of_Regulations";
 
+//Array that contains the name of the regulations' owl files
+var regOwl= new Array();
+regOwlPrefix="http://escience.rpi.edu/ontology/semanteco/2/0/";
+regOwl['EPA'] = "EPA-regulation.owl";
+regOwl['ri'] = "ri-regulation.owl";
+regOwl['ny'] = "ny-regulation.owl";
+regOwl['ma'] = "ma-regulation.owl";
+regOwl['ca'] = "ca-regulation.owl";
 //--------------------------------------------------------------------
 /*This function is called when provenance.html is loaded
 It parse the parameters from the given url
@@ -59,6 +66,7 @@ function showPml(){
   var isReg=params["isReg"]; 
   if(isReg=="true"){
     regId=params["dataSet"];
+    regOwlFile=regOwl[regId];
     pmlDataSet = regNames[regId];
     //alert(pmlDataSet);
 	  queryRegulationPml(regId);
@@ -136,11 +144,11 @@ the function displays the info*/
 function showPmlRecord4Regulations(){
 	var contents="Limit Value for " + pmlCharacteristic + ": "+ pmlValue + pmlUnit+"<br>";
   contents+="The "+ pmlDataSet.replace(/\_/g,' ')+" were got from <a href=\""+pmlDataSrc+"\">" + pmlDataSrc+"</a> on "+ pmlDataDownloadTime+"<br>";
-  contents+="And they were ingested into SemantAQUA by <a href=\"http://tw.rpi.edu/web/person/"+pmlAccountName+"\">"+pmlAccountName+"</a> via " + pmlInfEng + " on "+pmlDataConvertTime+"<br>";
+  contents+="They were ingested into SemantAQUA by <a href=\"http://tw.rpi.edu/web/person/"+pmlAccountName+"\">"+pmlAccountName+"</a> via " + pmlInfEng + " on "+pmlDataConvertTime+"<br>";
+    contents+="And they were encoded in <a href=\"http://www.w3.org/TR/owl2-overview/\">OWL</a> as <a href=\""+regOwlPrefix+regOwlFile+"\">"+ regOwlFile+"</a><br>";
 	var pmlDiv=document.getElementById("pmlInfo");
 	pmlDiv.innerHTML+=contents;
 }
-
 
 /*After the provenance info for the measurement is retrieved from the end point, 
 the function displays the info*/
