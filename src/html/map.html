@@ -60,14 +60,28 @@
 		<input id="EPA" type="checkbox" name="source" checked="checked" value="http://sparql.tw.rpi.edu/source/epa-gov" onclick="submitQuery(this.value,this.name)" />EPA<br/>
 	    </td></tr>
 	  </table>
-	  <table border="1">
+	   <table border="1">
+	    <tr><th>Species</th></tr>
+	    <tr>
+	      <td class="nobr">
+		<select name="species" id="species" onchange="onchange_species_selection();">
+		  <option value="">All species</option>
+		  <option value="Human">Human</option>
+		  <option value="Aquatic-life">Aquatic life</option>
+		</select>
+	      </td>
+	    </tr>
+	  </table>
+	  <table border="1" name="regulation" id="regulation">
 	    <tr><th>Regulation</th></tr>
-	    <tr><td>
-		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl" checked="checked" onclick="submitQuery(this.value,this.name)"/>EPA Regulation<br/>
+      <tr><td>
+      <div id="regDiv">
+<!--		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl" checked="checked" onclick="submitQuery(this.value,this.name)"/>EPA Regulation<br/>
 		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ca-regulation.owl" onclick="submitQuery(this.value,this.name)"/>CA Regulation<br/>
 		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ma-regulation.owl" onclick="submitQuery(this.value,this.name)" />MA Regulation<br/>
 		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ny-regulation.owl" onclick="submitQuery(this.value,this.name)" />NY Regulation<br/>
-		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl" onclick="submitQuery(this.value,this.name)"/>RI Regulation<br/>
+		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl" onclick="submitQuery(this.value,this.name)"/>RI Regulation<br/>-->
+		  </div>
 	    </td></tr>
 	  </table>
 	  <table border="1">

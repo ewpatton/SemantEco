@@ -15,6 +15,30 @@ function eliminateDuplicates(arr) {
   return out;
 }
 
+//<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl" checked="checked" onclick="submitQuery(this.value,this.name)"/>EPA Regulation<br/>
+function append_radio_element(radioTable, curName, curValue, curChecked, curHtml){
+  var element = document.createElement('input');
+  element.setAttribute("type", "radio");
+  element.setAttribute("name", curName);
+  var curId=curHtml.replace(/ /g, "_");
+  element.setAttribute("id", curId);
+	element.setAttribute("value", curValue);
+  element.setAttribute("checked", curChecked);
+  element.setAttribute("onclick", "submitQuery(this.value,this.name)");   
+  //element.innerHTML = curHtml+"<br/>"; 
+  //alert(element.innerHTML);
+  radioTable.appendChild(element);
+  //alert(curId);
+  radioTable.innerHTML += curHtml+"<br/>";
+  //document.getElementById(curId).innerHTML = curHtml+"<br/>"; 
+}
+
+function append_selection_element(select, value, html){
+  var element = document.createElement("option");
+  element.setAttribute("value",value);
+  element.innerHTML = html; 
+  select.appendChild(element);
+}
 
 function PadNumber(number, width) {
   var padded=number.toString();

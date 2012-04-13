@@ -348,6 +348,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	    var bindings = data.results.bindings;
 	    var found = {};
 	    var effects = {};
+	    var effectURLs = {};
 	    if(bindings.length==0) {
 	      contents += "<div class='bottom'>This site has no known pollution based on the regulation you selected.</div>";
 	      marker.openInfoWindow(contents);
@@ -366,6 +367,12 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		  effects[label] = {};
 		if(!effects[label][effect])
 		  effects[label][effect] = effect.substr(effect.indexOf("#")+1).replace(/_/g," ");
+		  
+		var effectURL= result["effectURL"].value;
+		if(effectURLs[label] == null)
+		  effectURLs[label] = {};
+		if(!effectURLs[label][effect])
+		  effectURLs[label][effect] = effectURL;	
 	      }
 	      catch(e) { }
 	    }
@@ -391,7 +398,10 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		var first = true;
 		for(var effect in effects[label]) {
 		  if(!first) contents += ",<br/>";
-		  contents += effects[label][effect];
+		  if(effectURLs[label][effect])
+		  	contents += "<a href=\""+effectURLs[label][effect]+"\">" + effects[label][effect]+"</a>";
+		  else
+		  	contents += effects[label][effect];
 		  first = false;
 		}
 	      }

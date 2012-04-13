@@ -25,6 +25,35 @@ var lat,lng;
 var zipcode;
 var countyFips;
 
+//
+var reg = new Array(2);
+//Array that contains the name of the regulations for human
+reg['human'] = new Array(5);
+reg['human']['EPA'] = "EPA Regulation";
+reg['human']['ca'] = "CA Regulations";
+reg['human']['ma'] = "MA Regulations";
+reg['human']['ny'] = "NY Regulations";
+reg['human']['ri'] = "RI Regulations";
+//Array that contains the name of the regulations for aquatic life
+reg ['aquatic'] = new Array(2);
+reg ['aquatic']['EPA'] = "EPA regulation for aquatic life";
+reg ['aquatic']['ne'] = "NE regulation for aquatic life";
+
+//
+esciencePrefix="http://escience.rpi.edu/ontology/semanteco/2/0/";
+sparqlPrefix="http://sparql.tw.rpi.edu/ontology/semanteco/2/0/";
+var regOwl = new Array(2);
+//Array for the owl files of the regulations for human
+regOwl ['human'] = new Array(5);
+regOwl ['human']['EPA'] = "EPA-regulation.owl";
+regOwl ['human']['ca'] = "ca-regulation.owl";
+regOwl ['human']['ma'] = "ma-regulation.owl";
+regOwl ['human']['ny'] = "ny-regulation.owl";
+regOwl ['human']['ri'] = "ri-regulation.owl";
+regOwl ['aquatic'] = new Array(2);
+regOwl ['aquatic']['EPA'] = "aqua-epa-regulation.owl";
+regOwl ['aquatic']['ne'] = "species-regulation.owl";
+
 function isChecked(str) {
   var el = document.getElementById(str);
   return el.checked;
@@ -56,6 +85,37 @@ function initialize() {
     map.addControl(c, c.getDefaultPosition());
     geocoder = new GClientGeocoder();
   }
+  
+  document.getElementById("species").selectedIndex=1;
+  onchange_species_selection();
+}
+
+function onchange_species_selection(){
+  var regTable=document.getElementById("regDiv");
+  regTable.innerHTML ="";
+  var species = $("#species").val();
+  //alert(species);
+  if(species=="" || species=="Human"){
+    //regTable.innerHTML += "<input type=\"radio\" name=\"regulation\" value=\"http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl\" checked=\"checked\" onclick=\"submitQuery(this.value,this.name)\"/>EPA Regulation<br/></td></tr>";  
+    //alert(regTable);
+    //append_radio_element(radioTable, curName, curValue, curChecked, curHtml)
+    //for (var i = 0; i < reg['human'].length; i++) {
+    for (var i in reg['human']) {
+      //alert(reg['human'][i]);
+      append_radio_element(regTable, "regulation", esciencePrefix + regOwl['human'][i], "unchecked", reg['human'][i]);
+    }
+  }	
+  if(species=="" || species=="Aquatic-life"){
+    for (var i in reg['aquatic']) {
+      //alert(reg['aquatic'][i]);
+      append_radio_element(regTable, "regulation", sparqlPrefix + regOwl['aquatic'][i], "unchecked", reg['aquatic'][i]);
+    }
+  }
+  
+  var spcIndex='human';
+  if(species=="Aquatic-life")
+    spcIndex='aquatic';
+  document.getElementById(reg[spcIndex]['EPA'].replace(/ /g, "_")).setAttribute("checked", "checked");    
 }
 
 function showReportSite(state) {
