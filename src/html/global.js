@@ -1,4 +1,4 @@
-var server="localhost"; //"aquarius.tw.rpi.edu/projects/semantaqua";
+var server="aquarius.tw.rpi.edu/projects/semantaqua";//"localhost"; 
 var thisserviceagent="http://"+server+"/water/service/agent";
 var thiszipagent="http://"+server+"/water/service/zip";
 var healthagent="http://"+server+"/water/service/agent";
