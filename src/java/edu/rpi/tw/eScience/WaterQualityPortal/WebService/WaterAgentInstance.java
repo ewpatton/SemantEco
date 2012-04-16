@@ -281,12 +281,14 @@ public class WaterAgentInstance implements HttpHandler {
 		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl");
 		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl");
 		//owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
-		owlModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
+		//owlModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
+		owlModel.read("http://sparql.tw.rpi.edu/ontology/semanteco/2/0/wildlife-healtheffect.owl");
 		owlModel.read(regulation);
 		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl");
 		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl");
 		//rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
-		rdfModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
+		//rdfModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
+		rdfModel.read("http://sparql.tw.rpi.edu/ontology/semanteco/2/0/wildlife-healtheffect.owl");
 		// Load data
 		for(int i=0;i<sources.length();i++) {
 			long start = System.currentTimeMillis();
