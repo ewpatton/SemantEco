@@ -51,7 +51,7 @@ regOwl ['human']['ma'] = "ma-regulation.owl";
 regOwl ['human']['ny'] = "ny-regulation.owl";
 regOwl ['human']['ri'] = "ri-regulation.owl";
 regOwl ['aquatic'] = new Array(2);
-regOwl ['aquatic']['EPA'] = "aqua-epa-regulation.owl";
+regOwl ['aquatic']['EPA'] = "epa-aqua-acute-regulation.owl";
 regOwl ['aquatic']['ne'] = "species-regulation.owl";
 
 //naics code
