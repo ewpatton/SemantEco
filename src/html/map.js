@@ -24,7 +24,7 @@ var pagedData = [];
 var lat,lng;
 var zipcode;
 var countyFips;
-
+var industry;
 //
 var reg = new Array(2);
 //Array that contains the name of the regulations for human
@@ -53,6 +53,30 @@ regOwl ['human']['ri'] = "ri-regulation.owl";
 regOwl ['aquatic'] = new Array(2);
 regOwl ['aquatic']['EPA'] = "aqua-epa-regulation.owl";
 regOwl ['aquatic']['ne'] = "species-regulation.owl";
+
+//naics code
+var naicsCode = new Array();
+naicsCode['all']='All Data';		  
+naicsCode['11']='Agriculture, Forestry, Fishing and Hunting';
+naicsCode['21']='Mining, Quarrying, and Oil and Gas Extraction';
+naicsCode['22']='Utilities';
+naicsCode['31-32-33']='Manufacturing';
+naicsCode['42']='Wholesale Trade';
+naicsCode['44-45']='Retail Trade';
+naicsCode['48-49']='Transportation and Warehousing';
+naicsCode['51']='Information';
+naicsCode['52']='Finance and Insurance';
+naicsCode['53']='Real Estate and Rental and Leasing';
+naicsCode['54']='Professional, Scientific, and Technical Services';
+naicsCode['55']='Management of Companies and Enterprises';
+naicsCode['56']='Administrative and Support and Waste Management and Remediation Services';
+naicsCode['61']='Educational Services';
+naicsCode['62']='Health Care and Social Assistance';
+naicsCode['71']='Arts, Entertainment, and Recreation';
+naicsCode['72']='Accommodation and Food Services';
+naicsCode['81']='Other Services (except Public Administration)';
+naicsCode['92']='Public Administration'; 
+
 
 function isChecked(str) {
   var el = document.getElementById(str);
@@ -88,6 +112,16 @@ function initialize() {
   
   document.getElementById("species").selectedIndex=1;
   onchange_species_selection();
+  //for industry facet
+  fill_industry_selection();
+}
+
+function fill_industry_selection(){
+  var industry_sel=document.getElementById("industry_selection_canvas");
+  industry_sel.innerHTML ="";
+  for (var i in naicsCode) {
+      append_selection_element(industry_sel, i, naicsCode[i]);
+  }
 }
 
 function onchange_species_selection(){
@@ -96,10 +130,6 @@ function onchange_species_selection(){
   var species = $("#species").val();
   //alert(species);
   if(species=="" || species=="Human"){
-    //regTable.innerHTML += "<input type=\"radio\" name=\"regulation\" value=\"http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl\" checked=\"checked\" onclick=\"submitQuery(this.value,this.name)\"/>EPA Regulation<br/></td></tr>";  
-    //alert(regTable);
-    //append_radio_element(radioTable, curName, curValue, curChecked, curHtml)
-    //for (var i = 0; i < reg['human'].length; i++) {
     for (var i in reg['human']) {
       //alert(reg['human'][i]);
       append_radio_element(regTable, "regulation", esciencePrefix + regOwl['human'][i], "unchecked", reg['human'][i]);
@@ -182,8 +212,9 @@ function showAddress(address) {
 	      var time = $("#time").val();
 	      var sources = JSON.stringify($.map($('[name="source"]:checked'), function(x) { return x.value; }));
 	      var regulation = $('[name="regulation"]:checked').val();
-	      
-	      getLimitData(sources, regulation, contaminants, effects, time);
+	      industry= $("#industry_selection_canvas").val();
+	      //alert(industry);
+	      getLimitData(sources, regulation, contaminants, effects, time, industry);
 	    },
 	    error: function(data) {
 	      window.alert("Unable to determine enough information about your location.");
@@ -272,7 +303,7 @@ function showHUC(){
 	  }});
 }
 
-function getLimitData(sources, regulation, contaminants, effects, time) {
+function getLimitData(sources, regulation, contaminants, effects, time, industry) {
   $.ajax({type: "GET",
 	  url: thisserviceagent,
 	  data: {"sources": sources,
@@ -280,6 +311,7 @@ function getLimitData(sources, regulation, contaminants, effects, time) {
 		 "contaminants": contaminants,
 		 "effects": effects,
 		 "time": time,
+		 "industry": industry,
 		 "countyCode": countyCode,
 		 "state": state,
 		 "method": "getLimitData"},
@@ -307,7 +339,7 @@ function getLimitData(sources, regulation, contaminants, effects, time) {
 	      limits.site["limit"] = Math.min(siteCount, 2*limit-limits.facility["limit"]);
 	    }
 	    generatePaging();
-	    getData(sources, regulation, contaminants, effects, time);
+	    getData(sources, regulation, contaminants, effects, time, industry);
 	  },
 	  error: function(err) {
 	    window.alert("Unable to retrieve data from the server.");
@@ -408,13 +440,14 @@ function getDataCallback(marker) {
   return function() { queryForWaterPollution(marker); };
 }
 
-function getData(sources, regulation, contaminants, effects, time) {
+function getData(sources, regulation, contaminants, effects, time, industry) {
   if(sources==null) {
     sources = JSON.stringify($.map($('[name="source"]:checked'), function(x) { return x.value; }));
     regulation = $('[name="regulation"]:checked').val();
     contaminants = $("#characteristicName").val();
     effects = $("#health").val();
     time = $("#time").val();
+    industry= $("#industry_selection_canvas").val();
   }
   map.clearOverlays();
   if(window.pagedData[curPage]) {
@@ -437,6 +470,7 @@ function getData(sources, regulation, contaminants, effects, time) {
 		 "contaminants":contaminants,
 		 "effects":effects,
 		 "time":time,
+		 "industry": industry,
 		 "countyCode":countyCode,
 		 "state":state,
 		 "lat":lat,
