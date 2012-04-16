@@ -26,25 +26,69 @@ public class CountInstanceQuery extends Query {
 		super(str);
 	}
 	
+	static public String code2RegExp(String code){
+		if(code==null || code.isEmpty() || code.compareTo("all")==0)
+			return "";
+		StringBuilder reg=new StringBuilder();
+		String[] parts=code.split("-");
+		reg.append("\"^");
+		if(parts.length==1){
+			reg.append(code);
+		}
+		else{
+			reg.append(code.charAt(0));
+			reg.append("[");
+			for(String part:parts)
+				reg.append(part.charAt(1));
+			reg.append("]");
+		}
+		reg.append("\"");
+		return reg.toString();
+	}
+	
 	public CountInstanceQuery(String source, String sites, String measures, Map<String,String> params) throws Exception {
 		super(null);
 		String state = params.get("state");
 		String county = params.get("countyCode");
 		time = WaterAgentInstance.processTimeParam(params.get("time"));
+		String naicsCode = params.get("industry");
 		if(source.equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
+		//"FILTER regex(?naics, \"^3[123]\") ";
+		String naicsReg=code2RegExp(naicsCode);
+		String naicsClause="";
+		if(!naicsReg.isEmpty())
+			naicsClause="FILTER regex(?naics, "+naicsReg+") ";
+			
 			while(county.length()<3) county = "0"+county;
-			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+/*			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
 					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " + 
 					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
 					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 					"prefix dc: <http://purl.org/dc/terms/> " +
 					"select (count(distinct ?s) as ?cnt) where { graph <"+sites+"> { "+
 					"?s a water:WaterFacility ; pol:hasCountyCode \""+state+county+"\" ; "+
-					"pol:hasPermit ?p ; wgs:lat ?lat ; wgs:long ?long } graph <"+measures+"> { "+
+					"pol:hasPermit ?p ; wgs:lat ?lat ; wgs:long ?long ; " +
+					"pol:hasNAICS ?naics. } " + naicsClause +" graph <"+measures+"> { "+
+					"?m pol:hasPermit ?p ; dc:date ?t ; pol:hasCharacteristic ?e ; repr:hasUnit ?unit . " +
+					(time==null?"":"FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
+					" } }";*/			
+			String part1= "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " + 
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix dc: <http://purl.org/dc/terms/> " +
+					"select (count(distinct ?s) as ?cnt) where { graph <"+sites+"> { "+
+					"?s a water:WaterFacility ; pol:hasCountyCode \""+state+county+"\" ; "+
+					"pol:hasPermit ?p ; wgs:lat ?lat ; wgs:long ?long ";
+			String part2 = " graph <"+measures+"> { "+
 					"?m pol:hasPermit ?p ; dc:date ?t ; pol:hasCharacteristic ?e ; repr:hasUnit ?unit . " +
 					(time==null?"":"FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
 					" } }";
-			//System.out.println(queryString);
+			if(naicsClause.isEmpty())
+				queryString= part1 +". } "+part2;
+			else
+				queryString = part1 +"; pol:hasNAICS ?naics. } " + naicsClause + part2;			
+			System.out.println(queryString);//for dug
 		}
 		else if(source.equals("http://sparql.tw.rpi.edu/source/usgs-gov")) {
 			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
