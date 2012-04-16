@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -118,16 +119,14 @@ public class WaterAgentInstance implements HttpHandler {
 		String query = arg0.getRequestURI().getQuery();
 		//parse request
 		String [] request=query.split("&");
-		//debug
-		System.out.println(query);
+		//for debug System.out.println(query);
 		
 		for(int i=0;i<request.length;i++) {
 			log.trace(request[i]);
 			String[] pieces = request[i].split("=");
 			if(pieces.length==2) {
 				result.put(pieces[0], java.net.URLDecoder.decode(pieces[1],"UTF-8"));
-				//debug
-				System.out.println(pieces[0]+", "+java.net.URLDecoder.decode(pieces[1],"UTF-8"));
+				//for debug System.out.println(pieces[0]+", "+java.net.URLDecoder.decode(pieces[1],"UTF-8"));
 			}
 			}
 		return result;
@@ -281,12 +280,13 @@ public class WaterAgentInstance implements HttpHandler {
 		//model.setCache(cache);
 		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl");
 		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl");
-		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
+		//owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
+		owlModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
 		owlModel.read(regulation);
 		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl");
 		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl");
-		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
-	
+		//rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
+		rdfModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
 		// Load data
 		for(int i=0;i<sources.length();i++) {
 			long start = System.currentTimeMillis();
@@ -345,7 +345,7 @@ public class WaterAgentInstance implements HttpHandler {
 				"prefix time: <http://www.w3.org/2006/time#> " +
 				"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
 				"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
-				"select ?s ?lat ?long ?label ";
+				"select distinct ?s ?lat ?long ?label ";
 		queryString +=
 				"where {"+
 				"?s a " + type + " ; geo:lat ?lat ; geo:long ?long ";
@@ -415,16 +415,21 @@ public class WaterAgentInstance implements HttpHandler {
 					break;
 				case 2:
 					pollutedSites = queryModel("pol:PollutedSite", true, model, params);
+					//for demo
+					System.out.println(pollutedSites.toString());
 					break;
 				}
 				log.info("Query finished in "+(System.currentTimeMillis()-start)+" ms");
 			}
 			TreeMap<String, JSONObject> allBindings = new TreeMap<String, JSONObject>();
 			JSONArray bindings = sites.getJSONObject("results").getJSONArray("bindings");
+			HashSet<String> seen = new HashSet<String>();
 			for(int i=0;i<bindings.length();i++) {
 				try {
 				JSONObject binding  = bindings.getJSONObject(i);
 				String uri = binding.getJSONObject("s").getString("value");
+				if(seen.contains(uri)) continue;
+				seen.add(uri);
 				JSONObject entry = new JSONObject();
 				entry.put("type", "literal");
 				entry.put("datatype", "http://www.w3.org/2001/XMLSchema#boolean");
@@ -440,10 +445,13 @@ public class WaterAgentInstance implements HttpHandler {
 				catch(Exception e) { }
 			}
 			bindings = facilities.getJSONObject("results").getJSONArray("bindings");
+			seen.clear();
 			for(int i=0;i<bindings.length();i++) {
 				try {
 				JSONObject binding = bindings.getJSONObject(i);
 				String uri = binding.getJSONObject("s").getString("value");
+				if(seen.contains(uri)) continue;
+				seen.add(uri);
 				if(allBindings.containsKey(uri)) {
 					binding = allBindings.get(uri);
 					binding.getJSONObject("facility").put("value", "true");
@@ -452,10 +460,13 @@ public class WaterAgentInstance implements HttpHandler {
 				catch(Exception e) { }
 			}
 			bindings = pollutedSites.getJSONObject("results").getJSONArray("bindings");
+			seen.clear();
 			for(int i=0;i<bindings.length();i++) {
 				try {
 				JSONObject binding = bindings.getJSONObject(i);
 				String uri = binding.getJSONObject("s").getString("value");
+				if(seen.contains(uri)) continue;
+				seen.add(uri);
 				if(allBindings.containsKey(uri)) {
 					binding = allBindings.get(uri);
 					binding.getJSONObject("polluted").put("value", "true");
@@ -531,7 +542,8 @@ public class WaterAgentInstance implements HttpHandler {
 					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
 					"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
 					"prefix health: <http://escience.rpi.edu/ontology/semanteco/2/0/health.owl#> "+
-					"select ?element ?permit ?type ?value ?unit ?limit ?op ?time ?effect " +
+					"prefix healtheffect: <http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl#> "+
+					"select ?element ?permit ?type ?value ?unit ?limit ?op ?time ?effect ?effectURL " +
 					"where {" +
 					"<"+site+"> pol:hasMeasurement ?m OPTIONAL { ?S pol:hasPermit ?permit } " +
 					"?m a pol:RegulationViolation ; pol:hasCharacteristic ?element ; pol:hasValue ?value ; "+
@@ -543,7 +555,14 @@ public class WaterAgentInstance implements HttpHandler {
 				if(!healthClause.equals(""))
 					queryString += " ?element health:hasHealthEffect ?effect "+healthClause+" ";
 				queryString +=
-					"OPTIONAL { ?element health:hasHealthEffect ?effect } "+
+					//"OPTIONAL { ?element health:hasHealthEffect ?effect } "+
+				//add health effects for species
+				"OPTIONAL { ?effect healtheffect:forSpecies healtheffect:CanadaGoose; "+
+				"healtheffect:isCausedBy ?element; " +
+				"rdfs:seeAlso ?info. " +
+				"?info healtheffect:hasURL ?effectURL. } "+
+				//"?spc rdfs:label \"Canada Goose\". } "+			
+				//
 					"OPTIONAL { ?m a ?cls . " +
 					"?cls owl:intersectionOf ?list . ?list rdf:rest*/rdf:first ?supers . " +
 					"?supers owl:onProperty pol:hasValue ; owl:someValuesFrom ?dt . ?dt owl:withRestrictions ?res ." +
@@ -560,6 +579,7 @@ public class WaterAgentInstance implements HttpHandler {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ResultSetFormatter.outputAsJSON(baos, queryResults);
 			result = baos.toString("UTF-8");
+			//for debug System.out.println(result);
 			qe.close();
 			log.info("Query finished in "+(System.currentTimeMillis()-start)+" ms");
 			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
