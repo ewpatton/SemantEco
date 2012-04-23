@@ -94,7 +94,7 @@ public class FipsCodeAgent {
 		FipsCodeAgent agent = new FipsCodeAgent(input);		
 		//FoiaUtil.printHashMap(agent.fipsCode2Name);
 		//FoiaUtil.printValueOfHashMap(agent.fipsCode2Name);
-		FoiaUtil.printHashMap(agent.fipsName2Code);
+		//FoiaUtil.printHashMap(agent.fipsName2Code);
 
 	}
 }
