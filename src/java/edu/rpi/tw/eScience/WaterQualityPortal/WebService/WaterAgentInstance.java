@@ -95,7 +95,7 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 	
 	public WaterAgentInstance() {
-		birdAgent = new BirdObservation("53", "./53-county-code.txt");
+		birdAgent = new BirdObservation("53", "data/fips/53-county-code.txt");
 	}
 	
 	public WaterAgentInstance(ZipCodeLookup zipCode, File basePath) {
