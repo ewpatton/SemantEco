@@ -41,6 +41,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.FacilityDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.WaterDataQuery;
+import edu.rpi.tw.eScience.WaterQualityPortal.species.BirdObservation;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.DistributionWebService;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.WaterEntityAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.GeonameIdLookup;
@@ -64,6 +65,7 @@ public class WaterAgentInstance implements HttpHandler {
 	static Cache cache;
 	static HashMap<String, String> states = new HashMap<String, String>();
 	static Logger log = Logger.getRootLogger();
+	BirdObservation birdAgent;
 	
 	public static String getStateURI(String state) {
 		return states.get(state);
@@ -93,6 +95,7 @@ public class WaterAgentInstance implements HttpHandler {
 	}
 	
 	public WaterAgentInstance() {
+		birdAgent = new BirdObservation("53", "./53-county-code.txt");
 	}
 	
 	public WaterAgentInstance(ZipCodeLookup zipCode, File basePath) {
@@ -791,6 +794,10 @@ public class WaterAgentInstance implements HttpHandler {
 				else if(method.equalsIgnoreCase("getSpeciesDistributionByCounty")) {
 					//System.err.println("getSpeciesDistributionByCounty");
 					DistributionWebService.getSpeciesDistributionByCounty(arg0, params, log);
+				}
+				else if(method.equalsIgnoreCase("getBirdObservationByCounty")) {
+					//System.err.println("getBirdObservationByCounty");
+					birdAgent.getSpeciesDistributionByCounty(arg0, params, log);
 				}
 				return;
 			}
