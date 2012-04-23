@@ -259,6 +259,5 @@ public class DistributionByCountyAgent {
 		String waFile = "./2012_distribution_by_county.csv";
 		String out = "./wa_2012_distribution_by_county.csv";
 		agent.processCSV(waFile, out);
-
 	}
 }

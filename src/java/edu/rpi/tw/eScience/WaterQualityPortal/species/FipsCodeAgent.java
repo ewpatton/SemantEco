@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.util.*;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
@@ -21,6 +21,10 @@ public class FipsCodeAgent {
 		fipsCode2Name = new HashMap<String, String>();
 		fipsName2Code = new HashMap<String, String>();
 		buildLookupTables(inputFile);
+	}
+	
+	public Set<String> getCountyFips(){
+		return fipsCode2Name.keySet();		
 	}
 	
 	public String code2Name(String code){
@@ -90,7 +94,7 @@ public class FipsCodeAgent {
 		FipsCodeAgent agent = new FipsCodeAgent(input);		
 		//FoiaUtil.printHashMap(agent.fipsCode2Name);
 		//FoiaUtil.printValueOfHashMap(agent.fipsCode2Name);
-		//FoiaUtil.printHashMap(agent.fipsName2Code);
+		FoiaUtil.printHashMap(agent.fipsName2Code);
 
 	}
 }
