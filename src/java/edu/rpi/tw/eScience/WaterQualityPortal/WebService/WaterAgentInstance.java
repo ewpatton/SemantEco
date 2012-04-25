@@ -520,6 +520,7 @@ public class WaterAgentInstance implements HttpHandler {
 			QueryExecution qe;
 			ResultSet queryResults;
 			String site = params.get("site");
+			String species=params.get("species");
 			String charClause = "", healthClause = "";
 			ArrayList<String> uris = processCharacteristicParam(params.get("contaminants"));
 			if(uris != null && uris.size()>0) {
@@ -559,16 +560,17 @@ public class WaterAgentInstance implements HttpHandler {
 					queryString += charClause;
 				if(!healthClause.equals(""))
 					queryString += " ?element health:hasHealthEffect ?effect "+healthClause+" ";
-				queryString +=
+				if(!species.equals(""))
+					queryString +=
 					//"OPTIONAL { ?element health:hasHealthEffect ?effect } "+
 				//add health effects for species
-				"OPTIONAL { ?effect healtheffect:forSpecies healtheffect:CanadaGoose; "+
+				"OPTIONAL { ?effect healtheffect:forSpecies healtheffect:"+species+"; "+
 				"healtheffect:isCausedBy ?element; " +
 				"rdfs:seeAlso ?info. " +
-				"?info healtheffect:hasURL ?effectURL. } "+
+				"?info healtheffect:hasURL ?effectURL. } ";
 				//"?spc rdfs:label \"Canada Goose\". } "+			
 				//
-					"OPTIONAL { ?m a ?cls . " +
+				queryString += "OPTIONAL { ?m a ?cls . " +
 					"?cls owl:intersectionOf ?list . ?list rdf:rest*/rdf:first ?supers . " +
 					"?supers owl:onProperty pol:hasValue ; owl:someValuesFrom ?dt . ?dt owl:withRestrictions ?res ." +
 					"?res rdf:rest*/rdf:first [ ?p ?limit ] ." +
