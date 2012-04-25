@@ -39,9 +39,9 @@ reg ['aquatic'] = new Array(2);
 reg ['aquatic']['EPA'] = "EPA regulation for aquatic life";
 reg ['aquatic']['ne'] = "NE regulation for aquatic life";
 //Array that contains the name of the regulations for canadian goose
-reg ['canadian-goose'] = new Array(2);
-reg ['canadian-goose']['EPA'] = "EPA regulation for aquatic life";
-reg ['canadian-goose']['ne'] = "NE regulation for aquatic life";
+reg ['CanadaGoose'] = new Array(2);
+reg ['CanadaGoose']['EPA'] = "EPA regulation for aquatic life";
+reg ['CanadaGoose']['ne'] = "NE regulation for aquatic life";
 
 //
 esciencePrefix="http://escience.rpi.edu/ontology/semanteco/2/0/";
@@ -133,7 +133,7 @@ function onchange_species_selection() {
 	var regTable=document.getElementById("regDiv");
 	regTable.innerHTML ="";
 	var species = $("#species").val();
-	// alert(species);
+	//alert(species);
 	if(species=="" || species=="Human"){
 		$("#spinner").css("display","block");
 		for (var i in reg['human']) {
@@ -157,11 +157,17 @@ function onchange_species_selection() {
 		});
 		$("#spinner").css("display","none");
 	}
-	if (species == "Canadian-goose") {
+	
+	if (species == "CanadaGoose") {
 		$("#spinner").css("display","block");
-		for (var i in reg['canadian-goose']) {
+		for (var i in reg['CanadaGoose']) {
 			append_radio_element(regTable, "regulation", sparqlPrefix + regOwl['aquatic'][i], "unchecked", reg['aquatic'][i]);
 		}
+		var zip=$('#zip').val();
+		alert(zip);
+		if(zip!='98103')
+		 $("#spinner").css("display","none");
+		else {
 		highlight = [];
         var bounds = map.getBounds();
         var southWest = bounds.getSouthWest();
@@ -190,12 +196,14 @@ function onchange_species_selection() {
 				$("#spinner").css("display","none");
 			});
 		});
+		}
 	}
+	
 	var spcIndex = 'human';
 	if (species == "Aquatic-life")
 		spcIndex = 'aquatic';
-	if (species == "Canadian-goose")
-		spcIndex = 'canadian-goose';
+	if (species == "CanadaGoose")
+		spcIndex = 'CanadaGoose';
 	console.log(reg[spcIndex]['EPA']);
 	document.getElementById(reg[spcIndex]['EPA'].replace(/ /g, "_")).
 	setAttribute("checked", "checked");
