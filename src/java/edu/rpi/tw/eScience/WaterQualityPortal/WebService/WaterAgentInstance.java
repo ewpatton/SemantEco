@@ -37,6 +37,7 @@ import com.sun.net.httpserver.HttpHandler;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.CountInstanceQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.EPAHack;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.ListCharacteristicsQuery;
+import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataInViewQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.FacilityDataQuery;
@@ -319,6 +320,62 @@ public class WaterAgentInstance implements HttpHandler {
 		return model;
 	}
 	
+	protected Model loadAllData(Map<String,String> params) throws JSONException, IOException {
+		long loadStart = System.currentTimeMillis();
+		String regulation = params.get("regulation");
+		JSONArray sources = new JSONArray(params.get("sources"));
+		boolean reason = Boolean.parseBoolean(params.get("reason")!=null?params.get("reason"):"true");
+
+		// Load ontologies
+		Model owlModel,rdfModel;
+		if(reason)
+			owlModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		else
+			owlModel = ModelFactory.createDefaultModel();
+		if(reason)
+			rdfModel = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		else
+			rdfModel = ModelFactory.createDefaultModel();
+		Model model = ModelFactory.createUnion(owlModel, rdfModel);
+		//model.setCache(cache);
+		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl");
+		owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl");
+		//owlModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
+		//owlModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
+		owlModel.read("http://sparql.tw.rpi.edu/ontology/semanteco/2/0/wildlife-healtheffect.owl");
+		owlModel.read(regulation);
+		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl");
+		rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl");
+		//rdfModel.read("http://escience.rpi.edu/ontology/semanteco/2/0/health.owl");
+		//rdfModel.read("http://localhost/semantaqua/health/wildlife-healtheffect.owl");	
+		rdfModel.read("http://sparql.tw.rpi.edu/ontology/semanteco/2/0/wildlife-healtheffect.owl");
+		// Load data
+		for(int i=0;i<sources.length();i++) {
+			long start = System.currentTimeMillis();
+			log.debug("Loading data for source <"+sources.getString(i)+">");
+			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
+				//LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
+				EPAHack q = new EPAHack(params);
+				try {
+					q.execute(Configuration.TRIPLE_STORE, rdfModel);
+				}
+				catch(Exception e) {
+					LoadDataInViewQuery q1 = new LoadDataInViewQuery(sources.getString(i), params);
+					q1.execute(Configuration.TRIPLE_STORE, rdfModel);
+				}
+			}
+			else {
+				LoadDataInViewQuery q = new LoadDataInViewQuery(sources.getString(i), params);
+				q.execute(Configuration.TRIPLE_STORE, owlModel);
+			}
+			log.debug("Load finished in "+(System.currentTimeMillis()-start)+" ms");
+		}
+		log.info("Data load finished in "+(System.currentTimeMillis()-loadStart)+" ms");
+		owlModel = null;
+		rdfModel = null;
+		return model;
+	}
+
 	protected JSONObject queryModel(String type, boolean polluted, Model model, Map<String,String> params) throws UnsupportedEncodingException, JSONException {
 		String queryString;
 		QueryExecution qe;
@@ -506,6 +563,132 @@ public class WaterAgentInstance implements HttpHandler {
 		}
 	}
 	
+	protected void getAllData(HttpExchange req, Map<String,String> params) {
+		String result = null;
+		boolean err = false;
+		OutputStream os = req.getResponseBody();
+		Model model;
+		try {
+			model = loadAllData(params);
+			String queryString;
+			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix health: <http://escience.rpi.edu/ontology/semanteco/2/0/health.owl#> " +
+					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"select ?s ?lat ?lng where { ?s a pol:MeasurementSite ; geo:lat ?lat ; geo:long ?lng }";
+			QueryExecution qe;
+			ResultSet queryResults;
+			qe = QueryExecutionFactory.create(QueryFactory.create(queryString, Syntax.syntaxSPARQL_11), model);
+			queryResults = qe.execSelect();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ResultSetFormatter.outputAsJSON(baos, queryResults);
+			log.debug(baos.toString("UTF-8"));
+			qe.close();
+			
+			// Query
+			long start = System.currentTimeMillis();
+			JSONObject sites=null,facilities=null,pollutedSites=null;
+			for(int i=0;i<3;i++) {
+				log.debug("Querying data...");
+				switch(i) {
+				case 0:
+					sites = queryModel("pol:MeasurementSite", false, model, params);
+					break;
+				case 1:
+					facilities = queryModel("pol:Facility", false, model, params);
+					break;
+				case 2:
+					pollutedSites = queryModel("pol:PollutedSite", true, model, params);
+					//for demo
+					System.out.println(pollutedSites.toString());
+					break;
+				}
+				log.info("Query finished in "+(System.currentTimeMillis()-start)+" ms");
+			}
+			TreeMap<String, JSONObject> allBindings = new TreeMap<String, JSONObject>();
+			JSONArray bindings = sites.getJSONObject("results").getJSONArray("bindings");
+			HashSet<String> seen = new HashSet<String>();
+			for(int i=0;i<bindings.length();i++) {
+				try {
+				JSONObject binding  = bindings.getJSONObject(i);
+				String uri = binding.getJSONObject("s").getString("value");
+				if(seen.contains(uri)) continue;
+				seen.add(uri);
+				JSONObject entry = new JSONObject();
+				entry.put("type", "literal");
+				entry.put("datatype", "http://www.w3.org/2001/XMLSchema#boolean");
+				entry.put("value", "false");
+				binding.put("facility", entry);
+				entry = new JSONObject();
+				entry.put("type", "literal");
+				entry.put("datatype", "http://www.w3.org/2001/XMLSchema#boolean");
+				entry.put("value", "false");
+				binding.put("polluted", entry);
+				allBindings.put(uri, binding);
+				}
+				catch(Exception e) { }
+			}
+			bindings = facilities.getJSONObject("results").getJSONArray("bindings");
+			seen.clear();
+			for(int i=0;i<bindings.length();i++) {
+				try {
+				JSONObject binding = bindings.getJSONObject(i);
+				String uri = binding.getJSONObject("s").getString("value");
+				if(seen.contains(uri)) continue;
+				seen.add(uri);
+				if(allBindings.containsKey(uri)) {
+					binding = allBindings.get(uri);
+					binding.getJSONObject("facility").put("value", "true");
+				}
+				}
+				catch(Exception e) { }
+			}
+			bindings = pollutedSites.getJSONObject("results").getJSONArray("bindings");
+			seen.clear();
+			for(int i=0;i<bindings.length();i++) {
+				try {
+				JSONObject binding = bindings.getJSONObject(i);
+				String uri = binding.getJSONObject("s").getString("value");
+				if(seen.contains(uri)) continue;
+				seen.add(uri);
+				if(allBindings.containsKey(uri)) {
+					binding = allBindings.get(uri);
+					binding.getJSONObject("polluted").put("value", "true");
+				}
+				}
+				catch(Exception e) { }
+			}
+			result = sites.toString();
+			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
+		}
+		catch(Exception e) {
+			err = true;
+			e.printStackTrace();
+			result = "An error occurred on the server. Please contact the system administrator.";
+		}
+		finally {
+			model = null;
+		}
+		try {
+			req.sendResponseHeaders(err ? 500 : 200, result.length());
+			os.write(result.getBytes());
+		}
+		catch(IOException e1) {
+			e1.printStackTrace();
+		}
+		finally {
+			try {
+				os.flush();
+				os.close();
+			}
+			catch(Exception e) {}
+		}
+	}
+
 	protected void queryForWaterPollution(HttpExchange req, Map<String,String> params) {
 		String result = null;
 		boolean err = false;
@@ -769,6 +952,9 @@ public class WaterAgentInstance implements HttpHandler {
 				}
 				else if(method.equalsIgnoreCase("getData")) {
 					getData(arg0, params);
+				}
+				else if(method.equalsIgnoreCase("getAllData")) {
+					getAllData(arg0, params);
 				}
 				else if(method.equalsIgnoreCase("queryForWaterPollution")) {
 					queryForWaterPollution(arg0, params);
