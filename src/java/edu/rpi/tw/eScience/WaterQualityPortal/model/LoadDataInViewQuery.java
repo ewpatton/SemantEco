@@ -3,6 +3,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.model;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -112,47 +113,122 @@ public class LoadDataInViewQuery extends Query {
 			}
 			
 			if(source.equals("http://sparql.tw.rpi.edu/source/usgs-gov")) {
-				String inClause = null;
-				if(site==null) {
-					queryString =
-							"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-							"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-							"prefix time: <http://www.w3.org/2006/time#> " +
-							"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
-							"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
-							"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
-							"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
-							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
-							"prefix dc: <http://purl.org/dc/terms/> " +
-							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterSite ; pol:hasCountyCode "+county+
-							" ; dc:identifier ?x ; wgs:lat ?lat ; wgs:long ?long } " +
-							getGeoFilter()+							
-							"graph <" + measures + "> { ?m pol:hasSiteId ?x . " +
-							"FILTER(bif:exists((SELECT (1) WHERE { ?m time:inXSDDateTime ?t "+
-							(time==null? "" : "FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
-							" }))) "+
-							"} } ";
-					JSONObject ans = WaterAgentInstance.executeJSONQuery(endpoint, queryString);
-					JSONArray ids = new JSONArray();
-					JSONArray bindings = ans.getJSONObject("results").getJSONArray("bindings");
-					for(int i=0;i<bindings.length();i++) {
-						JSONObject result = bindings.getJSONObject(i).getJSONObject("s");
-						String uri = result.getString("value");
-						ids.put("<"+uri+">");
-					}
-					if(ids.length()==0) return model;
-					inClause = "IN (";
-					for(int i=0;i<ids.length();i++) {
-						if(i!=0) inClause += ",";
-						inClause += ids.getString(i);
-					}
-					inClause += ") ";
-				}
-				else {
-					inClause = "IN ( <"+site+"> )";
-				}
-				queryString = 
+				loadUSGSData(endpoint, model, sites, measures);
+			}
+			else if(source.equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
+				loadEPAData(endpoint, model, sites, measures);
+			}
+			else {
+				throw new IOException("Attempted to read data from unknown source.");
+			}
+		}
+		catch(Exception e) {//catch(JSONException e)
+			throw new IOException("Unable to parse response", e);
+		}
+		return model;
+	}
+	
+	public void loadUSGSData(String endpoint, Model model, String sites, String measures) throws UnsupportedEncodingException, JSONException {
+		//construct for the sites
+		queryString = 
+				"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+				"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+				"prefix time: <http://www.w3.org/2006/time#> " +
+				"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+				"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
+				"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+				"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+				"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+				"prefix dc: <http://purl.org/dc/terms/> " +
+				"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
+				"construct { " +
+				"?s rdf:type water:WaterSite . " +
+				"?s rdfs:label ?label . "+
+				"?s pol:hasCountyCode " + county + " . " +
+				//"?s pol:hasStateCode ?state . " +
+				"?s wgs:lat ?lat . " +
+				"?s wgs:long ?long . " +
+				"?s pol:hasMeasurement ?measurement . " +
+				"?measurement a water:WaterMeasurement . " +
+				"?measurement pol:hasCharacteristic ?element . " +
+				"?measurement pol:hasValue ?value . " +
+				"?measurement unit:hasUnit ?unit . " +
+				"?measurement time:inXSDDateTime ?time ." +
+				"} where {" +
+			    "graph <"+sites+"> {" +
+				"?s a water:WaterSite ; " +
+				"dc:identifier ?id ; " +
+				"pol:hasCountyCode " + county + " ; " +
+				//"pol:hasStateCode ?state ; " +
+				"wgs:lat ?lat ; " +
+				"wgs:long ?long . " +
+				"OPTIONAL { ?s rdfs:label ?label } "+
+				getGeoFilter()+
+				//"FILTER( ?s "+inClause+") "+
+				"} " +
+				"graph <"+measures+"> {" +
+				"?measurement pol:hasSiteId ?id ; " +
+				"pol:hasCharacteristic ?element ; "+
+				"pol:hasValue ?value ; " + 
+				"repr:hasUnit ?unit ; " +
+				"time:inXSDDateTime ?time . " +
+				(time == null ? "" : "FILTER( ?time > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
+				"} " +
+				"}";
+		System.out.println(queryString);
+			Logger.getRootLogger().trace(queryString);
+			model.read(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
+				   +"&format="+URLEncoder.encode("application/rdf+xml","UTF-8"), "", null);	
+	}
+	
+	public void loadUSGSDataBySite(String endpoint, Model model, String sites, String measures) throws UnsupportedEncodingException, JSONException {
+		JSONArray ids = null;
+		String inClause = null;
+		if(site==null) {
+			queryString =
 					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
+					"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix dc: <http://purl.org/dc/terms/> " +
+					"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterSite ; pol:hasCountyCode "+county+
+					" ; dc:identifier ?x ; wgs:lat ?lat ; wgs:long ?long } " +
+					getGeoFilter()+							
+					//"graph <" + measures + "> { ?m pol:hasSiteId ?x . " +
+					//"FILTER(bif:exists((SELECT (1) WHERE { ?m time:inXSDDateTime ?t "+
+					//(time==null? "" : "FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
+					//" }))) } "+
+					"} ";
+			JSONObject ans = WaterAgentInstance.executeJSONQuery(endpoint, queryString);
+			ids = new JSONArray();
+			JSONArray bindings = ans.getJSONObject("results").getJSONArray("bindings");
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject result = bindings.getJSONObject(i).getJSONObject("s");
+				String uri = result.getString("value");
+				ids.put("<"+uri+">");
+			}
+			if(ids.length()==0) return;
+			inClause = "IN (";
+			for(int i=0;i<ids.length();i++) {
+				if(i!=0) inClause += ",";
+				inClause += ids.getString(i);
+			}
+			inClause += ") ";
+		}
+		else {
+			inClause = "IN ( <"+site+"> )";
+		}	
+		
+		if(ids==null || ids.length()==0) return;
+		for(int i=0;i<ids.length();i++) {	
+			//construct for the sites
+			String curId=ids.getString(i);
+
+			String consStringForSite = "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 					"prefix time: <http://www.w3.org/2006/time#> " +
 					"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
@@ -165,98 +241,193 @@ public class LoadDataInViewQuery extends Query {
 					"construct { " +
 					"?s rdf:type water:WaterSite . " +
 					"?s rdfs:label ?label . "+
-					"?s pol:hasMeasurement ?measurement . " +
 					"?s pol:hasCountyCode " + county + " . " +
-					"?s pol:hasStateCode ?state . " +
 					"?s wgs:lat ?lat . " +
 					"?s wgs:long ?long . " +
+					"} where {" +
+					"graph <"+sites+"> {" +
+					curId +" a water:WaterSite . " +
+					"?s a water:WaterSite ; " +
+					"dc:identifier ?id ; " +
+					"pol:hasCountyCode " + county + " ; " +
+					"wgs:lat ?lat ; " +
+					"wgs:long ?long . " +
+					"OPTIONAL { ?s rdfs:label ?label } "+
+					//getGeoFilter()+
+					//"FILTER( ?s "+inClause+") "+
+					"} " +
+					"}";
+			System.out.println(consStringForSite);
+				Logger.getRootLogger().trace(consStringForSite);
+				model.read(endpoint+"?query="+URLEncoder.encode(consStringForSite, "UTF-8")
+					   +"&format="+URLEncoder.encode("application/rdf+xml","UTF-8"), "", null);	
+		}
+		
+		for(int i=0;i<ids.length();i++) {	
+			//construct for the sites
+			String curId=ids.getString(i);
+			queryString = 
+					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
+					"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix dc: <http://purl.org/dc/terms/> " +
+					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
+					"construct { " +
+/*					"?s rdf:type water:WaterSite . " +
+					"?s rdfs:label ?label . "+
+					"?s pol:hasCountyCode " + county + " . " +
+					//"?s pol:hasStateCode ?state . " +
+					"?s wgs:lat ?lat . " +
+					"?s wgs:long ?long . " +*/
+					curId + " pol:hasMeasurement ?measurement . " +
 					"?measurement a water:WaterMeasurement . " +
 					"?measurement pol:hasCharacteristic ?element . " +
 					"?measurement pol:hasValue ?value . " +
 					"?measurement unit:hasUnit ?unit . " +
 					"?measurement time:inXSDDateTime ?time ." +
 					"} where {" +
-					"graph <"+sites+"> {" +
+/*					"graph <"+sites+"> {" +
 					"?s a water:WaterSite ; " +
 					"dc:identifier ?id ; " +
 					"pol:hasCountyCode " + county + " ; " +
-					"pol:hasStateCode ?state ; " +
+					//"pol:hasStateCode ?state ; " +
 					"wgs:lat ?lat ; " +
 					"wgs:long ?long . " +
 					"OPTIONAL { ?s rdfs:label ?label } "+
 					getGeoFilter()+
 					//"FILTER( ?s "+inClause+") "+
-					"} " +
+					"} " +*/
 					"graph <"+measures+"> {" +
-					"?measurement pol:hasSiteId ?id ; " +
+					"?measurement pol:hasSiteId "+curId+" ; " +
 					"pol:hasCharacteristic ?element ; "+
 					"pol:hasValue ?value ; " + 
 					"repr:hasUnit ?unit ; " +
 					"time:inXSDDateTime ?time . " +
 					(time == null ? "" : "FILTER( ?time > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
 					"} " +
-					"}"
-					;
+					"}";
+			System.out.println(queryString);
 				Logger.getRootLogger().trace(queryString);
 				model.read(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
-					   +"&format="+URLEncoder.encode("application/rdf+xml","UTF-8"), "", null);
-			}
-			else if(source.equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
-				String inClause = null; 
-				String naicsClause="";
-				//"FILTER regex(?naics, \"^3[123]\") ";
-				String naicsReg=CountInstanceQuery.code2RegExp(naicsCode);
-				if(!naicsReg.isEmpty())
-					naicsClause="FILTER regex(?naics, "+naicsReg+") ";
-				
-				if(site==null) {
-					String queryStringPart1 =
-							"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-							"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-							"prefix time: <http://www.w3.org/2006/time#> " +
-							"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
-							"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
-							"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
-							"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
-							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
-							"prefix dc: <http://purl.org/dc/terms/> " +
-							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" ; " +
-									"pol:hasPermit ?x ; wgs:lat ?lat ; wgs:long ?long ";
-										
-					String queryStringPart2="graph <" + measures + "> { ?m pol:hasPermit ?x . " +
-							"FILTER(bif:exists((SELECT (1) WHERE { ?m dc:date ?t " +
-							(time==null?"":"FILTER( ?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
-							"}))) "+
-							"} }";
-					
-					if(naicsClause.isEmpty())
-						queryString= queryStringPart1 +". } " + getGeoFilter()+ queryStringPart2;
-					else
-						queryString = queryStringPart1 +"; pol:hasNAICS ?naics. } "+ getGeoFilter() + naicsClause + queryStringPart2;
+					   +"&format="+URLEncoder.encode("application/rdf+xml","UTF-8"), "", null);	
+		}	
+	}
+	
+	public void loadEPAData(String endpoint, Model model, String sites, String measures) throws JSONException, IOException {
+		JSONArray ids = null, permits=null;
+		String inClause = null; 
+		String naicsClause="";
+		//Example, "FILTER regex(?naics, \"^3[123]\") ";
+		String naicsReg=CountInstanceQuery.code2RegExp(naicsCode);
+		if(!naicsReg.isEmpty())
+			naicsClause="FILTER regex(?naics, "+naicsReg+") ";
+		
+		if(site==null) {
+			String queryStringPart1 =
+					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
+					"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+					"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix dc: <http://purl.org/dc/terms/> " +
+					"select distinct ?s ?x where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" ; " +
+							"pol:hasPermit ?x ; wgs:lat ?lat ; wgs:long ?long ";
+								
+			String queryStringPart2="graph <" + measures + "> { ?m pol:hasPermit ?x . " +
+					"FILTER(bif:exists((SELECT (1) WHERE { ?m dc:date ?t " +
+					(time==null?"":"FILTER( ?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
+					"}))) "+
+					"} }";
+			
+			if(naicsClause.isEmpty())
+				queryString= queryStringPart1 +". } " + getGeoFilter()+ queryStringPart2;
+			else
+				queryString = queryStringPart1 +"; pol:hasNAICS ?naics. } "+ getGeoFilter() + naicsClause + queryStringPart2;
 
-					
-					System.out.println(queryString);//for debug
-					JSONObject ans = WaterAgentInstance.executeJSONQuery(endpoint, queryString);					
-					JSONArray ids = new JSONArray();
-					JSONArray bindings = ans.getJSONObject("results").getJSONArray("bindings");
-					for(int i=0;i<bindings.length();i++) {
-						JSONObject result = bindings.getJSONObject(i).getJSONObject("s");
-						String uri = result.getString("value");
-						ids.put("<"+uri+">");
-					}
-					if(ids.length()==0) return model;
-					inClause = "IN (";
-					for(int i=0;i<ids.length();i++) {
-						if(i!=0) inClause += ",";
-						inClause += ids.getString(i);
-					}
-					inClause += ") ";
-				}
-				else {
-					inClause = "IN ( <"+site+"> )";
-				}
-				System.out.println("inClause:" + inClause);
-				queryString = 
+			
+			System.out.println(queryString);//for debug
+			JSONObject ans = WaterAgentInstance.executeJSONQuery(endpoint, queryString);					
+			ids = new JSONArray();
+			permits = new JSONArray();
+			JSONArray bindings = ans.getJSONObject("results").getJSONArray("bindings");
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject result = bindings.getJSONObject(i).getJSONObject("s");
+				String uri = result.getString("value");
+				ids.put("<"+uri+">");
+				JSONObject permit = bindings.getJSONObject(i).getJSONObject("x");
+				String permitVal = permit.getString("value");
+				permits.put("<"+permitVal+">");
+			}
+			if(ids.length()==0) return;
+			inClause = "IN (";
+			for(int i=0;i<ids.length();i++) {
+				if(i!=0) inClause += ",";
+				inClause += ids.getString(i);
+			}
+			inClause += ") ";
+		}
+		else {
+			inClause = "IN ( <"+site+"> )";
+		}
+		System.out.println("inClause:" + inClause);
+		
+		if(ids==null || ids.length()==0) return;
+		for(int i=0;i<permits.length();i++) {	
+			String curPermit=permits.getString(i);
+			//construct for the facilities
+			String consStringForFac = 
+					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					//"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
+					//"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+					//"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					//"prefix dc: <http://purl.org/dc/terms/> " +
+					"construct { " +
+					"?s rdf:type water:WaterFacility . " +
+					"?s rdfs:label ?label . "+
+					//"?s pol:hasMeasurement ?measurement . " +
+					//"?s pol:hasPermit ?id . "+
+					"?s pol:hasPermit "+curPermit+" . " +
+					"?s wgs:lat ?lat . " +
+					"?s wgs:long ?long . " +
+					"} where {" +
+					"graph <"+sites+"> {" +
+					"?s a water:WaterFacility ; " +
+					"pol:hasPermit "+curPermit+" ; " +
+					"pol:hasCountyCode \"" + makeCountyID(state, county) + "\" ; " +
+					"wgs:lat ?lat ; " +
+					"wgs:long ?long . " +
+					"OPTIONAL { ?s rdfs:label ?label } "+
+					//"FILTER( ?s "+inClause+") "+
+					//getGeoFilter()+
+					"}} ";	
+			System.out.println(consStringForFac);
+			Logger.getRootLogger().trace(consStringForFac);
+			URL urlFac = new URL(endpoint+"?query="+URLEncoder.encode(consStringForFac, "UTF-8")
+					+"&format="+URLEncoder.encode("text/rdf+n3","UTF-8"));
+			String contentFac = CharStreams.toString(new InputStreamReader(urlFac.openStream()));
+			//for debug System.out.println(content);
+			//Logger.getRootLogger().trace(content);
+			model.read(new StringReader(contentFac), "", "TTL");
+		}
+		
+		for(int i=0;i<ids.length();i++) {			
+			//inClause += ids.getString(i);		
+			String curId=ids.getString(i);
+			String curPermit=permits.getString(i);				
+			//construct for the measurements
+			queryString = 
 					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 					"prefix time: <http://www.w3.org/2006/time#> " +
@@ -267,21 +438,21 @@ public class LoadDataInViewQuery extends Query {
 					"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 					"prefix dc: <http://purl.org/dc/terms/> " +
 					"construct { " +
-					"?s rdf:type water:WaterFacility . " +
+		/*			"?s rdf:type water:WaterFacility . " +
 					"?s rdfs:label ?label . "+
-					"?s pol:hasMeasurement ?measurement . " +
 					"?s pol:hasPermit ?id . "+
 					"?s wgs:lat ?lat . " +
-					"?s wgs:long ?long . " +
+					"?s wgs:long ?long . " +*/
+					curId+" pol:hasMeasurement ?measurement . " +
 					"?measurement a water:WaterMeasurement . " +
 					"?measurement pol:hasCharacteristic ?element . " +
 					"?measurement pol:hasValue ?value . " +
 					"?measurement unit:hasUnit ?unit . " +
 					"?measurement time:inXSDDateTime ?time ." +
-					"?measurement pol:hasLimitOperator ?op . " +
-					"?measurement pol:hasLimitValue ?lval . "+
+					//"?measurement pol:hasLimitOperator ?op . " +
+					//"?measurement pol:hasLimitValue ?lval . "+
 					"} where {" +
-					"graph <"+sites+"> {" +
+		/*			"graph <"+sites+"> {" +
 					"?s a water:WaterFacility ; " +
 					"pol:hasPermit ?id ; " +
 					"pol:hasCountyCode \"" + makeCountyID(state, county) + "\" ; " +
@@ -291,22 +462,25 @@ public class LoadDataInViewQuery extends Query {
 					//"FILTER( ?lat != 0 && ?long != 0 ) "+
 					//"FILTER( ?s "+inClause+") "+
 					getGeoFilter()+
-					"} " +
+					"} " +*/					
 					"graph <"+measures+"> {" +
-					"?measurement pol:hasPermit ?id ; " +
+					"?measurement pol:hasPermit "+curPermit+" ; " +
 					"pol:hasCharacteristic ?element ; "+
 					"repr:hasUnit ?unit ; " +
 					"dc:date ?time . " +
-					"{ ?measurement rdf:value ?value } UNION { ?measurement pol:hasValue ?value } " +
+					//"{ ?measurement rdf:value ?value } UNION { ?measurement pol:hasValue ?value } " +
+					"?measurement rdf:value ?value. " +
 					(time==null?"":"FILTER( ?time > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
-					"OPTIONAL {"+
-					"?measurement pol:hasLimitOperator ?op ; "+
-					"pol:hasLimitValue ?lval . "+
+					//"OPTIONAL {"+
+					//"?measurement pol:hasLimitOperator ?op ; "+
+					//"pol:hasLimitValue ?lval . "+
+					//"} " +
 					"} " +
-					"} " +
-					"}"
+//					"graph <"+sites+"> {" +
+//					"?s pol:hasPermit "+curId+" . }" +
+					"}"//end of where
 					;
-				System.out.println(queryString);
+				//System.out.println(queryString);
 				Logger.getRootLogger().trace(queryString);
 				URL url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
 						+"&format="+URLEncoder.encode("text/rdf+n3","UTF-8"));
@@ -314,54 +488,49 @@ public class LoadDataInViewQuery extends Query {
 				//for debug System.out.println(content);
 				//Logger.getRootLogger().trace(content);
 				model.read(new StringReader(content), "", "TTL");
-				queryString = 
-						"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-						"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-						"prefix time: <http://www.w3.org/2006/time#> " +
-						"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
-						"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
-						"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
-						"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
-						"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
-						"prefix dc: <http://purl.org/dc/terms/> " +
-						"select ?s ?m where { graph <"+sites+"> {" +
-						"?s pol:hasPermit ?x ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" " +
-						"FILTER( ?s "+inClause+" ) }" +
-						"graph <"+measures+"> { "+
-						"{ ?m rdf:value ?value } UNION { ?m pol:hasValue ?value } ?m pol:hasPermit ?x ; pol:hasLimitOperator ?op ; pol:hasLimitValue ?lval . "+
-						"FILTER((?op = \"<=\" && ?value > ?lval) || " +
-						"(?op = \">=\" && ?value < ?lval) || " +
-						"(?op = \">\" && ?value <= ?lval))"+
-						"} }";
-				url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
-						+"&format="+URLEncoder.encode("application/sparql-results+xml", "UTF-8"));
-				System.err.println("LoadDataQuery.execute, url: "+url);//added by ping
-				content = CharStreams.toString(new InputStreamReader(url.openStream()));				
-				//for debug System.out.println(content);
-				ResultSet rs = ResultSetFactory.fromXML(content);
-				HashSet<String> seen = new HashSet<String>();
-				while(rs.hasNext()) {
-					QuerySolution qs = rs.next();
-					String uri = qs.getResource("m").getURI();
-					String sub = qs.getResource("s").getURI();
-					//Logger.getRootLogger().trace("Measurement "+uri+" is a violation.");
-					model.add(model.getResource(uri), RDF.type, model.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"));
-					if(seen.contains(sub)) continue;
-					seen.add(sub);
-					model.add(model.getResource(sub), RDF.type, model.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedSite"));
-					//for debug System.out.println("Facility as PollutedSite: "+sub);
-				}
-				seen = null;
-				rs = null;
-			}
-			else {
-				throw new IOException("Attempted to read data from unknown source.");
-			}
 		}
-		catch(JSONException e) {
-			throw new IOException("Unable to parse response", e);
+		/*
+		queryString = 
+				"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+				"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+				"prefix time: <http://www.w3.org/2006/time#> " +
+				"prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+				"prefix water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#> " +
+				"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+				"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
+				"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+				"prefix dc: <http://purl.org/dc/terms/> " +
+				"select ?s ?m where { graph <"+sites+"> {" +
+				"?s pol:hasPermit ?x ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" " +
+				"FILTER( ?s "+inClause+" ) }" +
+				"graph <"+measures+"> { "+
+				//"{ ?m rdf:value ?value } UNION { ?m pol:hasValue ?value } " +
+				"{ ?m rdf:value ?value }" +
+				"?m pol:hasPermit ?x ; pol:hasLimitOperator ?op ; pol:hasLimitValue ?lval . "+
+				"FILTER((?op = \"<=\" && ?value > ?lval) || " +
+				"(?op = \">=\" && ?value < ?lval) || " +
+				"(?op = \">\" && ?value <= ?lval))"+
+				"} }";
+		url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
+				+"&format="+URLEncoder.encode("application/sparql-results+xml", "UTF-8"));
+		System.err.println("LoadDataQuery.execute, url: "+url);//added by ping
+		content = CharStreams.toString(new InputStreamReader(url.openStream()));				
+		//for debug System.out.println(content);
+		ResultSet rs = ResultSetFactory.fromXML(content);
+		HashSet<String> seen = new HashSet<String>();
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			String uri = qs.getResource("m").getURI();
+			String sub = qs.getResource("s").getURI();
+			//Logger.getRootLogger().trace("Measurement "+uri+" is a violation.");
+			model.add(model.getResource(uri), RDF.type, model.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#RegulationViolation"));
+			if(seen.contains(sub)) continue;
+			seen.add(sub);
+			model.add(model.getResource(sub), RDF.type, model.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedSite"));
+			//for debug System.out.println("Facility as PollutedSite: "+sub);
 		}
-		return model;
+		seen = null;
+		rs = null;*/		
 	}
 
 }
