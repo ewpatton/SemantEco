@@ -27,9 +27,10 @@ import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
 
 public class LoadDataInViewQuery extends Query {
 	String state,county,stateURI,source,site,naicsCode;
-	String lngLow, lngHigh, latLow, latHigh;
+	String lngLow, lngHigh, latLow, latHigh;	
 	Calendar time;
 	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	String geoFilter=null;
 		
 	public LoadDataInViewQuery(String source, Map<String,String> params) {
 		super(null);
@@ -44,6 +45,7 @@ public class LoadDataInViewQuery extends Query {
 		lngHigh = params.get("lngHigh");
 		latLow = params.get("latLow");
 		latHigh = params.get("latHight");
+		geoFilter=getGeoFilter();
 	}
 	
 	String makeCountyID(String state, String county) {
@@ -57,6 +59,41 @@ public class LoadDataInViewQuery extends Query {
 		return null;
 	}
 	
+	private String getGeoFilter(){
+		//	String lngLow, lngHigh, latLow, latHigh;	
+		if(geoFilter==null){
+			boolean firstBound=true;
+			geoFilter = "FILTER (";
+			if(latLow!=null&&!latLow.isEmpty()){
+					geoFilter+= "?lat >= "+latLow; 
+					firstBound=false;
+			}
+			if(latHigh!=null&&!latHigh.isEmpty()){
+				if(firstBound){
+					geoFilter+=	" ?lat <= "+latHigh;
+					firstBound=false;
+				}
+				else
+					geoFilter+=	" && ?lat <= "+latHigh;
+			}
+			if(lngLow!=null&&!lngLow.isEmpty()){
+				if(firstBound){
+					geoFilter+= " ?long >= "+lngLow; 
+					firstBound=false;
+				}
+				geoFilter+= " && ?long >= "+lngLow; 
+			}
+			if(lngHigh!=null&&!lngHigh.isEmpty()){
+				if(firstBound){
+					geoFilter+=	" ?long <= "+lngHigh;	
+					firstBound=false;
+				}
+				geoFilter+=	" && ?long <= "+lngHigh;	
+			}
+			geoFilter += ") ";
+		}
+		return geoFilter;
+	}
 	
 	public Object execute(String endpoint, Model model) throws IOException {
 		try {
@@ -89,8 +126,7 @@ public class LoadDataInViewQuery extends Query {
 							"prefix dc: <http://purl.org/dc/terms/> " +
 							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterSite ; pol:hasCountyCode "+county+
 							" ; dc:identifier ?x ; wgs:lat ?lat ; wgs:long ?long } " +
-							"FILTER (?lat >= "+latLow+" && ?lat <= "+latHigh+
-							" && ?lng >="+lngLow+" && ?lng <="+lngHigh+") "+							
+							getGeoFilter()+							
 							"graph <" + measures + "> { ?m pol:hasSiteId ?x . " +
 							"FILTER(bif:exists((SELECT (1) WHERE { ?m time:inXSDDateTime ?t "+
 							(time==null? "" : "FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
@@ -148,7 +184,8 @@ public class LoadDataInViewQuery extends Query {
 					"wgs:lat ?lat ; " +
 					"wgs:long ?long . " +
 					"OPTIONAL { ?s rdfs:label ?label } "+
-					"FILTER( ?s "+inClause+") "+
+					getGeoFilter()+
+					//"FILTER( ?s "+inClause+") "+
 					"} " +
 					"graph <"+measures+"> {" +
 					"?measurement pol:hasSiteId ?id ; " +
@@ -185,10 +222,7 @@ public class LoadDataInViewQuery extends Query {
 							"prefix dc: <http://purl.org/dc/terms/> " +
 							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" ; " +
 									"pol:hasPermit ?x ; wgs:lat ?lat ; wgs:long ?long ";
-					
-					String geoFilter="FILTER (?lat >= "+latLow+" && ?lat <= "+latHigh+
-							" && ?lng >="+lngLow+" && ?lng <="+lngHigh+") ";
-					
+										
 					String queryStringPart2="graph <" + measures + "> { ?m pol:hasPermit ?x . " +
 							"FILTER(bif:exists((SELECT (1) WHERE { ?m dc:date ?t " +
 							(time==null?"":"FILTER( ?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
@@ -196,9 +230,9 @@ public class LoadDataInViewQuery extends Query {
 							"} }";
 					
 					if(naicsClause.isEmpty())
-						queryString= queryStringPart1 +". } " + geoFilter+ queryStringPart2;
+						queryString= queryStringPart1 +". } " + getGeoFilter()+ queryStringPart2;
 					else
-						queryString = queryStringPart1 +"; pol:hasNAICS ?naics. } "+ geoFilter + naicsClause + queryStringPart2;
+						queryString = queryStringPart1 +"; pol:hasNAICS ?naics. } "+ getGeoFilter() + naicsClause + queryStringPart2;
 
 					
 					System.out.println(queryString);//for debug
@@ -255,7 +289,8 @@ public class LoadDataInViewQuery extends Query {
 					"wgs:long ?long . " +
 					"OPTIONAL { ?s rdfs:label ?label } "+
 					//"FILTER( ?lat != 0 && ?long != 0 ) "+
-					"FILTER( ?s "+inClause+") "+
+					//"FILTER( ?s "+inClause+") "+
+					getGeoFilter()+
 					"} " +
 					"graph <"+measures+"> {" +
 					"?measurement pol:hasPermit ?id ; " +
