@@ -174,8 +174,8 @@ function onchange_species_selection() {
 					+ regOwl['aquatic'][i], "unchecked", reg['aquatic'][i]);
 		}
 		var zip = $('#zip').val();
-		alert(zip);
-		if (zip != '98103')
+		//alert(zip);
+		if (zip != '98103' && zip != '02809')
 			$("#spinner").css("display", "none");
 		else {
 			highlight = [];
@@ -185,66 +185,48 @@ function onchange_species_selection() {
 			var lngSpan = northEast.lng() - southWest.lng();
 			var latSpan = northEast.lat() - southWest.lat();
 
-			$
-					.getJSON(
-							"canada_goose_wa_huc8.json",
-							function(ret) {
-								var huc = ret.HUC_8;
-								$
-										.getJSON(
-												"water-bodies.json",
-												function(json) {
-													$(json.features)
-															.each(
-																	function() {
-																		var feature = this;
-																		$(huc)
-																				.each(
-																						function() {
-																							if (feature.properties.ReachCode
-																									.indexOf(this) === 0) {
-																								var coords = feature.geometry.coordinates;
-																								lng = coords[0][0][0];
-																								lat = coords[0][0][1];
-																								// highlight
-																								// the
-																								// water
-																								// body
-																								// only
-																								// if
-																								// the
-																								// first
-																								// point
-																								// of
-																								// the
-																								// water
-																								// body
-																								// falls
-																								// in
-																								// the
-																								// viewport
-																								// of
-																								// the
-																								// map,
-																								if (lng < northEast
-																										.lng()
-																										&& lat < northEast
-																												.lat()
-																										&& lng > southWest
-																												.lng()
-																										&& lat > southWest
-																												.lat())
-																									highlightPolygon(
-																											coords,
-																											feature.properties,
-																											highlight);
-																							}
-																						});
-																	});
-													$("#spinner").css(
-															"display", "none");
-												});
-							});
+//			$.getJSON("canada_goose_wa_huc8.json",
+//				function(ret) {
+//					var huc = ret.HUC_8;
+//					$.getJSON("water-bodies.json",
+//						function(json) {
+//							$(json.features).each(function() {
+//								var feature = this;
+//								$(huc).each(function() {
+//									if (feature.properties.ReachCode.indexOf(this) === 0) {
+//										var coords = feature.geometry.coordinates;
+//										lng = coords[0][0][0];
+//										lat = coords[0][0][1];
+//										// highlight the water body only if the first point
+//										// of the water body falls in the viewport of the map,
+//										if (lng < northEast.lng() && lat < northEast.lat()
+//											&& lng > southWest.lng() && lat > southWest.lat())
+//											highlightPolygon(coords,
+//													feature.properties,
+//													highlight);
+//									}
+//								});
+//							});
+//							$("#spinner").css("display", "none");
+//						});
+//				});
+			
+			$.getJSON("ri-waterbody.json", function(json) {
+				$(json.features).each(function() {
+					var coords = this.geometry.coordinates;
+					lng = coords[0][0][0];
+					lat = coords[0][0][1];
+					// highlight the water body only if the first point
+					// of the water body falls in the viewport of the map,
+					// and its area is more than 0.5 square kilometer
+					if (lng < northEast.lng() && lat < northEast.lat()
+							&& lng > southWest.lng() && lat > southWest.lat()
+							&& this.properties.AreaSqKm > 0.5)
+						highlightPolygon(coords, this.properties, highlight);
+				});
+			});
+			$("#spinner").css("display", "none");
+			
 		}
 	}
 
