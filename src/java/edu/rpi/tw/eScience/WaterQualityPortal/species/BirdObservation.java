@@ -27,19 +27,29 @@ import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Configuration;
 import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
 
 public class BirdObservation {
-	FipsCodeAgent fipsAgent=null;
-	String stateFips=null;
+	//FipsCodeAgent fipsAgent=null;
+	static String fipsFileDir="data/fips/";
+	static String fipsFilePost="-county-code.txt";
+	//String stateFips=null;
 	HashMap<String, Integer> fips2Count=null;
+	HashMap<String, FipsCodeAgent> fipsAgents=null;
 
 	public BirdObservation(String stateFips, String fipsFile){
-		fipsAgent = new FipsCodeAgent(fipsFile);	
-		this.stateFips=stateFips;
+		fipsAgents = new HashMap<String, FipsCodeAgent>();
+		//fipsAgent = new FipsCodeAgent(fipsFile);	
+		//this.stateFips=stateFips;
 		fips2Count = new HashMap<String, Integer>();
 	}
 
-	private void initCountTable(){
+	private void initCountTable(String stateFips){
+		FipsCodeAgent agent=fipsAgents.get(stateFips);
+		if(agent==null){
+			String fipsFile=fipsFileDir+stateFips+fipsFilePost;
+			agent = new FipsCodeAgent(fipsFile);	
+			fipsAgents.put(stateFips, agent);
+		}		
 		fips2Count.clear();
-		Iterator<String> it = fipsAgent.getCountyFips().iterator();
+		Iterator<String> it = agent.getCountyFips().iterator();
 		while(it.hasNext()) { 
 			String ctyFips = it.next(); 
 			fips2Count.put(stateFips+ctyFips, 0);
@@ -55,7 +65,9 @@ public class BirdObservation {
 		try {
 			String usState = params.get("state");
 			//remove the quotations
-			usState=usState.substring(1, usState.length()-1);	
+			usState=usState.substring(1, usState.length()-1);
+			String stateCode=params.get("stateCode");
+			stateCode=stateCode.substring(1, stateCode.length()-1);	
 			String spcCommonName = params.get("comName");
 			//remove the quotations
 			spcCommonName=spcCommonName.substring(1, spcCommonName.length()-1);	
@@ -84,9 +96,9 @@ public class BirdObservation {
 
 			System.out.println(queryString);
 			res = WaterAgentInstance.executeJSONQuery(Configuration.TRIPLE_STORE, queryString);
-			getFipsForBirdCount(res);
+			getFipsForBirdCount(stateCode, res);
 			response=outputBirdCountJson().toString();
-			//System.out.println(response);
+			System.out.println(response);
 			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
 			log.info("Query finished in "+(System.currentTimeMillis()-start)+" ms");
 		}
@@ -115,13 +127,13 @@ public class BirdObservation {
 		JSONObject obj = new JSONObject();
 		Iterator<Map.Entry<String, Integer>> it = fips2Count.entrySet().iterator();
 		try {
-		while (it.hasNext()) {
-			Map.Entry<String, Integer> curEntry = (Map.Entry<String, Integer>)it.next();
-			String fips = curEntry.getKey();
-			Integer count = curEntry.getValue();	
+			while (it.hasNext()) {
+				Map.Entry<String, Integer> curEntry = (Map.Entry<String, Integer>)it.next();
+				String fips = curEntry.getKey();
+				Integer count = curEntry.getValue();	
 				obj.put(fips, count);
-			 
-		}}
+
+			}}
 		catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -133,13 +145,13 @@ public class BirdObservation {
 		JSONObject obj = new JSONObject();
 		Iterator<Map.Entry<String, Integer>> it = fips2Count.entrySet().iterator();
 		try {
-		while (it.hasNext()) {
-			Map.Entry<String, Integer> curEntry = (Map.Entry<String, Integer>)it.next();
-			String fips = curEntry.getKey();
-			Integer count = curEntry.getValue();	
+			while (it.hasNext()) {
+				Map.Entry<String, Integer> curEntry = (Map.Entry<String, Integer>)it.next();
+				String fips = curEntry.getKey();
+				Integer count = curEntry.getValue();	
 				obj.put(fips, count);
-			 
-		}}
+
+			}}
 		catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -163,25 +175,30 @@ public class BirdObservation {
 	}
 
 
-	public void getFipsForBirdCount(JSONObject input) {
-		initCountTable(); 
+	public void getFipsForBirdCount(String stateFips, JSONObject input) {
+		initCountTable(stateFips); 
+		FipsCodeAgent agent=fipsAgents.get(stateFips);
+		if(agent==null){
+			System.err.println("In getFipsForBirdCount, no fips agent for the state: "+stateFips);
+			return;
+		}
+		
 		try {
-		JSONObject results = (JSONObject) input.get("results");	
-		JSONArray bindings = (JSONArray) results.get("bindings");
-		//Iterator<JSONObject> itrIn = bindings.iterator();
-		for(int i=0;i<bindings.length();i++) {
-			JSONObject curBinding = bindings.getJSONObject(i);
-			String ctyName = (String)((JSONObject) curBinding.get("ctyName")).get("value");
-			String total = (String)((JSONObject) curBinding.get("total")).get("value");
-			String ctyFips=fipsAgent.name2Code(ctyName);
-			fips2Count.put(stateFips+ctyFips, Integer.parseInt(total));
-		}} catch (JSONException e) {
-			e.printStackTrace();
-		}	
+			JSONObject results = (JSONObject) input.get("results");	
+			JSONArray bindings = (JSONArray) results.get("bindings");
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject curBinding = bindings.getJSONObject(i);
+				String ctyName = (String)((JSONObject) curBinding.get("ctyName")).get("value");
+				String total = (String)((JSONObject) curBinding.get("total")).get("value");
+				String ctyFips=agent.name2Code(ctyName);
+				fips2Count.put(stateFips+ctyFips, Integer.parseInt(total));
+			}} catch (JSONException e) {
+				e.printStackTrace();
+			}	
 	}
 
 
-/*	public void getFipsForBirdCount(String input){
+	/*	public void getFipsForBirdCount(String input){
 		JSONParser parser = new JSONParser();
 		try {	 
 			Object obj = parser.parse(new FileReader(input));	 
