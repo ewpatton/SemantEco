@@ -27,9 +27,11 @@ public class EPAHack extends Query {
 	}
 
 	public Object execute(String endpoint, Model model) throws IOException {
-		if(state.compareTo("CA")==0 
-				|| state.compareTo("MA")==0 
+		throw new IOException();
+		/*
+		if(state.compareTo("CA")==0 				
 				|| state.compareTo("NY")==0){
+			//|| state.compareTo("MA")==0 
 				//|| state.compareTo("RI")==0)
 		String url = "http://aquarius.tw.rpi.edu/projects/semantaqua/facilityData2.php?state="+state;
 		url += "&county="+county;
@@ -44,6 +46,6 @@ public class EPAHack extends Query {
 		return null;
 		}
 		else
-			throw new IOException();
+			throw new IOException();*/
 	}
 }
