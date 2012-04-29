@@ -26,6 +26,7 @@ stateAbbr2Code["RI"] = "US:44";
 stateAbbr2Code["CA"] = "US:06";
 stateAbbr2Code["MA"] = "US:25";
 stateAbbr2Code["NY"] = "US:36";
+stateAbbr2Code["WA"] = "US:53";
 var pagedData = [];
 var lat, lng;
 var zipcode;
@@ -378,7 +379,7 @@ function showAddress(address) {
 					success : function(data) {
 						state = data.result.stateAbbr;
 						showReportSite(state);
-						thisStateCode = data.result.stateCode;
+						thisStateCode = data.result.stateCode;						
 						if (thisStateCode == undefined)
 							thisStateCode = stateAbbr2Code[state];
 						stateCode = thisStateCode.split(":")[1];

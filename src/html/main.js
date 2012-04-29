@@ -326,6 +326,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
   effects = $("#health").val();
   time = $("#time").val();
   site = marker.siteData.uri;
+  species=$("#species").val();
   $("#spinner").css("display","block");
   $.ajax({type: "GET",
 	  url: thisserviceagent,
@@ -335,6 +336,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		 "effects":effects,
 		 "time":time,
 		 "countyCode":countyCode,
+		 "species":species,
 		 "state":state,
 		 "site":site,
 		 "method":"queryForWaterPollution",
@@ -354,8 +356,9 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 	      marker.openInfoWindow(contents);
 	      return;
 	    }
-	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
+	    contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Species</th><th>Health Effects</th></tr>";
 	    var table = $(document.createElement("table"));
+	    /*
 	    for(var i=0;i<bindings.length;i++) {
 	      try {
 		var result = bindings[i];
@@ -375,7 +378,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		  effectURLs[label][effect] = effectURL;	
 	      }
 	      catch(e) { }
-	    }
+	    }*/
 	    for(var i=0;i<bindings.length;i++) {
 	      try {
 		var result = bindings[i];
@@ -394,17 +397,35 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td>";
 		contents += label+"</td><td>"+value+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ false+","+marker.siteData.isFacility+",\'"+encodeURIComponent(marker.siteData.uri)+"\')\">?</a></td><td>";
 		contents += op+" "+limit+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ true+")\">?</a></td><td>"+time+"</td>";
+		//var curSpecies=result["species"].value;
+		var curSpecies=result["species"];
+		alert(curSpecies)
+		contents += "<td>"+curSpecies+"</td>";
 		contents += "<td>";
 		var first = true;
-		for(var effect in effects[label]) {
+		var healthBds= result["health"].results.bindings;
+		/*for(var effect in effects[label]) {
 		  if(!first) contents += ",<br/>";
 		  if(effectURLs[label][effect])
 		  	contents += "<a href=\""+effectURLs[label][effect]+"\">" + effects[label][effect]+"</a>";
 		  else
 		  	contents += effects[label][effect];
 		  first = false;
-		}
-	      }
+		}*/
+	    	for(var i=0;i<healthBds.length;i++) {
+	    	 if(!first) contents += ",<br/>";
+	    	 else
+	    	   first = false;
+	    	  var healthRes = healthBds[i];
+	    	  var effect=healthRes["effect"].value;
+	    	  effect=effect.substr(effect.indexOf("#")+1).replace(/_/g," ");
+	    	  var effectURL=healthRes["effectURL"].value;
+	    	  if(effectURL==null || effectURL.length==0)
+	    	    contents += effect;
+	    	  else
+	    	    contents += "<a href=\""+effectURL+"\">" + effect+"</a>";
+	      	}
+	      }//end of try
 	      catch(e) { }
 	    }
 	    contents += "</td></tr></table></div>";
