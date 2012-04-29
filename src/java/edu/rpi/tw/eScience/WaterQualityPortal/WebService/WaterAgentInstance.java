@@ -36,6 +36,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.CountInstanceQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.EPAHack;
+import edu.rpi.tw.eScience.WaterQualityPortal.model.HealthEffectsQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.ListCharacteristicsQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataInViewQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
@@ -325,7 +326,17 @@ public class WaterAgentInstance implements HttpHandler {
 		String regulation = params.get("regulation");
 		JSONArray sources = new JSONArray(params.get("sources"));
 		boolean reason = Boolean.parseBoolean(params.get("reason")!=null?params.get("reason"):"true");
-
+		boolean skipEPA=false, skipUSGS=false;
+		String site = params.get("site");
+		if(site!=null){
+			//if the site is an USGS site
+			if(site.contains("USGS")){
+				skipEPA=true;
+			}
+			else//if the site is an EPA site
+				skipUSGS=true;
+		}
+		
 		// Load ontologies
 		Model owlModel,rdfModel;
 		if(reason)
@@ -353,18 +364,20 @@ public class WaterAgentInstance implements HttpHandler {
 		for(int i=0;i<sources.length();i++) {
 			long start = System.currentTimeMillis();
 			log.debug("Loading data for source <"+sources.getString(i)+">");
-			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov")) {
+			if(sources.getString(i).equals("http://sparql.tw.rpi.edu/source/epa-gov") && !skipEPA) {
 				//LoadDataQuery q = new LoadDataQuery(sources.getString(i), params);
 				EPAHack q = new EPAHack(params);
 				try {
-					q.execute(Configuration.TRIPLE_STORE, rdfModel);
+					//q.execute(Configuration.TRIPLE_STORE, rdfModel);
+					q.execute(Configuration.TRIPLE_STORE, owlModel);
 				}
 				catch(Exception e) {
 					LoadDataInViewQuery q1 = new LoadDataInViewQuery(sources.getString(i), params);
-					q1.execute(Configuration.TRIPLE_STORE, rdfModel);
+					//q1.execute(Configuration.TRIPLE_STORE, rdfModel);
+					q1.execute(Configuration.TRIPLE_STORE, owlModel);
 				}
 			}
-			else {
+			else if (!skipUSGS){
 				LoadDataInViewQuery q = new LoadDataInViewQuery(sources.getString(i), params);
 				q.execute(Configuration.TRIPLE_STORE, owlModel);
 			}
@@ -689,7 +702,7 @@ public class WaterAgentInstance implements HttpHandler {
 		}
 	}
 
-	protected void queryForWaterPollution(HttpExchange req, Map<String,String> params) {
+	protected void queryForWaterPollutionV1(HttpExchange req, Map<String,String> params) {
 		String result = null;
 		boolean err = false;
 		OutputStream os = req.getResponseBody();
@@ -794,9 +807,146 @@ public class WaterAgentInstance implements HttpHandler {
 			catch(Exception e) {}
 		}
 	}
-
 	
 
+	
+	protected void queryForWaterPollution(HttpExchange req, Map<String,String> params) {
+		String result = null;
+		boolean err = false;
+		OutputStream os = req.getResponseBody();
+		try {
+			Model model = loadAllData(params);
+			
+			// Query
+			long start = System.currentTimeMillis();
+			log.debug("Querying data...");
+			String queryString;
+			QueryExecution qe;
+			ResultSet queryResults;
+			String site = params.get("site");
+			String species=params.get("species");
+			String charClause = "", healthClause = "";
+			ArrayList<String> uris = processCharacteristicParam(params.get("contaminants"));
+			if(uris != null && uris.size()>0) {
+				charClause = "<"+uris.get(0)+">";
+				for(int i=1;i<uris.size();i++) {
+					charClause += ",<"+uris.get(i)+">";
+				}
+				charClause = " FILTER(?element IN ("+charClause+")) ";
+			}
+			uris = processHealthEffectParam(params.get("effects"));
+			if(uris != null && uris.size()>0) {
+				healthClause = "<"+uris.get(0)+">";
+				for(int i=1;i<uris.size();i++) {
+					healthClause += ",<"+uris.get(i)+">";
+				}
+				healthClause = " FILTER(?effect IN ("+healthClause+")) ";
+			}
+
+			queryString = "prefix pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#> " +
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
+					"prefix time: <http://www.w3.org/2006/time#> " +
+					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+					"prefix owl: <http://www.w3.org/2002/07/owl#> " +
+					"prefix xsd: <http://www.w3.org/2001/XMLSchema#> "+
+					"prefix unit: <http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#> " +
+					"prefix health: <http://escience.rpi.edu/ontology/semanteco/2/0/health.owl#> "+
+					"prefix healtheffect: <http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl#> "+
+					"select ?element ?permit ?type ?value ?unit ?limit ?op ?time " +
+					"where {" +
+					"<"+site+"> pol:hasMeasurement ?m OPTIONAL { ?S pol:hasPermit ?permit } " +
+					"?m a pol:RegulationViolation ; pol:hasCharacteristic ?element ; pol:hasValue ?value ; "+
+					"unit:hasUnit ?unit ; time:inXSDDateTime ?time .OPTIONAL { ?m a ?type . ?type rdfs:subClassOf pol:RegulationViolation } ";
+				//if(t!=null)
+				//	queryString += "FILTER(?time > xsd:dateTime(\""+sdf.format(t.getTime())+"\"))";
+				if(!charClause.equals(""))
+					queryString += charClause;
+				if(!healthClause.equals(""))
+					queryString += " ?element health:hasHealthEffect ?effect "+healthClause+" ";
+/*				if(!species.equals(""))
+					queryString +=
+					//"OPTIONAL { ?element health:hasHealthEffect ?effect } "+
+				//add health effects for species
+				"OPTIONAL { ?effect healtheffect:forSpecies healtheffect:"+species+"; "+
+				"healtheffect:isCausedBy ?element; " +
+				"rdfs:seeAlso ?info. " +
+				"?info healtheffect:hasURL ?effectURL. } ";*/
+				//"?spc rdfs:label \"Canada Goose\". } "+			
+				//
+				queryString += "OPTIONAL { ?m a ?cls . " +
+					"?cls owl:intersectionOf ?list . ?list rdf:rest*/rdf:first ?supers . " +
+					"?supers owl:onProperty pol:hasValue ; owl:someValuesFrom ?dt . ?dt owl:withRestrictions ?res ." +
+					"?res rdf:rest*/rdf:first [ ?p ?limit ] ." +
+					"FILTER( datatype(?limit) = xsd:double ) "+
+					"OPTIONAL { FILTER( ?p = xsd:minInclusive ) BIND (\"<=\" AS ?op) } " +
+					"OPTIONAL { FILTER( ?p = xsd:maxInclusive ) BIND (\">=\" AS ?op) } " +
+					"OPTIONAL { FILTER( ?p = xsd:minExclusive ) BIND (\"<\" AS ?op) } "+
+					"OPTIONAL { FILTER( ?p = xsd:maxExclusive ) BIND (\">\" AS ?op) } "+
+					" } OPTIONAL { ?m pol:hasLimitOperator ?op ; pol:hasLimitValue ?limit } " +
+					"} order by asc(?time)";
+	        System.out.println("========before QueryExecutionFactory.create==================");
+			qe = QueryExecutionFactory.create(QueryFactory.create(queryString, Syntax.syntaxSPARQL_11), model);
+			queryResults = qe.execSelect();			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ResultSetFormatter.outputAsJSON(baos, queryResults);
+			//result = baos.toString("UTF-8");
+			//for debug 
+			System.out.println(baos.toString("UTF-8"));
+			JSONObject occurrences = new JSONObject(baos.toString("UTF-8"));
+			qe.close();
+			
+			System.out.println("======after qe.close()===================");
+			JSONArray bindings = occurrences.getJSONObject("results").getJSONArray("bindings");
+			for(int i=0;i<bindings.length();i++) {
+				try {
+				JSONObject binding  = bindings.getJSONObject(i);
+				String element = binding.getJSONObject("element").getString("value");	
+				
+				JSONObject defEffects=null;
+				if(!species.equals("")){
+					System.out.println("Look for the health effectos for "+element+" and "+species);
+					defEffects=HealthEffectsQuery.queryForHealthEffects(Configuration.TRIPLE_STORE, element, species, model);
+					//binding.put("species", "{\"value\":\""+species+"\",\"type\":\"literal\"}");
+					binding.put("species", species);
+				}
+				if(HealthEffectsQuery.isEmpty(defEffects)){
+					System.out.println("Look for the health effectos for "+element+" and Human");
+					defEffects=HealthEffectsQuery.queryForHealthEffects(Configuration.TRIPLE_STORE, element, "Human", model);
+					binding.put("species", "Human");	
+					//binding.put("species", "{\"value\":\"Human\",\"type\":\"literal\"}");	
+				}
+				binding.put("health", defEffects);				
+				}
+				catch(Exception e) { e.printStackTrace(); }
+			}
+			
+			result = occurrences.toString();
+			//for debug 
+			System.out.println(result);
+			log.info("Query finished in "+(System.currentTimeMillis()-start)+" ms");
+			req.getResponseHeaders().add("Content-Type", "application/sparql-results+json");
+		}
+		catch(Exception e) {
+			err = true;
+			e.printStackTrace();
+			result = "An error occurred on the server. Please contact the system administrator.";
+		}
+		try {
+			req.sendResponseHeaders(err ? 500 : 200, result.length());
+			os.write(result.getBytes());
+		}
+		catch(IOException e1) {
+			e1.printStackTrace();
+		}
+		finally {
+			try {
+				os.flush();
+				os.close();
+			}
+			catch(Exception e) {}
+		}
+	}
 	
 	protected void listCharacteristics(HttpExchange req, Map<String,String> params) {
 		String result = null;
@@ -958,6 +1108,7 @@ public class WaterAgentInstance implements HttpHandler {
 				}
 				else if(method.equalsIgnoreCase("queryForWaterPollution")) {
 					queryForWaterPollution(arg0, params);
+					//queryForWaterPollutionAndHealth(arg0, params);
 				}
 				else if(method.equalsIgnoreCase("listCharacteristics")) {
 					listCharacteristics(arg0, params);
