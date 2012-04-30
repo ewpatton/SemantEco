@@ -14,12 +14,12 @@ var pmlDataDownloadTime;
 var pmlDataConvertTime;
 var pmlAccountName;
 var pmlRawDataUrl;
+var regOwlFile;
 
 
 var provAppBase =parseParent(window.location.href); 
 var provWin; //refers to the pop out provenance window
-var provServer="aquarius.tw.rpi.edu/projects/semantaqua";
-var provServiceagent="http://"+provServer+"/prov/trendData.php";
+var provServiceagent="http://localhost/trend/trendData.php";
 var provEchoStates = {"CA": true, "MA": true, "NY": true, "RI": true};
 var publishUrl='http://sparql.tw.rpi.edu/';
 
@@ -30,15 +30,17 @@ regNames['ri'] = "Rhode_Island_Water_Quality_Regulations";
 regNames['ny'] = "New_York_Drinking_Water_Regulations";
 regNames['ma'] = "2011_Standards_and_Guidelines_for_Contaminants_in_Massachusetts_Drinking_Water";
 regNames['ca'] = "California_Code_of_Regulations";
+regNames['epa-aqua-acute'] = "EPA_Regulation_for_Aquatic_Life";
 
 //Array that contains the name of the regulations' owl files
-var regOwl= new Array();
 regOwlPrefix="http://escience.rpi.edu/ontology/semanteco/2/0/";
-regOwl['EPA'] = "EPA-regulation.owl";
-regOwl['ri'] = "ri-regulation.owl";
-regOwl['ny'] = "ny-regulation.owl";
-regOwl['ma'] = "ma-regulation.owl";
-regOwl['ca'] = "ca-regulation.owl";
+var regOwls= new Array();
+regOwls['EPA'] = "EPA-regulation.owl";
+regOwls['ri'] = "ri-regulation.owl";
+regOwls['ny'] = "ny-regulation.owl";
+regOwls['ma'] = "ma-regulation.owl";
+regOwls['ca'] = "ca-regulation.owl";
+regOwls['epa-aqua-acute'] = "epa-aqua-acute-regulation.owl";
 //--------------------------------------------------------------------
 /*This function is called when provenance.html is loaded
 It parse the parameters from the given url
@@ -64,11 +66,11 @@ function showPml(){
 
   //if this is for regulation provenance
   var isReg=params["isReg"]; 
-  if(isReg=="true"){
+  if(isReg==="true"){
     regId=params["dataSet"];
-    regOwlFile=regOwl[regId];
+    regOwlFile=regOwls[regId];
     pmlDataSet = regNames[regId];
-    //alert(pmlDataSet);
+    //alert(regId+regOwlFile+pmlDataSet);
 	  queryRegulationPml(regId);
 	}
   else {
@@ -542,7 +544,7 @@ function queryRegulationPml(regId){
         "?su3 pmlp:hasSource ?srcUrl.\r\n"+ 
         "?su3 pmlp:hasUsageDateTime ?downloadTime.\r\n"+ 
         "}}";
-  //alert(sparqlRegulationPml);
+  alert(sparqlRegulationPml);
 
        $.ajax({type: "GET",
           url: provServiceagent,
