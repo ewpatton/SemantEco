@@ -179,54 +179,11 @@ function onchange_species_selection() {
 			$("#spinner").css("display", "none");
 		else {
 			highlight = [];
-			var bounds = map.getBounds();
-			var southWest = bounds.getSouthWest();
-			var northEast = bounds.getNorthEast();
-			var lngSpan = northEast.lng() - southWest.lng();
-			var latSpan = northEast.lat() - southWest.lat();
-
-//			$.getJSON("canada_goose_wa_huc8.json",
-//				function(ret) {
-//					var huc = ret.HUC_8;
-//					$.getJSON("water-bodies.json",
-//						function(json) {
-//							$(json.features).each(function() {
-//								var feature = this;
-//								$(huc).each(function() {
-//									if (feature.properties.ReachCode.indexOf(this) === 0) {
-//										var coords = feature.geometry.coordinates;
-//										lng = coords[0][0][0];
-//										lat = coords[0][0][1];
-//										// highlight the water body only if the first point
-//										// of the water body falls in the viewport of the map,
-//										if (lng < northEast.lng() && lat < northEast.lat()
-//											&& lng > southWest.lng() && lat > southWest.lat())
-//											highlightPolygon(coords,
-//													feature.properties,
-//													highlight);
-//									}
-//								});
-//							});
-//							$("#spinner").css("display", "none");
-//						});
-//				});
-			
-			$.getJSON("ri-waterbody.json", function(json) {
-				$(json.features).each(function() {
-					var coords = this.geometry.coordinates;
-					lng = coords[0][0][0];
-					lat = coords[0][0][1];
-					// highlight the water body only if the first point
-					// of the water body falls in the viewport of the map,
-					// and its area is more than 0.5 square kilometer
-					if (lng < northEast.lng() && lat < northEast.lat()
-							&& lng > southWest.lng() && lat > southWest.lat()
-							&& this.properties.AreaSqKm > 0.5)
-						highlightPolygon(coords, this.properties, highlight);
-				});
-			});
+			if (zip == "98103") huc8waterbodyHighlight("canada_goose_wa_huc8.json", 
+					"water-bodies.json");
+			else if (zip == "02809") huc8waterbodyHighlight("canada-goose-ri-huc8.json",
+					"ri-waterbody.json");
 			$("#spinner").css("display", "none");
-			
 		}
 	}
 
@@ -241,6 +198,42 @@ function onchange_species_selection() {
 }
 
 /**
+ * filter water bodies from waterbodyfile by huc8file, only highlight those water bodies 
+ * covered by one of the huc8 areas in the huc8file and are in between southWest and 
+ * northEast bounds and are more than 0.1 square kilometer in size
+ * @param huc8file the name of a file containing huc8 codes used to filter water bodies 
+ * to be highlighted
+ * @param waterbodyfile the name of the water body file, containing a GeoJSON object
+ */
+function huc8waterbodyHighlight(huc8file, waterbodyfile) {
+	var bounds = map.getBounds();
+	var southWest = bounds.getSouthWest();
+	var northEast = bounds.getNorthEast();
+	$.getJSON(huc8file, function(ret) {
+		var huc = ret.HUC_8;
+		$.getJSON(waterbodyfile, function(json) {
+				$(json.features).each(function() {
+					if (this.properties.AreaSqKm > 0.1) {
+						var feature = this;
+						$(huc).each(function() {
+							if (feature.properties.ReachCode.indexOf(this) === 0) {
+								var coords = feature.geometry.coordinates;
+								var lng = coords[0][0][0];
+								var lat = coords[0][0][1];
+								// highlight the water body only if the first point
+								// of the water body falls in the viewport of the map,
+								if (lng < northEast.lng() && lat < northEast.lat()
+									&& lng > southWest.lng() && lat > southWest.lat())
+									highlightPolygon(coords, feature.properties);
+							}
+						});
+					}
+				});
+			});
+		});
+}
+
+/**
  * highlight a polygon extracted from the geometry attribute of a GeoJSON object
  * 
  * @param polygon
@@ -250,11 +243,8 @@ function onchange_species_selection() {
  *            number such as -119.08
  * @param properties
  *            the properties of the water body recorded in the GeoJSON object
- * @param record
- *            an array used to store all the polygons currently highlighted, so
- *            that we can un-highlight them later.
  */
-function highlightPolygon(polygon, properties, record) {
+function highlightPolygon(polygon, properties) {
 	var first = true;
 	$(polygon).each(
 			function() {
@@ -282,7 +272,7 @@ function highlightPolygon(polygon, properties, record) {
 					polygon1 = new GPolygon(poly_coords, "#fff", 0, 0, "#fff",
 							0.5);
 				}
-				record.push(polygon1);
+				highlight.push(polygon1);
 				map.addOverlay(polygon1);
 			});
 }
