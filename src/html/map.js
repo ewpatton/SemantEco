@@ -286,12 +286,19 @@ function highlightPolygon(polygon, properties) {
  */
 function makeTable(properties) {
 	var ret = "<table>";
-	for ( var p in properties) {
-		ret += "<tr><td>" + p + "</td><td>" + properties[p] + "</td></tr>";
+	for ( var p in properties) { // for showcase now, change later TODO
+		if (p=="ComID")
+			ret += "<tr><td title='Integer value that uniquely " +
+					"identifies the occurrence of each feature in the NHD.'>" + 
+					p + "</td><td>" + properties[p] + "</td></tr>";
+		else 
+			ret += "<tr><td>" + p + "</td><td>" + properties[p] + "</td></tr>";
 	}
 	ret += "<tr><td>Provenance:</td><td></td></tr>";
 	ret += "<tr><td>water body shapes</td><td>ftp://www.ecy.wa.gov/gis_a/hydro/nhd/NHDmajor.zip</td></tr>";
 	ret += "<tr><td>bird distribution</td><td>http://www.avianknowledge.net/</td></tr>";
+	ret += "<tr><td>terminology explanation</td>" +
+		"<td>http://nhd.usgs.gov/NHDDataDictionary_model2.0.pdf</td></tr>";
 	ret += "</table>";
 	return ret;
 }
