@@ -88,7 +88,43 @@ naicsCode['72'] = 'Accommodation and Food Services';
 naicsCode['81'] = 'Other Services (except Public Administration)';
 naicsCode['92'] = 'Public Administration';
 
+// to store the highlighted water bodies, so that they can be de-highlighted later
 var highlight = [];
+
+// Terminology explanations from http://nhd.usgs.gov/NHDDataDictionary_model2.0.pdf
+var nhd_term_ex = {
+		"ComID": "Integer value that uniquely identifies the occurrence of " +
+				"each feature in the National Hydrology Dataset (NHD).",
+		"Permanent_": "Identifier, 40-char GUID value that uniquely identifies " +
+				"the occurrence of each feature in The National Map.",
+		"FDate": "Date of last feature modification.",
+		"Resolution": "Source resolution.	Domain of values: 1 = Local >1:12,000;" +
+				" 2 = High 1:24,000/12,000; 3 = Medium 1:100,000",
+		"GNIS_ID": "Unique identifier assigned by GNIS, 10-char value. " +
+				"leading zeros may be missing on some features, null if no name " +
+				"associated with the feature",
+		"GNIS_Name": "Proper name, specific term, or expression by which a particular " +
+				"geographic entity is known, null if no name is associated with the feature",
+		"LengthKM": "Length of linear feature based on Albers Equal Area",
+		"AreaSqKm": "Area of areal feature based on Albers Equal Area",
+		"Elevation": "The vertical distance from a given datum, in meters. Stage " +
+				"of the water elevation is encoded in the FCode.",
+		"ReachCode": "Unique identifier for a 'reach'. The first eight numbers are " +
+				"the WBD_HUC8. The next six numbers are randomly assigned, " +
+				"sequential numbers that are unique within a HUC8, 14-char value.",
+		"FlowDir": "Direction of flow relative to coordinate order. Domain of values: " +
+				"1 = With digitized; 0 = Uninitialized",
+		"WBAreaComID": "The ComID of the waterbody through which the flowline flows." +
+				"Applies only to Artificial Path FType; null or '0' for all other FTypes.",
+		"WBArea_Permanent_ID": "Permanent_Identifier of the waterbody	through which " +
+				"the flowline flows. Applies only to Artificial Path FType; null or 0 " +
+				"for all other FTypes.",
+		"FType": "Three-digit integer value; unique identifier of a feature type.",
+		"FCode": "Five-digit integer value; comprised of the feature type and " +
+				"combinations of characteristics and values. Only some features " +
+				"have attributes; last two digits are '00' if no additional values " +
+				"are encoded."
+};
 
 function isChecked(str) {
 	var el = document.getElementById(str);
@@ -286,19 +322,17 @@ function highlightPolygon(polygon, properties) {
  */
 function makeTable(properties) {
 	var ret = "<table>";
-	for ( var p in properties) { // for showcase now, change later TODO
-		if (p=="ComID")
-			ret += "<tr><td title='Integer value that uniquely " +
-					"identifies the occurrence of each feature in the NHD.'>" + 
-					p + "</td><td>" + properties[p] + "</td></tr>";
-		else 
-			ret += "<tr><td>" + p + "</td><td>" + properties[p] + "</td></tr>";
-	}
+	
+	for ( var p in properties) 
+			ret += "<tr><td title=\"" + nhd_term_ex[p] + "\">" + 
+			p + "</td><td>" + properties[p] + "</td></tr>";
+	
 	ret += "<tr><td>Provenance:</td><td></td></tr>";
 	ret += "<tr><td>water body shapes</td><td>ftp://www.ecy.wa.gov/gis_a/hydro/nhd/NHDmajor.zip</td></tr>";
 	ret += "<tr><td>bird distribution</td><td>http://www.avianknowledge.net/</td></tr>";
 	ret += "<tr><td>terminology explanation</td>" +
-		"<td>http://nhd.usgs.gov/NHDDataDictionary_model2.0.pdf</td></tr>";
+		"<td>National Hydrography Dataset Data Dictionary " +
+		"http://nhd.usgs.gov/NHDDataDictionary_model2.0.pdf</td></tr>";
 	ret += "</table>";
 	return ret;
 }
