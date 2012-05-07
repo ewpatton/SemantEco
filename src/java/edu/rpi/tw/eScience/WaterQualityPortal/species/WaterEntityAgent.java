@@ -26,7 +26,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class WaterEntityAgent {
-	static String hucFile = "data/huc/wa_huc_0.001.json";
+	//static String hucFile = "data/huc/wa_huc_0.001.json";
+	static String hucFile = "data/huc/ri_huc8_0.001.json";
 
 	static HashMap<String, HashSet<String>> countyCode2huc = new HashMap<String, HashSet<String>>();
 	
@@ -188,12 +189,38 @@ public class WaterEntityAgent {
 		}       
 	}
 	
+	public static void getHUCForCouty(String fipsCode){
+		HashSet<String> hucSet = countyCode2huc.get(fipsCode);
+
+		
+	}
+	public static void getHUCForRI(){
+		FipsCodeAgent agent = new FipsCodeAgent("data/fips/44-county-code.txt");
+		ArrayList<String> ctyNames = new ArrayList<String>();
+		ctyNames.add("Bristol");
+		ctyNames.add("Kent");
+		ctyNames.add("Newport");
+		ctyNames.add("Providence");
+		ctyNames.add("Washington");
+		HashSet<String> all = new HashSet<String>();
+		for(String curName:ctyNames){
+			String curFips=agent.name2Code(curName);
+			HashSet<String> curSet = countyCode2huc.get("44"+curFips);
+			if(curSet!=null)
+				all.addAll(curSet);
+		}
+		System.out.println("All the huc codes: ");
+		System.out.println(all);
+	}
+	
 	public static void main(String[] args) {
 		WaterEntityAgent.buildHUCLookup();
 		WaterEntityAgent.printHashMap(WaterEntityAgent.countyCode2huc);
 		//JSONObject hucObj=WaterEntityAgent.getHUC("41059");
-		JSONObject hucObj=WaterEntityAgent.getHUCOneState("53");
-		System.out.println(hucObj.toString());
+		//JSONObject hucObj=WaterEntityAgent.getHUCOneState("53");
+		//System.out.println(hucObj.toString());
+		
+		getHUCForRI();
 	}
 }
 
