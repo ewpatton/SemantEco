@@ -20,7 +20,6 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class HealthEffectsQuery {
-	static int BUFFER_SIZE = 4096;
 	static String healthOntoPrefix="healtheffect:";
 	static HashMap<String, JSONObject> cache=new HashMap<String, JSONObject>();
 	
@@ -57,70 +56,7 @@ public class HealthEffectsQuery {
 		return effects;
 	}
 	
-	protected static JSONObject readJsonFromUrl(String target){
-    	//Phase1: do the get
-		URL url = null;
-		HttpURLConnection conn = null; 
-		StringBuilder replyBuffer=new StringBuilder();
-		
-		try {			
-			url = new URL(target);
-			conn = (HttpURLConnection)url.openConnection();			
-			// Set connection parameters.
-			conn.setDoInput (true);
-			conn.setDoOutput (true);
-			conn.setUseCaches (false);			
-			//conn.setRequestMethod("GET");			
-			conn.connect();
-		} catch (MalformedURLException e) {
-			System.err.println("readJsonFromUrl: " + e.getMessage());
-			e.printStackTrace();
-		}	
-		catch (IOException e) {
-			System.out.println("In readJsonFromUrl(), writing");
-			e.printStackTrace();
-		}
-		
-		//Phase2: get the reply
-		String contentType = conn.getContentType();		
-		char[] buffer = null;
-		int numChars=0;
-		BufferedReader in = null;
-		// Read response from the input stream.
-		try{	
-			in = new BufferedReader (new InputStreamReader(conn.getInputStream ()));
-			// Read (and print) till end of file
-			buffer = new char[BUFFER_SIZE];
-		    while ((numChars=in.read(buffer,0, BUFFER_SIZE))!= -1)
-		    	//bufferedWriter.write(buffer,0, numChars);
-		    	replyBuffer.append(buffer,0, numChars);	
-			
-		} catch (IOException e) {
-			System.err.println("In readJsonFromUrl(), reading data and writing to file");
-			System.err.println("Error: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-            //Close the BufferedReader		
-            try {
-            	conn = null;
-            	if (in!=null)
-            		in.close ();
-            } catch (IOException ex) {
-            	System.out.println("In readJsonFromUrl(), " + ex.getMessage());
-            }
-        }
-		
-		System.out.print(replyBuffer);
-		JSONObject effects=null;
-		try {
-			effects = new JSONObject(replyBuffer.toString());
-		} catch (JSONException e) {
-			System.out.println("In getCSVFile(), closing the BufferedReader");
-			e.printStackTrace();
-		}
-		 return effects;
 
-	}
 	
 	public static JSONObject queryForHealthEffects(String endpoint, String element, String species, Model model) throws UnsupportedEncodingException {
 		String elementName=element.substring(element.indexOf('#')+1, element.length());
@@ -144,24 +80,14 @@ public class HealthEffectsQuery {
 		JSONObject effects=cache.get(elementName);
 		if(effects==null){
 			System.out.println("Query from the endpoint for the health effectos for "+element+" and "+species);
-			effects=readJsonFromUrl(target);
+			effects=Util.readJsonFromUrl(target);
 			cache.put(elementName, effects);
 		}			
 		
 		return effects;
 	}
 	
-	public static boolean isEmpty(JSONObject health){
-		JSONArray bindings=null;
-		try {
-			bindings = health.getJSONObject("results").getJSONArray("bindings");
-		} catch (JSONException e) {
-			//e.printStackTrace();
-			System.err.println(e.getMessage());
-			return true;
-		}
-		return (bindings==null || bindings.length()==0);
-	}
+
 	
 	
 /*	public static String getHealthEffects(JSONObject health){

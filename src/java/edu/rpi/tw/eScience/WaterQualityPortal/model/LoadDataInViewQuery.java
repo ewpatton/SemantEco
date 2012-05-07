@@ -55,10 +55,7 @@ public class LoadDataInViewQuery extends Query {
 			this.isFoia=true;
 	}
 
-	String makeCountyID(String state, String county) {
-		while(county.length()<3) county = "0"+county;
-		return state+county;
-	}
+
 
 	@Override
 	public Object execute(String endpoint) throws IOException {
@@ -353,7 +350,7 @@ public class LoadDataInViewQuery extends Query {
 							"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
 							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 							"prefix dc: <http://purl.org/dc/terms/> " +
-							"select distinct ?s ?x where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+makeCountyID(state, county)+"\" ; " +
+							"select distinct ?s ?x where { graph <"+sites+"> { ?s a water:WaterFacility ; pol:hasCountyCode \""+Util.makeCountyID(state, county)+"\" ; " +
 							"pol:hasPermit ?x ; wgs:lat ?lat ; wgs:long ?long ";
 
 			String queryStringPart2="graph <" + measures + "> { ?m pol:hasPermit ?x . " +
@@ -427,7 +424,7 @@ public class LoadDataInViewQuery extends Query {
 							"graph <"+sites+"> {" +
 							curId+" a water:WaterFacility ; " +
 							//"pol:hasPermit "+curPermit+" ; " +
-							"pol:hasCountyCode \"" + makeCountyID(state, county) + "\" ; " +
+							"pol:hasCountyCode \"" + Util.makeCountyID(state, county) + "\" ; " +
 							"wgs:lat ?lat ; " +
 							"wgs:long ?long . " +
 							"OPTIONAL { "+ curId +" rdfs:label ?label } "+
