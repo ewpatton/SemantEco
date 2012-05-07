@@ -18,7 +18,7 @@ if(document.createElementNS===undefined) {
 }
 
 function closeModal() {
-  $(".modal-display").css("display","none");
+  $(".modal-display").css("display", "none");
 }
 
 function showModal() {

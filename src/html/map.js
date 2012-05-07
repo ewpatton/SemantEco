@@ -126,6 +126,10 @@ var nhd_term_ex = {
 				"are encoded."
 };
 
+// what plot_bird_count() generates, copied from firebug window, will figure out 
+// how to get this string in a better way
+var birdcount_plot_html = "<div id='plot'><svg width='480' height='250'><g transform='translate(40,40)'><clipPath id='clip'><rect width='400' height='170'/></clipPath><path class='area' clip-path='url(#clip)' d='M0,0.6800000000000068C0.30146045300657004,2.0120832389881596,25.35202456255394,164.55094191708915,37.12574850299401,164.73S58.89055223009507,164.55988020399602,70.65868263473054,164.56S95.7931491410262,167.90260697422417,107.73453093812375,166.26S131.5954425430549,97.53380427328958,143.6626746506986,96.39S171.3552943220488,159.9836906045715,180.7884231536926,165.07S204.54372226760867,158.79475367777582,216.71656686626747,158.61S241.4693041232776,163.37358499328047,253.84231536926146,163.54S278.7925102566441,163.7440255296109,290.96806387225547,163.71S314.7342242281937,162.92767353373216,326.89620758483034,162.52S351.8449895042267,161.71806784308194,364.0219560878244,162.01S394.0170173188822,163.4272978446875,400,163.71L400,170C394.0036593479707,170,376.20592149035264,170,364.0219560878244,170S339.07185628742513,170,326.89620758483034,170S303.14371257485027,170,290.96806387225547,170S266.2175648702595,170,253.84231536926146,170S228.89221556886227,170,216.71656686626747,170S192.96407185628743,170,180.7884231536926,170S155.8383233532934,170,143.6626746506986,170S119.9018629407851,170,107.73453093812375,170S82.4268130405855,170,70.65868263473054,170S48.90219560878243,170,37.12574850299401,170S6.187624750499001,170,0,170Z'/><g class='x axis' transform='translate(0,170)'><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(18.562874251497004,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(52.09580838323353,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(89.17165668662675,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(125.09980039920158,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(162.2255489021956,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(198.15369261477045,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(235.27944111776446,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(272.4051896207585,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(308.33333333333337,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(345.4590818363273,0)'/><line class='tick minor' style='opacity: 1;' y2='-170' x2='0' transform='translate(381.437125748503,0)'/><g style='opacity: 1;' transform='translate(0,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>2007</text></g><g style='opacity: 1;' transform='translate(37.12574850299401,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Feb</text></g><g style='opacity: 1;' transform='translate(70.65868263473054,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Mar</text></g><g style='opacity: 1;' transform='translate(107.73453093812375,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Apr</text></g><g style='opacity: 1;' transform='translate(143.6626746506986,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>May</text></g><g style='opacity: 1;' transform='translate(180.7884231536926,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Jun</text></g><g style='opacity: 1;' transform='translate(216.71656686626747,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Jul</text></g><g style='opacity: 1;' transform='translate(253.84231536926146,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Aug</text></g><g style='opacity: 1;' transform='translate(290.96806387225547,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Sep</text></g><g style='opacity: 1;' transform='translate(326.89620758483034,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Oct</text></g><g style='opacity: 1;' transform='translate(364.0219560878244,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Nov</text></g><g style='opacity: 1;' transform='translate(400,0)'><line class='tick' y2='-170' x2='0'/><text y='3' x='0' dy='.71em' text-anchor='middle'>Dec</text></g><path class='domain' d='M0,-170V0H400V-170'/></g><g class='y axis' transform='translate(400,0)'><g style='opacity: 1;' transform='translate(0,170)'><line class='tick' x2='6' y2='0'/><text x='9' y='0' dy='.32em' text-anchor='start'>0</text></g><g style='opacity: 1;' transform='translate(0,136)'><line class='tick' x2='6' y2='0'/><text x='9' y='0' dy='.32em' text-anchor='start'>200</text></g><g style='opacity: 1;' transform='translate(0,102)'><line class='tick' x2='6' y2='0'/><text x='9' y='0' dy='.32em' text-anchor='start'>400</text></g><g style='opacity: 1;' transform='translate(0,68)'><line class='tick' x2='6' y2='0'/><text x='9' y='0' dy='.32em' text-anchor='start'>600</text></g><g style='opacity: 1;' transform='translate(0,34)'><line class='tick' x2='6' y2='0'/><text x='9' y='0' dy='.32em' text-anchor='start'>800</text></g><g style='opacity: 1;' transform='translate(0,0)'><line class='tick' x2='6' y2='0'/><text x='9' y='0' dy='.32em' text-anchor='start'>1,000</text></g><path class='domain' d='M6,0H0V170H6'/></g><path class='line' clip-path='url(#clip)' d='M0,0.6800000000000068C0.30146045300657004,2.0120832389881596,25.35202456255394,164.55094191708915,37.12574850299401,164.73S58.89055223009507,164.55988020399602,70.65868263473054,164.56S95.7931491410262,167.90260697422417,107.73453093812375,166.26S131.5954425430549,97.53380427328958,143.6626746506986,96.39S171.3552943220488,159.9836906045715,180.7884231536926,165.07S204.54372226760867,158.79475367777582,216.71656686626747,158.61S241.4693041232776,163.37358499328047,253.84231536926146,163.54S278.7925102566441,163.7440255296109,290.96806387225547,163.71S314.7342242281937,162.92767353373216,326.89620758483034,162.52S351.8449895042267,161.71806784308194,364.0219560878244,162.01S394.0170173188822,163.4272978446875,400,163.71'/><text x='200' y='0' text-anchor='middle' font-size='12px'>Bird count for canadian geese in Washington state in 2007</text><text x='200' y='0' text-anchor='middle' dy='2.5ex' font-size='12px'>Provenance: http://www.avianknowledge.net/</text></g></svg></div>";
+	
 function isChecked(str) {
 	var el = document.getElementById(str);
 	return el.checked;
@@ -162,6 +166,119 @@ function initialize() {
 	onchange_species_selection();
 	// for industry facet
 	fill_industry_selection();
+	
+//	$("body").append("<div id='plot'></div>");
+//	plot_bird_count();
+//	$("#birdcount").toggle(function($e) {
+//		$e.preventDefault();
+//		$("table#p").hide();
+//		$("#plot").show();
+//		$("#birdcount").text("Water Body Properties");
+//	}, function($e) {
+//		$e.preventDefault();
+//		$("#plot").hide();
+//		$("table#p").show();
+//		$("#birdcount").text("Bird Count");
+//	});
+
+}
+
+function plot_bird_count() {
+	// for bird count display
+	var m = [40, 40, 40, 40],
+    w = 480 - m[1] - m[3],
+    h = 250 - m[0] - m[2],
+    parse = d3.time.format("%b %Y").parse;
+
+	// Scales and axes. Note the inverted domain for the y-scale: bigger is up!
+	var x = d3.time.scale().range([0, w]),
+	y = d3.scale.linear().range([h, 0]),
+	xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true),
+	yAxis = d3.svg.axis().scale(y).ticks(4).orient("right");
+
+	// An area generator, for the light fill.
+	var area = d3.svg.area()
+	    .interpolate("monotone")
+	    .x(function(d) { return x(d.date); })
+	    .y0(h)
+	    .y1(function(d) { return y(d.number); });
+
+	// A line generator, for the dark stroke.
+	var line = d3.svg.line()
+	    .interpolate("monotone")
+	    .x(function(d) { return x(d.date); })
+	    .y(function(d) { return y(d.number); });
+
+	d3.csv("readme2.csv", function(data) {
+		// Filter to one symbol; the bird count.
+		var values = data.filter(function(d) {
+			return d.symbol == "Bird Count";
+		});
+		// Parse dates and numbers. We assume bird counts are sorted by date.
+		data.forEach(function(d) {
+			d.date = parse(d.date);
+		});
+		// Compute the minimum and maximum date, and the maximum number.
+		x.domain([ values[0].date, values[values.length - 1].date ]);
+		y.domain([ 0, d3.max(values, function(d) {
+			return d.number;
+		}) ]).nice();
+		// Add an SVG element with the desired dimensions and margin.
+		var svg = d3.select("#plot")
+					.append("svg:svg")
+					.attr("width", w + m[1] + m[3])
+					.attr("height", h + m[0] + m[2])
+					.append("svg:g")
+					.attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+		// Add the clip path.
+		svg.append("svg:clipPath")
+			.attr("id", "clip")
+			.append("svg:rect")
+			.attr("width", w)
+			.attr("height", h);
+		// Add the area path.
+		svg.append("svg:path")
+			.attr("class", "area")
+			.attr("clip-path", "url(#clip)")
+			.attr("d", area(values));
+
+		// Add the x-axis.
+		svg.append("svg:g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + h + ")")
+			.call(xAxis);
+
+		// Add the y-axis.
+		svg.append("svg:g")
+			.attr("class", "y axis")
+			.attr("transform", "translate(" + w + ",0)")
+			.call(yAxis);
+
+		// Add the line path.
+		svg.append("svg:path")
+			.attr("class", "line")
+			.attr("clip-path", "url(#clip)")
+			.attr("d", line(values));
+
+		// Add caption for the plot.
+		svg.append("svg:text")
+			.attr("x", w / 2)
+			.attr("y", 0)
+			.attr("text-anchor", "middle")
+			.attr("font-size", "12px")
+			.text("Bird count for canadian geese in Washington state in 2007");
+
+		svg.append("svg:text")
+			.attr("x", w / 2)
+			.attr("y", 0)
+			.attr("text-anchor", "middle")
+			.attr("dy", "2.5ex")
+			.attr("font-size", "12px")
+			.text("Provenance: http://www.avianknowledge.net/");
+
+	});
+//	console.log(d3.select("#plot").html());
+
 }
 
 function fill_industry_selection() {
@@ -299,9 +416,13 @@ function highlightPolygon(polygon, properties) {
 						$(this).css('cursor', 'auto');
 					});
 					GEvent.addListener(polygon1, "click", function() {
-						map.openInfoWindowHtml(
-								polygon1.getBounds().getCenter(),
-								makeTable(properties));
+						//TODO: find out a better way to get birdcount_plot_html, which is 
+						//generated by plot_bird_count()
+						map.openInfoWindowTabsHtml(polygon1.getBounds().getCenter(),
+								[new GInfoWindowTab("Water Body Properties", 
+										makeTable(properties)), 
+								new GInfoWindowTab("Bird Count", 
+										birdcount_plot_html)]);						
 					});
 					first = false;
 				} else {
@@ -321,19 +442,22 @@ function highlightPolygon(polygon, properties) {
  * @return a table containing all the items in the properties
  */
 function makeTable(properties) {
-	var ret = "<table>";
+	var ret = "<table id='p'>";
 	
-	for ( var p in properties) 
+	for ( var p in properties) if (p != "Shape_Leng" && p != "Shape_Area")
 			ret += "<tr><td title=\"" + nhd_term_ex[p] + "\">" + 
 			p + "</td><td>" + properties[p] + "</td></tr>";
 	
-	ret += "<tr><td>Provenance:</td><td></td></tr>";
+	ret += "<tr><td><b>Provenance:</b></td><td></td></tr>";
 	ret += "<tr><td>water body shapes</td><td>ftp://www.ecy.wa.gov/gis_a/hydro/nhd/NHDmajor.zip</td></tr>";
 	ret += "<tr><td>bird distribution</td><td>http://www.avianknowledge.net/</td></tr>";
 	ret += "<tr><td>terminology explanation</td>" +
 		"<td>National Hydrography Dataset Data Dictionary " +
 		"http://nhd.usgs.gov/NHDDataDictionary_model2.0.pdf</td></tr>";
 	ret += "</table>";
+//	ret += "<div id='plotarea'><a id='birdcount' href='#'>Bird Count</a>" +
+//		"<div id='plot'></div></div>";
+
 	return ret;
 }
 
