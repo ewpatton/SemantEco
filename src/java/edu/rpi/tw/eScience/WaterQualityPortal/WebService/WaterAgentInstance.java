@@ -43,9 +43,11 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.FacilityDataQuery;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.WaterDataQuery;
+import edu.rpi.tw.eScience.WaterQualityPortal.model.Util;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.BirdObservation;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.DistributionWebService;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.WaterEntityAgent;
+import edu.rpi.tw.eScience.WaterQualityPortal.validation.CrossValidation;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.GeonameIdLookup;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
@@ -910,7 +912,7 @@ public class WaterAgentInstance implements HttpHandler {
 					//binding.put("species", "{\"value\":\""+species+"\",\"type\":\"literal\"}");
 					binding.put("species", species);
 				}
-				if(HealthEffectsQuery.isEmpty(defEffects)){
+				if(Util.isEmpty(defEffects)){
 					System.out.println("Look for the health effectos for "+element+" and Human");
 					defEffects=HealthEffectsQuery.queryForHealthEffects(Configuration.TRIPLE_STORE, element, "Human", model);
 					binding.put("species", "Human");	
@@ -1137,6 +1139,22 @@ public class WaterAgentInstance implements HttpHandler {
 				else if(method.equalsIgnoreCase("getBirdObservationByCounty")) {
 					//System.err.println("getBirdObservationByCounty");
 					birdAgent.getSpeciesDistributionByCounty(arg0, params, log);
+				}
+				else if(method.equalsIgnoreCase("getCloseSites")) {
+					//System.err.println("getBirdObservationByCounty");
+					CrossValidation.getCloseSites(arg0, params, log);
+				}
+				else if(method.equalsIgnoreCase("getCommonElements")) {
+					//System.err.println("getBirdObservationByCounty");
+					CrossValidation.getCommonElements(arg0, params, log);
+				}
+				else if(method.equalsIgnoreCase("getTestTypes")) {
+					//System.err.println("getBirdObservationByCounty");
+					CrossValidation.getTestTypes(arg0, params, log);
+				}
+				else if(method.equalsIgnoreCase("getMeasurements")) {
+					//System.err.println("getBirdObservationByCounty");
+					CrossValidation.getMeasurements(arg0, params, log);
 				}
 				return;
 			}
