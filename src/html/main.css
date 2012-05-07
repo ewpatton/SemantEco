@@ -247,6 +247,7 @@ a img {
 div.map-popup {
     font-size: 8pt;
     max-height: 270px;
+    max-width: 270px;
     overflow: scroll;
 }
 
@@ -329,3 +330,49 @@ div#modal-content {
 p.top { margin: 0; }
 div.top { height: 2em; }
 div.bottom { height: 2em; }
+
+table#p {
+	max-width: 500px;
+	max-height: 400px;
+}
+
+/*#plotarea {
+	display: none;
+}*/
+
+#plot {
+	text-align: center;
+	/*display: none;*/
+}
+
+path.line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+path.area {
+  fill: #e7e7e7;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line {
+  stroke: #fff;
+}
+
+.x.axis .minor {
+  stroke-opacity: .5;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.y.axis line, .y.axis path {
+  fill: none;
+  stroke: #000;
+}
+
