@@ -249,7 +249,7 @@ public class FoiaTranslator {
 		
 	public static void main(String[] args) {
 		FoiaTranslator translator = new FoiaTranslator();		
-		FoiaUtil.printKeyOfHashMap(translator.paraCode2Name);
+		FoiaUtil.printValueOfHashMap(translator.paraCode2Name);
 		//System.out.println(translator.paraCode2Name("-----"));
 		//translator.printValueOfHashMap(translator.paraCode2Name);
 		//translator.printHashMap(translator.paraCode2Name);

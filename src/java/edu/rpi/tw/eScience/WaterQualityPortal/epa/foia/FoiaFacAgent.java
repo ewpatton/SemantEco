@@ -11,8 +11,11 @@ import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.rpi.tw.eScience.WaterQualityPortal.epa.industry.NAICSAgent;
+
 public class FoiaFacAgent {
 	FRSAgent frsagent=null;
+	NAICSAgent naicsAgent=null;
 	
 	public class FoiaFacility {
 		public String regionCode;
@@ -20,8 +23,10 @@ public class FoiaFacAgent {
 		
 	}
 	
-	FoiaFacAgent(String stateUINFile){
+	FoiaFacAgent(String stateUINFile, String naicsCodeFile){
 		frsagent = new FRSAgent(stateUINFile);
+		naicsAgent = new NAICSAgent(naicsCodeFile);
+		
 	}
 	/**
 	 * @param fclData
@@ -227,14 +232,16 @@ public class FoiaFacAgent {
 	
 	public void processOneFacility(String fclData, BufferedWriter bufWriter){
 		DecimalFormat decFormat = new DecimalFormat("0.0000000");
-		StringBuilder strBuilder= new StringBuilder();		
+		StringBuilder strBuilder= new StringBuilder();	
 //		NPID     009        1-   9   Facility ID Number   
 		strBuilder.append("\""); 		
 		String perm=fclData.substring(0, 9).trim();
 		strBuilder.append(perm);
 		strBuilder.append("\",");
 		//UIN
-		strBuilder.append("\""); 		strBuilder.append(frsagent.perm2UIN(perm));
+		strBuilder.append("\""); 		
+		String uin=frsagent.perm2UIN(perm);
+		strBuilder.append(uin);
 		strBuilder.append("\",");
 //	    REGN     002       10-  11   Region Code    
 		strBuilder.append("\""); 		strBuilder.append(fclData.substring(9, 11).trim());
@@ -378,7 +385,10 @@ public class FoiaFacAgent {
 		strBuilder.append("\",");
 //	    FLLC     001      572- 572     Lat/Long Code of Accuracy  
 		strBuilder.append("\""); 		strBuilder.append(fclData.substring(571, 572).trim());
-		strBuilder.append("\"");		
+		strBuilder.append("\",");		
+		//NAICS Code
+		strBuilder.append("\""); 		strBuilder.append(naicsAgent.uin2NaicsCode(uin));
+		strBuilder.append("\"");	
 		
 		strBuilder.append("\n");		
 		try {
@@ -391,7 +401,7 @@ public class FoiaFacAgent {
 	
 	
 	public double LongDegree2decimal(String srcValue){
-		System.out.println(srcValue);
+		//System.out.println(srcValue);
 		if(srcValue.length()<8)
 			return 0;
 		int sign=1;
@@ -406,14 +416,14 @@ public class FoiaFacAgent {
 		sec+=tenthsec*0.1;
 		double dec = deg+min/60+sec/3600;
 		dec=sign*dec;
-		System.out.println(dec);
+		//System.out.println(dec);
 		return dec;
 		
 		
 	}
 
 	public double LatDegree2decimal(String srcValue){
-		System.out.println(srcValue);
+		//System.out.println(srcValue);
 		if(srcValue.length()<7)
 			return 0;
 		int sign=1;
@@ -428,7 +438,7 @@ public class FoiaFacAgent {
 		sec+=tenthsec*0.1;
 		double dec = deg+min/60+sec/3600;
 		dec=sign*dec;
-		System.out.println(dec);
+		//System.out.println(dec);
 		return dec;
 	}
 	
@@ -540,10 +550,11 @@ public class FoiaFacAgent {
 			"\"SIC2 Description\", \"Avg. Design Flow (MGD)\", \"Receiving Water\", \"River Basin Code\", " +
 			"\"River Basin Major\", \"BAS2 Description\", \"River Basin Code (Major/Minor)\", \"BAS4 Description\", " +
 			"\"Permit Type Code\", \"PTYP Description\", \"Permit Date Issued\", \"Permit Date Effective\", " +
-			"\"Permit Date Expired\", \"Longitude\", \"Latitude\", \"Lat/Long Code of Accuracy\"\n");
+			"\"Permit Date Expired\", \"Longitude\", \"Latitude\", \"Lat/Long Code of Accuracy\", " +
+			"\"NAICS\"\n");
 			
 			while ((strLine = reader.readLine()) != null)   {
-				System.out.println (strLine);
+				//System.out.println(strLine);
 				processOneFacility(strLine, bufferedWriter);
 			}
 
@@ -575,17 +586,20 @@ public class FoiaFacAgent {
 		//facAgent.LongDegree2decimal("-11046516");		
 		String dir="/media/DATA/epaMetaData/fac/";
 		String wholeFile="F#01613F.txt";
-		//String testFile="head500-F#01613F.txt";				
-		//String procFile="proc"+inputFile;
-		//facAgent.preprocessFile(dir+inputFile, dir+procFile);
-		//facAgent.processFile(dir+inputFile, dir+outputFile);
-		String curFile="WA-"+wholeFile;
-		String WAUINFile = "./WAUIN.CSV";
-		FoiaFacAgent facAgent = new FoiaFacAgent(WAUINFile);
-		//facAgent.extractOneState(dir+wholeFile, dir+curFile, "WA");
+		String curState="WA"; //"AZ";//WA//IA
+
+		String curFile=curState+"-"+wholeFile;
+		String UINFile =curState+ "UIN.CSV";//"./WAUIN.CSV"
+		String naicsFile=curState+"_NAICS.CSV";
+		FoiaFacAgent facAgent = new FoiaFacAgent(dir+UINFile, dir+naicsFile);
+		//facAgent.extractOneState(dir+wholeFile, dir+curFile, curState);
 		String outputFile=curFile.replace('#', '-').replaceAll(".txt", ".csv");
 		facAgent.processFile(dir+curFile, dir+outputFile);
 		
 	}
+	//String testFile="head500-F#01613F.txt";				
+	//String procFile="proc"+inputFile;
+	//facAgent.preprocessFile(dir+inputFile, dir+procFile);
+	//facAgent.processFile(dir+inputFile, dir+outputFile);
 
 }

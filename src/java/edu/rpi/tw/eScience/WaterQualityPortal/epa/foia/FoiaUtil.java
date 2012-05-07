@@ -101,7 +101,7 @@ addmon - value requared, but not limited*/
 		return value;		
 	}
 
-	static public void printHashMap(HashMap<String, Object> curMap){
+	static public void printHashMap(HashMap<String, String> curMap){
 		System.out.println("The Keys of the HashMap:");        
 		Iterator<String> iteratorKey = curMap.keySet().iterator();
 
@@ -123,9 +123,9 @@ addmon - value requared, but not limited*/
 	}
 
 
-	static public void printValueOfHashMap(HashMap<String, Object> curMap){
+	static public void printValueOfHashMap(HashMap<String, String> curMap){
 		System.out.println("The Values of the HashMap:"); 
-		Iterator<Entry<String, Object>> iteratorValue = curMap.entrySet().iterator();
+		Iterator<Entry<String, String>> iteratorValue = curMap.entrySet().iterator();
 
 		int num=0;
 		while(iteratorValue.hasNext()){        
