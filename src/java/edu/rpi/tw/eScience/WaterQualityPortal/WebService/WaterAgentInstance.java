@@ -86,6 +86,9 @@ public class WaterAgentInstance implements HttpHandler {
 		states.put("PA", "http://logd.tw.rpi.edu/id/us/state/Pennsylvania");
 		states.put("RI", "http://logd.tw.rpi.edu/id/us/state/Rhode_Island");
 		states.put("WA", "http://logd.tw.rpi.edu/id/us/state/Washington");
+		
+		states.put("DE", "http://logd.tw.rpi.edu/id/us/state/Delaware");
+		
 		/*
 		try {
 			cache = new MysqlCache(Configuration.CACHEDB_URL,Configuration.CACHEDB_USER,
@@ -601,6 +604,7 @@ public class WaterAgentInstance implements HttpHandler {
 			queryResults = qe.execSelect();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ResultSetFormatter.outputAsJSON(baos, queryResults);
+			//System.err.println("queryResults: "+queryResults);
 			log.debug(baos.toString("UTF-8"));
 			qe.close();
 			
