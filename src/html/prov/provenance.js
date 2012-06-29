@@ -15,7 +15,12 @@ var pmlDataConvertTime;
 var pmlAccountName;
 var pmlRawDataUrl;
 var regOwlFile;
+var isReg;
 
+var ratStep=0;
+var pmlSrcRat;
+var pmlSetRat;
+var pmlEngRat;
 
 var provAppBase =parseParent(window.location.href); 
 var provWin; //refers to the pop out provenance window
@@ -41,6 +46,8 @@ regOwls['ny'] = "ny-regulation.owl";
 regOwls['ma'] = "ma-regulation.owl";
 regOwls['ca'] = "ca-regulation.owl";
 regOwls['epa-aqua-acute'] = "epa-aqua-acute-regulation.owl";
+
+
 //--------------------------------------------------------------------
 /*This function is called when provenance.html is loaded
 It parse the parameters from the given url
@@ -65,7 +72,7 @@ function showPml(){
   pmlUnit = params["unit"];
 
   //if this is for regulation provenance
-  var isReg=params["isReg"]; 
+  isReg=params["isReg"]; 
   if(isReg==="true"){
     regId=params["dataSet"];
     regOwlFile=regOwls[regId];
@@ -101,6 +108,8 @@ function showPml(){
   }
 }
 
+
+
 /*This function is called in main.js and when the ? is clicked on map.html
 It prepares the parameters to send to the pop up window and opens the new window
 Params: 
@@ -111,7 +120,7 @@ function openProvWindow(characteristic, measuredValue, unit, isReg, fromEPA, sit
   //build url parameters string
   var height=450;
   var urlParam = 'chract=' + characteristic + '&mValue=' + measuredValue+'&unit=' + unit+'&isReg=' + isReg;
-  if(isReg){
+  if(isReg==="true"){
     height=300;
     urlParam += '&dataSet=' + regulation.substring(regulation.lastIndexOf('/')+1, regulation.lastIndexOf('-'));
   }
@@ -139,7 +148,46 @@ function openProvWindow(characteristic, measuredValue, unit, isReg, fromEPA, sit
     popup(provAppBase+'prov/provenance.html?'+urlParam, 600, height);
 }
 
+function getRationale(){
+  if(isReg==="true")
+   ratStep=1;
+  
+  queryRationale();
+}
 
+
+function queryRationale(){
+	//queryDataSetSourceRationale(pmlDataSrc, pmlDataSet);
+	
+	switch(ratStep)
+	{
+	case 0: 
+		queryThingRationale(pmlDataSrc);
+		break;
+	case 1:
+	    if(isReg==="true")
+	      queryThingRationale(regId);
+	    else
+				queryThingRationale(pmlDataSet);		
+		break;
+	case 2:
+		queryThingRationale(pmlInfEng);
+		break;
+	default:
+		alert("The rationale step " + ratStep +" is not supported.");
+	}
+}
+
+function showRationale(){
+	var contents = "<ul>";
+  if(isReg==="false")
+		contents += "<li>Rationale for using the data provider "+pmlDataSrc+" : " + pmlSrcRat +"<br></li>";
+	contents += "<li>Rationale for using the data set "+pmlDataSet+" : " + pmlSetRat+"<br></li>";
+	contents += "<li>Rationale for using the data conversion tool: "+pmlInfEng+" : " + pmlEngRat+"<br></li>";
+	contents += "</ul>";
+	var pmlDiv=document.getElementById("pmlRationale");
+	pmlDiv.innerHTML+=contents;
+}
 //--------------------------------------------------------------------
 /*After the provenance info for the regulation is retrieved from the end point, 
 the function displays the info*/
@@ -258,6 +306,80 @@ function showFiles4Measurement(){
   return contents;
 }
 
+/*
+function queryDataSetSourceRationale(dataSrc, dataSet){
+  var sparqlDataSetSourceRationale="prefix pmlp: <http://inference-web.org/2.0/pml-provenance.owl#>\r\n"+
+			  "prefix dcterms: <http://purl.org/dc/terms/>\r\n"+
+        "select ?srcRat ?setRat\r\n"+
+        "where{\r\n"+
+        "graph <http://sparql.tw.rpi.edu/semantaqua/rationale>{\r\n"+        
+        "?src pmlp:hasRationale ?srcRat .\r\n"+
+        "?src dcterms:identifier \""+dataSrc+"\" .\r\n"+        
+        "?set pmlp:hasRationale ?setRat .\r\n"+
+        "?set dcterms:identifier \""+dataSet+"\" .\r\n"+  
+        "}}";
+        
+    //alert(sparqlDataSetSourceRationale);
+
+       $.ajax({type: "GET",
+          url: provServiceagent,
+          data: "query="+encodeURIComponent(sparqlDataSetSourceRationale),
+          dataType: "xml", 
+          success: processDataSetSourceRationale,
+         	error: function (jqXHR, textStatus, errorThrown){
+						alert(jqXHR.status+", "+textStatus+", "+ errorThrown);
+         	}
+     });
+}*/
+
+function queryThingRationale(thingId){
+  var sparqlThingRationale="prefix pmlp: <http://inference-web.org/2.0/pml-provenance.owl#>\r\n"+
+			  "prefix dcterms: <http://purl.org/dc/terms/>\r\n"+
+        "select ?rat \r\n"+
+        "where{\r\n"+
+        "graph <http://sparql.tw.rpi.edu/semantaqua/rationale>{\r\n"+        
+        "?src pmlp:hasRationale ?rat .\r\n"+
+        "?src dcterms:identifier \""+thingId+"\" .\r\n"+        
+        "}}";
+        
+    //alert(sparqlDataSrcRationale);
+
+       $.ajax({type: "GET",
+          url: provServiceagent,
+          data: "query="+encodeURIComponent(sparqlThingRationale),
+          dataType: "xml", 
+          success: processThingRationale,
+         	error: function (jqXHR, textStatus, errorThrown){
+						alert(jqXHR.status+", "+textStatus+", "+ errorThrown);
+         	}
+     });
+}
+
+/*
+function queryDataManRationale(infEng){
+  var sparqlDataManRationale="prefix pmlp: <http://inference-web.org/2.0/pml-provenance.owl#>\r\n"+
+			  "prefix dcterms: <http://purl.org/dc/terms/>\r\n"+
+        "select ?engRat \r\n"+
+        "where{\r\n"+
+        "graph <http://sparql.tw.rpi.edu/semantaqua/rationale>{\r\n"+        
+        "?infEng pmlp:hasRationale ?engRat .\r\n"+
+        "?infEng dcterms:identifier \""+infEng+"\" .\r\n"+        
+        "}}";
+        
+    //alert(sparqlDataManRationale);
+
+       $.ajax({type: "GET",
+          url: provServiceagent,
+          data: "query="+encodeURIComponent(sparqlDataManRationale),
+          dataType: "xml", 
+          success: processDataManRationale,
+         	error: function (jqXHR, textStatus, errorThrown){
+						alert(jqXHR.status+", "+textStatus+", "+ errorThrown);
+         	}
+     });
+}
+*/
+
 /*This function queries the provenance for measurements from EPA
 Provenance queried: the inference engine
 */
@@ -330,6 +452,82 @@ function queryUSGSMeasurementPml(dataSrc, state, countyCode){
          	}
      });
 }
+
+function processThingRationale(data){
+	var rat="";
+	$(data).find('result').each(function(){
+	$(this).find("binding").each(function(){
+	  if($(this).attr("name")=="rat")
+	  {
+	    rat=($(this).find("literal").text());     
+	  }
+	});
+    //alert("rat: "+rat);
+	});	
+	
+	switch(ratStep)
+	{
+	case 0: 
+		pmlSrcRat=rat;
+		break;
+	case 1:
+		pmlSetRat=rat;
+		break;
+	case 2:
+		pmlEngRat=rat;
+		break;
+	default:
+		alert("The rationale step " + ratStep +" is not supported.");
+	}
+
+  ratStep = ratStep+1;
+  if(ratStep<3)
+  	queryRationale();
+  else 
+		showRationale();  
+}
+
+/*
+function processDataSetSourceRationale(data){
+	$(data).find('result').each(function(){
+	var srcRat="", setRat="";
+	$(this).find("binding").each(function(){
+	  if($(this).attr("name")=="srcRat")
+	  {
+	    srcRat=($(this).find("literal").text());     
+	    if(srcRat!="")
+	      pmlSrcRat=srcRat;
+	  }
+	  if($(this).attr("name")=="setRat")
+	  {
+	    setRat=($(this).find("literal").text()); 
+      if(setRat!="")
+		    pmlSetRat=setRat;
+	  }
+	});
+    //alert("srcRat: "+srcRat+", setRat: "+setRat);
+	});	
+	
+	queryDataManRationale(pmlInfEng);
+}
+
+function processDataManRationale(data){
+	$(data).find('result').each(function(){
+	var engRat="";
+	$(this).find("binding").each(function(){
+	  if($(this).attr("name")=="engRat")
+	  {
+	    engRat=($(this).find("literal").text());     
+	    if(engRat!="")
+	      pmlEngRat=engRat;
+	  }
+	});
+    //alert("engRat: "+engRat);
+	});	
+	
+	showRationale();
+}
+*/
 
 function processMeasurementPml(data) {
 	$(data).find('result').each(function(){
@@ -544,7 +742,7 @@ function queryRegulationPml(regId){
         "?su3 pmlp:hasSource ?srcUrl.\r\n"+ 
         "?su3 pmlp:hasUsageDateTime ?downloadTime.\r\n"+ 
         "}}";
-  alert(sparqlRegulationPml);
+  //alert(sparqlRegulationPml);
 
        $.ajax({type: "GET",
           url: provServiceagent,
