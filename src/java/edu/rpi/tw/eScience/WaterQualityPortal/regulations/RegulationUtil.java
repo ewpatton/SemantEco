@@ -38,4 +38,7 @@ public class RegulationUtil {
 		}
 		return value;		
 	}
+	
+
+	
 }
