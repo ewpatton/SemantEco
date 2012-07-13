@@ -22,6 +22,7 @@ import com.csvreader.CsvReader;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.Facility;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.FacilityMeasurement;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.MeasurementConstraint;
+import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
 public class EchoFacilityRegulationAgent {
 	int idCount = 0;
@@ -117,7 +118,7 @@ public class EchoFacilityRegulationAgent {
 				//System.out.println("Record " + recordNum + ": "+elementName);
 				//find the next element
 				if(elementName.compareTo("")!=0){
-					focusedName = FacilityRegulationUtil.processElementName(elementName);
+					focusedName = NameUtil.processElementName(elementName);
 				}
 
 				cmpValue = reader.get("C1_LVAL");	

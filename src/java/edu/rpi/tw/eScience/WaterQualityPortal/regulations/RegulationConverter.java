@@ -8,12 +8,19 @@ import java.util.*;
 
 import com.csvreader.CsvReader;
 
+import edu.rpi.tw.eScience.WaterQualityPortal.util.ConfigReader;
+import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
+
 public class RegulationConverter {
 	List <String> provenances = null;
 	List <String> regulations = null;
 	StringBuilder regBuf = null;
 	//StringBuilder regOfMeasurement = null;
-
+	String contaminantCol;
+	String threasholdCol;
+	String unitCol;
+	String defaultUnit;
+	
 	public RegulationConverter(){
 		provenances = new ArrayList <String>();
 		regulations = new ArrayList <String>();
@@ -21,13 +28,37 @@ public class RegulationConverter {
 		//regOfMeasurement = new StringBuilder();
 	}
 
+	public void config(String confFile){
+		ConfigReader reader = new ConfigReader(confFile);
+		/*String ontoStr = reader.getProperty("OntologyFaimly");
+		if(ontoStr.equals("OBOE"))
+			ontoType = OntologyFamily.OBOE;
+		else if(ontoStr.equals("TWC"))
+			ontoType = OntologyFamily.TWC;
+		else{
+			System.err.println("Ontology Faimly "+ontoStr+" is not supported.");
+			System.exit(-1);
+		}*/
+			
+		contaminantCol = reader.getProperty("ContaminantCol");
+		threasholdCol = reader.getProperty("ThreasholdCol");
+		unitCol = reader.getProperty("UnitCol");
+		defaultUnit = reader.getProperty("DefaultUnit");
+		if(unitCol.equals("NA")&&defaultUnit.equals("NA")){
+			System.err.println("Both unit column and default unit are NA." +
+					"This is not valid case for the converter");
+			System.exit(-1);
+		}
+	}
 
-	private void convertRegulationInCSV(String inputReg, String outputOwl, 
-			String regType, OntologyFamily ontoType){		
+	private void convertRegulationInCSV(String confFile, String inputReg, 
+			String outputOwl, OntologyFamily ontoType){		
 		CsvReader reader = null;
 		String element = null, value=null, unit=null;
 		int recordNum = 0;
 
+		config(confFile);
+		
 		try {			
 			reader = new CsvReader(inputReg);		
 			reader.readHeaders();
@@ -38,11 +69,19 @@ public class RegulationConverter {
 				recordNum++;
 				System.out.println("Record " + recordNum);
 				System.out.println(reader.getRawRecord());
-				element = reader.get("Contaminant").trim();
-				value=reader.get(regType).trim();
+				element = reader.get(contaminantCol).trim();
+				value=reader.get(threasholdCol).trim();
 				//value=value.replaceAll("ug/L", "");
 				//unit="ug/l";
-				unit = reader.get("Unit");				
+				if(unitCol.equals("NA"))
+					unit=defaultUnit;
+				else{
+				unit = reader.get(unitCol).trim().toLowerCase();	
+				if(unit==null || unit.isEmpty()){
+					if(!defaultUnit.equals("NA"))
+						unit = defaultUnit;
+				}				
+				}
 				System.out.println(element+", "+value+", "+unit);
 				insertRegulation(element, value,unit, ontoType);
 			}//end of while
@@ -65,30 +104,39 @@ public class RegulationConverter {
 
 	public void insertRegulation(String element,String value,String unit,
 			OntologyFamily ontoType){
-		element=element.replace("\"", "");
+		/*element=element.replace("\"", "");
 		element=element.replace(" ", "");
 		element=element.replace("<","");
 		element=element.replace(">","");
 		element=element.replace("&gt;","");
 		element=element.replace("&lt;","");
-		element=element.replace("&","");
+		element=element.replace("&","");*/
+		
+		element=NameUtil.processElementName(element);
 		element=RegulationUtil.capitalizeString(element);
-		value=value.replace("\"", "");
+		value=value.replaceAll("\"", "");
 		Double numValue = RegulationUtil.numStr2Double(value);
 		if(numValue==null)
 			return;
 
 		switch (ontoType){
 		case TWC: 
+			//need to have both ug/l and mg/l elseif the portal identify less pollution occurences
 			if(unit.compareTo("ug/l")==0){
 				insertRegulationGivenUnit(element, numValue/1000, "mg/l");
+				//insertRegulationGivenUnit(element, numValue, unit);
+			}			
+			else if(unit.compareTo("mg/l")==0){
+				insertRegulationGivenUnit(element, numValue, unit);
+				//insertRegulationGivenUnit(element, numValue*1000, "ug/l");			
 			}
-			insertRegulationGivenUnit(element, numValue, unit);
 			break;
 		case OBOE: 
 			//only process mg/l for now
-			if(unit.compareTo("mg/l")==0)
-				insertRegulationGivenUnitForOBOE(element, numValue,unit); 
+			if(unit.compareTo("ug/l")==0)
+				insertRegulationGivenUnitForOBOE(element, numValue/1000, "mg/l"); 
+			else if(unit.compareTo("mg/l")==0)
+				insertRegulationGivenUnitForOBOE(element, numValue, unit); 
 			break;
 		default:
 			System.err.println("In insertRegulation, the type of the ontoloy family "+
@@ -100,11 +148,13 @@ public class RegulationConverter {
 
 	public void insertRegulationGivenUnitForOBOE(String element,Double value,String unit){
 		//
-		insertObservationOfRegulationViolationForOBOE(element, regBuf);
-		insertMeasurementViolationForOBOE(element, value, unit, regBuf);
+		String procUnit = unit.replaceAll("/", "-");
+		insertObservationOfRegulationViolationForOBOE(element, value, procUnit, regBuf);
+		insertMeasurementViolationForOBOE(value, procUnit, regBuf);
+		insertDecimalValueViolationForOBOE(value, regBuf);
 	}
 
-	public void insertObservationOfRegulationViolationForOBOE(String element, StringBuilder curObs){
+	public void insertObservationOfRegulationViolationForOBOE(String element, Double value, String unit, StringBuilder curObs){
 		curObs.append("<owl:Class rdf:about=\"#Excessive"+element+"Observation\">\n");
 		curObs.append("<rdfs:subClassOf rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#ObservationOfRegulationViolation\"/>\n");
 		curObs.append("<owl:intersectionOf rdf:parseType=\"Collection\">\n");
@@ -119,34 +169,40 @@ public class RegulationConverter {
 		curObs.append("<owl:Restriction>\n");
 		curObs.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasMeasurement\"/>\n");
 		//curObs.append("<owl:someValuesFrom rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#RegulationViolation\"/>\n");
-		curObs.append("<owl:someValuesFrom rdf:resource=\"#Excessive"+element+"Measurement\"/>\n");
+		curObs.append("<owl:someValuesFrom rdf:resource=\"#Excessive"+value+unit+"Measurement\"/>\n");
 		curObs.append("</owl:Restriction>\n");
 		curObs.append("</owl:intersectionOf>\n");
 		curObs.append("</owl:Class>\n");		
 	}
 
-	public void insertMeasurementViolationForOBOE(String element, Double value,String unit, StringBuilder curMeasurement){
-		curMeasurement.append("<owl:Class rdf:about=\"#Excessive"+element+"Measurement\">\n");
-		curMeasurement.append("<rdfs:subClassOf rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#RegulationViolation\"/>\n");
-		curMeasurement.append("<owl:intersectionOf rdf:parseType=\"Collection\">\n");
+	public void insertMeasurementViolationForOBOE(Double value,String unit, StringBuilder curBuf){
+		curBuf.append("<owl:Class rdf:about=\"#Excessive"+value+unit+"Measurement\">\n");
+		curBuf.append("<rdfs:subClassOf rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#RegulationViolation\"/>\n");
+		curBuf.append("<owl:intersectionOf rdf:parseType=\"Collection\">\n");
 		//class: Measurement
-		curMeasurement.append("<owl:Class rdf:about=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement\"/>\n");
+		curBuf.append("<owl:Class rdf:about=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement\"/>\n");
 		//Restriction 1
-		curMeasurement.append("<owl:Restriction>\n");
-		curMeasurement.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofCharacteristic\"/>\n");
-		curMeasurement.append("<owl:hasValue rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-characteristics.owl#AmountOfSubstanceConcentration\"/>\n");
-		curMeasurement.append("</owl:Restriction>\n");
+		curBuf.append("<owl:Restriction>\n");
+		curBuf.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofCharacteristic\"/>\n");
+		curBuf.append("<owl:hasValue rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-characteristics.owl#AmountOfSubstanceConcentration\"/>\n");
+		curBuf.append("</owl:Restriction>\n");
 		//Restriction 2
 		if(unit.compareTo("")!=0){
-			curMeasurement.append("<owl:Restriction>\n");
-			curMeasurement.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#usesStandard\"/>\n");
-			curMeasurement.append("<owl:hasValue rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-standards.owl#MilligramPerLiter\"/>\n");
-			curMeasurement.append("</owl:Restriction>\n");
+			curBuf.append("<owl:Restriction>\n");
+			curBuf.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#usesStandard\"/>\n");
+			curBuf.append("<owl:hasValue rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-standards.owl#MilligramPerLiter\"/>\n");
+			curBuf.append("</owl:Restriction>\n");
 		}
 		//Restriction 3
+		curBuf.append("<owl:Restriction>\n");
+		curBuf.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasValue\"/>\n");
+		//curMeasurement.append("<owl:someValuesFrom rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#RegulationViolation\"/>\n");
+		curBuf.append("<owl:someValuesFrom rdf:resource=\"#Excessive"+value+"DecimalValue\"/>\n");
+		curBuf.append("</owl:Restriction>\n");
+		/*
 		curMeasurement.append("<owl:Restriction>\n");
 		curMeasurement.append("<owl:onProperty rdf:resource=\"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#hasNumericValue\"/>\n");
-		curMeasurement.append("<owl:someValuesFrom>\n");
+		curMeasurement.append("<owl:someValuesFrom>\n");		
 		curMeasurement.append("<rdfs:Datatype>\n");
 		curMeasurement.append("<owl:onDatatype rdf:resource=\"http://www.w3.org/2001/XMLSchema#double\"/>\n");
 		curMeasurement.append("<owl:withRestrictions rdf:parseType=\"Collection\">\n");
@@ -157,14 +213,42 @@ public class RegulationConverter {
 		curMeasurement.append("</rdf:Description>\n");
 		curMeasurement.append("</owl:withRestrictions>\n");
 		curMeasurement.append("</rdfs:Datatype>\n");
+		
 		curMeasurement.append("</owl:someValuesFrom>\n");
 		curMeasurement.append("</owl:Restriction>\n");
+		*/
 		//end of restrictions
-		curMeasurement.append("</owl:intersectionOf>\n");
-		curMeasurement.append("</owl:Class>\n");
+		curBuf.append("</owl:intersectionOf>\n");
+		curBuf.append("</owl:Class>\n");
 	}
 
 
+	public void insertDecimalValueViolationForOBOE(Double value, StringBuilder curBuf){
+		curBuf.append("<owl:Class rdf:about=\"#Excessive"+value+"DecimalValue\">\n");
+		curBuf.append("<rdfs:subClassOf rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#DecimalValueViolation\"/>\n");
+		curBuf.append("<owl:intersectionOf rdf:parseType=\"Collection\">\n");
+		//class: Decimal
+		curBuf.append("<owl:Class rdf:about=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Decimal\"/>\n");
+		//Restriction 1
+				curBuf.append("<owl:Restriction>\n");
+				curBuf.append("<owl:onProperty rdf:resource=\"http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasCode\"/>\n");
+				curBuf.append("<owl:someValuesFrom>\n");
+				curBuf.append("<rdfs:Datatype>\n");
+				curBuf.append("<owl:onDatatype rdf:resource=\"http://www.w3.org/2001/XMLSchema#double\"/>\n");
+				curBuf.append("<owl:withRestrictions rdf:parseType=\"Collection\">\n");
+				curBuf.append("<rdf:Description rdf:about=\"#"+value+"Threshold\">\n");
+				curBuf.append("<xsd:minInclusive rdf:datatype=\"http://www.w3.org/2001/XMLSchema#double\">");
+				curBuf.append(RegulationUtil.decFormat.format(value));
+				curBuf.append("</xsd:minInclusive>\n");
+				curBuf.append("</rdf:Description>\n");
+				curBuf.append("</owl:withRestrictions>\n");
+				curBuf.append("</rdfs:Datatype>\n");
+				curBuf.append("</owl:someValuesFrom>\n");
+				curBuf.append("</owl:Restriction>\n");
+				//end of restrictions
+				curBuf.append("</owl:intersectionOf>\n");
+				curBuf.append("</owl:Class>\n");
+	}
 
 
 	public void insertRegulationGivenUnit(String element,Double value,String unit){
@@ -202,7 +286,8 @@ public class RegulationConverter {
 		if(unit.compareTo("")!=0){
 			thisRegulation += "<owl:Restriction>\n";
 			//		thisRegulation += "<owl:onProperty rdf:resource=\"http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#hasUnit\"/>\n";
-			thisRegulation += "<owl:onProperty rdf:resource=\"http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#hasUnit\"/>\n";
+			//thisRegulation += "<owl:onProperty rdf:resource=\"http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#hasUnit\"/>\n";
+			thisRegulation += "<owl:onProperty rdf:resource=\"http://sweet.jpl.nasa.gov/2.1/repr.owl#hasUnit\"/>\n";
 			thisRegulation += "<owl:hasValue>"+unit+"</owl:hasValue>\n";
 			thisRegulation += "</owl:Restriction>\n";
 		}
@@ -225,7 +310,7 @@ public class RegulationConverter {
 		output +=  "<!ENTITY time \"http://www.w3.org/2006/time\" >\n";
 		output += "<!ENTITY pol \"http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#\">\n";
 		output += "<!ENTITY oboe-pol \"http://escience.rpi.edu/ontology/semanteco/2/0/oboe-pollution.owl#\" >\n";
-		output += "<!ENTITY "+filePrefix+" \"http://escience.rpi.edu/ontology/semanteco/2/0/"+file+"#\" >\n";
+		output += "<!ENTITY "+filePrefix+" \"http://escience.rpi.edu/ontology/semanteco/2/0/"+filePrefix+"#\" >\n";
 		output += "<!ENTITY water \"http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#\">\n";
 		//
 		output +=  "<!ENTITY elem \"http://sweet.jpl.nasa.gov/2.1/matrElement.owl#\" >\n";
@@ -301,11 +386,19 @@ public class RegulationConverter {
 		//String inputReg="epa-aqua-regulation-step2.csv";
 		//String outputOwl="epa-aqua-acute-regulation.owl";	
 		//"Freshwater-CMC-acute(ug/L)"; "Freshwater-CMC-chronic(ug/L)";
+		List<String> states = new ArrayList<String>();
+		states.add("ri");
+		states.add("mass");
+		states.add("ca");
+		states.add("ny");
+		states.add("EPA");
 
-		String inputReg="data/oboe/reg/ri-regulation.csv";
-		String outputOwl="data/oboe/reg/ri-regulation-OBOE.owl";
-		String regType="HUMAN HEALTH CRITERIA";		
-		reg.convertRegulationInCSV(inputReg, outputOwl, regType, OntologyFamily.OBOE);
+		for(String state:states){
+		String conf = "data/oboe/reg/"+state+".config";
+		String inputReg="data/oboe/reg/"+state+"-regulation.csv";
+		String outputOwl="data/oboe/reg/"+state+"-regulation-TWC.owl";
+		reg.convertRegulationInCSV(conf, inputReg, outputOwl, OntologyFamily.TWC);
+		}
 	}
 
 }

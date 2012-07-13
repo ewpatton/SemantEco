@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
+import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
+
 public class IcisRegulationAgent {
 	
 	int ruleIdCount = 0;
@@ -42,7 +44,7 @@ public class IcisRegulationAgent {
 				cmpValue = reader.get("LIMIT_VALUE_NMBR");	
 				if(cmpValue.compareTo("")!=0)
 				{					
-					elementName = FacilityRegulationUtil.processElementName(elementName);
+					elementName = NameUtil.processElementName(elementName);
 					cmpType = reader.get("VALUE_TYPE_CODE");
 					cmpOp = reader.get("LIMITVALUEQUALIFIERCODE");						
 					cmpUnit = reader.get("UNIT_SHORT_NAME");

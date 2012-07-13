@@ -8,14 +8,21 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class FacilityRegulationUtil {
+	/*
 	public static String processElementName(String elementName){
 		System.out.println(elementName);
 		String prd = elementName.replaceAll("\\.", "_");		
 		//System.out.println(prd);
 		prd = prd.replaceAll(",", "_");
 		//System.out.println(prd);
+		prd = prd.replaceAll(";", "_");
+		//System.out.println(prd);
 		prd = prd.replaceAll("'", "_");
 		//System.out.println(prd);
+		prd = prd.replaceAll("&gt", "_");
+		//System.out.println(prd)
+		prd = prd.replaceAll("&lt", "_");
+		//System.out.println(prd)	
 		prd = prd.replaceAll("&", "_"); 
 		//System.out.println(prd);
 		prd = prd.replaceAll("\\(", "_");
@@ -28,6 +35,15 @@ public class FacilityRegulationUtil {
 		//System.out.println(prd)
 		prd = prd.replaceAll("\\%", "_");
 		//System.out.println(prd)		
+		//new
+		prd = prd.replaceAll("\"", "_");
+		//System.out.println(prd)		
+		prd = prd.replaceAll("<", "_");
+		//System.out.println(prd)
+		prd = prd.replaceAll(">", "_");
+		//System.out.println(prd)		
+
+		
 		prd = prd.replaceAll("\\s", "_");
 		prd = prd.replaceAll("_+", "_");
 		if(prd.startsWith("_"))
@@ -37,7 +53,7 @@ public class FacilityRegulationUtil {
 		System.out.println(prd);
 		return prd;
 	}
-	
+	*/
 	
 	static public void saveMap(String outFile, HashMap<String, EPAFacilityRegulationRule> curMap){
 		System.out.println("The Values of the Map:"); 

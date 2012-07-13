@@ -3,10 +3,12 @@ package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.jar.Attributes.Name;
 
 import com.csvreader.CsvReader;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.util.ConfigReader;
+import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
 public class FoiaRegulationAgent {
 	
@@ -60,7 +62,7 @@ public class FoiaRegulationAgent {
 				cmpValue = reader.get(cmpValueCol);	
 				if(cmpValue.compareTo("")!=0)
 				{					
-					elementName = FacilityRegulationUtil.processElementName(elementName);
+					elementName = NameUtil.processElementName(elementName);
 					testType = reader.get(testTypeCol);
 					cmpOp = reader.get(cmpOpCol);						
 					cmpUnit = reader.get(cmpUnitCol);
