@@ -399,7 +399,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		contents += op+" "+limit+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ true+")\">?</a></td><td>"+time+"</td>";
 		//var curSpecies=result["species"].value;
 		var curSpecies=result["species"];
-		alert(curSpecies)
+		//alert(curSpecies)
 		contents += "<td>"+curSpecies+"</td>";
 		contents += "<td>";
 		var first = true;
