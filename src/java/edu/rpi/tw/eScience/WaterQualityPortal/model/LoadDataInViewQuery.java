@@ -162,7 +162,7 @@ public class LoadDataInViewQuery extends Query {
 						"} where {" +
 						"graph <"+sites+"> {" +
 						"?s a water:WaterSite ; " +
-						"dc:identifier ?id ; " +
+						//"dc:identifier ?id ; " +
 						"pol:hasCountyCode " + county + " ; " +
 						//"pol:hasStateCode ?state ; " +
 						"wgs:lat ?lat ; " +
@@ -171,7 +171,8 @@ public class LoadDataInViewQuery extends Query {
 
 		String queryStringPart2="} " +
 				"graph <"+measures+"> {" +
-				"?measurement pol:hasSiteId ?id ; " +
+				"?measurement pol:hasSite ?s; " +
+				//"?measurement pol:hasSiteId ?id ; " +
 				"pol:hasCharacteristic ?element ; "+
 				"pol:hasValue ?value ; " + 
 				"repr:hasUnit ?unit ; " +
