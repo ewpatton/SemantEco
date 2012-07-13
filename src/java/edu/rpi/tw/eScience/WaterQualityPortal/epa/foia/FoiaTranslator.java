@@ -25,7 +25,7 @@ public class FoiaTranslator {
 	HashMap<String, String> unitCode2LongName;
 	HashMap<String, String> sbCode2LongName;
 	
-	FoiaTranslator(){
+	public FoiaTranslator(){
 		paraCode2Name = new HashMap<String, String>();
 		unitCode2ShortName= new HashMap<String, String>();
 		unitCode2LongName= new HashMap<String, String>();

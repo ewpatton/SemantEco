@@ -18,7 +18,7 @@ public class FoiaOverrideAgent {
 	//static public Logger dmrLogger = Logger.getLogger(FoiaDmrAgent.class.getName());
 	static public Logger orLogger = Logger.getLogger("OverrideLogging");
 
-	FoiaOverrideAgent(String dir, String inputFileName){
+	public FoiaOverrideAgent(String dir, String inputFileName){
 		minMap = new HashMap<String, String>();
 		avgMap = new HashMap<String, String>();
 		buildOverrideTable(dir, inputFileName);

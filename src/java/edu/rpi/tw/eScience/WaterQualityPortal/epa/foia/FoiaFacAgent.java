@@ -583,20 +583,25 @@ public class FoiaFacAgent {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) {
-		//facAgent.LongDegree2decimal("-11046516");		
+
+		String curState="WY";
+		//"WV" "VT"
+		//"VA" "SC" "ND" "OR"//"NJ"//"NC"//"NC"
+		//"MO"//"ME"//"KS"//"IA"//"FL"//"DE"//"AZ";//WA//IA
 		String dir="/media/DATA/epaMetaData/fac/";
 		String wholeFile="F#01613F.txt";
-		String curState="WA"; //"AZ";//WA//IA
+		
 
 		String curFile=curState+"-"+wholeFile;
 		String UINFile =curState+ "UIN.CSV";//"./WAUIN.CSV"
 		String naicsFile=curState+"_NAICS.CSV";
 		FoiaFacAgent facAgent = new FoiaFacAgent(dir+UINFile, dir+naicsFile);
-		//facAgent.extractOneState(dir+wholeFile, dir+curFile, curState);
+		facAgent.extractOneState(dir+wholeFile, dir+curFile, curState);
 		String outputFile=curFile.replace('#', '-').replaceAll(".txt", ".csv");
-		facAgent.processFile(dir+curFile, dir+outputFile);
-		
+		facAgent.processFile(dir+curFile, dir+outputFile);		
 	}
+	
+	//facAgent.LongDegree2decimal("-11046516");	
 	//String testFile="head500-F#01613F.txt";				
 	//String procFile="proc"+inputFile;
 	//facAgent.preprocessFile(dir+inputFile, dir+procFile);

@@ -13,7 +13,7 @@ public class FoiaUnitConverter {
 	HashMap<String, Double> convMap =null;
 	static public Logger unitLogger = Logger.getLogger("UnitConvLogging");
 	
-	FoiaUnitConverter(){
+	public FoiaUnitConverter(){
 		convMap = new HashMap<String, Double>();
 		buildConvTable();
 	}
