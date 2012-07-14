@@ -462,7 +462,7 @@ function makeTable(properties) {
 }
 
 function showReportSite(state) {
-	var reportSiteUrl = "http://was.tw.rpi.edu/swqp/reportSite.php";
+	var reportSiteUrl = "http://aquarius.tw.rpi.edu/projects/semantaqua/reportSite.php";
 	$.ajax({
 		type : "GET",
 		url : reportSiteUrl,
