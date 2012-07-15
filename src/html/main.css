@@ -247,7 +247,7 @@ a img {
 div.map-popup {
     font-size: 8pt;
     max-height: 270px;
-    max-width: 270px;
+    max-width: 290px;
     overflow: scroll;
 }
 

@@ -162,7 +162,7 @@ function initialize() {
 		geocoder = new GClientGeocoder();
 	}
 
-	document.getElementById("species").selectedIndex = 1;
+	document.getElementById("species").selectedIndex = 0;
 	onchange_species_selection();
 	// for industry facet
 	fill_industry_selection();
