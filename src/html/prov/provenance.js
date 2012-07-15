@@ -120,7 +120,7 @@ function openProvWindow(characteristic, measuredValue, unit, isReg, fromEPA, sit
   //build url parameters string
   var height=450;
   var urlParam = 'chract=' + characteristic + '&mValue=' + measuredValue+'&unit=' + unit+'&isReg=' + isReg;
-  if(isReg==="true"){
+  if(isReg===true){
     height=300;
     urlParam += '&dataSet=' + regulation.substring(regulation.lastIndexOf('/')+1, regulation.lastIndexOf('-'));
   }
