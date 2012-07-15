@@ -541,8 +541,8 @@ function showAddress(address) {
 						var regulation = $('[name="regulation"]:checked').val();
 						industry = $("#industry_selection_canvas").val();
 						// alert(industry);
-						// getLimitData(sources, regulation, contaminants,
-						// effects, time, industry);
+						getLimitData(sources, regulation, contaminants, effects, time, industry);
+						/*
 						var bounds = map.getBounds();
 						var southWest = bounds.getSouthWest();
 						var northEast = bounds.getNorthEast();
@@ -552,7 +552,7 @@ function showAddress(address) {
 						var latHigh = northEast.lat();
 						getAllData(sources, regulation, contaminants, effects,
 								time, industry, lngLow, lngHigh, latLow,
-								latHigh);
+								latHigh);*/
 					},
 					error : function(data) {
 						window
