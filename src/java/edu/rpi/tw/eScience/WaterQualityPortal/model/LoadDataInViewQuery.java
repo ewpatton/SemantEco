@@ -461,7 +461,7 @@ public class LoadDataInViewQuery extends Query {
 					//"FILTER( ?s "+inClause+") "+
 					//getGeoFilter()+
 					"}} ";	*/
-			System.out.println(consStringForFac);
+			//System.out.println(consStringForFac);
 			Logger.getRootLogger().trace(consStringForFac);
 			URL urlFac = new URL(endpoint+"?query="+URLEncoder.encode(consStringForFac, "UTF-8")
 					+"&format="+URLEncoder.encode("text/rdf+n3","UTF-8"));
@@ -488,6 +488,7 @@ public class LoadDataInViewQuery extends Query {
 							"prefix repr: <http://sweet.jpl.nasa.gov/2.1/repr.owl#> " +
 							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 							"prefix dc: <http://purl.org/dc/terms/> " +
+							"prefix e1: <http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-"+state.toLowerCase()+"/vocab/enhancement/1/> "+
 							"construct { " +
 							/*			"?s rdf:type water:WaterFacility . " +
 					"?s rdfs:label ?label . "+
@@ -500,6 +501,7 @@ public class LoadDataInViewQuery extends Query {
 					"?measurement pol:hasValue ?value . " +
 					"?measurement unit:hasUnit ?unit . " +
 					"?measurement time:inXSDDateTime ?time ." +
+					"?measurement water:hasTestType ?testType ." +
 					//"?measurement pol:hasLimitOperator ?op . " +
 					//"?measurement pol:hasLimitValue ?lval . "+
 					"} where {" +
@@ -519,10 +521,14 @@ public class LoadDataInViewQuery extends Query {
 					"pol:hasCharacteristic ?element ; "+
 					"repr:hasUnit ?unit ; " +
 					"dc:date ?time . ";
-			if(isFoia)
-				queryString+="?measurement pol:hasValue ?value. ";
-			else
-				queryString+="?measurement rdf:value ?value. ";
+			if(isFoia){
+				queryString+="?measurement pol:hasValue ?value. "+
+						"?measurement water:hasValueTypeCode ?testType. ";
+			}
+			else{
+				queryString+="?measurement rdf:value ?value. "+
+						"?measurement e1:test_type ?testType. ";
+			}
 			//"{ ?measurement rdf:value ?value } UNION { ?measurement pol:hasValue ?value } " +
 			//"?measurement rdf:value ?value. " +
 			queryString+= (time==null?"":"FILTER( ?time > xsd:dateTime(\""+sdf.format(time.getTime())+"\")) ")+
@@ -540,7 +546,8 @@ public class LoadDataInViewQuery extends Query {
 			URL url = new URL(endpoint+"?query="+URLEncoder.encode(queryString, "UTF-8")
 					+"&format="+URLEncoder.encode("text/rdf+n3","UTF-8"));
 			String content = CharStreams.toString(new InputStreamReader(url.openStream()));
-			//for debug System.out.println(content);
+			//for debug 
+			System.out.println(content);
 			//Logger.getRootLogger().trace(content);
 			model.read(new StringReader(content), "", "TTL");
 		}

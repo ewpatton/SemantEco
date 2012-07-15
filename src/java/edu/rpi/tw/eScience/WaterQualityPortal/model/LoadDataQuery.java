@@ -102,8 +102,9 @@ public class LoadDataQuery extends Query {
 							"prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> " +
 							"prefix dc: <http://purl.org/dc/terms/> " +
 							"select distinct ?s where { graph <"+sites+"> { ?s a water:WaterSite ; pol:hasCountyCode "+county+
-							" ; dc:identifier ?x ; wgs:lat ?lat ; wgs:long ?long } " +
-							"graph <" + measures + "> { ?m pol:hasSiteId ?x . " +
+							"  ; wgs:lat ?lat ; wgs:long ?long } " + //; dc:identifier ?x
+							"graph <" + measures + "> { " +
+									"?m pol:hasSite ?s . " + //"?m pol:hasSiteId ?x . " 
 							"FILTER(bif:exists((SELECT (1) WHERE { ?m time:inXSDDateTime ?t "+
 							(time==null? "" : "FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
 							" }))) "+

@@ -96,9 +96,11 @@ public class CountInstanceQuery extends Query {
 					"prefix dc: <http://purl.org/dc/terms/> " +
 					"prefix time: <http://www.w3.org/2006/time#> " +
 					"select (count(distinct ?s) as ?cnt) where { graph <"+sites+"> { "+
-					"?s a water:WaterSite ; pol:hasCountyCode "+county+" ; dc:identifier ?x . "+
+					"?s a water:WaterSite ; pol:hasCountyCode "+county+"  . "+ //; dc:identifier ?x
 					"} graph <"+measures+"> { "+
-					"?m pol:hasSiteId ?x ; time:inXSDDateTime ?t ; pol:hasCharacteristic ?e ."+
+					//"?m pol:hasSiteId ?x ; " +
+					"?m pol:hasSite ?s; " +
+					"time:inXSDDateTime ?t ; pol:hasCharacteristic ?e ."+
 					(time==null?"":"FILTER(?t > xsd:dateTime(\""+sdf.format(time.getTime())+"\"))")+
 					"} }";
 		}
