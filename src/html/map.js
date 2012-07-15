@@ -340,8 +340,6 @@ function onchange_species_selection() {
 		}
 	}
 
-	document.getElementById("regulation").selectedIndex = 0;
-
 	var spcIndex = 'human';
 	if (species == "Aquatic-life")
 		spcIndex = 'aquatic';
