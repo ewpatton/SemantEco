@@ -396,7 +396,7 @@ function queryForWaterPollution(marker /*site, justQuery, icon*/) {
 		var limit = result["limit"].value;
 		contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td>";
 		contents += label+"</td><td>"+value+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ false+","+marker.siteData.isFacility+",\'"+encodeURIComponent(marker.siteData.uri)+"\')\">?</a></td><td>";
-		contents += op+" "+limit+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ true+")\">?</a></td><td>"+time+"</td>";
+		contents += op+" "+limit+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+limit+"\',\'"+unit+"\',"+ true+")\">?</a></td><td>"+time+"</td>";
 		//var curSpecies=result["species"].value;
 		var curSpecies=result["species"];
 		//alert(curSpecies)
