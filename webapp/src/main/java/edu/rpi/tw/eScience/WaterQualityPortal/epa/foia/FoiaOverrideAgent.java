@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+@Deprecated
 public class FoiaOverrideAgent {
 	HashMap<String, String> minMap;
 	HashMap<String, String> avgMap;

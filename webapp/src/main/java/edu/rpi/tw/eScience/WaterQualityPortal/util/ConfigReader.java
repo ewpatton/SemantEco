@@ -3,7 +3,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.util;
 import java.util.*;
 import java.io.*;
 
-
+@Deprecated
 public class ConfigReader {
  
   private String fileName;

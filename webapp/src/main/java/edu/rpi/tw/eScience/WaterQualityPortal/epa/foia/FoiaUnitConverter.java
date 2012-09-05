@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-
+@Deprecated
 public class FoiaUnitConverter {
 	static int BUFFER_SIZE = 4096;
 	static String convTableFile = "./TABLE430.txt"; 

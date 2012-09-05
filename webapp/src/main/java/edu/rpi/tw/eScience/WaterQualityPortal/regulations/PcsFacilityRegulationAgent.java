@@ -13,6 +13,7 @@ import org.apache.log4j.PropertyConfigurator;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaOverrideAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
 
+@Deprecated
 public class PcsFacilityRegulationAgent {
 	int ruleIdCount = 0;
 	private FoiaTranslator translator=null;

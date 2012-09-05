@@ -2,6 +2,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
 
+@Deprecated
 public class EPAFacilityRegulationRule {
 	static double DELTA = 0.0000001; 
 	int id;

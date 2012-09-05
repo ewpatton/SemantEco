@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.csvreader.*;
 
+@Deprecated
 public class EpaCSVAgent {
 	int idCount = 0;
 	int consIdCount = 0;

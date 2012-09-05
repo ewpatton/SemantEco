@@ -16,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
+@Deprecated
 public class FacilityMeasurement {
 	int id;
 	String elementName;

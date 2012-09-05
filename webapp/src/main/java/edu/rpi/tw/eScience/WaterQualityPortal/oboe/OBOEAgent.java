@@ -15,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
+@Deprecated
 public class OBOEAgent {
 	static int MIdCount = 0;
 	static int ObsIdCount = 0;

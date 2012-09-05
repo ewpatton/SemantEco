@@ -5,6 +5,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 
+@Deprecated
 public class ObjectMeasurement extends Measurement {
 	
 	public ObjectMeasurement(int curId, String curCharUri, String curValue,

@@ -14,6 +14,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
+@Deprecated
 public class EpaDataAgent implements WaterDataProvider {
 	static int BUFFER_SIZE = 4096;
 	//You can change the up most directory

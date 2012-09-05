@@ -11,6 +11,7 @@ import com.csvreader.CsvReader;
 /*
  * add scientific names 
  * use tables to get long status*/
+@Deprecated
 public class DistributionByCountyAgent {	
 	static HashMap<String, String> stateStatusTable=new HashMap<String, String>();
 	static HashMap<String, String> fedStatusTable=new HashMap<String, String>();

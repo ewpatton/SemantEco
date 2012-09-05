@@ -11,6 +11,7 @@ import com.csvreader.CsvReader;
 import edu.rpi.tw.eScience.WaterQualityPortal.util.ConfigReader;
 import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
+@Deprecated
 public class RegulationConverter {
 	List <String> provenances = null;
 	List <String> regulations = null;

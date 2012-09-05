@@ -9,6 +9,7 @@ import com.csvreader.CsvReader;
 import edu.rpi.tw.eScience.WaterQualityPortal.util.ConfigReader;
 import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
+@Deprecated
 public class FoiaRegulationAgent {
 	
 	int ruleIdCount = 0;

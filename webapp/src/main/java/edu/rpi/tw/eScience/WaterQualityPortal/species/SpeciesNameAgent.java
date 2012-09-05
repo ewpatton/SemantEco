@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.species;
 
+@Deprecated
 public class SpeciesNameAgent {
 	
 	static public SpeciesHierarchy getSpeciesHierarchy(int columnId){

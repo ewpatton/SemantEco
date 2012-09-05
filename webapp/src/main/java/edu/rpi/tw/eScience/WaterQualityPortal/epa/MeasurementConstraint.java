@@ -21,6 +21,7 @@ import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 /*
  * Measurement Constraint is extracted from the CSV file from the EPA site
  */
+@Deprecated
 public class MeasurementConstraint {
 	int id;
 	String elementName;

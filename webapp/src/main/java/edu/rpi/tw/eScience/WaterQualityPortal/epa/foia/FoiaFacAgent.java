@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.industry.NAICSAgent;
 
+@Deprecated
 public class FoiaFacAgent {
 	FRSAgent frsagent=null;
 	NAICSAgent naicsAgent=null;

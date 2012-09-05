@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.species;
 
+@Deprecated
 public class SpeciesHierarchy {
 	private String spcClass=null;
 	private String spcSubClass=null;

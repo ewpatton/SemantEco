@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
+@Deprecated
 public class FoiaTranslator {
 	static String paraTable = "./TABLE160a.txt"; 
 	static String unitTable = "./ICISPCS_UnitCodes.csv";

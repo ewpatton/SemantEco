@@ -8,6 +8,7 @@ import com.csvreader.CsvReader;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
+@Deprecated
 public class IcisRegulationAgent {
 	
 	int ruleIdCount = 0;

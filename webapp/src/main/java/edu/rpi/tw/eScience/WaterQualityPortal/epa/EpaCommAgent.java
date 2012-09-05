@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 
 //Ping Wang
+@Deprecated
 public class EpaCommAgent {
 	static int BUFFER_SIZE = 4096;
 	

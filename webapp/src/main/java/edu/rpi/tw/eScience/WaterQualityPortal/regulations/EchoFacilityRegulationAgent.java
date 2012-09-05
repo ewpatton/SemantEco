@@ -11,6 +11,7 @@ import com.csvreader.CsvReader;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
+@Deprecated
 public class EchoFacilityRegulationAgent {
 	int idCount = 0;
 	int ruleIdCount = 0;

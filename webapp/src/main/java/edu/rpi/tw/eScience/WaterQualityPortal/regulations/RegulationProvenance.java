@@ -3,6 +3,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 import java.io.*;
 import java.util.Map;
 
+@Deprecated
 public class RegulationProvenance {
 	static String PML_POSTFIX=".pml.ttl";
 	

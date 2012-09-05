@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
+@Deprecated
 public class Measurement {
 	String ID;
 	int id2;
@@ -36,7 +37,6 @@ public class Measurement {
 		return result;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public Measurement(String identification, int id2, Date Startdate, String StartTime, String chemicalname, double value_measurement, String unit_measurement) {
     	this.ID = identification; 
     	this.id2 = id2;

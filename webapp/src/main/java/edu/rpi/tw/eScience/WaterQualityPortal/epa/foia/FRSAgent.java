@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
+@Deprecated
 public class FRSAgent {
 	//static String perm2UINFile = "./WAUIN.CSV"; 
 	HashMap<String, String> perm2UIN;	

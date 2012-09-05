@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+@Deprecated
 public class FacilityRegulationUtil {
 	/*
 	public static String processElementName(String elementName){

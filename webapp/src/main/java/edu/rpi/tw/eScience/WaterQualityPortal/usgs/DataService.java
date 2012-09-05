@@ -9,6 +9,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
 
+@Deprecated
 public class DataService implements WaterDataProvider {
 
 	String countyCode="";

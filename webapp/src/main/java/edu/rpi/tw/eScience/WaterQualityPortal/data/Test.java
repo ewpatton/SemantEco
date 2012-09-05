@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
+@Deprecated
 public class Test implements WaterDataProvider {
 
 	final static String ns = "http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#";

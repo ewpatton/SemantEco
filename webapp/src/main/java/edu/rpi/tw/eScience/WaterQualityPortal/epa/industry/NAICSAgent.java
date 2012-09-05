@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
+@Deprecated
 public class NAICSAgent {
 	public static boolean DEBUG = false;
 	HashMap<String, String> uin2naics;

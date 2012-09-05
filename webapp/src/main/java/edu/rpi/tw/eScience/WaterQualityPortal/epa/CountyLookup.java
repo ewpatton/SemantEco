@@ -3,6 +3,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 import java.io.*;
 import java.util.*;
 
+@Deprecated
 public class CountyLookup {
 	String state;
 	String stateCode;

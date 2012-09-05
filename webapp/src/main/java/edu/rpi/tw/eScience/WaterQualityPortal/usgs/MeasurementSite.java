@@ -1,6 +1,5 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.usgs;
 
-
 import java.util.*;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -13,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
+@Deprecated
 public class MeasurementSite {
 	double lat,longitude;
 	String loc_id;

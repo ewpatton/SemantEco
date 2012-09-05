@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
+@Deprecated
 public class EpaUtil {
 	
 	public void saveFacilities(ArrayList<Facility> facAL, String fileName){

@@ -9,6 +9,7 @@ import java.util.*;
 
 import com.csvreader.*;
 
+@Deprecated
 public class FoiaDataAgent {
 	
 	HashMap<String, String> unitCode2ShortName;

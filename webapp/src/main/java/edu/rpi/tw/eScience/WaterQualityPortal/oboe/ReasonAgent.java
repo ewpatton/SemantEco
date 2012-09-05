@@ -14,6 +14,7 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
+@Deprecated
 public class ReasonAgent {
 	//static String OBOEHostDir="http://localhost/ontologies/oboe/";
 	//static String TWCHostDir="http://localhost/ontologies/twc/";	

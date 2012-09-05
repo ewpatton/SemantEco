@@ -6,6 +6,7 @@ import java.util.Date;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+@Deprecated
 public interface WaterDataProvider {
 	public void setUserSource(String county, String state, String zip);
 	public boolean getData(OntModel owlModel, Model pmlModel);

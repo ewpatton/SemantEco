@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
+@Deprecated
 public class DrinkingWaterDataAgent {
 
 	/*public class Range {

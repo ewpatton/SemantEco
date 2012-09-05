@@ -4,6 +4,7 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+@Deprecated
 public class Measurement {
 	int id;
 	protected String characteristicUri;

@@ -11,6 +11,7 @@ import org.json.JSONObject;
   1st, if the record has valid lat and long, use this to get zip code
   2nd if the record has street address and state, use this to lookup zip code
  */
+@Deprecated
 public class EpaFacilityAddressFixer {
 	public static boolean DEBUG = false;
 	//static String geoTargetPre = "http://maps.googleapis.com/maps/api/geocode/json?address=";

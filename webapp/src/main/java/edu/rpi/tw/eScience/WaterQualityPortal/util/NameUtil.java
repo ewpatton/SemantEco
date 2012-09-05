@@ -1,5 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.util;
 
+@Deprecated
 public class NameUtil {
 	
 	public static String processElementName(String elementName){

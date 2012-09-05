@@ -11,6 +11,7 @@ import com.csvreader.CsvReader;
   1st, if the record has valid lat and long, use this to get zip code
   2nd if the record has street address and state, use this to lookup zip code
 */
+@Deprecated
 public class EpaZipCodeFinder {
 	
 	public void processCSVFile(String inputFileName, String ouputFileName){

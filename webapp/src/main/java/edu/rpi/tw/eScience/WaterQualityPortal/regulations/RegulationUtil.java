@@ -2,6 +2,7 @@ package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
 import java.text.DecimalFormat;
 
+@Deprecated
 public class RegulationUtil {
 	static DecimalFormat decFormat = new DecimalFormat("0.000000");
 	

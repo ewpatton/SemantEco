@@ -18,6 +18,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
+@Deprecated
 public final class USGSParser {
 	
 	static String downloadSiteInfo1(File tmp, String state, String county) {

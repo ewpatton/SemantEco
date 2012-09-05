@@ -4,6 +4,7 @@ import java.io.File;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
+@Deprecated
 public class Session {
 	String id;
 	ZipCodeLookup zipCode;

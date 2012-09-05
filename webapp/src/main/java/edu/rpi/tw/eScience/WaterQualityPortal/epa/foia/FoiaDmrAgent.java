@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+@Deprecated
 public class FoiaDmrAgent {
 	private FoiaTranslator translator=null;
 	private FoiaUnitConverter unitConv=null;

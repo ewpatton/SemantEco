@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup.ServerFailedToRespondException;
 
+@Deprecated
 public class SessionManager implements HttpHandler, Runnable {
 
 	Thread cleanupThread; 
