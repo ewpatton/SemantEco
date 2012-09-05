@@ -2,6 +2,8 @@ package edu.rpi.tw.escience.waterquality;
 
 import java.util.Map;
 
+import edu.rpi.tw.escience.waterquality.query.Query;
+
 /**
  * An object implementing the QueryVisitor will be called when
  * a SemantAqua client requests data, allowing the visitor to

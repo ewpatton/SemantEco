@@ -7,7 +7,7 @@ import edu.rpi.tw.escience.waterquality.test.TestModuleConfiguration;
 
 import junit.framework.TestCase;
 
-public class DataSourceModuleTests extends TestCase {
+public class DataSourceModuleTest extends TestCase {
 
 	@Test
 	public void testGetName() {

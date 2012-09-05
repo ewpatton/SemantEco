@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.waterquality;
 
-import edu.rpi.tw.escience.waterquality.Query.Type;
+import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
 /**
  * A QueryFactory object generates new Query

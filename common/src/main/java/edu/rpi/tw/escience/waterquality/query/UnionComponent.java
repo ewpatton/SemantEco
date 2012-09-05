@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
 
 /**
  * This GraphComponentCollection represents a set of graph patterns

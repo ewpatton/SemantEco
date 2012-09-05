@@ -1,4 +1,6 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
+
+import java.util.List;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
@@ -47,4 +49,11 @@ public interface GraphComponentCollection extends GraphComponent {
 	 * @param component
 	 */
 	void addGraphComponent(GraphComponent component);
+	
+	/**
+	 * Returns a list of the current components contained in this
+	 * GraphComponentCollection instance
+	 * @return
+	 */
+	List<GraphComponent> getComponents();
 }

@@ -2,6 +2,8 @@ package edu.rpi.tw.escience.waterquality;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.waterquality.query.Query;
+
 /**
  * The QueryExecutor is responsible for executing SPARQL queries
  * on behalf of modules.

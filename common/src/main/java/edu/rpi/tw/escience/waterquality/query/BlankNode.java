@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
 
 /**
  * Represents a blank node used in a SPARQL query

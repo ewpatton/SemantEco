@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
 
 /**
  * OptionalComponent represents an OPTIONAL { } block in

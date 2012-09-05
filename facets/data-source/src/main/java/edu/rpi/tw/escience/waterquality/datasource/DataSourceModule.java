@@ -25,13 +25,13 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.Query;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
-import edu.rpi.tw.escience.waterquality.QueryResource;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.Query.Type;
+import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
+import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.waterquality.query.QueryResource;
+import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.util.JSONUtils;
 
 /**

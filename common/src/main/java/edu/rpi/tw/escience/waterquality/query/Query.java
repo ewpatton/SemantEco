@@ -1,6 +1,6 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * The Query interface defines how modules construct
@@ -11,6 +11,12 @@ import java.util.List;
  *
  */
 public interface Query extends GraphComponentCollection {
+
+	/**
+	 * Base URI used to represent variables and blank nodes in the SPARQL query
+	 */
+	String VAR_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	
 	/**
 	 * Specifies the various types of queries supported
 	 * by the Query engine.
@@ -92,10 +98,22 @@ public interface Query extends GraphComponentCollection {
 	void addFrom(String uri);
 	
 	/**
+	 * Gets the list of FROM clauses in the SPARQL query
+	 * @return
+	 */
+	Set<String> getFrom();
+	
+	/**
 	 * Adds a FROM NAMED clause to the SPARQL query
 	 * @param uri
 	 */
 	void addFromNamed(String uri);
+	
+	/**
+	 * Gets the list of FROM NAMED clauses in the SPARQL query
+	 * @param uri
+	 */
+	Set<String> getFromNamed();
 	
 	/**
 	 * Gets a QueryResource object representing
@@ -106,9 +124,15 @@ public interface Query extends GraphComponentCollection {
 	QueryResource getResource(String uri);
 	
 	/**
-	 * Sets the list of variables used in SELECT queries. Passing
+	 * Sets the collection of variables used in SELECT queries. Passing
 	 * null will result in a SELECT *
 	 * @param object
 	 */
-	void setVariables(List<QueryResource> object);
+	void setVariables(Set<Variable> object);
+	
+	/**
+	 * Gets the collection of variables used in SELECT queries.
+	 * @return
+	 */
+	Set<Variable> getVariables();
 }

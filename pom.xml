@@ -24,9 +24,10 @@
 
   <modules>
     <module>common</module>
+    <module>query</module>
+    <module>test</module>
     <module>facets</module>
     <module>webapp</module>
-    <module>test</module>
   </modules>
 
   <dependencyManagement>

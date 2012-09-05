@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
 
 /**
  * QueryResource is the base interface for all of the different
@@ -8,5 +8,10 @@ package edu.rpi.tw.escience.waterquality;
  *
  */
 public interface QueryResource {
-
+	/**
+	 * Gets the URI associated with this resource, if any
+	 * 
+	 * @return
+	 */
+	String getUri();
 }

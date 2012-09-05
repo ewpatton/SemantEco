@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.waterquality;
+package edu.rpi.tw.escience.waterquality.query;
 
 /**
  * The NamedGraphComponent is used to represent a GRAPH &lt;...&gt; { }
@@ -12,5 +12,5 @@ public interface NamedGraphComponent extends GraphComponentCollection {
 	 * Gets the URI for this NamedGraphComponent
 	 * @return
 	 */
-	String getURI();
+	String getUri();
 }
