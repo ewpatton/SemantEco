@@ -13,7 +13,6 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
@@ -164,6 +163,7 @@ public class FacilityMeasurement {
 		return col;		
 	}
 	
+	@SuppressWarnings("unused")
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
 		int col = valueCol(testNumber);
 		SimpleDateFormat srcFormat = new SimpleDateFormat("yyyyMMddHHmmss");

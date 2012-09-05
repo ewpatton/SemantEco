@@ -1,16 +1,11 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 
 import java.io.*;
-import java.util.*;
 import java.net.URL;
 import java.net.URLConnection;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-
-import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup.ServerFailedToRespondException;
 
 /*read csv, if missing zip code
   1st, if the record has valid lat and long, use this to get zip code
@@ -438,6 +433,7 @@ public class EpaFacilityAddressFixer {
 	 * @param args
 	 * @throws FileNotFoundException 
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		String state="RI", stateCode="44";
 		EpaFacilityAddressFixer fixer = new EpaFacilityAddressFixer(state, stateCode);

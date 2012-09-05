@@ -26,6 +26,7 @@ public class DistributionWebService {
 		try {
 			String stateAbbr = params.get("state");
 			String spcClass = params.get("spcClass");
+			@SuppressWarnings("unused")
 			Model model = ModelFactory.createDefaultModel();			
 			// Query
 			long start = System.currentTimeMillis();
@@ -80,6 +81,7 @@ public class DistributionWebService {
 			String stateAbbr = params.get("state");
 			String spcClass = params.get("spcClass");	
 			String spcName = params.get("spcName");	
+			@SuppressWarnings("unused")
 			Model model = ModelFactory.createDefaultModel();
 			
 			// Query
@@ -134,6 +136,7 @@ public class DistributionWebService {
 		try {
 			String stateAbbr = params.get("state");
 			String stateGeoNameId=GeonameIdLookup.execute(stateAbbr);			
+			@SuppressWarnings("unused")
 			Model model = ModelFactory.createDefaultModel();
 			
 			// Query

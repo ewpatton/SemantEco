@@ -1,23 +1,13 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.species;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.*;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.sun.net.httpserver.HttpExchange;
-
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Configuration;
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
-import edu.rpi.tw.eScience.WaterQualityPortal.zip.GeonameIdLookup;
 
 import java.io.FileReader;
 import org.json.simple.JSONArray;
@@ -100,6 +90,7 @@ public class WaterEntityAgent {
 		}		
 	}
 	
+	@SuppressWarnings({ "unused", "unchecked" })
 	static public void buildHUCLookup(){
 		JSONParser parser = new JSONParser();
 		 
@@ -142,6 +133,7 @@ public class WaterEntityAgent {
 		}	 
 	}
 	
+	@SuppressWarnings("unchecked")
 	static public JSONObject getHUC(String fipsCode){
 		System.out.println("getHUC for "+fipsCode);
 		JSONObject obj = new JSONObject();
@@ -159,6 +151,7 @@ public class WaterEntityAgent {
 		return obj;		
 	}
 	
+	@SuppressWarnings("unchecked")
 	static public JSONObject getHUCOneState(String curState){    
 		JSONObject obj = new JSONObject();
 		Iterator<String> iteratorKey = countyCode2huc.keySet().iterator();
@@ -179,6 +172,7 @@ public class WaterEntityAgent {
 		obj.put("HUC_8", hucArr);
 		return obj;		
 	}
+
 	static public void printHashMap(HashMap<String, HashSet<String>> curMap){
 		System.out.println("The HashMap:");        
 		Iterator<String> iteratorKey = curMap.keySet().iterator();
@@ -189,11 +183,11 @@ public class WaterEntityAgent {
 		}       
 	}
 	
+	@SuppressWarnings("unused")
 	public static void getHUCForCouty(String fipsCode){
 		HashSet<String> hucSet = countyCode2huc.get(fipsCode);
-
-		
 	}
+
 	public static void getHUCForRI(){
 		FipsCodeAgent agent = new FipsCodeAgent("data/fips/44-county-code.txt");
 		ArrayList<String> ctyNames = new ArrayList<String>();

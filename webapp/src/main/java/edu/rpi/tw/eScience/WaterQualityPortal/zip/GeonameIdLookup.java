@@ -12,9 +12,6 @@ import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUnitConverter;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
-
 public class GeonameIdLookup {
 	static String stateNameFile = "./states.txt"; 
 	static String queryBase="http://ws.geonames.org/search?name_equals=";

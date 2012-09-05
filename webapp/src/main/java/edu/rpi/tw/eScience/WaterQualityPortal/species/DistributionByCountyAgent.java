@@ -8,9 +8,6 @@ import java.util.*;
 
 import com.csvreader.CsvReader;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
-
 /*
  * add scientific names 
  * use tables to get long status*/
@@ -73,6 +70,7 @@ public class DistributionByCountyAgent {
 		return status;		
 	}
 
+	@SuppressWarnings("unused")
 	private void printArr(String[] strArr){
 		for(String str:strArr){
 			System.out.println(str);
@@ -143,8 +141,8 @@ public class DistributionByCountyAgent {
 		String[] spcNames=null;
 		String[] sciNames=null;
 		String[] stateStatus=null, fedStatus=null;
-		List<String> spcNamesList = new ArrayList();
-		List<String> sciNamesList = new ArrayList();
+		List<String> spcNamesList = new ArrayList<String>();
+		List<String> sciNamesList = new ArrayList<String>();
 
 		try {			
 			bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
@@ -204,6 +202,7 @@ public class DistributionByCountyAgent {
 						}
 						String countyCode=fipsAgent.name2Code(subject);
 						String spc = spcNamesList.get(i);
+						@SuppressWarnings("unused")
 						String spcClass=null;
 						/*						if(recordNum==10)//findSpeciesClassBound(spc.trim(), i);							
 							SpeciesNameAgent.findSpeciesSubClassBound(spc.trim(), i);*/

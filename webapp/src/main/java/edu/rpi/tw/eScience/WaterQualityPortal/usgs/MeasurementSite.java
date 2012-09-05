@@ -10,7 +10,6 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
@@ -109,6 +108,7 @@ public class MeasurementSite {
 		return source;
 	}
 	
+	@SuppressWarnings("unused")
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
 		String uri = Ontology.EPA.NS+"site-"+loc_id;
 		OntClass MeasurementSite = Ontology.MeasurementSite(owlModel);

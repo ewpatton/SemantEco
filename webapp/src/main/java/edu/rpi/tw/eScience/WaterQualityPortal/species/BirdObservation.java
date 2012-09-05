@@ -1,13 +1,10 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.species;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -75,6 +72,7 @@ public class BirdObservation {
 			String month = params.get("month");	
 			if(month.length()==1)
 				month="0"+month;
+			@SuppressWarnings("unused")
 			Model model = ModelFactory.createDefaultModel();
 
 			// Query
@@ -213,6 +211,7 @@ public class BirdObservation {
 		}	 
 	}*/
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		String stateFips="53";
 		String fipsFile="./53-county-code.txt";

@@ -1,10 +1,7 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.oboe;
 
-import java.text.SimpleDateFormat;
-
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class Measurement {

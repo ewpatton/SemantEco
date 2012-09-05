@@ -1,8 +1,6 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.oboe;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;

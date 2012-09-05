@@ -1,9 +1,7 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.oboe;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 

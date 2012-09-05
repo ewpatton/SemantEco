@@ -76,6 +76,7 @@ public class FoiaDataAgent {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	public void CSVRead(String inputfileName, String postContent, Facility curFac, HashMap<String, MeasurementConstraint> constraintsMap){		
 		CsvReader reader = null;
 		int recordNum = 0;

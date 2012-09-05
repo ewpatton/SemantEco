@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -18,11 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.io.CharStreams;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
 
@@ -194,6 +189,7 @@ public class LoadDataInViewQuery extends Query {
 				+"&format="+URLEncoder.encode("application/rdf+xml","UTF-8"), "", null);	
 	}
 
+	@SuppressWarnings("unused")
 	public void loadUSGSDataBySite(String endpoint, Model model, String sites, String measures) throws UnsupportedEncodingException, JSONException {
 		JSONArray ids = null;
 		String inClause = null;
@@ -331,6 +327,7 @@ public class LoadDataInViewQuery extends Query {
 		}	
 	}
 
+	@SuppressWarnings("unused")
 	public void loadEPAData(String endpoint, Model model, String sites, String measures) throws JSONException, IOException {
 		JSONArray ids = null, permits=null;
 		String inClause = null; 

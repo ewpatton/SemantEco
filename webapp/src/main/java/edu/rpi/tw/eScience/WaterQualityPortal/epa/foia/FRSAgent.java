@@ -1,10 +1,7 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa.foia;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import com.csvreader.CsvReader;
@@ -21,6 +18,7 @@ public class FRSAgent {
 	private void buildPerm2UINLookupTablesFromCSV(String srcFile){		
 		CsvReader reader = null;
 		String perm = null, uin=null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 	
 		try {			

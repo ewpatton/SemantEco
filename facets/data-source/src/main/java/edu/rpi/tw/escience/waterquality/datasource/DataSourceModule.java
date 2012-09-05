@@ -1,6 +1,8 @@
 package edu.rpi.tw.escience.waterquality.datasource;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -38,8 +40,19 @@ public class DataSourceModule implements Module {
 		Resource res = null;
 		res = config.getResource("web/data-source.js");
 		ui.addScript(res);
-		res = config.getResource("web/data-source.jsp");
-		ui.addFacet(res);
+		try {
+			JSONObject data = (JSONObject)JSONObject.stringToValue(queryForDataSources(null));
+			if(data.getBoolean("success")) {
+				
+			}
+			else {
+				
+			}
+			ui.addFacet(res);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

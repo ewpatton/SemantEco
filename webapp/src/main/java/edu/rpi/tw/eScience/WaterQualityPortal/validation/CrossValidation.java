@@ -2,8 +2,6 @@ package edu.rpi.tw.eScience.WaterQualityPortal.validation;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -11,12 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.sun.net.httpserver.HttpExchange;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Configuration;
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Util;
 
 public class CrossValidation {
@@ -330,6 +325,7 @@ public class CrossValidation {
 		return elements;		
 	}
 
+	@SuppressWarnings("unused")
 	static public void getTestTypes(HttpExchange req, Map<String,String> params, Logger log){
 		boolean err = false;
 		OutputStream os = req.getResponseBody();
@@ -507,6 +503,7 @@ public class CrossValidation {
 	}
 
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args){
 		CrossValidation inst = new CrossValidation();
 		String state="ri";
@@ -516,7 +513,7 @@ public class CrossValidation {
 		/*http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-RI0023779
 http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-RIR130007
 http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#FacilityPermit-RI0020401*/
-		inst.queryForCommonElements(Configuration.TRIPLE_STORE, state, permit, usgsSiteId);
+		CrossValidation.queryForCommonElements(Configuration.TRIPLE_STORE, state, permit, usgsSiteId);
 	}
 
 }

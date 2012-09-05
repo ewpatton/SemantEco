@@ -2,6 +2,8 @@ package edu.rpi.tw.escience.waterquality;
 
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public abstract class ModuleConfiguration extends Properties {
 
 	/**
@@ -13,5 +15,7 @@ public abstract class ModuleConfiguration extends Properties {
 	public abstract Query newQuery();
 	public abstract QueryExecutor getQueryExecutor();
 	public abstract Resource getResource(String path);
+	public abstract Resource generateStringResource(String content);
+	public abstract Logger getLogger();
 
 }

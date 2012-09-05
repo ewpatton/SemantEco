@@ -56,6 +56,7 @@ public class EpaCommAgent {
 		
 		//Phase2: get the reply
 		//Content-Type" content=content="text/html; charset=iso-8859-1"
+		@SuppressWarnings("unused")
 		String contentType = conn.getContentType();		
 		char[] buffer = null;
 		int numChars=0;
@@ -95,6 +96,7 @@ public class EpaCommAgent {
 	}
 
 	
+	@SuppressWarnings("unused")
 	private void doPost(String outputFile) {
 		String target = "http://www.epa-echo.gov/cgi-bin/ideaotis.cgi";
 		String content = "idea_active=Y&idea_database=PBL&media_tool=ECHOI&idea_client=otis_pba&idea_pcs_migrate=Y&func_nametype=CASE&func_nametype=FACILITY&idea_linkage=LINKED+NONLINKED&idea_db_filter=INC+AFS+ICI+FRS+PCS+ICP+RCR+TRI+DEM+NEI&idea_report=OTISECHO+PARM+SORTNAME_tricommas_pencommas_DEMRADIUS%3D3_violqtrsmax%3D12&otis_custom_col=7%2C21%2C12%2C24%2C13%2C19%2C18%2C23%2C15%2C29&idea_major=&idea_zip_any=12180&zip=12180";
@@ -173,6 +175,7 @@ public class EpaCommAgent {
 		//return response; 
 	}
 	
+	@SuppressWarnings("unused")
 	private void doGet(String outputFile) {
 		String target = "http://www.epa-echo.gov/cgi-bin/get1cReport.cgi?tool=echo&IDNumber=110012303854";
 		
@@ -446,6 +449,7 @@ public class EpaCommAgent {
 	/**
 	 * @param args
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		EpaCommAgent comAgent = new EpaCommAgent();		
 		String cgiTarget = "http://www.epa-echo.gov/cgi-bin/ideaotis.cgi";

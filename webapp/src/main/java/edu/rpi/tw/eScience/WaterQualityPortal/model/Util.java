@@ -61,6 +61,7 @@ public class Util {
 		}
 		
 		//Phase2: get the reply
+		@SuppressWarnings("unused")
 		String contentType = conn.getContentType();		
 		char[] buffer = null;
 		int numChars=0;

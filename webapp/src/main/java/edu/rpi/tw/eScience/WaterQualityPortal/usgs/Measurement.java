@@ -9,7 +9,6 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
 
@@ -98,6 +97,7 @@ public class Measurement {
 		return source;
 	}
 
+	@SuppressWarnings("unused")
 	public Individual asIndividual(OntModel owlModel, Model pmlModel) {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Individual m = owlModel.createIndividual(Ontology.EPA.NS+"usgs-measure-"+id2, Ontology.WaterMeasurement(owlModel));

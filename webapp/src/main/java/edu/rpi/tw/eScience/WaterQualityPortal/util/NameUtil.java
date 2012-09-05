@@ -1,14 +1,5 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.util;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
-import edu.rpi.tw.eScience.WaterQualityPortal.regulations.EPAFacilityRegulationRule;
-
 public class NameUtil {
 	
 	public static String processElementName(String elementName){

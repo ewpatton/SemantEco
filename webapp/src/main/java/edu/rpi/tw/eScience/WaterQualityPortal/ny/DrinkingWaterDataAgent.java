@@ -26,6 +26,7 @@ public class DrinkingWaterDataAgent {
 //NitrateMaxRange	NitrateMaxConc	NitrateMeanRange	NitrateMeanConc	
 //TTHMMaxRange	TTHMMaxConc	TTHMMeanRange	TTHMMeanConc
 	
+	@SuppressWarnings("unused")
 	private void convertRangeName(String rangeName, StringBuilder sb){
 		int index=-1;
 		String pre="";
@@ -112,6 +113,7 @@ public class DrinkingWaterDataAgent {
 
 	public void getPWS(String inputfileName, BufferedWriter bufferedWriter){
 			CsvReader reader = null;
+			@SuppressWarnings("unused")
 			int recordNum = 0;
 			String principalcounty, PWSIDNumber, PWSName, systemPopulation;
 			HashMap<String, String> pwsIDMap = new HashMap<String, String> ();
@@ -162,6 +164,7 @@ public class DrinkingWaterDataAgent {
 	
 	public void getRegulations(String inputfileName, BufferedWriter bufferedWriter){
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		HashMap<String, String> regulationsMap = new HashMap<String, String> ();
 		String curRange;
@@ -214,6 +217,7 @@ public class DrinkingWaterDataAgent {
 
 	public void getConc(String inputfileName, BufferedWriter bufferedWriter){		
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		String pwsId, year, curConc;
 		StringBuilder sb = new StringBuilder();
@@ -264,6 +268,7 @@ public class DrinkingWaterDataAgent {
 
 	}
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		DrinkingWaterDataAgent agent = new DrinkingWaterDataAgent();
 

@@ -3,7 +3,6 @@ package edu.rpi.tw.eScience.WaterQualityPortal.epa;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;

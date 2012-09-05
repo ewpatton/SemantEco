@@ -48,7 +48,6 @@ import edu.rpi.tw.eScience.WaterQualityPortal.species.BirdObservation;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.DistributionWebService;
 import edu.rpi.tw.eScience.WaterQualityPortal.species.WaterEntityAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.validation.CrossValidation;
-import edu.rpi.tw.eScience.WaterQualityPortal.zip.GeonameIdLookup;
 import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
 
 import org.apache.log4j.Level;
@@ -668,6 +667,7 @@ protected void getData(HttpExchange req, Map<String,String> params) {
 	}
 }
 
+@SuppressWarnings("unused")
 protected void getAllData(HttpExchange req, Map<String,String> params) {
 	String result = null;
 	boolean err = false;

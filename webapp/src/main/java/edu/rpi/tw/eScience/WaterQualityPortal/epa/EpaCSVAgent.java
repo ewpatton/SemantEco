@@ -219,6 +219,7 @@ public class EpaCSVAgent {
 	 * @param args
 	 * @throws FileNotFoundException 
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws FileNotFoundException {
 		EpaCSVAgent csvAgent = new EpaCSVAgent();
 		EpaUtil epaUtil = new EpaUtil();

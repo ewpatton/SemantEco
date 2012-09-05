@@ -1,16 +1,11 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.epa.foia;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 import com.csvreader.CsvReader;
 
@@ -94,6 +89,7 @@ public class FoiaTranslator {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private void buildUnitLookupTablesFromCSV(){		
 		CsvReader reader = null;
 		String unitCode = null, unitShortName=null, unitLongName=null;
@@ -135,6 +131,7 @@ public class FoiaTranslator {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void buildSBCodeLookupTablesFromCSV(){		
 		CsvReader reader = null;
 		String sbCode = null, sbLongName=null;

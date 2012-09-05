@@ -2,7 +2,6 @@ package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
 import java.io.*;
 import java.util.Map;
-import java.util.Properties;
 
 public class RegulationProvenance {
 	static String PML_POSTFIX=".pml.ttl";
@@ -20,6 +19,7 @@ public class RegulationProvenance {
 		return exeCommand(idCommand);		
 	}
 	
+	@SuppressWarnings("unused")
 	private String queryEnv(String varName){
 		Map<String, String> env = System.getenv();
 		return env.get(varName);		

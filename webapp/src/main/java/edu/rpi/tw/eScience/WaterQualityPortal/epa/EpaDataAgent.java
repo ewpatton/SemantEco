@@ -241,10 +241,12 @@ public class EpaDataAgent implements WaterDataProvider {
 			curLine = reader.readLine();
 			if(curLine==null){
 				//System.err.println("Facility "+curFac.ID+" has No Soup Data");
+				reader.close();
 				return;
 			}
 			if(curLine.indexOf("No CWA")!=-1){
 				//System.err.println("Facility "+curFac.ID+" has No CWA");
+				reader.close();
 				return;
 			}
 			
@@ -265,6 +267,7 @@ public class EpaDataAgent implements WaterDataProvider {
 				//System.err.println("Current Facility:");
 				//curFac.printFacility();
 				//System.exit(0);
+				reader.close();
 				return;
 			}
 			
@@ -277,8 +280,7 @@ public class EpaDataAgent implements WaterDataProvider {
 					}	
 					curFac.setQtrDurList(qtrDurList);
 				}//end of if
-				if(curLine == null)
-					break;
+				
 				if(curLine.compareTo("NC Boolean List")==0){
 					NCBoolList = new ArrayList<String>(numQtr);
 					for(int i=0;i<numQtr;i++){
@@ -513,6 +515,7 @@ public class EpaDataAgent implements WaterDataProvider {
 				rowNum++;
 				facilities.add(curFacility);				
 			}//end of the outer while
+			reader.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

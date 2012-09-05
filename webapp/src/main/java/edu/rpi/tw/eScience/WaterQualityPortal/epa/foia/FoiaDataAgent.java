@@ -62,6 +62,7 @@ public class FoiaDataAgent {
 		return sbuf.toString();		
 	}
 	
+	@SuppressWarnings("unused")
 	private void buildUnitLookupTables(){
 		String infoFile = "./procTABLE180a.txt";
 		String delimiter = "\\|";
@@ -113,6 +114,7 @@ public class FoiaDataAgent {
 		String infoFile = "./ICISTable_UnitCodes.csv";
 		CsvReader reader = null;
 		String unitCode = null, unitShortName=null, unitLongName=null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 	
 		try {			
@@ -202,6 +204,7 @@ public class FoiaDataAgent {
 	
 	public void CSVRead(String inputfileName, BufferedWriter bufferedWriter){		
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		String curUnitCode = null, curUnitShortName=null, curUnitLongName=null;
 	

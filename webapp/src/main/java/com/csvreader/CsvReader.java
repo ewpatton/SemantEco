@@ -1706,6 +1706,7 @@ public class CsvReader {
 	private class UserSettings {
 		// having these as publicly accessible members will prevent
 		// the overhead of the method call that exists on properties
+		@SuppressWarnings("unused")
 		public boolean CaseSensitive;
 
 		public char TextQualifier;
@@ -1751,12 +1752,12 @@ public class CsvReader {
 
 		public int Length;
 
-		public HashMap IndexByName;
+		public HashMap<String, Integer> IndexByName;
 
 		public HeadersHolder() {
 			Headers = null;
 			Length = 0;
-			IndexByName = new HashMap();
+			IndexByName = new HashMap<String, Integer>();
 		}
 	}
 

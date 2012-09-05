@@ -1,10 +1,7 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.Vector;
-
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
 
 public class Regulation {
 
@@ -47,6 +44,7 @@ public class Regulation {
 			// BufferedWriter out = new BufferedWriter(tfstream);
 
 			String strLine;	    	    
+			@SuppressWarnings("unused")
 			boolean isNum = true;
 			//reg.insertPMLSource(original, inputFile, pmlName);
 			//skip 1st line

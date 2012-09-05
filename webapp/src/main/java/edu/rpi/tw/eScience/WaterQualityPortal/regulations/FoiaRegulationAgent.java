@@ -3,7 +3,6 @@ package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.jar.Attributes.Name;
 
 import com.csvreader.CsvReader;
 
@@ -38,6 +37,7 @@ public class FoiaRegulationAgent {
 
 	public void procOneCSVFile(String inputfileName, HashMap<String, EPAFacilityRegulationRule> regMap){		
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		String elementName= null;
 		//for constraint
@@ -90,6 +90,7 @@ public class FoiaRegulationAgent {
 			}
 	}
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws FileNotFoundException {
 		FoiaRegulationAgent agent = new FoiaRegulationAgent();
 		String confIcis="data/config/icis.config";

@@ -3,8 +3,6 @@ package edu.rpi.tw.eScience.WaterQualityPortal.oboe;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 public class OBOEOntology {
 	

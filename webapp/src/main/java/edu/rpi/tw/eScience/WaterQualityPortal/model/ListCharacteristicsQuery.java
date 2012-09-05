@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import com.google.common.io.CharStreams;
 import com.hp.hpl.jena.query.ResultSetFactory;

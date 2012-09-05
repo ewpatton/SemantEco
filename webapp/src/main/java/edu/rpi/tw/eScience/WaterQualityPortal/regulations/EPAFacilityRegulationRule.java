@@ -1,7 +1,5 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
-import java.io.BufferedWriter;
-
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
 
 public class EPAFacilityRegulationRule {

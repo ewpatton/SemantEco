@@ -20,6 +20,7 @@ public class IcisRegulationAgent {
 
 	public void procOneCSVFile(String inputfileName, HashMap<String, EPAFacilityRegulationRule> regMap){		
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		String elementName= null;
 		//for constraint
@@ -72,6 +73,7 @@ public class IcisRegulationAgent {
 			}
 	}
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws FileNotFoundException {
 		IcisRegulationAgent agent = new IcisRegulationAgent();
 		String state="NH"; //RI, MA, CA, NY

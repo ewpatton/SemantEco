@@ -43,6 +43,7 @@ public class OBOEAgent {
 	
 	public void readCSV(String inputfileName){
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		measurements = new ArrayList<OBOEMeasurement>();
 		timeMeasurements = new ArrayList<OBOEMeasurement>();
@@ -119,6 +120,7 @@ public class OBOEAgent {
 		return pollutionOwl+charName;
 	}
 	
+	@SuppressWarnings("unused")
 	private void loadMeasurements(OntModel owlModel, Model pmlModel){
 		for(OBOEMeasurement m : measurements) {
 			m.asIndividual(owlModel, pmlModel);
@@ -135,6 +137,7 @@ public class OBOEAgent {
 	}
 	
 	protected Model loadData(String inputfileName, String outputfileName) {
+		@SuppressWarnings("unused")
 		long loadStart = System.currentTimeMillis();
 		BufferedWriter bufferedWriter=null;
 	

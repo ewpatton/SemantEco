@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 public class FoiaOverrideAgent {
 	HashMap<String, String> minMap;

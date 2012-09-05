@@ -1,27 +1,14 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.xerces.impl.xpath.XPath;
 
 import com.csvreader.CsvReader;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.Facility;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.FacilityMeasurement;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.MeasurementConstraint;
 import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
 
 public class EchoFacilityRegulationAgent {
@@ -95,6 +82,7 @@ public class EchoFacilityRegulationAgent {
 	
 	public void procOneCSVFile(String inputfileName, HashMap<String, EPAFacilityRegulationRule> regMap){		
 		CsvReader reader = null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 		String focusedName = null;
 		String elementName= null;

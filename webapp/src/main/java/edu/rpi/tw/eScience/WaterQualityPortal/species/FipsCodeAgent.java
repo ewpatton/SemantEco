@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
-
 public class FipsCodeAgent {
 	static String prefix="\"US:53:";
 	static int prefixLen=prefix.length();	
@@ -56,6 +53,7 @@ public class FipsCodeAgent {
 			reader = new BufferedReader(new InputStreamReader(fIn));		
 			String strLine;
 			String code="", desc="", name="";
+			@SuppressWarnings("unused")
 			int posCode, posName;
 			while ((strLine = reader.readLine()) != null)   {
 				posCode=strLine.indexOf('|');
@@ -89,6 +87,8 @@ public class FipsCodeAgent {
 			}
 		}
 	}
+	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		String input="./53-county-code.txt";
 		FipsCodeAgent agent = new FipsCodeAgent(input);		

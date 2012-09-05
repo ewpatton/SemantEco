@@ -175,7 +175,7 @@ public final class USGSParser {
     		data.put(x.getID(), x);
     		
     		}
-    	
+    	readbuffer1.close();
     
     	downloadSiteInfo2(new File("/tmp/"), "44", "44%3A001");
         BufferedReader readbuffer2 = new BufferedReader(new FileReader("/tmp/data.txt"));
@@ -207,6 +207,7 @@ public final class USGSParser {
     	for(MeasurementSite x : data.values()) {
     		System.out.println(x.toString());
     	}
+    	readbuffer2.close();
     	
     	/*catch(Exception e) {
     		e.printStackTrace();
@@ -246,6 +247,7 @@ public final class USGSParser {
     		x.setSourceDocument(source, counter);
     		data.put(x.getID(), x);
     	}
+    	readbuffer1.close();
     	
     	source = downloadSiteInfo2(tmp, stateCode, countyCode.replaceAll(":", "%3A"));
         BufferedReader readbuffer2 = new BufferedReader(new FileReader(new File(tmp,"data.txt")));
@@ -274,6 +276,7 @@ public final class USGSParser {
 			x.setSourceDocument(source, counter);
     		temp.addData(x);
     	}
+    	readbuffer2.close();
     	return data.values();
 	}
 

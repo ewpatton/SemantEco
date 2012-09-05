@@ -1,10 +1,8 @@
 package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -12,11 +10,8 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaDmrAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaOverrideAgent;
 import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUnitConverter;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
 
 public class PcsFacilityRegulationAgent {
 	int ruleIdCount = 0;
@@ -209,6 +204,7 @@ public class PcsFacilityRegulationAgent {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws FileNotFoundException {
 		//PcsFacilityRegulationAgent agent = new PcsFacilityRegulationAgent();
 		String state="WA"; //RI, MA, CA, NY

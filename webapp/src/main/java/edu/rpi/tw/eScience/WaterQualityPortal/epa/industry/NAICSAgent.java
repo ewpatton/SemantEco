@@ -11,9 +11,6 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
-
 public class NAICSAgent {
 	public static boolean DEBUG = false;
 	HashMap<String, String> uin2naics;
@@ -37,6 +34,7 @@ public class NAICSAgent {
 	public void buildLookupTable(String codeFile){
 		CsvReader reader = null;
 		String uin = null, naics=null;
+		@SuppressWarnings("unused")
 		int recordNum = 0;
 	
 		try {			
