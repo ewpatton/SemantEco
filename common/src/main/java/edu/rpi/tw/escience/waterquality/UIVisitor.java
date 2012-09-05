@@ -9,6 +9,18 @@ package edu.rpi.tw.escience.waterquality;
  *
  */
 public interface UIVisitor {
+	
+	/**
+	 * Gets the name of the UIVisitor for
+	 * provenance purposes
+	 * @return
+	 */
 	String getName();
+	
+	/**
+	 * Allows the UIVisitor to manipulate
+	 * the SemantAqua UI at runtime
+	 * @param ui
+	 */
 	void visit(SemantAquaUI ui);
 }
