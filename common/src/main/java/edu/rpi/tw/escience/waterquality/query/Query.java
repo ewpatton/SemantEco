@@ -30,6 +30,11 @@ public interface Query extends GraphComponentCollection {
 		ASK
 	}
 	
+	enum SortType {
+		ASC,
+		DESC
+	}
+	
 	/**
 	 * Gets the GraphComponentCollection associated with this query
 	 * if it is a SPARQL CONSTRUCT query.
@@ -135,4 +140,41 @@ public interface Query extends GraphComponentCollection {
 	 * @return
 	 */
 	Set<Variable> getVariables();
+	
+	/**
+	 * Adds a group by statement to the query
+	 * @param var Variable to group by
+	 */
+	void addGroupBy(Variable var);
+	
+	/**
+	 * Adds an order by statement to the query
+	 * @param var Variable to order by
+	 * @param sort Direction to sort
+	 */
+	void addOrderBy(Variable var, SortType sort);
+	
+	/**
+	 * Sets whether a SELECT query should return only distinct results
+	 * @param distinct true if the selection should be distinct
+	 */
+	void setDistinct(boolean distinct);
+	
+	/**
+	 * Returns whether this query is a SELECT DISTINCT query or not
+	 * @return
+	 */
+	boolean isDistinct();
+	
+	/**
+	 * Sets whether a SELECT query should return reduced results
+	 * @param reduced true if the selection should be reduced
+	 */
+	void setReduced(boolean reduced);
+	
+	/**
+	 * Returns whether this query is a SELECT REDUCED query or not
+	 * @return
+	 */
+	boolean isReduced();
 }

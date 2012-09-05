@@ -44,6 +44,16 @@ public class QueryImpl implements Query {
 	
 	private Map<String, QueryResource> resources = new HashMap<String, QueryResource>();
 	
+	private boolean distinct = false;
+	private boolean reduced = false;
+	
+	private static class OrderByEntry {
+		private Variable variable;
+		private SortType directon;
+	}
+	
+	private List<OrderByEntry> orderList;
+	
 	public QueryImpl() {
 		this(Type.SELECT);
 	}
@@ -338,6 +348,40 @@ public class QueryImpl implements Query {
 	@Override
 	public Set<String> getFromNamed() {
 		return Collections.unmodifiableSet(fromNamedList);
+	}
+
+	@Override
+	public void addGroupBy(Variable var) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addOrderBy(Variable var, SortType sort) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setDistinct(boolean distinct) {
+		reduced = false;
+		this.distinct = distinct;
+	}
+
+	@Override
+	public boolean isDistinct() {
+		return distinct;
+	}
+
+	@Override
+	public void setReduced(boolean reduced) {
+		distinct = false;
+		this.reduced = reduced;
+	}
+
+	@Override
+	public boolean isReduced() {
+		return reduced;
 	}
 	
 }
