@@ -26,10 +26,16 @@
     <module>common</module>
     <module>facets</module>
     <module>webapp</module>
+    <module>test</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit</artifactId>
+	<version>4.10</version>
+      </dependency>
       <dependency>
 	<groupId>org.json</groupId>
 	<artifactId>json</artifactId>
