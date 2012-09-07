@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
+package edu.rpi.tw.escience.WaterQualityPortal.regulations;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import com.csvreader.CsvReader;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
+import edu.rpi.tw.escience.WaterQualityPortal.util.NameUtil;
 
 @Deprecated
 public class EchoFacilityRegulationAgent {

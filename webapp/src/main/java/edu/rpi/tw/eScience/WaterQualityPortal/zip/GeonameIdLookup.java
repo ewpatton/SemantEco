@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.zip;
+package edu.rpi.tw.escience.WaterQualityPortal.zip;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

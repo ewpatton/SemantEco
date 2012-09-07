@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 

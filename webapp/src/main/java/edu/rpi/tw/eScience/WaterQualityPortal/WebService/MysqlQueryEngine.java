@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;

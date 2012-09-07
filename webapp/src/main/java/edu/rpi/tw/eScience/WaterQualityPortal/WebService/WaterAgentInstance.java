@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,21 +34,21 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.model.CountInstanceQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.EPAHack;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.HealthEffectsQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.ListCharacteristicsQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataInViewQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.LoadDataQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Query;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.FacilityDataQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Query.WaterDataQuery;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Util;
-import edu.rpi.tw.eScience.WaterQualityPortal.species.BirdObservation;
-import edu.rpi.tw.eScience.WaterQualityPortal.species.DistributionWebService;
-import edu.rpi.tw.eScience.WaterQualityPortal.species.WaterEntityAgent;
-import edu.rpi.tw.eScience.WaterQualityPortal.validation.CrossValidation;
-import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
+import edu.rpi.tw.escience.WaterQualityPortal.model.CountInstanceQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.model.EPAHack;
+import edu.rpi.tw.escience.WaterQualityPortal.model.HealthEffectsQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.model.ListCharacteristicsQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.model.LoadDataInViewQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.model.LoadDataQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Query;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Util;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Query.FacilityDataQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Query.WaterDataQuery;
+import edu.rpi.tw.escience.WaterQualityPortal.species.BirdObservation;
+import edu.rpi.tw.escience.WaterQualityPortal.species.DistributionWebService;
+import edu.rpi.tw.escience.WaterQualityPortal.species.WaterEntityAgent;
+import edu.rpi.tw.escience.WaterQualityPortal.validation.CrossValidation;
+import edu.rpi.tw.escience.WaterQualityPortal.zip.ZipCodeLookup;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

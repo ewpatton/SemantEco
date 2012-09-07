@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
+package edu.rpi.tw.escience.WaterQualityPortal.regulations;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -10,8 +10,8 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaOverrideAgent;
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaTranslator;
+import edu.rpi.tw.escience.WaterQualityPortal.epa.foia.FoiaOverrideAgent;
+import edu.rpi.tw.escience.WaterQualityPortal.epa.foia.FoiaTranslator;
 
 @Deprecated
 public class PcsFacilityRegulationAgent {

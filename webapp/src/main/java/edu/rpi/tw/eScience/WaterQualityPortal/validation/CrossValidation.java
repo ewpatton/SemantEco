@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.validation;
+package edu.rpi.tw.escience.WaterQualityPortal.validation;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,8 +11,8 @@ import org.json.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Configuration;
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Util;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.Configuration;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Util;
 
 public class CrossValidation {
 	static String polPrefix="http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";

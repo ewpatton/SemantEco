@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Cache.CacheStalenessCheck;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.Cache.CacheStalenessCheck;
 
 public class UnionCacheCheck implements CacheStalenessCheck {
 	TreeMap<String, CacheStalenessCheck> checks = new TreeMap<String, CacheStalenessCheck>();

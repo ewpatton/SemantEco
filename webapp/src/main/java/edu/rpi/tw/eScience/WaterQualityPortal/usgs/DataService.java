@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.usgs;
+package edu.rpi.tw.escience.WaterQualityPortal.usgs;
 
 import java.io.File;
 import java.net.URL;
@@ -7,7 +7,7 @@ import java.util.Date;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.data.WaterDataProvider;
+import edu.rpi.tw.escience.WaterQualityPortal.data.WaterDataProvider;
 
 @Deprecated
 public class DataService implements WaterDataProvider {

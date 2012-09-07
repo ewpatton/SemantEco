@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
+package edu.rpi.tw.escience.WaterQualityPortal.regulations;
 
 @Deprecated
 public enum OntologyFamily {

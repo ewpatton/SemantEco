@@ -40,8 +40,18 @@
     </dependencies>
   </dependencyManagement>
 
-  <modules>
-    <module>data-source</module>
-    <module>time</module>
-  </modules>
+  <profiles>
+    <profile>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>data-source</module>
+	<module>time</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>parent-only</id>
+    </profile>
+  </profiles>
 </project>

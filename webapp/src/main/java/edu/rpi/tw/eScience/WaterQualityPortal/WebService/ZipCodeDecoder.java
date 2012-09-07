@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,8 +6,8 @@ import java.io.OutputStream;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup;
-import edu.rpi.tw.eScience.WaterQualityPortal.zip.ZipCodeLookup.ServerFailedToRespondException;
+import edu.rpi.tw.escience.WaterQualityPortal.zip.ZipCodeLookup;
+import edu.rpi.tw.escience.WaterQualityPortal.zip.ZipCodeLookup.ServerFailedToRespondException;
 
 public class ZipCodeDecoder implements HttpHandler {
 

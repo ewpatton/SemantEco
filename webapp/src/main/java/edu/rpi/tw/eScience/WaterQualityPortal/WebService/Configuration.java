@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 public class Configuration {
 	public static final String TRIPLE_STORE = "http://sparql.tw.rpi.edu/virtuoso/sparql";

@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.model;
+package edu.rpi.tw.escience.WaterQualityPortal.model;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +23,7 @@ import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.WaterAgentInstance;
 
 public class LoadDataQuery extends Query {
 

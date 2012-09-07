@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.ny;
+package edu.rpi.tw.escience.WaterQualityPortal.ny;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;

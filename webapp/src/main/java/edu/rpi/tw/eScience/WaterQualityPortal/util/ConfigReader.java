@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.util;
+package edu.rpi.tw.escience.WaterQualityPortal.util;
 
 import java.util.*;
 import java.io.*;

@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.model;
+package edu.rpi.tw.escience.WaterQualityPortal.model;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import com.google.common.io.CharStreams;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.WaterAgentInstance;
 
 public class CountInstanceQuery extends Query {
 

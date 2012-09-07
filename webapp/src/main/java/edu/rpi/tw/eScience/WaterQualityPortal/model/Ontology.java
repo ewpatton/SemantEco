@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.model;
+package edu.rpi.tw.escience.WaterQualityPortal.model;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;

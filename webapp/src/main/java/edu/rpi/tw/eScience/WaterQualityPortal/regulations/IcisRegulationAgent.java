@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
+package edu.rpi.tw.escience.WaterQualityPortal.regulations;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import com.csvreader.CsvReader;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
+import edu.rpi.tw.escience.WaterQualityPortal.util.NameUtil;
 
 @Deprecated
 public class IcisRegulationAgent {

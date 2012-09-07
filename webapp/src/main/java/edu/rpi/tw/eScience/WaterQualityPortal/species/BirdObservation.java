@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.species;
+package edu.rpi.tw.escience.WaterQualityPortal.species;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -20,8 +20,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.sun.net.httpserver.HttpExchange;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Configuration;
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.WaterAgentInstance;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.Configuration;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.WaterAgentInstance;
 
 public class BirdObservation {
 	//FipsCodeAgent fipsAgent=null;

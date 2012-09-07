@@ -1,6 +1,6 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
+package edu.rpi.tw.escience.WaterQualityPortal.regulations;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.foia.FoiaUtil;
+import edu.rpi.tw.escience.WaterQualityPortal.epa.foia.FoiaUtil;
 
 @Deprecated
 public class EPAFacilityRegulationRule {

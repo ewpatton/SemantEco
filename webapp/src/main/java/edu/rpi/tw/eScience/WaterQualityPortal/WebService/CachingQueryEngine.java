@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 public interface CachingQueryEngine extends QueryEngine {
 	public void setCache(Cache cache);

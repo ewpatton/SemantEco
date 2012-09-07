@@ -1,36 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-  <context-param>
-    <param-name>debug</param-name>
-    <param-value>false</param-value>
-  </context-param>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-  <session-config> <!-- 10 minutes -->
-    <session-timeout>10</session-timeout>
-  </session-config>
+  <display-name>SemantAqua Portal Application</display-name>
 
+<!-- 
   <servlet>
-    <display-name>Servlet1</display-name>
-    <servlet-name>Servlet1</servlet-name>
-    <servlet-class>test.Servlet1</servlet-class>
-    <init-param>
-      <param-name>sleep-time-in-seconds</param-name>
-      <param-value>10</param-value>
-    </init-param>
+    <display-name>SemantAqua</display-name>
+    <servlet-name>SemantAqua</servlet-name>
+    <servlet-class>edu.rpi.tw.escience.waterquality.SemantAquaServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>Servlet1</servlet-name>
-    <url-pattern>/Servlet1</url-pattern>
+    <servlet-name>SemantAqua</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+    <url-pattern>/js/modules/*</url-pattern>
   </servlet-mapping>
+-->
 
   <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+
 </web-app>

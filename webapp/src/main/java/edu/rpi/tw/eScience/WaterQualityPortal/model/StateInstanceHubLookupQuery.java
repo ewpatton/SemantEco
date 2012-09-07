@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.model;
+package edu.rpi.tw.escience.WaterQualityPortal.model;
 
 import java.io.IOException;
 

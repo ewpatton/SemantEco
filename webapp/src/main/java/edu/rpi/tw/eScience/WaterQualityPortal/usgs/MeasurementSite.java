@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.usgs;
+package edu.rpi.tw.escience.WaterQualityPortal.usgs;
 
 import java.util.*;
 
@@ -10,7 +10,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Ontology;
 
 @Deprecated
 public class MeasurementSite {

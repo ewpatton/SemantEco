@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.species;
+package edu.rpi.tw.escience.WaterQualityPortal.species;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

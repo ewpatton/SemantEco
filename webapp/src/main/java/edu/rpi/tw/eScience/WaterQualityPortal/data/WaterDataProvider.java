@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.data;
+package edu.rpi.tw.escience.WaterQualityPortal.data;
 
 import java.net.URL;
 import java.util.Date;

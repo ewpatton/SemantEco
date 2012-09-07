@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.epa;
+package edu.rpi.tw.escience.WaterQualityPortal.epa;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.model.Ontology;
+import edu.rpi.tw.escience.WaterQualityPortal.model.Ontology;
 
 /*
  * Measurement Constraint is extracted from the CSV file from the EPA site

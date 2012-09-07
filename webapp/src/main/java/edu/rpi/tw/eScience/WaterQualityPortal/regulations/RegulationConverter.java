@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.regulations;
+package edu.rpi.tw.escience.WaterQualityPortal.regulations;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -8,8 +8,8 @@ import java.util.*;
 
 import com.csvreader.CsvReader;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.util.ConfigReader;
-import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
+import edu.rpi.tw.escience.WaterQualityPortal.util.ConfigReader;
+import edu.rpi.tw.escience.WaterQualityPortal.util.NameUtil;
 
 @Deprecated
 public class RegulationConverter {

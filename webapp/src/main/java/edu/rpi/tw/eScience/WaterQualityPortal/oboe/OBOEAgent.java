@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.oboe;
+package edu.rpi.tw.escience.WaterQualityPortal.oboe;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -13,7 +13,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.util.NameUtil;
+import edu.rpi.tw.escience.WaterQualityPortal.util.NameUtil;
 
 @Deprecated
 public class OBOEAgent {

@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.epa.foia;
+package edu.rpi.tw.escience.WaterQualityPortal.epa.foia;
 
 import java.io.IOException;
 import java.text.DecimalFormat;

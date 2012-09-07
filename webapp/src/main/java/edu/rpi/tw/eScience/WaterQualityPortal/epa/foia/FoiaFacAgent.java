@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.epa.foia;
+package edu.rpi.tw.escience.WaterQualityPortal.epa.foia;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.epa.industry.NAICSAgent;
+import edu.rpi.tw.escience.WaterQualityPortal.epa.industry.NAICSAgent;
 
 @Deprecated
 public class FoiaFacAgent {

@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.WebService;
+package edu.rpi.tw.escience.WaterQualityPortal.WebService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import java.util.TreeMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.rpi.tw.eScience.WaterQualityPortal.WebService.Cache.CacheStalenessCheck;
+import edu.rpi.tw.escience.WaterQualityPortal.WebService.Cache.CacheStalenessCheck;
 
 public class SPARQLCacheCheck implements CacheStalenessCheck {
 	

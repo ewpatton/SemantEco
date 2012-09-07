@@ -1,4 +1,4 @@
-package edu.rpi.tw.eScience.WaterQualityPortal.species;
+package edu.rpi.tw.escience.WaterQualityPortal.species;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
