@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%@ taglib uri="/WEB-INF/semantaqua.tld" prefix="module" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
@@ -10,6 +11,15 @@
     <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="js/jquery.ba-bbq-1.2.1.js"></script>
     <script type="text/javascript" src="js/modernizr-2.0.js"></script>
+=======
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <link rel="stylesheet" href="css/reset.css" type="text/css"/>
+    <link rel="stylesheet" href="css/main.css" type="text/css"/>
+    <title>Water Quality Portal</title>
+    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+>>>>>>> Started work on servlet implementation
     <script type="text/javascript" src="js/d3.js"></script>
     <script type="text/javascript" src="js/d3.csv.js"></script>
     <script type="text/javascript" src="js/d3.time.js"></script>
@@ -20,8 +30,14 @@
     <script src="contaminants.js" type="text/javascript"></script>
     <script src="prov/provenance.js" type="text/javascript"></script>
     <script src="map.js" type="text/javascript"></script>
+<<<<<<< HEAD
     <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAAiPn9VO27ogin18TIwvmjjhTblPQlWTwbnJ1lYeL5MGN8z4mldhSbc_2C3LyG68tVmYiYWybgEgOS1A" type="text/javascript"></script>
     <module:scripts />
+=======
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAAiPn9VO27ogin18TIwvmjjhTblPQlWTwbnJ1lYeL5MGN8z4mldhSbc_2C3LyG68tVmYiYWybgEgOS1A" type="text/javascript"></script>
+>>>>>>> Started work on servlet implementation
   </head>
   <body onload="initialize()" onunload="closeHelpers()" onunload="GUnload()">
     <div class="modal-display">
@@ -61,7 +77,10 @@
       </div>
       <div style="margin-left:auto;margin-right:auto;width:100%">
 	<div id="facet" style="float:right;width:20%">
+<<<<<<< HEAD
 	  <module:facets />
+=======
+>>>>>>> Started work on servlet implementation
 	  <table border="1">
 	    <tr><th>Data Source</th></tr>
 	    <tr><td>

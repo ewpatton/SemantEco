@@ -3,6 +3,7 @@
 
   <display-name>SemantAqua Portal Application</display-name>
 
+<!--
   <servlet>
     <display-name>SemantAqua</display-name>
     <servlet-name>SemantAqua</servlet-name>
@@ -13,8 +14,7 @@
     	<param-value>WEB-INF/log4j.properties</param-value>
     </init-param>
   </servlet>
-
-<!-- 
+ 
   <servlet-mapping>
     <servlet-name>SemantAqua</servlet-name>
     <url-pattern>/rest/*</url-pattern>
