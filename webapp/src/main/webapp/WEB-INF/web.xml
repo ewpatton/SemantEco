@@ -3,14 +3,18 @@
 
   <display-name>SemantAqua Portal Application</display-name>
 
-<!-- 
   <servlet>
     <display-name>SemantAqua</display-name>
     <servlet-name>SemantAqua</servlet-name>
     <servlet-class>edu.rpi.tw.escience.waterquality.SemantAquaServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
+    <init-param>
+    	<param-name>log4j-properties-location</param-name>
+    	<param-value>WEB-INF/log4j.properties</param-value>
+    </init-param>
   </servlet>
 
+<!-- 
   <servlet-mapping>
     <servlet-name>SemantAqua</servlet-name>
     <url-pattern>/rest/*</url-pattern>

@@ -48,4 +48,8 @@ public interface QueryExecutor {
 	 * @return
 	 */
 	QueryExecutor execute(String endpoint, Query query, Model model);
+
+	String getDefaultSparqlEndpoint();
+
+	QueryExecutor accept(String string);
 }

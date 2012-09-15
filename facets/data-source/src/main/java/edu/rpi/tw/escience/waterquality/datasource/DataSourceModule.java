@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,10 +29,13 @@ import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
+import edu.rpi.tw.escience.waterquality.query.BlankNode;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
+import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
+import edu.rpi.tw.escience.waterquality.query.Variable;
 import edu.rpi.tw.escience.waterquality.util.JSONUtils;
 
 /**
@@ -51,8 +55,13 @@ public class DataSourceModule implements Module {
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String DC_NS = "http://purl.org/dc/terms/";
 	private static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
+	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String STATE_VAR = "state";
+	private static final String SOURCE_VAR = "source";
+	private static final String LABEL_VAR = "label";
 	private static final String RESULTS_BLOCK = "results";
+	private static final String FAILURE = "{\"success\":false}";
+	private Logger log = Logger.getLogger(DataSourceModule.class);
 	
 	/**
 	 * Queries for data from the SPARQL endpoint and uses that data to
@@ -77,17 +86,23 @@ public class DataSourceModule implements Module {
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui) {
+	public void visit(SemantAquaUI ui, Map<String, String> params) {
+		log.trace("visit(ui)");
 		Resource res = null;
-		res = config.getResource("web/data-source.js");
+		res = config.getResource("test.js");
 		ui.addScript(res);
 		try {
 			String responseText = "<div id=\"DataSourceFacet\" class=\"facet\">";
-			JSONObject data = (JSONObject)JSONObject.stringToValue(queryForDataSources(null));
+			String response = queryForDataSources(null);
+			log.debug("Response: "+response);
+			JSONObject data = new JSONObject(response);
 			if(data.getBoolean("success")) {
 				JSONArray sources = (JSONArray)data.get("data");
 				for(int i=0;i<sources.length();i++) {
-					
+					JSONObject mapping = sources.getJSONObject(i);
+					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+mapping.getString("uri")+"\" />";
+					responseText += "<label for=\"source\">"+mapping.getString("label")+"</label>";
+					responseText += "<br />";
 				}
 			}
 			else {
@@ -98,7 +113,7 @@ public class DataSourceModule implements Module {
 			ui.addFacet(res);
 		}
 		catch(Exception e) {
-			config.getLogger().error("Unable to generate UI component", e);
+			log.error("Unable to generate UI component", e);
 		}
 	}
 
@@ -124,6 +139,7 @@ public class DataSourceModule implements Module {
 	
 	@Override
 	public void setModuleConfiguration(ModuleConfiguration config) {
+		log.trace("setModuleConfiguration");
 		this.config = config;
 	}
 
@@ -136,8 +152,71 @@ public class DataSourceModule implements Module {
 	 */
 	@QueryMethod
 	public String queryForDataSources(Map<String, String> params) {
+		log.trace("queryForDataSources");
 		Query query = config.getQueryFactory().newQuery();
-		config.getQueryExecutor().execute(query);
+		
+		// generate variables and resources for query
+		Variable source = query.createVariable(Query.VAR_NS+SOURCE_VAR);
+		Variable label = query.createVariable(Query.VAR_NS+LABEL_VAR);
+		QueryResource dcSource = query.getResource(DC_NS+"source");
+		QueryResource rdfsLabel = query.getResource(RDFS_NS+LABEL_VAR);
+		BlankNode graph = query.createBlankNode();
+		
+		// build query
+		Set<Variable> vars = new HashSet<Variable>();
+		vars.add(source);
+		vars.add(label);
+		query.setVariables(vars);
+		query.setDistinct(true);
+		NamedGraphComponent metadata = query.getNamedGraph(SEMANTAQUA_METADATA);
+		metadata.addPattern(graph, dcSource, source);
+		OptionalComponent optional = query.createOptional();
+		metadata.addGraphComponent(optional);
+		optional.addPattern(source, rdfsLabel, label);
+		
+		// execute query
+		String responseStr = FAILURE;
+		String resultStr = config.getQueryExecutor().accept("application/json").execute(query);
+		log.debug("Results: "+resultStr);
+		if(resultStr == null) {
+			return responseStr;
+		}
+		try {
+			JSONObject results = new JSONObject(resultStr);
+			JSONObject response = new JSONObject();
+			JSONArray data = new JSONArray();
+			response.put("success", true);
+			response.put("data", data);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray("bindings");
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				String sourceUri = binding.getJSONObject(SOURCE_VAR).getString("value");
+				String labelStr = null;
+				try {
+					labelStr = binding.getJSONObject(LABEL_VAR).getString("value");
+				}
+				catch(Exception e) { }
+				if(labelStr == null) {
+					labelStr = sourceUri.substring(sourceUri.lastIndexOf('/')+1).replace('-', '.');
+				}
+				JSONObject mapping = new JSONObject();
+				mapping.put("uri", sourceUri);
+				mapping.put("label", labelStr);
+				data.put(mapping);
+			}
+			responseStr = response.toString();
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return responseStr;
+	}
+	
+	/**
+	 * 
+	 */
+	@QueryMethod
+	public String queryForPollutionData(Map<String, String> params) {
 		return null;
 	}
 	
@@ -150,6 +229,7 @@ public class DataSourceModule implements Module {
 	 * @return List of URIs representing graphs in the SPARQL endpoint
 	 */
 	private List<String> retrieveStateGraphsForSource(final String state, final String source) {
+		log.trace("retrieveStateGraphsForSource");
 		List<String> graphs = new ArrayList<String>();
 		String stateUri = null;
 		
@@ -187,7 +267,7 @@ public class DataSourceModule implements Module {
 					}
 				}
 			} catch (JSONException e) {
-				config.getLogger().error("Could not parse JSON results", e);
+				log.error("Could not parse JSON results", e);
 			}
 		}
 		if(stateUri == null) {
@@ -216,6 +296,7 @@ public class DataSourceModule implements Module {
 	 * @return
 	 */
 	private Collection<String> processResults(final String results) {
+		log.trace("processResults");
 		Set<String> graphs = new HashSet<String>();
 		try {
 			ByteArrayInputStream data = new ByteArrayInputStream(results.getBytes("UTF-8"));
@@ -232,11 +313,11 @@ public class DataSourceModule implements Module {
 				}
 			}
 		} catch (SAXException e) {
-			config.getLogger().error("Could not parse SPARQL results", e);
+			log.error("Could not parse SPARQL results", e);
 		} catch (IOException e) {
-			config.getLogger().error("Could not read SPARQL results", e);
+			log.error("Could not read SPARQL results", e);
 		} catch (ParserConfigurationException e) {
-			config.getLogger().error("Parser configuration error", e);
+			log.error("Parser configuration error", e);
 		}
 		return graphs;
 	}
@@ -249,6 +330,7 @@ public class DataSourceModule implements Module {
 	 * @return
 	 */
 	private Query augmentQueryForSource(final Query query, final Map<String, String> params, final String source) {
+		log.trace("augmentQueryForSource");
 		String stateAbbr = params.get("state");
 		List<String> graphs = retrieveStateGraphsForSource(stateAbbr, source);
 		QueryResource site = query.getVariable(QUERY_NS+"s");
@@ -270,6 +352,7 @@ public class DataSourceModule implements Module {
 	 * @return
 	 */
 	private Query buildQueryObject(final Query query, final Map<String, String> params) {
+		log.trace("buildQueryObject");
 		String temp = params.get("sources");
 		List<String> sources = null;
 		if(temp != null && !temp.equals("")) {

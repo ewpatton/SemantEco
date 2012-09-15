@@ -100,6 +100,7 @@ public class QueryImpl implements Query {
 	public NamedGraphComponent getNamedGraph(String uri) {
 		if(!namedGraphs.containsKey(uri)) {
 			namedGraphs.put(uri, new NamedGraphComponentImpl(uri));
+			whereClause.addGraphComponent(namedGraphs.get(uri));
 		}
 		return namedGraphs.get(uri);
 	}
@@ -112,8 +113,7 @@ public class QueryImpl implements Query {
 
 	@Override
 	public OptionalComponent createOptional() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OptionalComponentImpl();
 	}
 
 	@Override
@@ -236,6 +236,12 @@ public class QueryImpl implements Query {
 	}
 	
 	private void writeVars(PrintStream out) {
+		if(reduced) {
+			out.println("REDUCED ");
+		}
+		if(distinct) {
+			out.println("DISTINCT ");
+		}
 		if(variables == null) {
 			out.println("*");
 		}

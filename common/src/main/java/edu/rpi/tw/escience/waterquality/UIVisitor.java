@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.waterquality;
 
+import java.util.Map;
+
 /**
  * An object implementing UIVisitor can be used to extend the
  * SemantAqua user interface via JavaServer Faces or by adding
@@ -21,6 +23,7 @@ public interface UIVisitor {
 	 * Allows the UIVisitor to manipulate
 	 * the SemantAqua UI at runtime
 	 * @param ui
+	 * @param params
 	 */
-	void visit(SemantAquaUI ui);
+	void visit(SemantAquaUI ui, Map<String, String> params);
 }

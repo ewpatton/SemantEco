@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.waterquality;
 
+import java.util.List;
+
 /**
  * The SemantAquaUI object provides a mechanism for
  * modules to manipulate the UI when it is rendered by
@@ -26,4 +28,10 @@ public interface SemantAquaUI {
 	 * @param facet
 	 */
 	void addFacet(Resource facet);
+	
+	List<Resource> getFacets();
+	
+	List<Resource> getScripts();
+	
+	List<Resource> getStylesheets();
 }
