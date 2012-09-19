@@ -1,16 +1,25 @@
 package edu.rpi.tw.escience.waterquality;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
+import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
+import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
 @WebServlet(name="SemantAqua",
 			urlPatterns={"/rest/*","/js/modules/*","/js/config.js"},
@@ -23,49 +32,66 @@ public class SemantAquaServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5803626987887478846L;
 	
-	private static final String PROPERTIES = "/WEB-INF/classes/semantaqua.properties";
-	
 	private Properties props = new Properties();
-	
-	private static boolean debugging = false;
 	
 	private static final int HTTP_PORT = 80;
 	private static final int HTTPS_PORT = 443;
 	
+	private Logger log = null;
+	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		getServletContext().log("Initializing SemantAqua");
-		getServletContext().log("Running on servlet version: "+getServletContext().getMajorVersion());
-		getServletContext().log("Servlet context path: "+getServletContext().getContextPath());
-		try {
-			InputStream is = getServletContext().getResourceAsStream(PROPERTIES);
-			if(is != null) {
-				props.load(is);
-				if(props.getProperty("debug", "false").equals("true")) {
-					debugging = true;
-				}
+		initLogger(config);
+		log.info("Initializing SemantAqua");
+		log.debug("Running on servlet version: "+getServletContext().getMajorVersion());
+		log.debug("Servlet context path: "+getServletContext().getContextPath());
+		SemantAquaConfiguration.configure(getServletContext());
+		final String webinf = config.getServletContext().getRealPath("WEB-INF");
+		log.debug("WEB-INF: "+webinf);
+		File modules = new File(webinf+"/modules");
+		if(!modules.exists()) {
+			log.info("Creating modules directory");
+			modules.mkdir();
+		}
+		ModuleManagerFactory.getInstance().setModulePath(modules.getAbsolutePath());
+		log.info("Finished initializing SemantAqua");
+	}
+	
+	private void initLogger(ServletConfig config) {
+		String log4jconfig = config.getInitParameter("log4j-properties-location");
+		ServletContext context = config.getServletContext();
+		if(log4jconfig == null) {
+			BasicConfigurator.configure();
+		}
+		else {
+			String appPath = context.getRealPath("/");
+			String log4jpath = appPath + log4jconfig;
+			if(new File(log4jpath).exists()) {
+				PropertyConfigurator.configure(log4jpath);
+				log = Logger.getLogger(SemantAquaServlet.class);
 			}
 			else {
-				throw new IOException("Unable to get resource "+PROPERTIES);
+				BasicConfigurator.configure();
 			}
-		} catch (IOException e) {
-			getServletContext().log("Unable to load "+PROPERTIES, e);
 		}
 	}
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		getServletContext().log(request.getScheme());
-		getServletContext().log(request.getServerName());
-		getServletContext().log(""+request.getServerPort());
-		getServletContext().log(request.getContextPath());
-		getServletContext().log(request.getServletPath());
-		getServletContext().log(request.getPathInfo());
-		getServletContext().log(request.getRequestURI());
+		log.debug(request.getScheme());
+		log.debug(request.getServerName());
+		log.debug(""+request.getServerPort());
+		log.debug(request.getContextPath());
+		log.debug(request.getServletPath());
+		log.debug(request.getPathInfo());
+		log.debug(request.getRequestURI());
 		PrintStream ps = null;
 		if(request.getServletPath().equals("/js/config.js")) {
 			printConfig(request, response);
+		}
+		else if(request.getServletPath().equals("/js/modules")) {
+			printAjax(request, response);
 		}
 		else {
 			ps = new PrintStream(response.getOutputStream());
@@ -76,7 +102,7 @@ public class SemantAquaServlet extends HttpServlet {
 	
 	@Override
 	public String getServletInfo() {
-		getServletConfig().getServletContext().getResourceAsStream("/META-INF/maven/edu.rpi.tw.escience/semantauqa/pom.properties");
+		getServletContext().getResourceAsStream("/META-INF/maven/edu.rpi.tw.escience/semantauqa/pom.properties");
 		return "SemantAqua";
 	}
 	
@@ -89,10 +115,22 @@ public class SemantAquaServlet extends HttpServlet {
 		response.setHeader("Content-Type", "text/javascript");
 		PrintStream ps = new PrintStream(response.getOutputStream());
 		String baseUrl = computeBaseUrl(request);
-		if(isDebug()) {
+		if(SemantAquaConfiguration.get().isDebug()) {
 			ps.println("// file autogenerated by "+getClass().getName()+"#printConfig");
 		}
 		ps.println("var SemantAqua = { \"baseUrl\": \""+baseUrl+"\", \"restBaseUrl\": \""+baseUrl+"rest/\" }");
+		ps.close();
+	}
+	
+	private void printAjax(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.setHeader("Content-Type", "text/javascript");
+		PrintStream ps = new PrintStream(response.getOutputStream());
+		String module = request.getPathInfo().replace("/", "").replace(".js", "");
+		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
+		Module mod = mgr.getModuleByName(module);
+		if(mod != null) {
+			ps.println(JavaScriptGenerator.ajaxForModule(mod));
+		}
 		ps.close();
 	}
 	
@@ -115,14 +153,6 @@ public class SemantAquaServlet extends HttpServlet {
 			path += "/";
 			return path;
 		}
-	}
-	
-	/**
-	 * Returns whether the debug property is set to true for this deployment or not
-	 * @return
-	 */
-	public static boolean isDebug() {
-		return debugging;
 	}
 
 }
