@@ -15,7 +15,6 @@ import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.waterquality.ui.SemantAquaUIFactory;
-import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
 
 /**
  * The ScriptTag class provides a means for SemantAqua JSP to provide JavaScript
@@ -54,7 +53,7 @@ public class ScriptTag extends TagSupport {
 				out.write("<script src=\"");
 				out.write(context.getContextPath());
 				out.write("/js/modules/");
-				out.write(JavaScriptGenerator.cleanName(i.getName()));
+				out.write(i.getClass().getSimpleName());
 				out.write(".js\" type=\"text/javascript\"></script>\r\n");
 			}
 			log.debug("Scripts: "+scripts.size());

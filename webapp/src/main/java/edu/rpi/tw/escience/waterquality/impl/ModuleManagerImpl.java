@@ -31,9 +31,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleManager;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
 
 /**
  * ModuleManagerImpl provides the default implementation of the ModuleManager interface
@@ -105,54 +105,53 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void buildUserInterface(SemantAquaUI ui, Map<String, String> params) {
+	public void buildUserInterface(SemantAquaUI ui, Request request) {
 		log.trace("buildUserInterface");
 		log.debug("Modules: "+modules.size());
 		for(Module module : modules) {
 			log.debug("Visiting module "+module.getName());
-			module.visit(ui, params);
+			module.visit(ui, request);
 		}
 	}
 
 	@Override
-	public void buildOntologyModel(OntModel model, Map<String, String> params) {
+	public void buildOntologyModel(OntModel model, Request request) {
 		log.trace("buildOntologyModel");
 		for(Module module : modules) {
-			module.visit((OntModel)model, params);
+			module.visit((OntModel)model, request);
 		}
 	}
 
 	@Override
-	public void buildDataModel(Model model, Map<String, String> params) {
+	public void buildDataModel(Model model, Request request) {
 		log.trace("buildDataModel");
 		for(Module module : modules) {
-			module.visit((Model)model, params);
+			module.visit((Model)model, request);
 		}
 	}
 
 	@Override
 	public String updateFragmentForFacet(Module module,
-			Map<String, String> params) {
+			Request request) {
 		log.trace("updateFragmentForFacet");
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void augmentQuery(Query query, Map<String, String> params) {
+	public void augmentQuery(Query query, Request request) {
 		log.trace("augmentQuery");
-		augmentQuery(query, params, null);
+		augmentQuery(query, request, null);
 	}
 
 	@Override
-	public void augmentQuery(Query query, Map<String, String> params,
-			Module originator) {
+	public void augmentQuery(Query query, Request request, Module originator) {
 		log.trace("augmentQuery");
 		for(Module module : modules) {
 			if(module == originator) {
 				continue;
 			}
-			module.visit(query, params);
+			module.visit(query, request);
 		}
 	}
 
@@ -308,7 +307,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	protected final void installModule(Module module, String path, InputStream properties) {
 		log.debug("Installing module '"+module.getName()+"' version "+module.getMajorVersion()+"."+module.getMinorVersion()+
 				(module.getExtraVersion() != null ? "-"+module.getExtraVersion() : ""));
-		final String name = JavaScriptGenerator.cleanName(module.getName());
+		final String name = module.getClass().getSimpleName();
 		if(moduleMap.containsKey(name)) {
 			Module oldModule = moduleMap.get(name);
 			int pos = modules.indexOf(oldModule);

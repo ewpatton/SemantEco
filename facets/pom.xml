@@ -48,6 +48,7 @@
       <modules>
 	<module>data-source</module>
 	<module>time</module>
+	<module>zipcode</module>
       </modules>
     </profile>
     <profile>

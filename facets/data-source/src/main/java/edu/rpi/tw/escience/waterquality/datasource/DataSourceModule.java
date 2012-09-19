@@ -27,6 +27,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.BlankNode;
@@ -70,25 +71,25 @@ public class DataSourceModule implements Module {
 	 * populate the data model.
 	 */
 	@Override
-	public void visit(Model model, Map<String, String> params) {
+	public void visit(Model model, Request request) {
 		Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
-		buildQueryObject(query, params);
+		buildQueryObject(query, request);
 		config.getQueryExecutor().execute(query, model);
 	}
 
 	@Override
-	public void visit(OntModel model, Map<String, String> params) {
+	public void visit(OntModel model, Request request) {
 		// do nothing as we are simply a data provider, not an ontology provider
 	}
 
 	@Override
-	public void visit(Query query, Map<String, String> params) {
+	public void visit(Query query, Request request) {
 		// the data source module handles all of its customization when
 		// constructing the data model see visit(Model, Map)
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Map<String, String> params) {
+	public void visit(SemantAquaUI ui, Request request) {
 		log.trace("visit(ui)");
 		Resource res = null;
 		res = config.getResource("test.js");
@@ -331,9 +332,9 @@ public class DataSourceModule implements Module {
 	 * @param source
 	 * @return
 	 */
-	private Query augmentQueryForSource(final Query query, final Map<String, String> params, final String source) {
+	private Query augmentQueryForSource(final Query query, final Request request, final String source) {
 		log.trace("augmentQueryForSource");
-		String stateAbbr = params.get("state");
+		String stateAbbr = request.getParam("state")[0];
 		List<String> graphs = retrieveStateGraphsForSource(stateAbbr, source);
 		QueryResource site = query.getVariable(QUERY_NS+"s");
 		QueryResource polHasSite = query.getResource(POL_NS+"hasSite");
@@ -353,9 +354,9 @@ public class DataSourceModule implements Module {
 	 * @param params
 	 * @return
 	 */
-	private Query buildQueryObject(final Query query, final Map<String, String> params) {
+	private Query buildQueryObject(final Query query, final Request request) {
 		log.trace("buildQueryObject");
-		String temp = params.get("sources");
+		String temp = request.getParam("sources")[0];
 		List<String> sources = null;
 		if(temp != null && !temp.equals("")) {
 			JSONArray arr = (JSONArray)JSONObject.stringToValue(temp);
@@ -365,7 +366,7 @@ public class DataSourceModule implements Module {
 			sources = JSONUtils.toList(arr);
 		}
 		for(String source : sources) {
-			augmentQueryForSource(query, params, source);
+			augmentQueryForSource(query, request, source);
 		}
 		return query;
 	}

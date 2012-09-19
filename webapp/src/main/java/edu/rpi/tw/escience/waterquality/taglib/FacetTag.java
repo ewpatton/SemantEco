@@ -56,7 +56,7 @@ public class FacetTag extends TagSupport {
 			for(Resource i : facets) {
 				final String name = ((OwnedResource)i).getOwner().getName();
 				log.debug("Outputing facet for '"+name+"'");
-				out.write("<table id=\""+JavaScriptGenerator.cleanName(name).toLowerCase()+"\" border=\"1\">");
+				out.write("<table id=\""+JavaScriptGenerator.cleanName(i.getClass().getSimpleName())+"\" border=\"1\">");
 				out.write("<tr><th>"+name+"</th></tr>");
 				out.write("<tr><td>");
 				if(i.isJspResource()) {

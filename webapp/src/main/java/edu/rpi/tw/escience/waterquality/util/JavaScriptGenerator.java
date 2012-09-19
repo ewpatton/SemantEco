@@ -58,20 +58,28 @@ public final class JavaScriptGenerator {
 		String result = "\""+m.getName()+"\": ";
 		result += "function(args,success,error){" + 
 				"var a=$.extend({},SemantAquaUI.getState(),args);" +
-				"var b=$.ajax(SemantAqua.restBaseUrl+\""+cls.getSimpleName()+"/"+m.getName()+"\");" +
+				"var b=$.ajax(SemantAqua.restBaseUrl+\""+cls.getSimpleName()+"/"+m.getName()+"\",{\"data\":a});" +
 				"if(success)b.done(success);" +
 				"if(error)b.fail(error);" +
 				"}";
 		return result;
 	}
-	
-	/**
-	 * Generates a clean name for given string; used for generating variables in JavaScript
-	 * @param name
-	 * @return
-	 */
-	public static String cleanName(String name) {
-		return name.replaceAll(" ", "-");
+
+	public static String cleanName(final String name) {
+		final StringBuilder sb = new StringBuilder();
+		for(int i=0;i<name.length();i++) {
+			char c = name.charAt(i);
+			if(Character.isLowerCase(c)) {
+				if(i>0) {
+					sb.append("-");
+				}
+				sb.append(Character.toLowerCase(c));
+			}
+			else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 	
 }

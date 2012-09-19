@@ -1,7 +1,6 @@
 package edu.rpi.tw.escience.waterquality;
 
 import java.util.List;
-import java.util.Map;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -31,7 +30,7 @@ public interface ModuleManager {
 	 * @param ui
 	 * @param params
 	 */
-	void buildUserInterface(SemantAquaUI ui, Map<String, String> params);
+	void buildUserInterface(SemantAquaUI ui, Request request);
 	
 	/**
 	 * Requests that the ModuleManager help construct the ontology model
@@ -39,7 +38,7 @@ public interface ModuleManager {
 	 * @param model
 	 * @param params
 	 */
-	void buildOntologyModel(OntModel model, Map<String, String> params);
+	void buildOntologyModel(OntModel model, Request request);
 	
 	/**
 	 * Requests that the ModuleManager help construct the data model
@@ -47,7 +46,7 @@ public interface ModuleManager {
 	 * @param model
 	 * @param params
 	 */
-	void buildDataModel(Model model, Map<String, String> params);
+	void buildDataModel(Model model, Request request);
 	
 	/**
 	 * Requests that the provided module give an updated code fragment
@@ -56,7 +55,7 @@ public interface ModuleManager {
 	 * @param params
 	 * @return
 	 */
-	String updateFragmentForFacet(Module module, Map<String, String> params);
+	String updateFragmentForFacet(Module module, Request request);
 	
 	/**
 	 * Allows any modules in this ModuleManager interface to change the provided
@@ -65,7 +64,7 @@ public interface ModuleManager {
 	 * @param query
 	 * @param params
 	 */
-	void augmentQuery(Query query, Map<String, String> params);
+	void augmentQuery(Query query, Request request);
 	
 	/**
 	 * Allows any modules in this ModuleManager interface to change the provided
@@ -76,7 +75,7 @@ public interface ModuleManager {
 	 * @param params
 	 * @param originator
 	 */
-	void augmentQuery(Query query, Map<String, String> params, Module originator);
+	void augmentQuery(Query query, Request request, Module originator);
 	
 	/**
 	 * Lists all of the modules managed by this ModuleManager.

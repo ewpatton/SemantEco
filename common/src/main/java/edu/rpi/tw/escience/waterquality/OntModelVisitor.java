@@ -1,7 +1,5 @@
 package edu.rpi.tw.escience.waterquality;
 
-import java.util.Map;
-
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
@@ -27,5 +25,5 @@ public interface OntModelVisitor {
 	 * @param model OntModel used for reasoning
 	 * @param params Parameters passed from the client in the RESTful call
 	 */
-	void visit(OntModel model, Map<String, String> params);
+	void visit(OntModel model, Request request);
 }

@@ -39,13 +39,11 @@ public class SemantAquaConfiguration extends Properties {
 				return;
 			}
 			config.load(is);
-			if(config.getProperty("debug", "false").equals("true")) {
-				debugging = true;
-			}
 		}
 		catch(IOException e) {
 			log.warn("Unable to load "+PROPERTIES, e);
 		}
+		install(config);
 	}
 	
 	/**
@@ -74,5 +72,12 @@ public class SemantAquaConfiguration extends Properties {
 	 */
 	public String getTripleStore() {
 		return config.getProperty("triple-store", "http://sparql.tw.rpi.edu/virtuoso/sparql");
+	}
+	
+	protected final static void install(SemantAquaConfiguration config) {
+		SemantAquaConfiguration.config = config;
+		if(config.getProperty("debug", "false").equals("true")) {
+			debugging = true;
+		}
 	}
 }

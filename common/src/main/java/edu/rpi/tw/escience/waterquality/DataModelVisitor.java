@@ -1,7 +1,5 @@
 package edu.rpi.tw.escience.waterquality;
 
-import java.util.Map;
-
 import com.hp.hpl.jena.rdf.model.Model;
 
 /**
@@ -26,5 +24,5 @@ public interface DataModelVisitor {
 	 * @param model Data model to be modified by the visitor
 	 * @param params Parameters passed through the RESTful interface by the caller
 	 */
-	void visit(Model model, Map<String, String> params);
+	void visit(Model model, Request request);
 }

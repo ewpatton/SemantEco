@@ -9,21 +9,25 @@
     <title>Water Quality Portal</title>
     <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="js/jquery.ba-bbq-1.2.1.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/modernizr-2.0.js"></script>
     <script type="text/javascript" src="js/d3.js"></script>
     <script type="text/javascript" src="js/d3.csv.js"></script>
     <script type="text/javascript" src="js/d3.time.js"></script>
-    <script type="text/javascript" src="js/config.js" ></script>
     <script type="text/javascript" src="js/json.js"></script>
+    <script type="text/javascript" src="js/SemantAqua.js"></script>
+    <script type="text/javascript" src="js/SemantAquaUI.js"></script>
+    <script type="text/javascript" src="js/config.js" ></script>
     <script src="main.js" type="text/javascript"></script>
     <script src="util.js" type="text/javascript"></script>
     <script src="contaminants.js" type="text/javascript"></script>
     <script src="prov/provenance.js" type="text/javascript"></script>
     <script src="map.js" type="text/javascript"></script>
-    <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAAiPn9VO27ogin18TIwvmjjhTblPQlWTwbnJ1lYeL5MGN8z4mldhSbc_2C3LyG68tVmYiYWybgEgOS1A" type="text/javascript"></script>
+    <%--<script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAAiPn9VO27ogin18TIwvmjjhTblPQlWTwbnJ1lYeL5MGN8z4mldhSbc_2C3LyG68tVmYiYWybgEgOS1A" type="text/javascript"></script>--%>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAkAvsEZc18GOe01jOVpX48hnWRIgIajec&amp;sensor=false"></script>
     <module:scripts />
   </head>
-  <body onload="initialize()" onunload="closeHelpers()" onunload="GUnload()">
+  <body onload="SemantAqua.initialize()" onunload="closeHelpers()" onunload="GUnload()">
     <div class="modal-display">
       <div class="modal-fadeout"></div>
       <div class="modal-window-container">
@@ -44,17 +48,17 @@
     </div>
     <div id="content">
       <div style="text-align:center">
-	<form action="#" onsubmit="showAddress(this.zip.value,0,5000); return false">
+	<form>
 	  <p>Zip Code:
 	    <input id="zip" type="text" size="10" name="zip" value="02888" />
-            <input type="submit" value="Go!" /><br/>
+        <input type="button" value="Go!" onclick="SemantAqua.showAddress()" /><br/>
 	    Try: 
-	    <a href="javascript:submit_zip('02809');">Bristol, RI: 02809</a>, 
-	    <a href="javascript:submit_zip('90813');">Los Angeles, CA: 90813</a>, 
-	    <a href="javascript:submit_zip('94107');">San Francisco, CA: 94107</a>, 
-	    <a href="javascript:submit_zip('95113');">Santa Clara, CA: 95113</a>, 
-	    <a href="javascript:submit_zip('98103');">Seattle, WA: 98103</a>, 
-	    <a href="javascript:submit_zip('94305');">Stanford, CA: 94305</a>
+	    <a href="javascript:SemantAqua.showAddress('02809');">Bristol, RI: 02809</a>, 
+	    <a href="javascript:SemantAqua.showAddress('90813');">Los Angeles, CA: 90813</a>, 
+	    <a href="javascript:SemantAqua.showAddress('94107');">San Francisco, CA: 94107</a>, 
+	    <a href="javascript:SemantAqua.showAddress('95113');">Santa Clara, CA: 95113</a>, 
+	    <a href="javascript:SemantAqua.showAddress('98103');">Seattle, WA: 98103</a>, 
+	    <a href="javascript:SemantAqua.showAddress('94305');">Stanford, CA: 94305</a>
 	  </p>
 	</form>
 	<p id="reportSite">&nbsp;</p>
@@ -82,7 +86,7 @@
 	      </td>
 	    </tr>
 	  </table>
-	  <table border="1" name="regulation" id="regulation">
+	  <table border="1" id="regulation">
 	    <tr><th>Regulation</th></tr>
       <tr><td>
       <div id="regDiv">
@@ -105,10 +109,10 @@
 	      </td>
 	    </tr>
 	  </table>
-	  <table border="1" name="industry_table" id="industry_table">
+	  <table border="1" id="industry_table">
 	    <tr><th>Industry</th></tr>
       <tr><td>	  
-	  <div id="industry_selection_div"><select name= "industry_selection_canvas" id="industry_selection_canvas" width="170" style="width: 170px"> 
+	  <div id="industry_selection_div"><select name= "industry_selection_canvas" id="industry_selection_canvas" style="width: 170px"> 
 		</select>
 </div>
 	    </td></tr>
@@ -152,14 +156,14 @@
 	    </tr>
 	  </table>
 	</div>
-	<div id="display" styple="width: 100%; height: 720px">
+	<div id="display" style="width: 100%; height: 720px">
 	  <div id="map_canvas" style="width: 78%; height: 720px"></div>
 	  <div id="page">&nbsp;</div>
 	</div>
       </div>
       
       <div id="footer"><a href="about.html">About</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="privacy.html">Privacy</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="contact.html">Contact</a></div>
-      <div id="spinner"><img src="spinner.gif" alt="Processing..."/><br/>Processing your request...</div>
+      <div id="spinner"><img src="images/spinner.gif" alt="Processing..."/><br/>Processing your request...</div>
       <div id="sparql2"><div></div></div>
       <div id="sparql"><div id="sparql-content"></div><div class="big"><a onclick="javascript:hideSparql();">Close this window</a></div></div>
     </div>

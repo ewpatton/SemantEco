@@ -1,7 +1,5 @@
 package edu.rpi.tw.escience.waterquality;
 
-import java.util.Map;
-
 import edu.rpi.tw.escience.waterquality.query.Query;
 
 /**
@@ -29,5 +27,5 @@ public interface QueryVisitor {
 	 * @param query Query object to manipulate
 	 * @param params Parameters from the RESTful call
 	 */
-	void visit(Query query, Map<String, String> params);
+	void visit(Query query, Request request);
 }

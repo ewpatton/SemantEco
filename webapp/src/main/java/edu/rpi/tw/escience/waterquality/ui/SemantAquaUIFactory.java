@@ -1,10 +1,9 @@
 package edu.rpi.tw.escience.waterquality.ui;
 
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 import edu.rpi.tw.escience.waterquality.ModuleManager;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 
@@ -51,9 +50,23 @@ public class SemantAquaUIFactory {
 		if(ui == null || lastModified < mgr.getLastModified()) {
 			ui = new SemantAquaUIImpl();
 			log.debug("building user interface");
-			mgr.buildUserInterface(ui, new HashMap<String, String>());
+			mgr.buildUserInterface(ui, new NOPRequest());
 			lastModified = mgr.getLastModified();
 		}
 		return ui;
+	}
+	
+	private static class NOPRequest implements Request {
+
+		@Override
+		public String[] getParam(String key) {
+			return null;
+		}
+
+		@Override
+		public Logger getLogger() {
+			return Logger.getLogger(SemantAquaUI.class);
+		}
+		
 	}
 }
