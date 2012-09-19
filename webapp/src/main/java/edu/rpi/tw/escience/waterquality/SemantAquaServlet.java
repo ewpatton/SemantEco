@@ -29,6 +29,9 @@ public class SemantAquaServlet extends HttpServlet {
 	
 	private static boolean debugging = false;
 	
+	private static final int HTTP_PORT = 80;
+	private static final int HTTPS_PORT = 443;
+	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -102,10 +105,10 @@ public class SemantAquaServlet extends HttpServlet {
 			path += request.getScheme();
 			path += "://";
 			path += request.getServerName();
-			if(request.getScheme().equals("http") && request.getServerPort() != 80) {
+			if(request.getScheme().equals("http") && request.getServerPort() != HTTP_PORT) {
 				path += ":"+request.getServerPort();
 			}
-			else if(request.getScheme().equals("https") && request.getServerPort() != 443) {
+			else if(request.getScheme().equals("https") && request.getServerPort() != HTTPS_PORT) {
 				path += ":"+request.getServerPort();
 			}
 			path += request.getContextPath();
@@ -114,6 +117,10 @@ public class SemantAquaServlet extends HttpServlet {
 		}
 	}
 	
+	/**
+	 * Returns whether the debug property is set to true for this deployment or not
+	 * @return
+	 */
 	public static boolean isDebug() {
 		return debugging;
 	}
