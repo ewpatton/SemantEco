@@ -125,11 +125,11 @@ public class ModuleManagerImplTest extends TestCase {
 			super(getTestDir().getAbsolutePath());
 		}
 		
-		public String explodeJar(final String path) {
+		public String testExplodeJar(final String path) {
 			return super.explodeJar(path);
 		}
 		
-		public void installModule(Module module, String path, InputStream properties) {
+		public void testInstallModule(Module module, String path, InputStream properties) {
 			super.installModule(module, path, properties);
 		}
 		
@@ -170,7 +170,7 @@ public class ModuleManagerImplTest extends TestCase {
 		try {
 			File jar = createTestJar();
 			TestModuleManagerImpl test = new TestModuleManagerImpl();
-			test.explodeJar(jar.getAbsolutePath());
+			test.testExplodeJar(jar.getAbsolutePath());
 			final File testFile = new File(getTestDir(), "../../resources/test-module/hello.txt");
 			final File testMetaInf = new File(getTestDir(), "../../resources/test-module/META-INF/");
 			assertTrue("hello.txt was not extracted from the test module", testFile.exists());

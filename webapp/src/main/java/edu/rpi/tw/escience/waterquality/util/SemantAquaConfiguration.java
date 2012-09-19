@@ -8,6 +8,14 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
+/**
+ * SemantAquaConfiguration encapsulates the various properties
+ * used through SemantAqua and is generated from the semantaqua.properties
+ * file packaged in WEB-INF/classes.
+ * 
+ * @author ewpatton
+ *
+ */
 public class SemantAquaConfiguration extends Properties {
 	/**
 	 * 
@@ -19,6 +27,10 @@ public class SemantAquaConfiguration extends Properties {
 	
 	private static boolean debugging = false;
 	
+	/**
+	 * Configures the object from the provided servlet context
+	 * @param context
+	 */
 	public static void configure(ServletContext context) {
 		config = new SemantAquaConfiguration();
 		try {
@@ -36,6 +48,10 @@ public class SemantAquaConfiguration extends Properties {
 		}
 	}
 	
+	/**
+	 * Returns the current configuration
+	 * @return
+	 */
 	public static SemantAquaConfiguration get() {
 		return config;
 	}
@@ -44,10 +60,18 @@ public class SemantAquaConfiguration extends Properties {
 		SemantAquaConfiguration.config = config;
 	}
 	
+	/**
+	 * Checks whether we are in a debug environment
+	 * @return
+	 */
 	public boolean isDebug() {
 		return debugging;
 	}
 	
+	/**
+	 * Gets the default triple store specified in the properties file.
+	 * @return
+	 */
 	public String getTripleStore() {
 		return config.getProperty("triple-store", "http://sparql.tw.rpi.edu/virtuoso/sparql");
 	}

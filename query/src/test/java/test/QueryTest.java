@@ -187,9 +187,9 @@ public class QueryTest extends TestCase {
 		Query x = new QueryImpl();
 		x.setVariables(null);
 		Variable s,p,o;
-		s = x.getVariable("s");
-		p = x.getVariable("p");
-		o = x.getVariable("o");
+		s = x.getVariable(Query.VAR_NS+"s");
+		p = x.getVariable(Query.VAR_NS+"p");
+		o = x.getVariable(Query.VAR_NS+"o");
 		x.addPattern(s, p, o);
 		x.toString();
 		Set<Variable> temp = new HashSet<Variable>();

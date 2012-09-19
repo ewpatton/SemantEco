@@ -23,6 +23,13 @@ import edu.rpi.tw.escience.waterquality.res.OwnedResource;
 import edu.rpi.tw.escience.waterquality.ui.SemantAquaUIFactory;
 import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
 
+/**
+ * The FacetTag class provides a mechanism for the SemantAqua JSP to present
+ * facets from the various modules to the end user.
+ * 
+ * @author ewpatton
+ *
+ */
 public class FacetTag extends TagSupport {
 
 	/**
@@ -30,6 +37,13 @@ public class FacetTag extends TagSupport {
 	 */
 	private static final long serialVersionUID = -7656285413071676382L;
 	private Logger log = Logger.getLogger(FacetTag.class);
+	
+	/**
+	 * Default constructor used by the JSP processor to instantiate this class
+	 */
+	public FacetTag() {
+		
+	}
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -67,6 +81,12 @@ public class FacetTag extends TagSupport {
 
 		private WrapperOutputStream output = new WrapperOutputStream();
 		
+		/**
+		 * Provides a response wrapper that can be passed to a JSP processor
+		 * to capture the output of the processor before sending it to the
+		 * actual response stream.
+		 * @param response
+		 */
 		public ModuleJspEvaluator(HttpServletResponse response) {
 			super(response);
 		}

@@ -17,6 +17,14 @@ import edu.rpi.tw.escience.waterquality.res.ScriptResource;
 import edu.rpi.tw.escience.waterquality.res.StringResource;
 import edu.rpi.tw.escience.waterquality.res.StyleResource;
 
+/**
+ * The ModuleConfigurationImpl provides the default implementation of
+ * ModuleConfiguration by providing the appropriate default implementations
+ * of the many other interfaces that make up the SemantAqua API.
+ * 
+ * @author ewpatton
+ *
+ */
 public class ModuleConfigurationImpl extends ModuleConfiguration {
 	
 	/**
@@ -28,6 +36,11 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 	private Logger log = Logger.getLogger(ModuleConfigurationImpl.class);
 	private String resourceDir = null;
 	
+	/**
+	 * Constructs a ModuleConfigurationImpl for the specified module.
+	 * @param module
+	 * @param resourceDir Directory to where resources were extracted by the ModuleClassLoader associated with the module
+	 */
 	public ModuleConfigurationImpl(Module module, String resourceDir) {
 		log.trace("ModuleConfigurationImpl");
 		if(module != null) {

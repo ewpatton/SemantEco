@@ -44,7 +44,7 @@ public class VariableTest extends TestCase {
 	
 	@Test
 	public void testHashCode() {
-		Variable x = new VariableImpl("x");
-		assertEquals(31+"x".hashCode(), x.hashCode());
+		Variable x = new VariableImpl(Query.VAR_NS+"x");
+		assertEquals(31+(Query.VAR_NS+"x").hashCode(), x.hashCode());
 	}
 }

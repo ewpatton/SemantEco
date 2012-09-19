@@ -21,6 +21,14 @@ import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
+/**
+ * The SemantAquaServlet class provides the main entry point to SemantAqua and is
+ * primarily concerned with handling dynamic requests and performing the initial
+ * configuration of the portal and its dependencies.
+ * 
+ * @author ewpatton
+ *
+ */
 @WebServlet(name="SemantAqua",
 			urlPatterns={"/rest/*","/js/modules/*","/js/config.js"},
 			description="SemantAqua Portal",
@@ -38,6 +46,9 @@ public class SemantAquaServlet extends HttpServlet {
 	private static final int HTTPS_PORT = 443;
 	
 	private Logger log = null;
+	
+	private static final int HTTP = 80;
+	private static final int HTTPS = 443;
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -143,16 +154,24 @@ public class SemantAquaServlet extends HttpServlet {
 			path += request.getScheme();
 			path += "://";
 			path += request.getServerName();
-			if(request.getScheme().equals("http") && request.getServerPort() != HTTP_PORT) {
+			if(request.getScheme().equals("http") && request.getServerPort() != HTTP) {
 				path += ":"+request.getServerPort();
 			}
-			else if(request.getScheme().equals("https") && request.getServerPort() != HTTPS_PORT) {
+			else if(request.getScheme().equals("https") && request.getServerPort() != HTTPS) {
 				path += ":"+request.getServerPort();
 			}
 			path += request.getContextPath();
 			path += "/";
 			return path;
 		}
+	}
+	
+	/**
+	 * Returns whether or not the servlet is built in a debug profile
+	 * @return
+	 */
+	public static boolean isDebug() {
+		return debugging;
 	}
 
 }

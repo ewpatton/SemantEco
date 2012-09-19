@@ -29,9 +29,21 @@ public interface SemantAquaUI {
 	 */
 	void addFacet(Resource facet);
 	
+	/**
+	 * Lists all of the facets present in this UI object.
+	 * @return
+	 */
 	List<Resource> getFacets();
 	
+	/**
+	 * Lists all of the scripts present in this UI object.
+	 * @return
+	 */
 	List<Resource> getScripts();
 	
+	/**
+	 * Lists all of the stylesheets present in this UI object.
+	 * @return
+	 */
 	List<Resource> getStylesheets();
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +26,14 @@ import edu.rpi.tw.escience.waterquality.query.URI;
 import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
+/**
+ * QueryImpl is the default implementation of the Query interface and provides
+ * the bulk of the logic required for programatically generating SPARQL queries
+ * used by the SemantAqua portal.
+ * 
+ * @author ewpatton
+ *
+ */
 public class QueryImpl implements Query {
 
 	private Map<String, String> prefixes = new HashMap<String, String>();
@@ -47,17 +56,28 @@ public class QueryImpl implements Query {
 	private boolean distinct = false;
 	private boolean reduced = false;
 	
+	private long limit = -1;
+	private long offset = -1;
+	
 	private static class OrderByEntry {
 		private Variable variable;
-		private SortType directon;
+		private SortType direction;
 	}
 	
 	private List<OrderByEntry> orderList;
+	private List<Variable> groupList;
 	
+	/**
+	 * Constructs a SELECT query
+	 */
 	public QueryImpl() {
 		this(Type.SELECT);
 	}
 	
+	/**
+	 * Constructs a query of the specified type
+	 * @param type Either ASK, CONSTRUCT, DESCRIBE, or SELECT
+	 */
 	public QueryImpl(Type type) {
 		if(type == null) {
 			throw new IllegalArgumentException("type cannot be null");
@@ -203,6 +223,7 @@ public class QueryImpl implements Query {
 			writeVars(ps);
 		}
 		writeWhereClause(ps);
+		writeSolutionModifier(ps);
 		return out.toString();
 	}
 	
@@ -270,6 +291,50 @@ public class QueryImpl implements Query {
 		}
 		out.println("WHERE ");
 		out.println(whereClause.toString());
+	}
+	
+	private void writeSolutionModifier(PrintStream out) {
+		writeGroupClause(out);
+		writeOrderByClause(out);
+		writeLimitOffsetClauses(out);
+	}
+	
+	private void writeGroupClause(PrintStream out) {
+		if(groupList != null) {
+			out.print("GROUP BY");
+			for(Variable i : groupList) {
+				out.print(" ");
+				out.print(i.toString());
+			}
+			out.println();
+		}
+	}
+	
+	private void writeOrderByClause(PrintStream out) {
+		if(orderList != null) {
+			out.print("ORDER BY");
+			for(OrderByEntry i : orderList) {
+				out.print(" ");
+				if(i.direction == SortType.ASC) {
+					out.print("ASC(");
+				}
+				else {
+					out.print("DESC(");
+				}
+				out.print(i.variable);
+				out.print(")");
+			}
+			out.println();
+		}
+	}
+	
+	private void writeLimitOffsetClauses(PrintStream out) {
+		if(offset != -1) {
+			out.println("OFFSET "+offset);
+		}
+		if(limit != -1) {
+			out.println("LIMIT "+limit);
+		}
 	}
 
 	@Override
@@ -358,14 +423,21 @@ public class QueryImpl implements Query {
 
 	@Override
 	public void addGroupBy(Variable var) {
-		// TODO Auto-generated method stub
-		
+		if(groupList == null) {
+			groupList = new LinkedList<Variable>();
+		}
+		groupList.add(var);
 	}
 
 	@Override
 	public void addOrderBy(Variable var, SortType sort) {
-		// TODO Auto-generated method stub
-		
+		if(orderList == null) {
+			orderList = new LinkedList<OrderByEntry>();
+		}
+		OrderByEntry entry = new OrderByEntry();
+		entry.direction = sort;
+		entry.variable = var;
+		orderList.add(entry);
 	}
 
 	@Override
@@ -388,6 +460,26 @@ public class QueryImpl implements Query {
 	@Override
 	public boolean isReduced() {
 		return reduced;
+	}
+
+	@Override
+	public void setLimit(long limit) {
+		this.limit = limit;
+	}
+
+	@Override
+	public long getLimit() {
+		return this.limit;
+	}
+
+	@Override
+	public void setOffset(long offset) {
+		this.offset = offset;
+	}
+
+	@Override
+	public long getOffset() {
+		return this.offset;
 	}
 	
 }

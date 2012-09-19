@@ -35,6 +35,15 @@ import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
 
+/**
+ * ModuleManagerImpl provides the default implementation of the ModuleManager interface
+ * for the SemantAqua portal. It is responsible for monitoring the modules directory
+ * and installing and configuring new modules or removing deleted modules from the 
+ * runtime of the portal as needed.
+ * 
+ * @author ewpatton
+ *
+ */
 public class ModuleManagerImpl implements ModuleManager, FileListener {
 
 	private static final int BUFSIZE = 8096;
@@ -45,11 +54,23 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	private Map<String, ModuleClassLoader> classLoaders = new HashMap<String, ModuleClassLoader>();
 	private String path = null;
 	private volatile long lastModified = 0;
+	private static final String MODULE_ERROR = "Unable to instantiate module ";
+	private static final int REFRESH_RATE = 5000;
+	private static final String RES_DIR = "META-INF/res/";
 	
+	/**
+	 * Default constructor
+	 */
 	public ModuleManagerImpl() {
 		log.trace("ModuleManagerImpl");
 	}
 	
+	/**
+	 * Constructs a ModuleManagerImpl that will monitor the specified
+	 * path for new JAR files and remove any modules originating from
+	 * a removed JAR file in that path.
+	 * @param path
+	 */
 	public ModuleManagerImpl(String path) {
 		log.trace("ModuleManagerImpl");
 		this.path = path;
@@ -58,15 +79,15 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			FileSystemManager manager = VFS.getManager();
 			FileObject file = manager.resolveFile(path);
 			DefaultFileMonitor fm = new DefaultFileMonitor(this);
-			fm.setDelay(5000);
+			fm.setDelay(REFRESH_RATE);
 			fm.setRecursive(true);
 			log.debug("Monitoring "+file);
 			fm.addFile(file);
 			fm.start();
-			File[] modules = new File(path).listFiles();
-			for(int i=0;i<modules.length;i++) {
-				if(modules[i].getAbsolutePath().endsWith(".jar")) {
-					FileObject modJar = manager.resolveFile("file:"+modules[i].getAbsolutePath());
+			File[] activeModules = new File(path).listFiles();
+			for(int i=0;i<activeModules.length;i++) {
+				if(activeModules[i].getAbsolutePath().endsWith(".jar")) {
+					FileObject modJar = manager.resolveFile("file:"+activeModules[i].getAbsolutePath());
 					if(modJar != null) {
 						fileCreated(new CreateEvent(modJar));
 					}
@@ -142,7 +163,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void fileCreated(FileChangeEvent event) {
+	public final void fileCreated(FileChangeEvent event) {
 		log.trace("fileCreated");
 		log.debug("Observed file created: "+event.getFile().getName().getPath());
 		if(event.getFile().getName().getExtension().equals("jar")) {
@@ -156,60 +177,62 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			if(loader != null) {
 				log.debug("Generated classloader");
 				classLoaders.put(event.getFile().getName().getPath(), loader);
-				Set<Class<? extends Module>> newModules = loader.getModules();
-				if(newModules.size() == 0) {
-					return;
-				}
-				final String path = explodeJar(event.getFile().getName().getPath());
-				for(Class<? extends Module> i : newModules) {
-					Module module = null;
-					try {
-						log.debug("Generating new module instance");
-						module = i.newInstance();
-					} catch (InstantiationException e) {
-						log.warn("Unable to instantiate module "+i.getSimpleName(), e);
-					} catch (IllegalAccessException e) {
-						log.warn("Unable to instantiate module "+i.getSimpleName(), e);
-					}
-					if(module != null) {
-						// TODO change this to a regex
-						InputStream properties = null;
-						JarFile jar = null;
-						try {
-							jar = new JarFile(event.getFile().getName().getPath());
-							ZipEntry entry = jar.getEntry("module.properties");
-							if(entry != null) {
-								properties = jar.getInputStream(entry);
-							}
-						}
-						catch(IOException e) {
-							
-						}
-						finally {
-							installModule(module, path, properties);
-							try {
-								if(properties != null) {
-									properties.close();
-								}
-								if(jar != null) {
-									jar.close();
-								}
-							}
-							catch(IOException e) {
-								// don't care
-							}
-						}
-					}
-				}
+				final String resPath = explodeJar(event.getFile().getName().getPath());
+				processLoader(loader, event.getFile().getName().getPath(),
+						resPath);
 				resetLastModified();
 			}
 		}
 	}
 	
-	protected String explodeJar(final String path) {
+	protected final void processLoader(final ModuleClassLoader loader, 
+			final String jarPath, final String resPath) {
+		Set<Class<? extends Module>> newModules = loader.getModules();
+		for(Class<? extends Module> i : newModules) {
+			Module module = null;
+			try {
+				log.debug("Generating new module instance");
+				module = i.newInstance();
+			} catch (InstantiationException e) {
+				log.warn(MODULE_ERROR+i.getSimpleName(), e);
+			} catch (IllegalAccessException e) {
+				log.warn(MODULE_ERROR+i.getSimpleName(), e);
+			}
+			if(module != null) {
+				InputStream properties = null;
+				JarFile jar = null;
+				try {
+					jar = new JarFile(jarPath);
+					ZipEntry entry = jar.getEntry("module.properties");
+					if(entry != null) {
+						properties = jar.getInputStream(entry);
+					}
+				}
+				catch(IOException e) {
+					
+				}
+				finally {
+					installModule(module, resPath, properties);
+					try {
+						if(properties != null) {
+							properties.close();
+						}
+						if(jar != null) {
+							jar.close();
+						}
+					}
+					catch(IOException e) {
+						// don't care
+					}
+				}
+			}
+		}
+	}
+	
+	protected final String explodeJar(final String path) {
 		log.trace("Exploding jar");
 		try {
-			final String name = path.substring(path.lastIndexOf('/')+1, path.length()-4);
+			final String name = path.substring(path.lastIndexOf('/')+1, path.length()-".jar".length());
 			final File resDir = new File(this.path+"/../../resources/"+name+"/");
 			if(!resDir.exists()) {
 				resDir.mkdirs();
@@ -218,9 +241,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			Enumeration<JarEntry> entries = jar.entries();
 			while(entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				if(entry.getName().startsWith("META-INF/res/") &&
+				// TODO change this to a regex
+				if(entry.getName().startsWith(RES_DIR) &&
 						!entry.getName().endsWith("/")) {
-					File dest = new File(resDir, entry.getName().substring(13));
+					File dest = new File(resDir, entry.getName().substring(RES_DIR.length()));
 					new File(dest.getParent()).mkdirs();
 					copy(jar.getInputStream(entry), new FileOutputStream(dest));
 				}
@@ -233,7 +257,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		return null;
 	}
 	
-	protected void copy(final InputStream is, final OutputStream os) 
+	protected final void copy(final InputStream is, final OutputStream os) 
 			throws IOException {
 		final byte[] buffer = new byte[BUFSIZE];
 		int read = 0;
@@ -245,7 +269,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void fileDeleted(FileChangeEvent event) {
+	public final void fileDeleted(FileChangeEvent event) {
 		log.trace("fileDeleted");
 		ModuleClassLoader loader = classLoaders.get(event.getFile().getName().getPath());
 		if(loader == null) {
@@ -260,9 +284,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			try {
 				module = i.newInstance();
 			} catch (InstantiationException e) {
-				log.warn("Unable to instantiate module "+i.getSimpleName(), e);
+				log.warn(MODULE_ERROR+i.getSimpleName(), e);
 			} catch (IllegalAccessException e) {
-				log.warn("Unable to instantiate module "+i.getSimpleName(), e);
+				log.warn(MODULE_ERROR+i.getSimpleName(), e);
 			}
 			if(module != null) {
 				uninstallModule(module);
@@ -281,7 +305,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 	}
 	
-	protected void installModule(Module module, String path, InputStream properties) {
+	protected final void installModule(Module module, String path, InputStream properties) {
 		log.debug("Installing module '"+module.getName()+"' version "+module.getMajorVersion()+"."+module.getMinorVersion()+
 				(module.getExtraVersion() != null ? "-"+module.getExtraVersion() : ""));
 		final String name = JavaScriptGenerator.cleanName(module.getName());
@@ -297,7 +321,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		configureModule(module, path, properties);
 	}
 	
-	protected void configureModule(Module module, String path, InputStream properties) {
+	protected final void configureModule(Module module, String path, InputStream properties) {
 		ModuleConfigurationImpl config = new ModuleConfigurationImpl(module, path);
 		if(properties != null) {
 			try {
@@ -310,13 +334,13 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void fileChanged(FileChangeEvent event) {
+	public final void fileChanged(FileChangeEvent event) {
 		// TODO Auto-generated method stub
 		log.trace("fileChanged");
 		resetLastModified();
 	}
 	
-	protected void resetLastModified() {
+	protected final void resetLastModified() {
 		lastModified = System.currentTimeMillis();
 	}
 	

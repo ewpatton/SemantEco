@@ -5,12 +5,25 @@ import java.lang.reflect.Method;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
 
+/**
+ * JavaScriptGenerator provides some basic utilities for creating
+ * JavaScript used by the client to interact with the server.
+ * @author ewpatton
+ *
+ */
 public final class JavaScriptGenerator {
 
 	private JavaScriptGenerator() {
 	
 	}
 	
+	/**
+	 * Generates JavaScript to provide an AJAX interface for talking
+	 * to the specified Module. Any method annotated with \@QueryMethod
+	 * will be provided an implementation on the client.
+	 * @param mod
+	 * @return
+	 */
 	public static String ajaxForModule(Module mod) {
 		final Class<?> cls = mod.getClass();
 		String result = "var "+cls.getSimpleName()+" = {";
@@ -52,6 +65,11 @@ public final class JavaScriptGenerator {
 		return result;
 	}
 	
+	/**
+	 * Generates a clean name for given string; used for generating variables in JavaScript
+	 * @param name
+	 * @return
+	 */
 	public static String cleanName(String name) {
 		return name.replaceAll(" ", "-");
 	}

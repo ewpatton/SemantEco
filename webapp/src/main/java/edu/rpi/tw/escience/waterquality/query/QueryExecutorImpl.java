@@ -20,6 +20,16 @@ import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
+/**
+ * QueryExecutorImpl provides the default implementation used by
+ * modules to execute queries on external SPARQL data sources.
+ * 
+ * NB: This class holds a weak reference to the module it is meant to
+ * track.
+ * 
+ * @author ewpatton
+ *
+ */
 public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	
 	private String endpoint = null;
@@ -28,6 +38,12 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	private List<String> acceptTypes = new LinkedList<String>();
 	private static final int BUFSIZE = 1024;
 	
+	/**
+	 * Creates a new QueryExecutorImpl for the specified module that
+	 * will execute any queries against the specified triple store.
+	 * @param owner
+	 * @param tripleStore
+	 */
 	public QueryExecutorImpl(Module owner, String tripleStore) {
 		if(owner != null) {
 			this.owner = new WeakReference<Module>(owner);
@@ -126,6 +142,11 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		return null;
 	}
 	
+	/**
+	 * Generates the default executor for a particular module
+	 * @param module
+	 * @return
+	 */
 	public static QueryExecutor getExecutorForModule(Module module) {
 		return new QueryExecutorImpl(module, SemantAquaConfiguration.get().getTripleStore());
 	}
@@ -136,7 +157,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	}
 	
 	@Override
-	public Object clone() {
+	public Object clone() throws CloneNotSupportedException {
 		QueryExecutorImpl copy = new QueryExecutorImpl(owner.get(), endpoint);
 		copy.acceptTypes = new ArrayList<String>(acceptTypes);
 		return copy;
@@ -144,9 +165,14 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public QueryExecutor accept(String mimeType) {
-		QueryExecutorImpl clone = (QueryExecutorImpl)clone();
-		clone.acceptTypes.add(mimeType);
-		return clone;
+		try {
+			QueryExecutorImpl clone = (QueryExecutorImpl)clone();
+			clone.acceptTypes.add(mimeType);
+			return clone;
+		}
+		catch(CloneNotSupportedException e) {
+			return this;
+		}
 	}
 
 }

@@ -12,6 +12,14 @@ import edu.rpi.tw.escience.waterquality.query.GraphComponent;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 
+/**
+ * GraphComponentCollectionImpl provides a default implementation of the
+ * GraphComponentCollection and serves as the base class for a number of
+ * other graph feature classes.
+ * 
+ * @author ewpatton
+ *
+ */
 public class GraphComponentCollectionImpl implements GraphComponentCollection {
 
 	private List<GraphComponent> components = new ArrayList<GraphComponent>();

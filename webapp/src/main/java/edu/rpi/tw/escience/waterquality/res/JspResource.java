@@ -13,11 +13,24 @@ import org.apache.log4j.Logger;
 
 import edu.rpi.tw.escience.waterquality.Module;
 
+/**
+ * Reference to a JSP file provided in a module's jar file.
+ * 
+ * @author ewpatton
+ *
+ */
 public class JspResource extends OwnedResource {
 
 	private String path = null;
 	private Logger log = Logger.getLogger(JspResource.class);
 	
+	/**
+	 * Creates a JspResource reference for the given module
+	 * named by path
+	 * 
+	 * @param owner
+	 * @param path
+	 */
 	public JspResource(Module owner, String path) {
 		super(owner);
 		this.path = path;
@@ -38,6 +51,13 @@ public class JspResource extends OwnedResource {
 		return true;
 	}
 	
+	/**
+	 * Dispatches a request to the JSP named by the resource
+	 * so that it can provide output to the main SemantAqua interface.
+	 * @param context
+	 * @param request
+	 * @param response
+	 */
 	public void dispatch(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			context.getRequestDispatcher(path).forward(request, response);

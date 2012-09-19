@@ -61,6 +61,8 @@ public class DataSourceModule implements Module {
 	private static final String LABEL_VAR = "label";
 	private static final String RESULTS_BLOCK = "results";
 	private static final String FAILURE = "{\"success\":false}";
+	private static final String BINDINGS = "bindings";
+	private static final String VALUE = "value";
 	private Logger log = Logger.getLogger(DataSourceModule.class);
 	
 	/**
@@ -188,13 +190,13 @@ public class DataSourceModule implements Module {
 			response.put("success", true);
 			response.put("data", data);
 			results = results.getJSONObject("results");
-			JSONArray bindings = results.getJSONArray("bindings");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
 			for(int i=0;i<bindings.length();i++) {
 				JSONObject binding = bindings.getJSONObject(i);
-				String sourceUri = binding.getJSONObject(SOURCE_VAR).getString("value");
+				String sourceUri = binding.getJSONObject(SOURCE_VAR).getString(VALUE);
 				String labelStr = null;
 				try {
-					labelStr = binding.getJSONObject(LABEL_VAR).getString("value");
+					labelStr = binding.getJSONObject(LABEL_VAR).getString(VALUE);
 				}
 				catch(Exception e) { }
 				if(labelStr == null) {
@@ -255,13 +257,13 @@ public class DataSourceModule implements Module {
 			JSONObject response = (JSONObject)JSONObject.stringToValue(results);
 			try {
 				if(response.getJSONObject(RESULTS_BLOCK) != null && 
-					response.getJSONObject(RESULTS_BLOCK).getJSONArray("bindings") != null &&
-					response.getJSONObject(RESULTS_BLOCK).getJSONArray("bindings").length() > 0) {
-					JSONArray bindings = response.getJSONObject(RESULTS_BLOCK).getJSONArray("bindings");
+					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS) != null &&
+					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS).length() > 0) {
+					JSONArray bindings = response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS);
 					for(int i=0;i<bindings.length();i++) {
 						JSONObject binding = bindings.getJSONObject(i);
-						if(binding.getJSONObject(STATE_VAR) != null && binding.getJSONObject(STATE_VAR).getString("value") != null) {
-							stateUri = binding.getJSONObject(STATE_VAR).getString("value");
+						if(binding.getJSONObject(STATE_VAR) != null && binding.getJSONObject(STATE_VAR).getString(VALUE) != null) {
+							stateUri = binding.getJSONObject(STATE_VAR).getString(VALUE);
 							break;
 						}
 					}

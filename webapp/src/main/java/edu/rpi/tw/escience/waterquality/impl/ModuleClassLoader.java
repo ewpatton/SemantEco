@@ -16,6 +16,15 @@ import org.apache.log4j.Logger;
 
 import edu.rpi.tw.escience.waterquality.Module;
 
+/**
+ * ModuleClassLoader is used to load classes from a module's JAR file.
+ * It is also responsible for verifying the integrity of the JAR and
+ * locating any classes that implement Module so that they can be
+ * retrieved by the ModuleManager for later use.
+ * 
+ * @author ewpatton
+ *
+ */
 public class ModuleClassLoader extends ClassLoader {
 
 	private Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
@@ -23,6 +32,11 @@ public class ModuleClassLoader extends ClassLoader {
 	private static final int BUFSIZE = 8192;
 	private Logger log = Logger.getLogger(ModuleClassLoader.class);
 	
+	/**
+	 * Constructs a ModuleClassLoader from the JAR at the specified
+	 * path.
+	 * @param path
+	 */
 	@SuppressWarnings("unchecked")
 	public ModuleClassLoader(String path) {
 		super(Thread.currentThread().getContextClassLoader());
@@ -58,7 +72,7 @@ public class ModuleClassLoader extends ClassLoader {
 	}
 	
 	protected final Class<?> registerClass(JarFile file, JarEntry entry) throws IOException {
-		final String clsName = entry.getName().replaceAll("/", ".").substring(0, entry.getName().length()-6);
+		final String clsName = entry.getName().replaceAll("/", ".").substring(0, entry.getName().length()-".class".length());
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		final InputStream is = file.getInputStream(entry);
 		final byte[] buffer = new byte[BUFSIZE];
@@ -84,6 +98,11 @@ public class ModuleClassLoader extends ClassLoader {
 		return cls;
 	}
 	
+	/**
+	 * Gets the set of module classes found in the JAR file
+	 * loaded by this ModuleClassLoader.
+	 * @return
+	 */
 	public Set<Class<? extends Module>> getModules() {
 		return Collections.unmodifiableSet(modules);
 	}

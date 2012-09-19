@@ -2,10 +2,21 @@ package edu.rpi.tw.escience.waterquality.query.impl;
 
 import edu.rpi.tw.escience.waterquality.query.GraphComponent;
 
+/**
+ * FilterComponentImpl provides a mechanism for storing FILTER statements
+ * inside of a GraphComponentCollection.
+ * 
+ * @author ewpatton
+ *
+ */
 public class FilterComponentImpl implements GraphComponent {
 
 	private String condition = null;
 	
+	/**
+	 * Generates a FILTER representing the given condition
+	 * @param cond
+	 */
 	public FilterComponentImpl(String cond) {
 		if(cond == null) {
 			throw new IllegalArgumentException("cond cannot be null");
@@ -13,6 +24,10 @@ public class FilterComponentImpl implements GraphComponent {
 		this.condition = cond;
 	}
 	
+	/**
+	 * Returns the condition string for this filter
+	 * @return
+	 */
 	public String getCondition() {
 		return condition;
 	}

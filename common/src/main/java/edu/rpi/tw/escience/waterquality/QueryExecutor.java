@@ -49,7 +49,23 @@ public interface QueryExecutor {
 	 */
 	QueryExecutor execute(String endpoint, Query query, Model model);
 
+	/**
+	 * Gets the default SPARQL endpoint URI used by this SemantAqua instance.
+	 * @return
+	 */
 	String getDefaultSparqlEndpoint();
 
-	QueryExecutor accept(String string);
+	/**
+	 * Allows the caller of the executor to specify a mime type to send
+	 * in the HTTP Accept header when the SPARQL query is executed. This
+	 * returns a QueryExecutor so that calls can be chained.
+	 * 
+	 * <pre>
+	 * QueryExecutor qe = ...;
+	 * qe.accept("application/json").accept("application/rdf+xml").execute(...);
+	 * </pre>
+	 * @param mimeType
+	 * @return
+	 */
+	QueryExecutor accept(String mimeType);
 }

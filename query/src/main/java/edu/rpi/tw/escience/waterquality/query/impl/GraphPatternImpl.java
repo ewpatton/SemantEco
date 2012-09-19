@@ -5,6 +5,12 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import edu.rpi.tw.escience.waterquality.query.GraphPattern;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 
+/**
+ * GraphPatternImpl provides the default implementation of the
+ * GraphPattern interface.
+ * @author ewpatton
+ *
+ */
 public class GraphPatternImpl implements GraphPattern {
 
 	private QueryResource subject = null;
@@ -13,6 +19,13 @@ public class GraphPatternImpl implements GraphPattern {
 	private String value = null;
 	private XSDDatatype valueType = null;
 	
+	/**
+	 * Constructs a graph pattern such as ?s ?p ?o where any can be
+	 * a known URI, a variable, or a blank node.
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 */
 	public GraphPatternImpl(QueryResource subject, QueryResource predicate,
 			QueryResource object) {
 		this.subject = subject;
@@ -20,6 +33,15 @@ public class GraphPatternImpl implements GraphPattern {
 		this.object = object;
 	}
 
+	/**
+	 * Constructs a graph pattern such as ?s ?p "..."^^xsd:... where the
+	 * datatype is optional and ?s and ?p are either a known URI, a variable,
+	 * or a blank node
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 * @param type
+	 */
 	public GraphPatternImpl(QueryResource subject, QueryResource predicate,
 			String object, XSDDatatype type) {
 		this.subject = subject;

@@ -3,11 +3,25 @@ package edu.rpi.tw.escience.waterquality.query.impl;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
+/**
+ * VariableImpl provides a default implementation of the Variable interface.
+ * 
+ * @author ewpatton
+ *
+ */
 public class VariableImpl implements Variable {
 
 	private String uri = null;
 	
+	/**
+	 * Creates a new VariableImpl representing the specified URI. The URI should
+	 * start with {@link Query#VAR_NS}.
+	 * @param uri
+	 */
 	public VariableImpl(String uri) {
+		if(uri != null && !uri.startsWith(Query.VAR_NS)) {
+			throw new IllegalArgumentException("URI "+uri+" not a valid variable identifier");
+		}
 		this.uri = uri;
 	}
 	
@@ -15,6 +29,7 @@ public class VariableImpl implements Variable {
 		this.uri = uri;
 	}
 	
+	@Override
 	public String getUri() {
 		return uri;
 	}

@@ -30,6 +30,12 @@ public interface Query extends GraphComponentCollection {
 		ASK
 	}
 	
+	/**
+	 * Specifies the different sort orders allowed
+	 * by a SPARQL query.
+	 * @author ewpatton
+	 *
+	 */
 	enum SortType {
 		ASC,
 		DESC
@@ -177,4 +183,28 @@ public interface Query extends GraphComponentCollection {
 	 * @return
 	 */
 	boolean isReduced();
+	
+	/**
+	 * Sets the value of the LIMIT clause in the SPARQL query
+	 * @param limit
+	 */
+	void setLimit(long limit);
+	
+	/**
+	 * Gets the value of the LIMIT clause in the SPARQL query, -1 if no limit is set
+	 * @return
+	 */
+	long getLimit();
+	
+	/**
+	 * Sets the value of the OFFSET clause in the SPARQL query
+	 * @param offset
+	 */
+	void setOffset(long offset);
+	
+	/**
+	 * Gets the value of the OFFSET caluse in the SPARQL query, -1 if no limit is set
+	 * @return
+	 */
+	long getOffset();
 }
