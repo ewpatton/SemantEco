@@ -50,6 +50,9 @@ public class SemantAquaServlet extends HttpServlet {
 	private static final int HTTP = 80;
 	private static final int HTTPS = 443;
 	
+	private static final int HTTP = 80;
+	private static final int HTTPS = 443;
+	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
