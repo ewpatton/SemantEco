@@ -60,7 +60,7 @@ public class JspResource extends OwnedResource {
 	 */
 	public void dispatch(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			context.getRequestDispatcher(path).forward(request, response);
+			context.getRequestDispatcher("/"+path).include(request, response);
 		} catch (ServletException e) {
 			log.warn("Unable to dispatch request to JSP file", e);
 		} catch (IOException e) {

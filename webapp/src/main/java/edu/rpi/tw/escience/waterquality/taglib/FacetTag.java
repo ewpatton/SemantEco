@@ -62,7 +62,7 @@ public class FacetTag extends TagSupport {
 				if(i.isJspResource()) {
 					ModuleJspEvaluator eval = new ModuleJspEvaluator((HttpServletResponse)pageContext.getResponse());
 					JspResource jsp = (JspResource)i;
-					jsp.dispatch(pageContext.getServletContext(), (HttpServletRequest)pageContext.getRequest(), eval);
+					jsp.dispatch(pageContext.getServletContext(), (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)eval);
 					out.write(eval.toString());
 				}
 				else {
@@ -79,7 +79,9 @@ public class FacetTag extends TagSupport {
 
 	private static class ModuleJspEvaluator extends HttpServletResponseWrapper {
 
-		private WrapperOutputStream output = new WrapperOutputStream();
+		private final WrapperOutputStream output = new WrapperOutputStream();
+		private final Logger log = Logger.getLogger(ModuleJspEvaluator.class);
+		private final PrintWriter writer = new PrintWriter(output, true);
 		
 		/**
 		 * Provides a response wrapper that can be passed to a JSP processor
@@ -93,16 +95,20 @@ public class FacetTag extends TagSupport {
 		
 		@Override
 		public PrintWriter getWriter() {
-			return new PrintWriter(getOutputStream());
+			log.debug("getWriter");
+			return writer;
 		}
 		
 		@Override
 		public ServletOutputStream getOutputStream() {
+			log.debug("getOutputStream");
 			return output;
 		}
 		
 		@Override
 		public String toString() {
+			log.debug("toString");
+			writer.close();
 			return output.toString();
 		}
 		
@@ -114,11 +120,13 @@ public class FacetTag extends TagSupport {
 
 		@Override
 		public void write(int arg0) throws IOException {
+			log.debug("write");
 			data.write(arg0);
 		}
 		
 		@Override
 		public String toString() {
+			log.debug("toString");
 			try {
 				return data.toString("UTF-8");
 			} catch (UnsupportedEncodingException e) {
