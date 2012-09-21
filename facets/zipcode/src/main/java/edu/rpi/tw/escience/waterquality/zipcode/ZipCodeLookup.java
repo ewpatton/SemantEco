@@ -114,8 +114,17 @@ public class ZipCodeLookup {
 				state = content.getString("adminName1");
 				stateAbbr = content.getString("adminCode1");
 				stateNum = stateLookup.get(state.toLowerCase());
+				if(stateNum.contains("US:")) {
+					stateNum = stateNum.replace("US:", "");
+				}
 				county = content.getString("adminName2");
 				countyNum = content.getString("adminCode2");
+				if(countyNum.contains("US:")) {
+					countyNum = countyNum.replace("US:", "");
+				}
+				if(countyNum.contains(":")) {
+					countyNum = countyNum.split(":")[1];
+				}
 				city = content.getString("placeName");
 				lat = content.getDouble("lat");
 				lng = content.getDouble("lng");
@@ -180,7 +189,7 @@ public class ZipCodeLookup {
 			description.put("county", county);
 			description.put("city", city);
 			description.put("stateCode", stateNum);
-			description.put("countyCode", getCountyCode());
+			description.put("countyCode", countyNum);
 			description.put("lat", lat);
 			description.put("lng", lng);
 			result.put("result", description);

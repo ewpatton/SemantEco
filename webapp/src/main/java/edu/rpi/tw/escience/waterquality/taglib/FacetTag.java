@@ -21,7 +21,7 @@ import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.res.JspResource;
 import edu.rpi.tw.escience.waterquality.res.OwnedResource;
 import edu.rpi.tw.escience.waterquality.ui.SemantAquaUIFactory;
-import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
+import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
 /**
  * The FacetTag class provides a mechanism for the SemantAqua JSP to present
@@ -56,7 +56,7 @@ public class FacetTag extends TagSupport {
 			for(Resource i : facets) {
 				final String name = ((OwnedResource)i).getOwner().getName();
 				log.debug("Outputing facet for '"+name+"'");
-				out.write("<table id=\""+JavaScriptGenerator.cleanName(i.getClass().getSimpleName())+"\" border=\"1\">");
+				out.write("<table id=\""+NameUtils.cleanName(i.getOwner().getClass().getSimpleName())+"\" border=\"1\">");
 				out.write("<tr><th>"+name+"</th></tr>");
 				out.write("<tr><td>");
 				if(i.isJspResource()) {

@@ -38,6 +38,7 @@ import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 import edu.rpi.tw.escience.waterquality.util.JSONUtils;
+import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
 /**
  * The Data Source Module provides the mechanisms for constructing the primary
@@ -103,8 +104,8 @@ public class DataSourceModule implements Module {
 				JSONArray sources = (JSONArray)data.get("data");
 				for(int i=0;i<sources.length();i++) {
 					JSONObject mapping = sources.getJSONObject(i);
-					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+mapping.getString("uri")+"\" />";
-					responseText += "<label for=\"source\">"+mapping.getString("label")+"</label>";
+					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+mapping.getString("uri")+"\" id=\""+NameUtils.cleanName(mapping.getString("label"))+"\" />";
+					responseText += "<label for=\""+NameUtils.cleanName(mapping.getString("label"))+"\">"+mapping.getString("label")+"</label>";
 					responseText += "<br />";
 				}
 			}

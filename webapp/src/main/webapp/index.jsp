@@ -47,7 +47,7 @@
       <img src="images/header.png" alt="header"/>
     </div>
     <div id="content">
-      <div style="text-align:center">
+      <div class="main">
 	<form>
 	  <p>Zip Code:
 	    <input id="zip" type="text" size="10" name="zip" value="02888" />
@@ -63,9 +63,10 @@
 	</form>
 	<p id="reportSite">&nbsp;</p>
       </div>
-      <div style="margin-left:auto;margin-right:auto;width:100%">
-	<div id="facet" style="float:right;width:20%">
+      <div class="sidebar">
+	<div id="facets" style="float:right;width:20%">
 	  <module:facets />
+	  <!-- 
 	  <table border="1">
 	    <tr><th>Data Source</th></tr>
 	    <tr><td>
@@ -78,7 +79,7 @@
 	    <tr>
 	      <td class="nobr">
 		<select name="species" id="species" onchange="onchange_species_selection();">
-		  <!--<option value="">All species</option>-->
+		  <%--<option value="">All species</option>--%>
 		  <option value="Human">Human</option>
 		  <option value="Aquatic-life">Aquatic life</option>
 		  <option value="CanadaGoose">Canada Goose</option>
@@ -90,11 +91,11 @@
 	    <tr><th>Regulation</th></tr>
       <tr><td>
       <div id="regDiv">
-<!--		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl" checked="checked" onclick="submitQuery(this.value,this.name)"/>EPA Regulation<br/>
+<%--		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl" checked="checked" onclick="submitQuery(this.value,this.name)"/>EPA Regulation<br/>
 		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ca-regulation.owl" onclick="submitQuery(this.value,this.name)"/>CA Regulation<br/>
 		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ma-regulation.owl" onclick="submitQuery(this.value,this.name)" />MA Regulation<br/>
 		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ny-regulation.owl" onclick="submitQuery(this.value,this.name)" />NY Regulation<br/>
-		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl" onclick="submitQuery(this.value,this.name)"/>RI Regulation<br/>-->
+		<input type="radio" name="regulation" value="http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl" onclick="submitQuery(this.value,this.name)"/>RI Regulation<br/>--%>
 		  </div>
 	    </td></tr>
 	  </table>
@@ -155,6 +156,7 @@
 	      </td>
 	    </tr>
 	  </table>
+	  -->
 	</div>
 	<div id="display" style="width: 100%; height: 720px">
 	  <div id="map_canvas" style="width: 78%; height: 720px"></div>

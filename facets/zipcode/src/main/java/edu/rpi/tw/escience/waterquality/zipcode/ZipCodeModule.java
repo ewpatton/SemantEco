@@ -15,6 +15,7 @@ import edu.rpi.tw.escience.waterquality.zipcode.ZipCodeLookup.ServerFailedToResp
 
 public class ZipCodeModule implements Module {
 
+	@SuppressWarnings("unused")
 	private ModuleConfiguration config = null;
 	
 	@Override

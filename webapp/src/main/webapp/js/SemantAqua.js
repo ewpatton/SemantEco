@@ -2,18 +2,22 @@ var SemantAqua = {
 	"limit": 5,
 	"initialize": function() {
 		SemantAqua.configureConsole();
-		var mapOptions = {
-			center: new google.maps.LatLng(37.4419, -122.1419),
-			zoom: 8,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			zoomControl: true,
-			panControl: true
-		};
-		SemantAqua.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-		SemantAqua.geocode = new google.maps.Geocoder();
+		SemantAqua.configureMaps();
+		$.bbq.pushState(SemantAquaUI.getFacetParams(),1);
+		SemantAquaUI.populateFacets();
 		$(window).bind('hashchange', SemantAqua.handleStateChange);
-		SemantAqua.configureConsole();
 		SemantAqua.configureWebSockets();
+	},
+	"configureMaps": function() {
+		var mapOptions = {
+				center: new google.maps.LatLng(37.4419, -122.1419),
+				zoom: 8,
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				zoomControl: true,
+				panControl: true
+			};
+		SemantAqua.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+		SemantAqua.geocoder = new google.maps.Geocoder();
 	},
 	"configureConsole": function() {
 		if(typeof window.console == "undefined") {
@@ -106,11 +110,16 @@ var SemantAqua = {
 			alert("The input zip code is not valid! Please check and input again.")
 			return;
 		}
-		$.bbq.pushState({"zip": zip});
-		SemantAqua.handleStateChange();
+		$.bbq.pushState({"zip": zip,"action":"decodeZipCode"});
 		return false;
 	},
 	"handleStateChange": function() {
+		var action = $.bbq.getState("action");
+		if(typeof SemantAqua[action] == "function") {
+			SemantAqua[action].call(SemantAqua);
+		}
+	},
+	"decodeZipCode": function() {
 		var zip = $.bbq.getState("zip");
 		if(zip == null) {
 			SemantAqua.hideSpinner();
@@ -125,35 +134,39 @@ var SemantAqua = {
 	"processZipCode": function(response) {
 		var data = JSON.parse(response);
 		console.log(response);
-		var stateCode = data.result.stateCode;
-		if(stateCode.indexOf(":")!=-1) {
-			stateCode = stateCode.split(":")[1];
-		}
 		$.bbq.pushState({"state":data.result.stateAbbr,
-			"stateCode":stateCode, "countyCode":countyCode,
-			"lat":data.result.lat, "lng":data.result.lng})
+			"countyCode":data.result.countyCode,
+			"lat":data.result.lat, "lng":data.result.lng,
+			"action":"showReportSites"});
 	},
 	"doGeocode": function(zip) {
+		console.trace();
 		if(SemantAqua.geocoder) {
-			SemantAqua.geocoder.getLatLng(zip, function(pt) {
-				if(!point) {
-					alert(zip + " not found");
-				}
-				else {
-					map.setCenter(point);
-					map.setZoom(10);
-				}
-			});
+			SemantAqua.geocoder.geocode({"address":zip, "region":"US"},
+				function(pt) {
+					console.log(pt);
+					if(!pt) {
+						alert(zip + " not found");
+					}
+					else {
+						SemantAqua.map.setCenter(pt[0].geometry.location);
+						SemantAqua.map.setZoom(10);
+					}
+				});
+		}
+		else {
+			console.log("SemantAqua.geocoder is null");
 		}
 	},
 	"showReportSites": function() {
-		
+		SemantAqua.hideSpinner();
 	},
 	"showSpinner": function() {
 		$("#spinner").css("display", "block");
 	},
 	"hideSpinner": function() {
 		$("#spinner").css("display", "none");
+		$.bbq.removeState("action");
 	},
 	"triggerUpdate": function() {
 		SemantAqua.showAddress($("#zip").val());

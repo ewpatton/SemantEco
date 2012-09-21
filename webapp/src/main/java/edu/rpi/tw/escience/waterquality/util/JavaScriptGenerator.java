@@ -65,21 +65,4 @@ public final class JavaScriptGenerator {
 		return result;
 	}
 
-	public static String cleanName(final String name) {
-		final StringBuilder sb = new StringBuilder();
-		for(int i=0;i<name.length();i++) {
-			char c = name.charAt(i);
-			if(Character.isLowerCase(c)) {
-				if(i>0) {
-					sb.append("-");
-				}
-				sb.append(Character.toLowerCase(c));
-			}
-			else {
-				sb.append(c);
-			}
-		}
-		return sb.toString();
-	}
-	
 }
