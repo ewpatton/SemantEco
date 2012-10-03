@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -45,6 +46,11 @@ public class DataSourceModuleTest extends TestCase {
 			params.put(key, values);
 		}
 		
+		@Override
+		public Logger getLogger() {
+			return Logger.getRootLogger();
+		}
+		
 	}
 	
 	private static class TestModuleConfiguration extends MockModuleConfiguration {
@@ -77,6 +83,7 @@ public class DataSourceModuleTest extends TestCase {
 	}
 	
 	private static class TestResource extends MockResource {
+		@SuppressWarnings("unused")
 		String path = null;
 		public TestResource(String path) {
 			this.path = path;
@@ -84,6 +91,7 @@ public class DataSourceModuleTest extends TestCase {
 	}
 	
 	private static class TestStringResource extends MockResource {
+		@SuppressWarnings("unused")
 		String content = null;
 		public TestStringResource(String content) {
 			this.content = content;
@@ -132,34 +140,6 @@ public class DataSourceModuleTest extends TestCase {
 		}
 	}
 	
-	private static class TestQueryExecutor2 extends MockQueryExecutor {
-		
-		public String[] responses = new String[] {
-			getResource("/test002.json"),
-			getResource("/test003.xml"),
-			getResource("/test002.json"),
-			getResource("/test003.xml")
-		};
-		int pointer = 0;
-		
-		public TestQueryExecutor2() throws Exception {
-			
-		}
-		
-		public QueryExecutor accept(String mimeType) {
-			return this;
-		}
-		
-		public String execute(Query query) {
-			return responses[pointer++];
-		}
-		
-		public String execute(String endpoint, Query query) {
-			return responses[pointer++];
-		}
-		
-	}
-	
 	private static class TestUI extends MockUI {
 		Set<Resource> facets = new HashSet<Resource>();
 		
@@ -197,19 +177,34 @@ public class DataSourceModuleTest extends TestCase {
 		TestRequest request = new TestRequest();
 		DataSourceModule module = new DataSourceModule();
 		module.setModuleConfiguration(config);
-		module.visit(model, request);
-		request.setParam("source", new String[] { "http://sparql.tw.rpi.edu/garbage" });
-		module.visit(model, request);
+		try {
+			module.visit(model, request);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			
+		}
+		try {
+			request.setParam("source", new String[] { "http://sparql.tw.rpi.edu/garbage" });
+			module.visit(model, request);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			
+		}
 		request.setParam("source", new String[] { "http://sparql.tw.rpi.edu/source/usgs-gov", "http://sparql.tw.rpi.edu/source/epa-gov" });
 		request.setParam("state",new String[] { "RI" });
-		request.setParam("county",new String[] { "001" });
+		request.setParam("county",new String[] { "1" });
 		request.setParam("zip",new String[] { "02809" });
-		module.visit(model, request);
-		try {
-			config.queryExecutor = new TestQueryExecutor2();
-		}
-		catch(Exception e) { }
-		module.visit(model, request);
+		request.setParam("lat", new String[] { "41.6842" });
+		request.setParam("lng", new String[] { "-71.26866" });
+		request.setParam("limit", new String[] { "{\"facility\":{\"offset\":0,\"limit\":0},\"site\":{\"offset\":0,\"limit\":2}}" });
+//		module.visit(model, request);
+//		try {
+//			config.queryExecutor = new TestQueryExecutor2();
+//		}
+//		catch(Exception e) { }
+//		module.visit(model, request);
 	}
 	
 	@Test

@@ -116,6 +116,7 @@ public class GraphPatternImpl implements GraphPattern {
 		else {
 			result += object;
 		}
+		result += " . ";
 		return result;
 	}
 

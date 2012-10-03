@@ -85,6 +85,14 @@ public interface Query extends GraphComponentCollection {
 	Variable createVariable(String uri);
 	
 	/**
+	 * Creates a variable expression for a SELECT
+	 * prolog, e\.g\. count(distinct ?var)
+	 * @param
+	 * @return
+	 */
+	Variable createVariableExpression(String expr);
+	
+	/**
 	 * Creates a blank node for use in this Query
 	 * @return
 	 */
@@ -207,4 +215,13 @@ public interface Query extends GraphComponentCollection {
 	 * @return
 	 */
 	long getOffset();
+
+	/**
+	 * Adds an arbitrary expression used to order SPARQL query results.
+	 * It is not guaranteed that the Query engine will validate this
+	 * string.
+	 * @param expr A valid expression in the SPARQL algebra that can be used in an ORDER BY statement
+	 * @param sort Direction to sort
+	 */
+	void addOrderBy(String expr, SortType sort);
 }

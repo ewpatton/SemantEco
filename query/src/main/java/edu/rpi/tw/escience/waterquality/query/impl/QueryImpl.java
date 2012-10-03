@@ -61,6 +61,7 @@ public class QueryImpl implements Query {
 	
 	private static class OrderByEntry {
 		private Variable variable;
+		private String expression;
 		private SortType direction;
 	}
 	
@@ -252,7 +253,6 @@ public class QueryImpl implements Query {
 	}
 	
 	private void writeConstruct(PrintStream out) {
-		out.print("CONSTRUCT ");
 		out.println(constructClause.toString());
 	}
 	
@@ -321,7 +321,12 @@ public class QueryImpl implements Query {
 				else {
 					out.print("DESC(");
 				}
-				out.print(i.variable);
+				if(i.variable != null) {
+					out.print(i.variable);
+				}
+				else {
+					out.print(i.expression);
+				}
 				out.print(")");
 			}
 			out.println();
@@ -480,6 +485,22 @@ public class QueryImpl implements Query {
 	@Override
 	public long getOffset() {
 		return this.offset;
+	}
+
+	@Override
+	public void addOrderBy(String expr, SortType sort) {
+		if(orderList == null) {
+			orderList = new LinkedList<OrderByEntry>();
+		}
+		OrderByEntry entry = new OrderByEntry();
+		entry.expression = expr;
+		entry.direction = sort;
+		orderList.add(entry);
+	}
+
+	@Override
+	public Variable createVariableExpression(String expr) {
+		return new VariableExprImpl(expr);
 	}
 	
 }

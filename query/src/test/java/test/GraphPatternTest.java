@@ -77,13 +77,13 @@ public class GraphPatternTest extends TestCase {
 		p = new VariableImpl(Query.VAR_NS+"p");
 		o = new VariableImpl(Query.VAR_NS+"o");
 		GraphPatternImpl x = new GraphPatternImpl(s, p, o);
-		assertEquals("?s ?p ?o", x.toString());
+		assertEquals("?s ?p ?o . ", x.toString());
 		x.setObject("123", null);
-		assertEquals("?s ?p \"123\"", x.toString());
+		assertEquals("?s ?p \"123\" . ", x.toString());
 		x.setObject("123", XSDDatatype.XSDint);
-		assertEquals("?s ?p \"123\"^^xsd:int", x.toString());
+		assertEquals("?s ?p \"123\"^^xsd:int . ", x.toString());
 		x.setObject("long \"string\" with quotes", XSDDatatype.XSDstring);
-		assertEquals("?s ?p \"\"\"long \"string\" with quotes\"\"\"^^xsd:string",
+		assertEquals("?s ?p \"\"\"long \"string\" with quotes\"\"\"^^xsd:string . ",
 				x.toString());
 	}
 	

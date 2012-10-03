@@ -1,25 +1,12 @@
 package edu.rpi.tw.escience.waterquality.datasource;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -35,7 +22,6 @@ import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
@@ -49,19 +35,11 @@ import edu.rpi.tw.escience.waterquality.util.NameUtils;
 public class DataSourceModule implements Module {
 
 	private ModuleConfiguration config = null;
-	private static final String LOGD_ENDPOINT = "http://logd.tw.rpi.edu/sparql?output=sparqljson";
 	private static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
-	private static final String INSTANCE_HUB_STATES = "http://logd.tw.rpi.edu/source/twc-rpi-edu/dataset/instance-hub-us-states-and-territories/version/2011-Jun-02";
-	private static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
-	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String DC_NS = "http://purl.org/dc/terms/";
-	private static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
-	private static final String STATE_VAR = "state";
-	private static final String GRAPH_VAR = "graph";
 	private static final String SOURCE_VAR = "source";
 	private static final String LABEL_VAR = "label";
-	private static final String RESULTS_BLOCK = "results";
 	private static final String FAILURE = "{\"success\":false}";
 	private static final String BINDINGS = "bindings";
 	private static final String VALUE = "value";
@@ -73,11 +51,8 @@ public class DataSourceModule implements Module {
 	 */
 	@Override
 	public void visit(Model model, Request request) {
-		Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
-		if(null == buildQueryObject(query, request)) {
-			return;
-		}
-		config.getQueryExecutor().execute(query, model);
+		DataModelBuilder builder = new DataModelBuilder(request, config);
+		builder.build(model);
 	}
 
 	@Override
@@ -158,6 +133,7 @@ public class DataSourceModule implements Module {
 	 */
 	@QueryMethod
 	public String queryForDataSources(Request request) {
+		final Logger log = request.getLogger();
 		log.trace("queryForDataSources");
 		Query query = config.getQueryFactory().newQuery();
 		
@@ -218,146 +194,16 @@ public class DataSourceModule implements Module {
 		return responseStr;
 	}
 	
-	/**
-	 * Retrieves a list of graphs from {@link #SEMANTAQUA_METADATA} related to
-	 * the specified state and source.
-	 * 
-	 * @param state State abbreviation, e.g. "CA", "NY"
-	 * @param source Source entity, e.g. http://sparql.tw.rpi.edu/source/epa-gov
-	 * @return List of URIs representing graphs in the SPARQL endpoint
-	 */
-	private List<String> retrieveStateGraphsForSource(final String state, final String source) {
-		log.trace("retrieveStateGraphsForSource");
-		List<String> graphs = new ArrayList<String>();
-		String stateUri = null;
-		
-		Query query = config.getQueryFactory().newQuery(Type.SELECT);
-		query.setVariables(null);
-		NamedGraphComponent graph = query.getNamedGraph(INSTANCE_HUB_STATES);
-		QueryResource stateVar = query.getVariable(QUERY_NS+STATE_VAR);
-		QueryResource identifier = query.getResource(DC_NS+"identifier");
-		graph.addPattern(stateVar, identifier, state, null);
-		
-		// execute query
-		String results = config.getQueryExecutor().execute(LOGD_ENDPOINT, query);
-		if(results != null) {
-			try {
-				JSONObject response = new JSONObject(results);
-				if(response.getJSONObject(RESULTS_BLOCK) != null && 
-					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS) != null &&
-					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS).length() > 0) {
-					JSONArray bindings = response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS);
-					for(int i=0;i<bindings.length();i++) {
-						JSONObject binding = bindings.getJSONObject(i);
-						if(binding.getJSONObject(STATE_VAR) != null && binding.getJSONObject(STATE_VAR).getString(VALUE) != null) {
-							stateUri = binding.getJSONObject(STATE_VAR).getString(VALUE);
-							break;
-						}
-					}
-				}
-			} catch (JSONException e) {
-				log.error("Could not parse JSON results", e);
-			}
-		}
-		if(stateUri == null) {
-			return graphs;
-		}
-		
-		// get graphs from sparql.tw.rpi.edu related to (stateUri, source)
-		query = config.getQueryFactory().newQuery(Type.SELECT);
-		query.setVariables(null);
-		graph = query.getNamedGraph(SEMANTAQUA_METADATA);
-		QueryResource graphVar = query.getVariable(QUERY_NS+GRAPH_VAR);
-		QueryResource topicProp = query.getResource(SIOC_NS+"topic");
-		QueryResource sourceProp = query.getResource(DC_NS+SOURCE_VAR);
-		graph.addPattern(graphVar, topicProp, query.getResource(stateUri));
-		graph.addPattern(graphVar, sourceProp, query.getResource(source));
-		
-		// execute query
-		results = config.getQueryExecutor().execute(query);
-		graphs.addAll(processResults(results));
-		return graphs;
-	}
-	
-	/**
-	 * Processes the results from metadata graph query
-	 * @param results application/sparql-results+xml encoded results from a SPARQL endpoint
-	 * @return
-	 */
-	private Collection<String> processResults(final String results) {
-		log.trace("processResults");
-		Set<String> graphs = new HashSet<String>();
-		try {
-			ByteArrayInputStream data = new ByteArrayInputStream(results.getBytes("UTF-8"));
-			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(data);
-			NodeList nodesToProcess = doc.getElementsByTagName("result");
-			for(int i=0;i<nodesToProcess.getLength();i++) {
-				Element e = (Element)nodesToProcess.item(i);
-				NodeList bindings = e.getElementsByTagName("binding");
-				for(int j=0;j<bindings.getLength();j++) {
-					Element binding = (Element)bindings.item(j);
-					if(binding.getAttribute("name").equals(GRAPH_VAR)) {
-						graphs.add(binding.getTextContent().trim());
-					}
-				}
-			}
-		} catch (SAXException e) {
-			log.error("Could not parse SPARQL results", e);
-		} catch (IOException e) {
-			log.error("Could not read SPARQL results", e);
-		} catch (ParserConfigurationException e) {
-			log.error("Parser configuration error", e);
-		}
-		return graphs;
-	}
-	
-	/**
-	 * Augments the Query object for the specific data source
-	 * @param query
-	 * @param params
-	 * @param source
-	 * @return
-	 */
-	private Query augmentQueryForSource(final Query query, final Request request, final String source) {
-		log.trace("augmentQueryForSource");
-		String stateAbbr = null;
-		try {
-			stateAbbr = request.getParam("state")[0];
-		}
-		catch(Exception e) {
-			return null;
-		}
-		List<String> graphs = retrieveStateGraphsForSource(stateAbbr, source);
-		QueryResource site = query.getVariable(QUERY_NS+"s");
-		QueryResource polHasSite = query.getResource(POL_NS+"hasSite");
-		QueryResource id = query.getVariable(QUERY_NS+"id");
-		for(String graph : graphs) {
-			NamedGraphComponent component = query.getNamedGraph(graph);
-			if(graph.contains("measurements")) {
-				component.addPattern(site, polHasSite, id);
-			}
-		}
-		return query;
-	}
-	
-	/**
-	 * Builds a Query object used for constructing a subset of the data
-	 * @param query
-	 * @param params
-	 * @return
-	 */
-	private Query buildQueryObject(final Query query, final Request request) {
-		log.trace("buildQueryObject");
-		String[] temp = request.getParam(SOURCE_VAR);
-		List<String> sources = null;
-		if(temp == null || temp.length == 0) {
-			return null;
-		}
-		sources = Arrays.asList(temp);
-		for(String source : sources) {
-			augmentQueryForSource(query, request, source);
-		}
-		return query;
-	}
+	@QueryMethod
+	public String getSiteCounts(Request request) {
+		final Logger log = request.getLogger();
+		log.trace("getSiteCounts");
 
+		String responseStr = FAILURE;
+		InstanceCounter counter = new InstanceCounter(request, config);
+		JSONObject result = counter.build();
+		responseStr = result.toString();
+		return responseStr;
+	}
+	
 }

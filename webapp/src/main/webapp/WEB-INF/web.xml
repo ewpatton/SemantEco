@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
   <display-name>SemantAqua Portal Application</display-name>
 
@@ -7,11 +7,11 @@
     <display-name>SemantAqua</display-name>
     <servlet-name>SemantAqua</servlet-name>
     <servlet-class>edu.rpi.tw.escience.waterquality.SemantAquaServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
     <init-param>
     	<param-name>log4j-properties-location</param-name>
     	<param-value>WEB-INF/log4j.properties</param-value>
     </init-param>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 <!-- 
   <servlet-mapping>
