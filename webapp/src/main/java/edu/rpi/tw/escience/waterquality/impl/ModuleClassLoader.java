@@ -31,6 +31,7 @@ public class ModuleClassLoader extends ClassLoader {
 	private Set<Class<? extends Module>> modules = new HashSet<Class<? extends Module>>();
 	private static final int BUFSIZE = 8192;
 	private Logger log = Logger.getLogger(ModuleClassLoader.class);
+	private Map<String, byte[]> clazzBytes = new HashMap<String, byte[]>();
 	
 	/**
 	 * Constructs a ModuleClassLoader from the JAR at the specified
@@ -49,13 +50,16 @@ public class ModuleClassLoader extends ClassLoader {
 				JarEntry entry = entries.nextElement();
 				log.debug("Found entry in jar: "+entry.getName());
 				if(entry.getName().endsWith(".class")) {
-					Class<?> cls = registerClass(file, entry);
-					if(cls == null) {
-						continue;
-					}
-					if(module.isAssignableFrom(cls)) {
-						modules.add((Class<? extends Module>) cls);
-					}
+					loadClassBytes(file, entry);
+				}
+			}
+			for(String i : clazzBytes.keySet()) {
+				Class<?> cls = registerClass(i, clazzBytes.get(i));
+				if(cls == null) {
+					continue;
+				}
+				if(module.isAssignableFrom(cls)) {
+					modules.add((Class<? extends Module>) cls);
 				}
 			}
 			if(modules.size() == 0) {
@@ -68,10 +72,15 @@ public class ModuleClassLoader extends ClassLoader {
 	}
 	
 	protected Class<?> findClass(String name) {
+		if(!classes.containsKey(name)) {
+			if(clazzBytes.containsKey(name)) {
+				registerClass(name, clazzBytes.get(name));
+			}
+		}
 		return classes.get(name);
 	}
 	
-	protected final Class<?> registerClass(JarFile file, JarEntry entry) throws IOException {
+	protected final void loadClassBytes(JarFile file, JarEntry entry) throws IOException {
 		final String clsName = entry.getName().replaceAll("/", ".").substring(0, entry.getName().length()-".class".length());
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		final InputStream is = file.getInputStream(entry);
@@ -82,9 +91,16 @@ public class ModuleClassLoader extends ClassLoader {
 		}
 		is.close();
 		final byte[] byteCode = baos.toByteArray();
+		clazzBytes.put(clsName, byteCode);
+	}
+	
+	protected final Class<?> registerClass(String name, byte[] byteCode) {
 		Class<?> cls = null;
+		if(classes.containsKey(name)) {
+			return classes.get(name);
+		}
 		try {
-			cls = defineClass(clsName, byteCode, 0, byteCode.length);
+			cls = defineClass(name, byteCode, 0, byteCode.length);
 		}
 		catch(ClassFormatError e) {
 			log.warn("Invalid class file", e);
@@ -93,7 +109,7 @@ public class ModuleClassLoader extends ClassLoader {
 			log.warn("No class definition", e);
 		}
 		if(cls != null) {
-			classes.put(clsName, cls);
+			classes.put(name, cls);
 		}
 		return cls;
 	}

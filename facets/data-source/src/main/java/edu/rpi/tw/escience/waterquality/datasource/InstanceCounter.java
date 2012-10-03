@@ -32,7 +32,7 @@ public class InstanceCounter extends QueryUtils {
 		super(request.getLogger(), config);
 		this.log = request.getLogger();
 		this.config = config;
-		String[] sources = request.getParam("source");
+		String[] sources = request.getParam("source[]");
 		if(sources == null || sources.length == 0) {
 			throw new IllegalArgumentException("The source parameter must be supplied.");
 		}
@@ -59,13 +59,7 @@ public class InstanceCounter extends QueryUtils {
 			final Query query = config.getQueryFactory().newQuery();
 			if(source.contains("usgs-gov")) {
 				buildUSGSCounter(query, graphs);
-				String results = config.getQueryExecutor().execute(query);
-				try {
-					response.put("siteCount", process(results));
-				} catch (JSONException e) {
-					log.warn("Unable to add site count to response", e);
-				}
-				String resultStr = config.getQueryExecutor().execute(query);
+				String resultStr = config.getQueryExecutor().accept("application/json").execute(query);
 				int number = process(resultStr);
 				try {
 					response.put("site", number);
@@ -76,13 +70,7 @@ public class InstanceCounter extends QueryUtils {
 			}
 			else if(source.contains("epa-gov")) {
 				buildEPACounter(query, graphs);
-				String results = config.getQueryExecutor().execute(query);
-				try {
-					response.put("facilityCount", process(results));
-				} catch (JSONException e) {
-					log.warn("Unable to add facility count to response", e);
-				}
-				String resultStr = config.getQueryExecutor().execute(query);
+				String resultStr = config.getQueryExecutor().accept("application/json").execute(query);
 				int number = process(resultStr);
 				try {
 					response.put("facility", number);

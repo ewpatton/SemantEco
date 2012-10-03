@@ -74,7 +74,7 @@ public class DataSourceModule implements Module {
 		ui.addScript(res);
 		try {
 			String responseText = "<div id=\"DataSourceFacet\" class=\"facet\">";
-			String response = queryForDataSources(null);
+			String response = queryForDataSources(request);
 			log.debug("Response: "+response);
 			JSONObject data = new JSONObject(response);
 			if(data.getBoolean("success")) {

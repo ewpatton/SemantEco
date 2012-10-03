@@ -1,5 +1,6 @@
 var SemantAqua = {
 	"limit": 5,
+	"action": null,
 	"initialize": function() {
 		SemantAqua.configureConsole();
 		SemantAqua.configureMaps();
@@ -7,6 +8,9 @@ var SemantAqua = {
 		SemantAquaUI.populateFacets();
 		$(window).bind('hashchange', SemantAqua.handleStateChange);
 		SemantAqua.configureWebSockets();
+		if($.bbq.getState("zip") != null) {
+			SemantAqua.decodeZipCode();
+		}
 	},
 	"configureMaps": function() {
 		var mapOptions = {
@@ -114,7 +118,7 @@ var SemantAqua = {
 		return false;
 	},
 	"handleStateChange": function() {
-		var action = $.bbq.getState("action");
+		var action = SemantAqua.action;
 		if(typeof SemantAqua[action] == "function") {
 			SemantAqua[action].call(SemantAqua);
 		}
@@ -134,10 +138,10 @@ var SemantAqua = {
 	"processZipCode": function(response) {
 		var data = JSON.parse(response);
 		console.log(response);
+		SemantAqua.action = "getLimitData";
 		$.bbq.pushState({"state":data.result.stateAbbr,
-			"countyCode":data.result.countyCode,
-			"lat":data.result.lat, "lng":data.result.lng,
-			"action":"showReportSites"});
+			"county":data.result.countyCode,
+			"lat":data.result.lat, "lng":data.result.lng});
 	},
 	"doGeocode": function(zip) {
 		console.trace();
@@ -157,6 +161,73 @@ var SemantAqua = {
 		else {
 			console.log("SemantAqua.geocoder is null");
 		}
+	},
+	"getLimitData": function() {
+		DataSourceModule.getSiteCounts({}, SemantAqua.processLimitData);
+	},
+	"processLimitData": function(response) {
+		var data = JSON.parse(response);
+		console.log(response);
+		var limits = {"site": {}, "facility": {}};
+		limits.site["offset"] = 0;
+		limits.facility["offset"] = 0;
+		limits.site["count"] = parseInt(data.site);
+		limits.facility["count"] = parseInt(data.facility);
+		if(data.facility > data.site) {
+			limits.site["limit"] = Math.min(SemantAqua.limit, limits.site.count);
+			limits.facility["limit"] = Math.min(limits.facility.count,
+					2*SemantAqua.limit - limits.site.limit);
+		}
+		else {
+			limits.facility["limit"] = Math.min(SemantAqua.limit, limits.facility.count);
+			limits.site["limit"] = Math.min(limits.site.count,
+					2*SemantAqua.limit - limits.facility.limit);
+		}
+		$.bbq.pushState({"limits": limits});
+		SemantAqua.generatePaging();
+		SemantAqua.getData();
+	},
+	"generatePaging": function() {
+		var limits = $.bbq.getState("limits");
+		var div = $("#page");
+		div.empty();
+		div.append("Page: ");
+		var offset = parseInt(limits.facility.offset) + parseInt(limits.site.offset);
+		var limit = parseInt(limits.facility.count) + parseInt(limits.site.count);
+		var page = Math.floor(offset / (2 * SemantAqua.limit)) + 1;
+		var pages = Math.floor(limit / (2 * SemantAqua.limit)) + 1;
+		for ( var i = 1; i < page; i++) {
+			var el = document.createElement("a");
+			div.append(el);
+			$(el).click(generatePagingCallback(i));
+			$(el).attr("href", "#");
+			$(el).text(i.toString());
+			div.append(" ");
+		}
+		var el = document.createElement("a");
+		div.append(el);
+		$(el).click(SemantAqua.generatePagingCallback(page));
+		$(el).attr("href", "#");
+		$(el).toggleClass("selected");
+		$(el).text(page.toString());
+		div.append(" ");
+		for ( var i = page + 1; i <= pages; i++) {
+			var el = document.createElement("a");
+			div.append(el);
+			$(el).click(SemantAqua.generatePagingCallback(i));
+			$(el).attr("href", "#");
+			$(el).text(i.toString());
+			div.append(" ");
+		}
+	},
+	"generatePagingCallback": function(i) {
+		return function() {
+			changePage(i);
+			return false;
+		};
+	},
+	"getData": function() {
+		SemantAqua.hideSpinner();
 	},
 	"showReportSites": function() {
 		SemantAqua.hideSpinner();

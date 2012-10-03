@@ -100,19 +100,19 @@ public class FacetTag extends TagSupport {
 		
 		@Override
 		public PrintWriter getWriter() {
-			log.debug("getWriter");
+			log.trace("getWriter");
 			return writer;
 		}
 		
 		@Override
 		public ServletOutputStream getOutputStream() {
-			log.debug("getOutputStream");
+			log.trace("getOutputStream");
 			return output;
 		}
 		
 		@Override
 		public String toString() {
-			log.debug("toString");
+			log.trace("toString");
 			writer.close();
 			return output.toString();
 		}
@@ -125,13 +125,13 @@ public class FacetTag extends TagSupport {
 
 		@Override
 		public void write(int arg0) throws IOException {
-			log.debug("write");
+			log.trace("write");
 			data.write(arg0);
 		}
 		
 		@Override
 		public String toString() {
-			log.debug("toString");
+			log.trace("toString");
 			try {
 				return data.toString("UTF-8");
 			} catch (UnsupportedEncodingException e) {
