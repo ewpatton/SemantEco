@@ -3,10 +3,10 @@ package edu.rpi.tw.escience.waterquality.datasource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,7 +37,6 @@ import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.Variable;
-import edu.rpi.tw.escience.waterquality.util.JSONUtils;
 import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
 /**
@@ -59,6 +58,7 @@ public class DataSourceModule implements Module {
 	private static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String STATE_VAR = "state";
+	private static final String GRAPH_VAR = "graph";
 	private static final String SOURCE_VAR = "source";
 	private static final String LABEL_VAR = "label";
 	private static final String RESULTS_BLOCK = "results";
@@ -74,7 +74,9 @@ public class DataSourceModule implements Module {
 	@Override
 	public void visit(Model model, Request request) {
 		Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
-		buildQueryObject(query, request);
+		if(null == buildQueryObject(query, request)) {
+			return;
+		}
 		config.getQueryExecutor().execute(query, model);
 	}
 
@@ -104,8 +106,8 @@ public class DataSourceModule implements Module {
 				JSONArray sources = (JSONArray)data.get("data");
 				for(int i=0;i<sources.length();i++) {
 					JSONObject mapping = sources.getJSONObject(i);
-					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+mapping.getString("uri")+"\" id=\""+NameUtils.cleanName(mapping.getString("label"))+"\" />";
-					responseText += "<label for=\""+NameUtils.cleanName(mapping.getString("label"))+"\">"+mapping.getString("label")+"</label>";
+					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+mapping.getString("uri")+"\" id=\""+NameUtils.cleanName(mapping.getString(LABEL_VAR))+"\" />";
+					responseText += "<label for=\""+NameUtils.cleanName(mapping.getString(LABEL_VAR))+"\">"+mapping.getString(LABEL_VAR)+"</label>";
 					responseText += "<br />";
 				}
 			}
@@ -155,14 +157,14 @@ public class DataSourceModule implements Module {
 	 * @return
 	 */
 	@QueryMethod
-	public String queryForDataSources(Map<String, String> params) {
+	public String queryForDataSources(Request request) {
 		log.trace("queryForDataSources");
 		Query query = config.getQueryFactory().newQuery();
 		
 		// generate variables and resources for query
 		Variable source = query.createVariable(Query.VAR_NS+SOURCE_VAR);
 		Variable label = query.createVariable(Query.VAR_NS+LABEL_VAR);
-		QueryResource dcSource = query.getResource(DC_NS+"source");
+		QueryResource dcSource = query.getResource(DC_NS+SOURCE_VAR);
 		QueryResource rdfsLabel = query.getResource(RDFS_NS+LABEL_VAR);
 		BlankNode graph = query.createBlankNode();
 		
@@ -206,7 +208,7 @@ public class DataSourceModule implements Module {
 				}
 				JSONObject mapping = new JSONObject();
 				mapping.put("uri", sourceUri);
-				mapping.put("label", labelStr);
+				mapping.put(LABEL_VAR, labelStr);
 				data.put(mapping);
 			}
 			responseStr = response.toString();
@@ -214,14 +216,6 @@ public class DataSourceModule implements Module {
 			log.error("Unable to parse JSON results", e);
 		}
 		return responseStr;
-	}
-	
-	/**
-	 * 
-	 */
-	@QueryMethod
-	public String queryForPollutionData(Map<String, String> params) {
-		return null;
 	}
 	
 	/**
@@ -237,15 +231,6 @@ public class DataSourceModule implements Module {
 		List<String> graphs = new ArrayList<String>();
 		String stateUri = null;
 		
-		/**
-		 * PREFIX dc: <http://purl.org/dc/terms/>
-		 * SELECT *
-		 * WHERE {
-		 *   GRAPH <http://logd.tw.rpi.edu/source/twc-rpi-edu/dataset/instance-hub-us-states-and-territories/version/2011-Jun-02>  {
-		 *     ?s dc:identifier "CA"
-		 *   }
-		 * }
-		 */
 		Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		query.setVariables(null);
 		NamedGraphComponent graph = query.getNamedGraph(INSTANCE_HUB_STATES);
@@ -256,8 +241,8 @@ public class DataSourceModule implements Module {
 		// execute query
 		String results = config.getQueryExecutor().execute(LOGD_ENDPOINT, query);
 		if(results != null) {
-			JSONObject response = (JSONObject)JSONObject.stringToValue(results);
 			try {
+				JSONObject response = new JSONObject(results);
 				if(response.getJSONObject(RESULTS_BLOCK) != null && 
 					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS) != null &&
 					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS).length() > 0) {
@@ -282,9 +267,9 @@ public class DataSourceModule implements Module {
 		query = config.getQueryFactory().newQuery(Type.SELECT);
 		query.setVariables(null);
 		graph = query.getNamedGraph(SEMANTAQUA_METADATA);
-		QueryResource graphVar = query.getVariable(QUERY_NS+"graph");
+		QueryResource graphVar = query.getVariable(QUERY_NS+GRAPH_VAR);
 		QueryResource topicProp = query.getResource(SIOC_NS+"topic");
-		QueryResource sourceProp = query.getResource(DC_NS+"source");
+		QueryResource sourceProp = query.getResource(DC_NS+SOURCE_VAR);
 		graph.addPattern(graphVar, topicProp, query.getResource(stateUri));
 		graph.addPattern(graphVar, sourceProp, query.getResource(source));
 		
@@ -311,7 +296,7 @@ public class DataSourceModule implements Module {
 				NodeList bindings = e.getElementsByTagName("binding");
 				for(int j=0;j<bindings.getLength();j++) {
 					Element binding = (Element)bindings.item(j);
-					if(binding.getAttribute("name").equals(STATE_VAR)) {
+					if(binding.getAttribute("name").equals(GRAPH_VAR)) {
 						graphs.add(binding.getTextContent().trim());
 					}
 				}
@@ -335,7 +320,13 @@ public class DataSourceModule implements Module {
 	 */
 	private Query augmentQueryForSource(final Query query, final Request request, final String source) {
 		log.trace("augmentQueryForSource");
-		String stateAbbr = request.getParam("state")[0];
+		String stateAbbr = null;
+		try {
+			stateAbbr = request.getParam("state")[0];
+		}
+		catch(Exception e) {
+			return null;
+		}
 		List<String> graphs = retrieveStateGraphsForSource(stateAbbr, source);
 		QueryResource site = query.getVariable(QUERY_NS+"s");
 		QueryResource polHasSite = query.getResource(POL_NS+"hasSite");
@@ -357,15 +348,12 @@ public class DataSourceModule implements Module {
 	 */
 	private Query buildQueryObject(final Query query, final Request request) {
 		log.trace("buildQueryObject");
-		String temp = request.getParam("sources")[0];
+		String[] temp = request.getParam(SOURCE_VAR);
 		List<String> sources = null;
-		if(temp != null && !temp.equals("")) {
-			JSONArray arr = (JSONArray)JSONObject.stringToValue(temp);
-			if(arr == null) {
-				return query;
-			}
-			sources = JSONUtils.toList(arr);
+		if(temp == null || temp.length == 0) {
+			return null;
 		}
+		sources = Arrays.asList(temp);
 		for(String source : sources) {
 			augmentQueryForSource(query, request, source);
 		}

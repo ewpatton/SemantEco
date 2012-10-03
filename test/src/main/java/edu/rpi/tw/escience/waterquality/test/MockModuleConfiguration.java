@@ -14,7 +14,7 @@ import edu.rpi.tw.escience.waterquality.Resource;
  * @author ewpatton
  *
  */
-public class TestModuleConfiguration extends ModuleConfiguration {
+public class MockModuleConfiguration extends ModuleConfiguration {
 
 	/**
 	 * 
@@ -24,43 +24,37 @@ public class TestModuleConfiguration extends ModuleConfiguration {
 	/**
 	 * Default constructor used to generate test module configurations
 	 */
-	public TestModuleConfiguration() {
+	public MockModuleConfiguration() {
 	}
 
 	@Override
 	public String getSparqlEndpoint() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public QueryFactory getQueryFactory() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public QueryExecutor getQueryExecutor() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Resource getResource(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Resource generateStringResource(String content) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Logger getLogger() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 }

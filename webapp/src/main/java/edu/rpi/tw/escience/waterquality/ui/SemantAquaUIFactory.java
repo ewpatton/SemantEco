@@ -2,6 +2,9 @@ package edu.rpi.tw.escience.waterquality.ui;
 
 import org.apache.log4j.Logger;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
+
 import edu.rpi.tw.escience.waterquality.ModuleManager;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
@@ -60,12 +63,27 @@ public class SemantAquaUIFactory {
 
 		@Override
 		public String[] getParam(String key) {
-			return null;
+			return new String[0];
 		}
 
 		@Override
 		public Logger getLogger() {
 			return Logger.getLogger(SemantAquaUI.class);
+		}
+
+		@Override
+		public OntModel getModel() {
+			return null;
+		}
+
+		@Override
+		public Model getDataModel() {
+			return null;
+		}
+
+		@Override
+		public Model getCombinedModel() {
+			return null;
 		}
 		
 	}

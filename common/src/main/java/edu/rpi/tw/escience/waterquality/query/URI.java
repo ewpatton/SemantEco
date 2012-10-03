@@ -16,6 +16,9 @@ public class URI implements QueryResource {
 	 * @param uri A UTF-8 encoded string representing a URI
 	 */
 	public URI(String uri) {
+		if(uri.contains(" ")) {
+			uri = uri.replaceAll(" ", "%20");
+		}
 		this.uri = java.net.URI.create(uri);
 	}
 

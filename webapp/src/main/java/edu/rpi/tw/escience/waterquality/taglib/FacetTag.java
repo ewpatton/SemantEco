@@ -60,10 +60,15 @@ public class FacetTag extends TagSupport {
 				out.write("<tr><th>"+name+"</th></tr>");
 				out.write("<tr><td>");
 				if(i.isJspResource()) {
-					ModuleJspEvaluator eval = new ModuleJspEvaluator((HttpServletResponse)pageContext.getResponse());
-					JspResource jsp = (JspResource)i;
-					jsp.dispatch(pageContext.getServletContext(), (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)eval);
-					out.write(eval.toString());
+					try {
+						ModuleJspEvaluator eval = new ModuleJspEvaluator((HttpServletResponse)pageContext.getResponse());
+						JspResource jsp = (JspResource)i;
+						jsp.dispatch(pageContext.getServletContext(), (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)eval);
+						out.write(eval.toString());
+					}
+					catch(Exception e) {
+						log.warn("Unable to render facet due to exception", e);
+					}
 				}
 				else {
 					out.write(i.toString());

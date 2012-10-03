@@ -14,10 +14,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
 /**
@@ -173,6 +178,43 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		catch(CloneNotSupportedException e) {
 			return this;
 		}
+	}
+
+	@Override
+	public String executeLocalQuery(Request request, Query query) {
+		log.trace("executeLocalQuery");
+		log.debug("Module '"+owner.get().getName()+"' executing query: "+query.toString());
+		Model model = request.getCombinedModel();
+		Model resultModel = null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		try {
+			switch(query.getType()) {
+			case SELECT:
+				ResultSet results = qe.execSelect();
+				ResultSetFormatter.outputAsJSON(baos, results);
+				return baos.toString("UTF-8");
+			case DESCRIBE:
+				resultModel = qe.execDescribe();
+				resultModel.write(baos);
+				return baos.toString("UTF-8");
+			case CONSTRUCT:
+				resultModel = qe.execConstruct();
+				resultModel.write(baos);
+				return baos.toString("UTF-8");
+			case ASK:
+				if(qe.execAsk()) {
+					return "{\"result\":true}";
+				}
+				else {
+					return "{\"result\":false}";
+				}
+			}
+		}
+		catch(Exception e) {
+			log.warn("Unable to execute query due to exception", e);
+		}
+		return null;
 	}
 
 }

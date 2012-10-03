@@ -5,9 +5,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
+import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
 public class RegulationModule implements Module {
 
@@ -63,5 +65,20 @@ public class RegulationModule implements Module {
 	public void setModuleConfiguration(ModuleConfiguration config) {
 		this.config = config;
 	}
-
+	
+	/**
+	 * 
+	 */
+	@QueryMethod
+	public String queryForPollutedSites(Request request) {
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		config.getQueryExecutor().executeLocalQuery(request, query);
+		return null;
+	}
+	
+	@QueryMethod
+	public String queryForSitePollution(Request request) {
+		return null;
+	}
+	
 }

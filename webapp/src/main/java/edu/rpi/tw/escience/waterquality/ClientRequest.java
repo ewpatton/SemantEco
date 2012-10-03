@@ -9,7 +9,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
+import org.mindswap.pellet.jena.PelletReasonerFactory;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
+import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
 public class ClientRequest extends LoggerWrapper implements Request {
@@ -17,6 +23,9 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	WsOutbound clientLog;
 	Logger log;
 	Map<String, String[]> params;
+	OntModel model = null;
+	Model dataModel = null;
+	boolean combined = false;
 	
 	public ClientRequest(String name, Map<String, String[]> params, WsOutbound channel) {
 		super(name);
@@ -100,6 +109,37 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		if(priority.isGreaterOrEqual(log.getEffectiveLevel())) {
 			forcedLog(LoggerWrapper.class.getName(), priority, message, null);
 		}
+	}
+
+	@Override
+	public OntModel getModel() {
+		if(model == null) {
+			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
+			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			mgr.buildOntologyModel(model, this);
+		}
+		return model;
+	}
+
+	@Override
+	public Model getDataModel() {
+		if(dataModel == null) {
+			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
+			dataModel = ModelFactory.createDefaultModel();
+			mgr.buildDataModel(dataModel, this);
+		}
+		return dataModel;
+	}
+
+	@Override
+	public Model getCombinedModel() {
+		if(combined == false) {
+			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
+			getModel();
+			mgr.buildDataModel(model, this);
+			combined = true;
+		}
+		return model;
 	}
 
 }
