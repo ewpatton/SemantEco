@@ -3,6 +3,7 @@ package edu.rpi.tw.escience.waterquality;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Level;
@@ -60,12 +61,18 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		if(clientLog == null) {
 			return;
 		}
+		String msg = message.toString();
+		String err = (t != null ? t.getLocalizedMessage() : "");
+		msg = msg.replaceAll("\n", Matcher.quoteReplacement("\\n"))
+				.replaceAll("\"", Matcher.quoteReplacement("\\\""));
+		err = err.replaceAll("\n", Matcher.quoteReplacement("\\n"))
+				.replaceAll("\"", Matcher.quoteReplacement("\\\""));
 		if(SemantAquaConfiguration.get().isDebug()) {
 			if(priority.isGreaterOrEqual(Level.DEBUG)) {
 				String response = "{\"level\":\""+priority+"\"," +
-						"\"message\":\""+message+"\"";
+						"\"message\":\""+msg+"\"";
 				if(t != null) {
-					response += ",\"error\":\""+t.getLocalizedMessage()+"\"";
+					response += ",\"error\":\""+err+"\"";
 				}
 				response += "}";
 				sendToClient(response);
@@ -74,9 +81,9 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		else {
 			if(priority.isGreaterOrEqual(Level.INFO)) {
 				String response = "{\"level\":\""+priority+"\"," +
-						"\"message\":\""+message+"\"";
+						"\"message\":\""+msg+"\"";
 				if(t != null) {
-					response += ",\"error\":\""+t.getLocalizedMessage()+"\"";
+					response += ",\"error\":\""+err+"\"";
 				}
 				response += "}";
 				sendToClient(response);
