@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 
 /**
@@ -38,7 +39,7 @@ public class MockModuleConfiguration extends ModuleConfiguration {
 	}
 
 	@Override
-	public QueryExecutor getQueryExecutor() {
+	public QueryExecutor getQueryExecutor(Request request) {
 		throw new UnsupportedOperationException();
 	}
 

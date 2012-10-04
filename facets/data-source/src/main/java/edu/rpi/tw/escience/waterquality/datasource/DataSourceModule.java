@@ -132,7 +132,7 @@ public class DataSourceModule implements Module {
 	 * @return
 	 */
 	@QueryMethod
-	public String queryForDataSources(Request request) {
+	public String queryForDataSources(final Request request) {
 		final Logger log = request.getLogger();
 		log.trace("queryForDataSources");
 		Query query = config.getQueryFactory().newQuery();
@@ -158,7 +158,7 @@ public class DataSourceModule implements Module {
 		
 		// execute query
 		String responseStr = FAILURE;
-		String resultStr = config.getQueryExecutor().accept("application/json").execute(query);
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 		log.debug("Results: "+resultStr);
 		if(resultStr == null) {
 			return responseStr;

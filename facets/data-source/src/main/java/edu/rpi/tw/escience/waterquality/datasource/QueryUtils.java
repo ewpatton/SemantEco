@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
@@ -53,11 +54,13 @@ public class QueryUtils {
 
 	private final Logger log;
 	private final ModuleConfiguration config;
+	private final Request request;
 	
 	private static final Map<String, String> stateUriMap = new HashMap<String, String>();
 	
-	public QueryUtils(final Logger log, final ModuleConfiguration config) {
-		this.log = log;
+	public QueryUtils(final Request request, final ModuleConfiguration config) {
+		this.request = request;
+		this.log = request.getLogger();
 		this.config = config;
 	}
 	
@@ -76,7 +79,7 @@ public class QueryUtils {
 		graph.addPattern(stateVar, identifier, state, null);
 		
 		// execute query
-		String results = config.getQueryExecutor().execute(LOGD_ENDPOINT, query);
+		String results = config.getQueryExecutor(request).execute(LOGD_ENDPOINT, query);
 		if(results != null) {
 			try {
 				JSONObject response = new JSONObject(results);
@@ -125,7 +128,7 @@ public class QueryUtils {
 		graph.addPattern(graphVar, sourceProp, query.getResource(source));
 		
 		// execute query
-		String results = config.getQueryExecutor().accept("application/json").execute(query);
+		String results = config.getQueryExecutor(request).accept("application/json").execute(query);
 		graphs.addAll(processUriList(results));
 		return graphs;
 	}

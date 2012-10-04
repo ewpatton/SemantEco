@@ -34,9 +34,10 @@ public abstract class ModuleConfiguration extends Properties {
 	
 	/**
 	 * Gets a QueryExecutor object for executing SPARQL queries
+	 * @param request Original client request
 	 * @return The QueryExecutor for the module
 	 */
-	public abstract QueryExecutor getQueryExecutor();
+	public abstract QueryExecutor getQueryExecutor(Request request);
 	
 	/**
 	 * Gets a Resource object from the JAR file for this module

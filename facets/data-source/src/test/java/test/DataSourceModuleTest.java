@@ -16,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.datasource.DataSourceModule;
 import edu.rpi.tw.escience.waterquality.query.Query;
@@ -67,7 +68,7 @@ public class DataSourceModuleTest extends TestCase {
 		}
 		
 		@Override
-		public QueryExecutor getQueryExecutor() {
+		public QueryExecutor getQueryExecutor(Request request) {
 			return queryExecutor;
 		}
 		

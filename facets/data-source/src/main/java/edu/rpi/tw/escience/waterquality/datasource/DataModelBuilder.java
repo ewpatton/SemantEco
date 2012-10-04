@@ -48,7 +48,7 @@ public class DataModelBuilder extends QueryUtils {
 	 * @param config Data source module's configuration
 	 */
 	public DataModelBuilder(final Request request, final ModuleConfiguration config) {
-		super(request.getLogger(), config);
+		super(request, config);
 		this.log = request.getLogger();
 		this.config = config;
 		this.request = request;
@@ -94,7 +94,7 @@ public class DataModelBuilder extends QueryUtils {
 		log.trace("loadDataForSource");
 		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		if(buildQueryForSource(query, source)) {
-			config.getQueryExecutor().accept("text/turtle").execute(query, model);
+			config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
 		}
 	}
 
@@ -311,7 +311,7 @@ public class DataModelBuilder extends QueryUtils {
 		query.setVariables(vars);
 		
 		// execute and return results
-		String results = config.getQueryExecutor().accept("application/json").execute(query);
+		String results = config.getQueryExecutor(request).accept("application/json").execute(query);
 		return processUriList(results);
 	}
 	

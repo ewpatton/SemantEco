@@ -8,6 +8,7 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import edu.rpi.tw.escience.waterquality.query.BlankNode;
 import edu.rpi.tw.escience.waterquality.query.GraphComponent;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
+import edu.rpi.tw.escience.waterquality.query.GraphPattern;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
@@ -181,6 +182,30 @@ public class MockQuery implements Query {
 
 	@Override
 	public Variable createVariableExpression(String expr) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean hasVariable(String var) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<GraphComponentCollection> findGraphComponentsWithPattern(
+			QueryResource subject, QueryResource predicate, QueryResource object) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<GraphComponentCollection> findGraphComponentsWithPattern(
+			QueryResource subject, QueryResource predicate, String value,
+			XSDDatatype type) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<GraphComponentCollection> findGraphComponentsWithPattern(
+			GraphPattern pattern) {
 		throw new UnsupportedOperationException();
 	}
 

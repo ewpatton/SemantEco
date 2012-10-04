@@ -18,6 +18,7 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import edu.rpi.tw.escience.waterquality.query.BlankNode;
 import edu.rpi.tw.escience.waterquality.query.GraphComponent;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
+import edu.rpi.tw.escience.waterquality.query.GraphPattern;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
@@ -501,6 +502,34 @@ public class QueryImpl implements Query {
 	@Override
 	public Variable createVariableExpression(String expr) {
 		return new VariableExprImpl(expr);
+	}
+
+	@Override
+	public boolean hasVariable(String var) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<GraphComponentCollection> findGraphComponentsWithPattern(
+			QueryResource subject, QueryResource predicate, QueryResource object) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GraphComponentCollection> findGraphComponentsWithPattern(
+			QueryResource subject, QueryResource predicate, String value,
+			XSDDatatype type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GraphComponentCollection> findGraphComponentsWithPattern(
+			GraphPattern pattern) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

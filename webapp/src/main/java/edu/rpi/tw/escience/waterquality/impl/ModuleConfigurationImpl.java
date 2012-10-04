@@ -8,6 +8,7 @@ import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.query.QueryExecutorImpl;
 import edu.rpi.tw.escience.waterquality.query.QueryFactoryImpl;
@@ -32,7 +33,7 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 	 */
 	private static final long serialVersionUID = 3086677327878305603L;
 	private WeakReference<Module> owner = null;
-	private QueryExecutor executor = null;
+	private QueryExecutorImpl executor = null;
 	private Logger log = Logger.getLogger(ModuleConfigurationImpl.class);
 	private String resourceDir = null;
 	
@@ -63,9 +64,16 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 	}
 
 	@Override
-	public QueryExecutor getQueryExecutor() {
+	public QueryExecutor getQueryExecutor(Request request) {
 		log.trace("getQueryExecutor");
-		return executor;
+		try {
+			QueryExecutorImpl newExecutor = (QueryExecutorImpl) executor.clone();
+			newExecutor.setRequest(request);
+			return newExecutor;
+		} catch (CloneNotSupportedException e) {
+			log.warn("Unable to clone query executor", e);
+			return null;
+		}
 	}
 
 	@Override

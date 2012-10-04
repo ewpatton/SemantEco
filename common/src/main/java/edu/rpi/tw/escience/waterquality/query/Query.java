@@ -1,6 +1,9 @@
 package edu.rpi.tw.escience.waterquality.query;
 
+import java.util.List;
 import java.util.Set;
+
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 /**
  * The Query interface defines how modules construct
@@ -16,6 +19,7 @@ public interface Query extends GraphComponentCollection {
 	 * Base URI used to represent variables and blank nodes in the SPARQL query
 	 */
 	String VAR_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	
 	/**
 	 * Specifies the various types of queries supported
@@ -224,4 +228,45 @@ public interface Query extends GraphComponentCollection {
 	 * @param sort Direction to sort
 	 */
 	void addOrderBy(String expr, SortType sort);
+	
+	/**
+	 * Checks whether a variable has been referenced by a Query
+	 * @param var Fully qualified name of a variable
+	 * @return true if the variable has been used, otherwise false
+	 */
+	boolean hasVariable(String var);
+	
+	/**
+	 * Searches the query for triple patterns that match the specified pattern
+	 * and returns the list of graph components that contains them. Specifying
+	 * null for a parameter will match all triple patterns on that field.
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 * @return
+	 */
+	List<GraphComponentCollection> findGraphComponentsWithPattern(QueryResource subject,
+			QueryResource predicate, QueryResource object);
+	
+	/**
+	 * Searches the query for triple patterns that match the specified pattern
+	 * and returns the list of graph components that contains them. Specifying
+	 * null for a parameter will match all triple patterns on that field.
+	 * @param subject
+	 * @param predicate
+	 * @param value
+	 * @param type
+	 * @return
+	 */
+	List<GraphComponentCollection> findGraphComponentsWithPattern(QueryResource subject,
+			QueryResource predicate, String value, XSDDatatype type);
+	
+	/**
+	 * Searches the query for triples patterns that match the specified pattern
+	 * and returns the list of graph comoponents that contains them. If the pattern
+	 * has a null field it will match any triple pattern on that field.
+	 * @param pattern
+	 * @return
+	 */
+	List<GraphComponentCollection> findGraphComponentsWithPattern(GraphPattern pattern);
 }

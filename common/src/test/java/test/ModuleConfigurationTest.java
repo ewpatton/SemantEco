@@ -6,6 +6,7 @@ import org.junit.Test;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
+import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import junit.framework.TestCase;
 
@@ -31,7 +32,7 @@ public class ModuleConfigurationTest extends TestCase {
 		}
 
 		@Override
-		public QueryExecutor getQueryExecutor() {
+		public QueryExecutor getQueryExecutor(Request request) {
 			// TODO Auto-generated method stub
 			return null;
 		}

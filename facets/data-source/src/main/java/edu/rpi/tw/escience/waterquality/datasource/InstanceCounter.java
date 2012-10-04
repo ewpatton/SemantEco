@@ -27,9 +27,11 @@ public class InstanceCounter extends QueryUtils {
 	private final List<String> sources = new ArrayList<String>();
 	private final String stateUri;
 	private final String countyCode;
+	private final Request request;
 	
 	public InstanceCounter(final Request request, final ModuleConfiguration config) {
-		super(request.getLogger(), config);
+		super(request, config);
+		this.request = request;
 		this.log = request.getLogger();
 		this.config = config;
 		String[] sources = request.getParam("source[]");
@@ -59,7 +61,7 @@ public class InstanceCounter extends QueryUtils {
 			final Query query = config.getQueryFactory().newQuery();
 			if(source.contains("usgs-gov")) {
 				buildUSGSCounter(query, graphs);
-				String resultStr = config.getQueryExecutor().accept("application/json").execute(query);
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 				int number = process(resultStr);
 				try {
 					response.put("site", number);
@@ -70,7 +72,7 @@ public class InstanceCounter extends QueryUtils {
 			}
 			else if(source.contains("epa-gov")) {
 				buildEPACounter(query, graphs);
-				String resultStr = config.getQueryExecutor().accept("application/json").execute(query);
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 				int number = process(resultStr);
 				try {
 					response.put("facility", number);

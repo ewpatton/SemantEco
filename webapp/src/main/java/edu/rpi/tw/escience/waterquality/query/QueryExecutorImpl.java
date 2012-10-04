@@ -23,6 +23,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.Request;
+import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
 /**
@@ -42,6 +43,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	private Logger log = Logger.getLogger(QueryExecutorImpl.class);
 	private List<String> acceptTypes = new LinkedList<String>();
 	private static final int BUFSIZE = 1024;
+	private Request request = null;
 	
 	/**
 	 * Creates a new QueryExecutorImpl for the specified module that
@@ -102,8 +104,13 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String execute(String endpoint, Query query) {
+		final Logger log = request.getLogger();
 		log.trace("execute");
 		log.info("Module '"+owner.get().getName()+"' executing query");
+		log.debug("Letting modules visit query before execution");
+		long start = System.currentTimeMillis();
+		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
+		log.debug("Time to augment: "+(System.currentTimeMillis()-start)+" ms");
 		log.debug(query.toString().replaceAll("\n", "\n    "));
 		List<String> mimeTypes = new ArrayList<String>(acceptTypes);
 		if(mimeTypes.size()==0) {
@@ -116,7 +123,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		}
 		java.net.URI queryUrl = java.net.URI.create(queryStr);
 		try {
-			long start = System.currentTimeMillis();
+			start = System.currentTimeMillis();
 			HttpURLConnection conn = (HttpURLConnection)queryUrl.toURL().openConnection();
 			conn.setRequestProperty("Accept", acceptedStr);
 			conn.connect();
@@ -152,7 +159,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	 * @param module
 	 * @return
 	 */
-	public static QueryExecutor getExecutorForModule(Module module) {
+	public static QueryExecutorImpl getExecutorForModule(Module module) {
 		return new QueryExecutorImpl(module, SemantAquaConfiguration.get().getTripleStore());
 	}
 
@@ -215,6 +222,10 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			log.warn("Unable to execute query due to exception", e);
 		}
 		return null;
+	}
+	
+	public void setRequest(Request request) {
+		this.request = request;
 	}
 
 }

@@ -70,10 +70,10 @@ public class RegulationModule implements Module {
 	 * 
 	 */
 	@QueryMethod
-	public String queryForPollutedSites(Request request) {
+	public String queryForPollutedSites(final Request request) {
 		Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		
-		return config.getQueryExecutor().accept("application/json").executeLocalQuery(request, query);
+		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(request, query);
 	}
 	
 	@QueryMethod
