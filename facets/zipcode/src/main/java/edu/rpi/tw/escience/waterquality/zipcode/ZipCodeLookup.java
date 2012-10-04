@@ -27,10 +27,15 @@ public class ZipCodeLookup {
 	static HashMap<String, String> stateLookup = null;
 	
 	public static void doStateLookup(Logger log) {
+		log.trace("doStateLookup");
 		try {
+			log.debug("Contacting USGS state code web service...");
+			long start = System.currentTimeMillis();
 			stateLookup = new HashMap<String,String>();
 			URL requestURL = new URL("http://qwwebservices.usgs.gov/Codes/statecode");
 			InputStream o = (InputStream)requestURL.getContent();
+			log.debug("...finished in "+(System.currentTimeMillis()-start)+" ms");
+			log.debug("Processing USGS response");
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(o);
@@ -42,7 +47,7 @@ public class ZipCodeLookup {
 				stateLookup.put(desc.toLowerCase(), value);
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
+			log.warn("Unexpected exception", e);
 		}
 	}
 	
@@ -52,6 +57,7 @@ public class ZipCodeLookup {
 	}
 	
 	public static ZipCodeLookup execute(String zipCode, Logger log) throws Exception {
+		log.trace("execute");
 		if(stateLookup==null) doStateLookup(log);
 		if(!cached.containsKey("02809")) init(log);
 		ZipCodeLookup zcl = null;
@@ -94,10 +100,13 @@ public class ZipCodeLookup {
 	}
 	
 	ZipCodeLookup(String zip, Logger log) throws ServerFailedToRespondException {
+		log.trace("ZipCodeLookup");
 		this.log = log;
 		this.zip = zip;
 		String query = queryBase+zip+queryEnd;
 		try {
+			log.debug("Connecting to Geonames service...");
+			long start = System.currentTimeMillis();
 			URL requestURL = new URL(query);
 			URLConnection conn = requestURL.openConnection();
 			conn.setReadTimeout(5000);
@@ -107,6 +116,8 @@ public class ZipCodeLookup {
 			String result="";
 			String line;
 			while((line=br.readLine())!=null) result += line;
+			br.close();
+			log.debug("...finished in "+(System.currentTimeMillis()-start)+" ms");
 			JSONObject content = new JSONObject(result);
 			JSONArray codes = content.getJSONArray("postalcodes");
 			if(codes.length()>0) {
@@ -135,7 +146,7 @@ public class ZipCodeLookup {
 			throw new ServerFailedToRespondException();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			log.warn("Unable to perform zip code lookup", e);
 		}
 	}
 	
