@@ -114,7 +114,8 @@ var SemantAqua = {
 			alert("The input zip code is not valid! Please check and input again.")
 			return;
 		}
-		$.bbq.pushState({"zip": zip,"action":"decodeZipCode"});
+		SemantAqua.action = "decodeZipCode";
+		$.bbq.pushState({"zip": zip});
 		return false;
 	},
 	"handleStateChange": function() {

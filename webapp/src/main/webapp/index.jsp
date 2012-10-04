@@ -27,7 +27,7 @@
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAkAvsEZc18GOe01jOVpX48hnWRIgIajec&amp;sensor=false"></script>
     <module:scripts />
   </head>
-  <body onload="SemantAqua.initialize()" onunload="closeHelpers()" onunload="GUnload()">
+  <body onload="SemantAqua.initialize()">
     <div class="modal-display">
       <div class="modal-fadeout"></div>
       <div class="modal-window-container">

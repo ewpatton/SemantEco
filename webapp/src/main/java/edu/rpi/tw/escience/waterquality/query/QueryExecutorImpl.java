@@ -179,6 +179,9 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	public QueryExecutor accept(String mimeType) {
 		try {
 			QueryExecutorImpl clone = (QueryExecutorImpl)clone();
+			clone.endpoint = endpoint;
+			clone.owner = owner;
+			clone.request = request;
 			clone.acceptTypes.add(mimeType);
 			return clone;
 		}
