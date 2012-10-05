@@ -13,10 +13,16 @@ import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.zipcode.ZipCodeLookup.ServerFailedToRespondException;
 
+/**
+ * The ZipCodeModule is responsible for finding the state and county
+ * associated with a specific ZIP code. It returns a lat,long pair
+ * representing the center of the ZIP code so that the map interface
+ * can focus on the relevant area.
+ *  
+ * @author ewpatton
+ *
+ */
 public class ZipCodeModule implements Module {
-
-	@SuppressWarnings("unused")
-	private ModuleConfiguration config = null;
 	
 	@Override
 	public void visit(Model model, Request request) {
@@ -60,9 +66,15 @@ public class ZipCodeModule implements Module {
 
 	@Override
 	public void setModuleConfiguration(ModuleConfiguration config) {
-		this.config = config;
+		// not needed
 	}
-	
+
+	/**
+	 * Decodes the ZIP code sent by the client and sends back the
+	 * state, county, lat, and long of the ZIP code
+	 * @param request
+	 * @return
+	 */
 	@QueryMethod
 	public String decodeZipCode(Request request) {
 		String result = null;

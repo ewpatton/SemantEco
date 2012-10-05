@@ -9,10 +9,16 @@ import junit.framework.TestCase;
 public class URITest extends TestCase {
 	
 	private static final String testUri = "http://example.com/testuri";
+	private static final String testUri2 = "http://example.com/test uri";
 	
 	@Test
 	public void testConstructor() {
 		new URI(testUri);
+	}
+	
+	public void testSpacing() {
+		URI uri = new URI(testUri2);
+		assertTrue(uri.toString().contains("%20"));
 	}
 	
 	@Test

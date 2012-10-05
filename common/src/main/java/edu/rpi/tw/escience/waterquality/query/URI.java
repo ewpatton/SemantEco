@@ -15,11 +15,12 @@ public class URI implements QueryResource {
 	 * the java.net.util class.
 	 * @param uri A UTF-8 encoded string representing a URI
 	 */
-	public URI(String uri) {
+	public URI(final String uri) {
+		String processedUri = uri;
 		if(uri.contains(" ")) {
-			uri = uri.replaceAll(" ", "%20");
+			processedUri = uri.replaceAll(" ", "%20");
 		}
-		this.uri = java.net.URI.create(uri);
+		this.uri = java.net.URI.create(processedUri);
 	}
 
 	@Override

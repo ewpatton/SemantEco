@@ -21,27 +21,37 @@ import edu.rpi.tw.escience.waterquality.query.Variable;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 
+/**
+ * The TimeModule provides a facet for users to control how far back data
+ * are queried and uses that information to control what data are copied from
+ * the triple store into the local Model so that it can be reasoned over
+ * when the regulations are applied by the RegulationModule.
+ * 
+ * @author ewpatton
+ *
+ */
 public class TimeModule implements Module {
 
 	private ModuleConfiguration config = null;
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String TIME_NS = "http://www.w3.org/2006/time#";
+	private static final String TIME_VAR = "time";
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(final Model model, final Request request) {
 		// no need to modify the A-Box
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(final OntModel model, final Request request) {
 		// no need to modify the T-Box
 	}
 
 	@Override
-	public void visit(Query query, Request request) {
+	public void visit(final Query query, final Request request) {
 		// if the query references time assume the caller
 		// knows what it's doing
-		if(query.hasVariable(VAR_NS+"time")) {
+		if(query.hasVariable(VAR_NS+TIME_VAR)) {
 			return;
 		}
 		// if the query doesn't have a measurement
@@ -51,7 +61,7 @@ public class TimeModule implements Module {
 		}
 		
 		// extract the time passed from the client
-		final String[] args = request.getParam("time");
+		final String[] args = request.getParam(TIME_VAR);
 		String time = "";
 		if(args.length > 0) {
 			time = args[0];
@@ -64,15 +74,15 @@ public class TimeModule implements Module {
 		}
 	}
 	
-	protected void handleConstructQuery(Query query) {
+	protected void handleConstructQuery(final Query query) {
 		// add ?measurement time:inXSDDateTime ?time to the graph
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
-		final Variable timeVar = query.getVariable(VAR_NS+"time");
+		final Variable timeVar = query.getVariable(VAR_NS+TIME_VAR);
 		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
 		query.getConstructComponent().addPattern(measurement, timeInXSDDateTime, timeVar);
 	}
 	
-	protected void updateWhereClause(Query query, String deltaT) {
+	protected void updateWhereClause(final Query query, final String deltaT) {
 		// find components that mention the type of the measurement
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
@@ -84,7 +94,7 @@ public class TimeModule implements Module {
 		}
 		
 		final GraphComponentCollection graph = graphs.get(0);
-		final Variable timeVar = query.getVariable(VAR_NS+"time");
+		final Variable timeVar = query.getVariable(VAR_NS+TIME_VAR);
 		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
 		
 		// add item to the found graph
@@ -96,11 +106,11 @@ public class TimeModule implements Module {
 		}
 		final Calendar time = processTimeParam(deltaT);
 		final String xsdTime = sdf.format(time);
-		graph.addFilter("?time > xsd:dateTime(\""+xsdTime+"\")");
+		graph.addFilter("?"+TIME_VAR+" > xsd:dateTime(\""+xsdTime+"\")");
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Request request) {
+	public void visit(final SemantAquaUI ui, final Request request) {
 		// we just have the one display item, no javascript
 		Resource res = config.getResource("time.jsp");
 		ui.addFacet(res);
@@ -127,16 +137,18 @@ public class TimeModule implements Module {
 	}
 
 	@Override
-	public void setModuleConfiguration(ModuleConfiguration config) {
+	public void setModuleConfiguration(final ModuleConfiguration config) {
 		this.config = config;
 	}
 	
-	protected Calendar processTimeParam(String time) {
-		if(time == null || time.equals("")) return null;
+	protected Calendar processTimeParam(final String time) {
+		if(time == null || time.equals("")) {
+			return null;
+		}
 		Calendar c = Calendar.getInstance();
 		char type = time.charAt(time.length()-1);
-		time = time.substring(1, time.length()-1);
-		int move = Integer.parseInt(time);
+		String offset = time.substring(1, time.length()-1);
+		int move = Integer.parseInt(offset);
 		switch(type) {
 		case 'Y':
 			c.add(Calendar.YEAR, move);

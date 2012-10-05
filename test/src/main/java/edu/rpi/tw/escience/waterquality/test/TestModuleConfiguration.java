@@ -1,5 +1,9 @@
 package edu.rpi.tw.escience.waterquality.test;
 
+import java.io.File;
+
+import junit.framework.Assert;
+
 import org.apache.log4j.Logger;
 
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
@@ -32,14 +36,14 @@ public class TestModuleConfiguration extends ModuleConfiguration {
 
 	@Override
 	public Resource getResource(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		File file = new File(System.getProperty("user.dir")+"/target/classes/META-INF/res/"+path);
+		Assert.assertTrue(file.exists());
+		return new TestResource();
 	}
 
 	@Override
 	public Resource generateStringResource(String content) {
-		// TODO Auto-generated method stub
-		return null;
+		return new TestStringResource();
 	}
 
 	@Override

@@ -3,7 +3,7 @@ var SemantAqua = {
 	"action": null,
 	"initialize": function() {
 		SemantAqua.configureConsole();
-		SemantAqua.configureMaps();
+		SemantAquaUI.configureMap();
 		$.bbq.pushState(SemantAquaUI.getFacetParams(),1);
 		SemantAquaUI.populateFacets();
 		$(window).bind('hashchange', SemantAqua.handleStateChange);
@@ -11,17 +11,6 @@ var SemantAqua = {
 		if($.bbq.getState("zip") != null) {
 			SemantAqua.decodeZipCode();
 		}
-	},
-	"configureMaps": function() {
-		var mapOptions = {
-				center: new google.maps.LatLng(37.4419, -122.1419),
-				zoom: 8,
-				mapTypeId: google.maps.MapTypeId.ROADMAP,
-				zoomControl: true,
-				panControl: true
-			};
-		SemantAqua.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-		SemantAqua.geocoder = new google.maps.Geocoder();
 	},
 	"configureConsole": function() {
 		if(typeof window.console == "undefined") {
@@ -132,8 +121,8 @@ var SemantAqua = {
 		}
 		SemantAqua.pagedData = [];
 		SemantAqua.curPage = 0;
-		SemantAqua.doGeocode(zip);
-		SemantAqua.showSpinner();
+		SemantAquaUI.doGeocode(zip);
+		SemantAquaUI.showSpinner();
 		ZipCodeModule.decodeZipCode({}, SemantAqua.processZipCode);
 	},
 	"processZipCode": function(response) {
@@ -143,25 +132,6 @@ var SemantAqua = {
 		$.bbq.pushState({"state":data.result.stateAbbr,
 			"county":data.result.countyCode,
 			"lat":data.result.lat, "lng":data.result.lng});
-	},
-	"doGeocode": function(zip) {
-		console.trace();
-		if(SemantAqua.geocoder) {
-			SemantAqua.geocoder.geocode({"address":zip, "region":"US"},
-				function(pt) {
-					console.log(pt);
-					if(!pt) {
-						alert(zip + " not found");
-					}
-					else {
-						SemantAqua.map.setCenter(pt[0].geometry.location);
-						SemantAqua.map.setZoom(10);
-					}
-				});
-		}
-		else {
-			console.log("SemantAqua.geocoder is null");
-		}
 	},
 	"getLimitData": function() {
 		DataSourceModule.getSiteCounts({}, SemantAqua.processLimitData);
@@ -228,17 +198,10 @@ var SemantAqua = {
 		};
 	},
 	"getData": function() {
-		SemantAqua.hideSpinner();
+		SemantAquaUI.hideSpinner();
 	},
 	"showReportSites": function() {
-		SemantAqua.hideSpinner();
-	},
-	"showSpinner": function() {
-		$("#spinner").css("display", "block");
-	},
-	"hideSpinner": function() {
-		$("#spinner").css("display", "none");
-		$.bbq.removeState("action");
+		SemantAquaUI.hideSpinner();
 	},
 	"triggerUpdate": function() {
 		SemantAqua.showAddress($("#zip").val());

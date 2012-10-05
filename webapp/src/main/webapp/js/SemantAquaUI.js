@@ -1,4 +1,34 @@
 var SemantAquaUI = {
+	"configureMap": function() {
+		var mapOptions = {
+				center: new google.maps.LatLng(37.4419, -122.1419),
+				zoom: 8,
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				zoomControl: true,
+				panControl: true
+			};
+		SemantAquaUI.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+		SemantAquaUI.geocoder = new google.maps.Geocoder();
+	},
+	"doGeocode": function(zip) {
+		console.trace();
+		if(SemantAqua.geocoder) {
+			SemantAqua.geocoder.geocode({"address":zip, "region":"US"},
+				function(pt) {
+					console.log(pt);
+					if(!pt) {
+						alert(zip + " not found");
+					}
+					else {
+						SemantAqua.map.setCenter(pt[0].geometry.location);
+						SemantAqua.map.setZoom(10);
+					}
+				});
+		}
+		else {
+			console.log("SemantAqua.geocoder is null");
+		}
+	},
 	"getState": function() {
 		return $.extend({}, $.bbq.getState(), SemantAquaUI.getFacetParams());
 	},
@@ -71,5 +101,12 @@ var SemantAquaUI = {
 				}
 			}
 		}
+	},
+	"showSpinner": function() {
+		$("#spinner").css("display", "block");
+	},
+	"hideSpinner": function() {
+		$("#spinner").css("display", "none");
+		$.bbq.removeState("action");
 	}
 };
