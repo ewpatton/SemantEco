@@ -50,6 +50,7 @@
 	<module>time</module>
 	<module>regulation</module>
 	<module>zipcode</module>
+	<module>data-type</module>
       </modules>
     </profile>
     <profile>
