@@ -219,4 +219,9 @@ public class MockQuery implements Query {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public GraphComponentCollection createGraphComponentCollection() {
+		throw new UnsupportedOperationException();
+	}
+
 }

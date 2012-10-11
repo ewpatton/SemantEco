@@ -243,8 +243,10 @@ public class DataModelBuilder extends QueryUtils {
 		
 		// build where clause
 		final GraphComponentCollection facilities = query.getNamedGraph(graphUri);
-		facilities.addPattern(s, rdfType, waterWaterFacility);
-		addSiteFilter(facilities, facUris);
+		final GraphComponentCollection subgraph = query.createGraphComponentCollection();
+		facilities.addGraphComponent(subgraph);
+		subgraph.addPattern(s, rdfType, waterWaterFacility);
+		addSiteFilter(subgraph, facUris);
 		facilities.addPattern(s, wgsLat, lat);
 		facilities.addPattern(s, wgsLong, lng);
 		final OptionalComponent optional = query.createOptional();

@@ -562,5 +562,10 @@ public class QueryImpl implements Query {
 	public String getNamespace(String prefix) {
 		return prefixes.get(prefix);
 	}
+
+	@Override
+	public GraphComponentCollection createGraphComponentCollection() {
+		return new GraphComponentCollectionImpl();
+	}
 	
 }

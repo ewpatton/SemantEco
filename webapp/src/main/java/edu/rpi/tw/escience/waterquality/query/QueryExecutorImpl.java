@@ -107,7 +107,6 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String execute(String endpoint, Query query) {
-		final Logger log = request.getLogger();
 		log.trace("execute");
 		log.info("Module '"+owner.get().getName()+"' executing query");
 		log.debug("Letting modules visit query before execution");
@@ -153,7 +152,9 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	public QueryExecutor execute(String endpoint, Query query, Model model) {
 		log.trace("execute");
 		log.debug("Module '"+owner.get().getName()+"' executing remote query");
+		long start = System.currentTimeMillis();
 		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
+		log.debug("Augmenting query took "+(System.currentTimeMillis()-start)+" ms");
 		log.debug("Query: "+query);
 		String queryUri = endpoint;
 		if(endpoint.contains("?")) {
@@ -172,6 +173,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			}
 			String acceptedStr = listToHeader(mimeTypes);
 			conn.addRequestProperty("Accept", acceptedStr);
+			start = System.currentTimeMillis();
 			conn.connect();
 			String responseType = conn.getContentType();
 			String type = "RDF/XML";
@@ -190,6 +192,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		} catch (IOException e) {
 			log.warn("Unable to communicate with server", e);
 		}
+		log.debug("Query completed in "+(System.currentTimeMillis()-start)+" ms");
 		return this;
 	}
 	
@@ -211,6 +214,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		QueryExecutorImpl copy = new QueryExecutorImpl(owner.get(), endpoint);
 		copy.acceptTypes = new ArrayList<String>(acceptTypes);
+		copy.log = this.log;
 		return copy;
 	}
 
@@ -271,6 +275,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	
 	public void setRequest(Request request) {
 		this.request = request;
+		this.log = request.getLogger();
 	}
 
 }
