@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.waterquality.query.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -506,15 +507,35 @@ public class QueryImpl implements Query {
 
 	@Override
 	public boolean hasVariable(String var) {
-		// TODO Auto-generated method stub
-		return false;
+		return resources.containsKey(var);
 	}
-
+	
+	protected List<GraphComponentCollection> findGraphComponentWithPattern(final GraphComponentCollection start, 
+			final GraphPatternImpl pattern) {
+		final List<GraphComponentCollection> results = new ArrayList<GraphComponentCollection>();
+		List<GraphComponent> components = start.getComponents();
+		boolean addThis = false;
+		for(GraphComponent i : components) {
+			if(i instanceof GraphPatternImpl) {
+				if(((GraphPatternImpl) i).matches(pattern)) {
+					addThis = true;
+				}
+			}
+			else if(i instanceof GraphComponentCollection) {
+				results.addAll(findGraphComponentWithPattern((GraphComponentCollection)i, pattern));
+			}
+		}
+		if(addThis) {
+			results.add(start);
+		}
+		return results;
+	}
+	
 	@Override
 	public List<GraphComponentCollection> findGraphComponentsWithPattern(
 			QueryResource subject, QueryResource predicate, QueryResource object) {
-		// TODO Auto-generated method stub
-		return null;
+		final GraphPatternImpl pattern = new GraphPatternImpl(subject, predicate, object);
+		return findGraphComponentWithPattern(whereClause, pattern);
 	}
 
 	@Override
@@ -530,6 +551,16 @@ public class QueryImpl implements Query {
 			GraphPattern pattern) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setNamespace(String prefix, String namespace) {
+		prefixes.put(prefix, namespace);
+	}
+
+	@Override
+	public String getNamespace(String prefix) {
+		return prefixes.get(prefix);
 	}
 	
 }

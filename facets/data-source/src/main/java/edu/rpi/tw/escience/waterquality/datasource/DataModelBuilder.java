@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -32,6 +34,7 @@ import edu.rpi.tw.escience.waterquality.util.LimitUtils;
  */
 public class DataModelBuilder extends QueryUtils {
 	
+	private static final String SITE = "s";
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
 	
@@ -52,20 +55,24 @@ public class DataModelBuilder extends QueryUtils {
 		this.log = request.getLogger();
 		this.config = config;
 		this.request = request;
-		String[] sources = request.getParam("source");
-		if(sources == null || sources.length == 0) {
+		JSONArray sources = (JSONArray)request.getParam("source");
+		if(sources == null || sources.length() == 0) {
 			throw new IllegalArgumentException("The source parameter must be supplied");
 		}
-		for(int i=0;i<sources.length;i++) {
-			this.sources.add(sources[i]);
+		try {
+			for(int i=0;i<sources.length();i++) {
+				this.sources.add(sources.getString(i));
+			}
+		} catch (JSONException e) {
+			throw new IllegalArgumentException("Unable to parse input 'source'", e);
 		}
-		String[] state = request.getParam("state");
-		if(state == null || state.length == 0) {
+		String state = (String)request.getParam("state");
+		if(state == null || state.isEmpty()) {
 			throw new IllegalArgumentException("State parameter not supplied. Expected two digit state abbreviation, e.g. CA.");
 		}
-		this.stateUri = getStateURI(state[0]);
+		this.stateUri = getStateURI(state);
 		try {
-			this.countyCode = request.getParam("county")[0];
+			this.countyCode = (String)request.getParam("county");
 		}
 		catch(Exception e) {
 			throw new IllegalArgumentException("County parameter not supplied.", e);
@@ -110,17 +117,23 @@ public class DataModelBuilder extends QueryUtils {
 		log.trace("buildQueryForSource");
 		final List<String> graphs = retrieveStateGraphsForSource(stateUri, source);
 		List<String> sites = null;
+		String measurementGraph = null
 		for(int i=0;i<graphs.size();i++) {
 			String graph = graphs.get(i);
 			if(graph.contains("measurement")) {
-				extendQueryForMeasurements(query, graph);
+				measurementGraph = graph;
 			}
 			else if(graph.contains("echo") || graph.contains("foia")) {
-				extendQueryForEPAFacilities(query, graph);
+				double clat = Double.parseDouble((String)request.getParam("lat"));
+				double clng = Double.parseDouble((String)request.getParam("lng"));
+				int limit = LimitUtils.getLimit(request, "facility");
+				int offset = LimitUtils.getOffset(request, "facility");
+				sites = listEPASitesInBounds(graphs, clat, clng, offset, limit);
+				extendQueryForEPAFacilities(query, graph, sites);
 			}
 			else if(graph.contains("nwis")) {
-				double clat = Double.parseDouble(request.getParam("lat")[0]);
-				double clng = Double.parseDouble(request.getParam("lng")[0]);
+				double clat = Double.parseDouble((String)request.getParam("lat"));
+				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "site");
 				int offset = LimitUtils.getOffset(request, "site");
 				sites = listUSGSSitesInBounds(graphs, clat, clng, offset, limit);
@@ -129,6 +142,9 @@ public class DataModelBuilder extends QueryUtils {
 			else {
 				log.warn("Unable to process graph '"+graph+"'");
 			}
+		}
+		if(measurementGraph != null) {
+			extendQueryForMeasurements(query, measurementGraph);
 		}
 		return true;
 	}
@@ -160,7 +176,6 @@ public class DataModelBuilder extends QueryUtils {
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
-		final QueryResource polHasSite = query.getResource(POL_NS+"hasSite");
 		final QueryResource reprHasUnit = query.getResource(REPR_NS+"hasUnit");
 		
 		// build construct query
@@ -170,9 +185,23 @@ public class DataModelBuilder extends QueryUtils {
 		construct.addPattern(measurement, unitHasUnit, unit);
 		
 		// build where clause
-		graph.addPattern(measurement, polHasSite, s);
+		if(graphUri.contains("nwis")) {
+			final QueryResource polHasSite = query.getResource(POL_NS+"hasSite");
+			graph.addPattern(measurement, polHasSite, s);
+		}
+		else {
+			final Variable permit = query.getVariable(QUERY_NS+"permit");
+			final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+			graph.addPattern(measurement, polHasPermit, permit);
+		}
 		graph.addPattern(measurement, polHasCharacteristic, element);
-		graph.addPattern(measurement, polHasValue, value);
+		if(graphUri.contains("echo")) {
+			final QueryResource rdfValue = query.getResource(RDF_NS+"value");
+			graph.addPattern(measurement, rdfValue, value);
+		}
+		else {
+			graph.addPattern(measurement, polHasValue, value);
+		}
 		graph.addPattern(measurement, reprHasUnit, unit);
 		
 		return true;
@@ -185,8 +214,43 @@ public class DataModelBuilder extends QueryUtils {
 	 * @param graphUri URI of the graph containing triples
 	 * @return
 	 */
-	protected boolean extendQueryForEPAFacilities(final Query query, final String graphUri) {
+	protected boolean extendQueryForEPAFacilities(final Query query, final String graphUri,
+			final List<String> facUris) {
 		log.trace("extendQueryForEPAFacilities");
+		
+		// variables
+		final Variable s = query.getVariable(QUERY_NS+"s");
+		final Variable label = query.getVariable(QUERY_NS+"label");
+		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		
+		// known uris
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource waterWaterFacility = query.getResource(WATER_NS+"WaterFacility");
+		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
+		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		
+		// build construct clause
+		final GraphComponentCollection construct = query.getConstructComponent();
+		construct.addPattern(s, rdfType, waterWaterFacility);
+		construct.addPattern(s, rdfsLabel, label);
+		construct.addPattern(s, wgsLat, lat);
+		construct.addPattern(s, wgsLong, lng);
+		construct.addPattern(s, polHasMeasurement, measurement);
+		
+		// build where clause
+		final GraphComponentCollection facilities = query.getNamedGraph(graphUri);
+		facilities.addPattern(s, rdfType, waterWaterFacility);
+		addSiteFilter(facilities, facUris);
+		facilities.addPattern(s, wgsLat, lat);
+		facilities.addPattern(s, wgsLong, lng);
+		final OptionalComponent optional = query.createOptional();
+		facilities.addGraphComponent(optional);
+		optional.addPattern(s, rdfsLabel, label);
+		
 		return false;
 	}
 	
@@ -257,7 +321,7 @@ public class DataModelBuilder extends QueryUtils {
 	 */
 	protected final List<String> listUSGSSitesInBounds(final List<String> graphs, 
 			final double clat, final double clng,
-			final int offset, int limit) {
+			final int offset, final int limit) {
 		log.trace("listUSGSSitesInBounds");
 		
 		// figure out which graph is which
@@ -315,6 +379,67 @@ public class DataModelBuilder extends QueryUtils {
 		return processUriList(results);
 	}
 	
+	protected final List<String> listEPASitesInBounds(final List<String> graphs,
+			final double clat, final double clng, final int offset, final int limit) {
+		log.trace("listEPASitesInBounds");
+
+		// figure out which graph is which
+		String sitesUri = null;
+		String measuresUri = null;
+		if(graphs.get(0).contains("measurement")) {
+			measuresUri = graphs.get(0);
+			sitesUri = graphs.get(1);
+		}
+		else {
+			measuresUri = graphs.get(1);
+			sitesUri = graphs.get(0);
+		}
+
+		// generate a query
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		query.setDistinct(true);
+		
+		// named graphs
+		final NamedGraphComponent sites = query.getNamedGraph(sitesUri);
+		final NamedGraphComponent measures = query.getNamedGraph(measuresUri);
+		
+		// variables
+		final Variable s = query.getVariable(QUERY_NS+"s");
+		final Variable lat = query.getVariable(QUERY_NS+"lat");
+		final Variable lng = query.getVariable(QUERY_NS+"long");
+		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
+		final Variable permit = query.getVariable(QUERY_NS+"permit");
+		
+		// known uris
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource waterWaterFacility = query.getResource(WATER_NS+"WaterFacility");
+		final QueryResource polHasCountyCode = query.getResource(POL_NS+"hasCountyCode");
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+		
+		// build query
+		sites.addPattern(s, rdfType, waterWaterFacility);
+		sites.addPattern(s, polHasCountyCode, request.getParam("state")+countyCode, null);
+		sites.addPattern(s, wgsLat, lat);
+		sites.addPattern(s, wgsLong, lng);
+		sites.addPattern(s, polHasPermit, permit);
+		measures.addPattern(measurement, polHasPermit, permit);
+		query.addOrderBy("((?"+LAT+" - "+clat+")*(?"+LAT+" - "+clat+")+" +
+				"(?"+LONG+" - "+clng+")*(?"+LONG+" - "+clng+"))", SortType.ASC);
+		query.setOffset(offset);
+		query.setLimit(limit);
+		
+		// set select only for s variable
+		Set<Variable> vars = new HashSet<Variable>();
+		vars.add(s);
+		query.setVariables(vars);
+		
+		// execute and return results
+		String results = config.getQueryExecutor(request).accept("application/json").execute(query);
+		return processUriList(results);
+	}
+	
 	/**
 	 * Adds the site filter to the specified graph component collection using the list of
 	 * sites specified.
@@ -322,7 +447,7 @@ public class DataModelBuilder extends QueryUtils {
 	 * @param sites List of sites to include in the filter
 	 */
 	protected final void addSiteFilter(final GraphComponentCollection query, final List<String> sites) {
-		String filter = "?s IN (<";
+		String filter = "?"+SITE+" IN (<";
 		boolean first = true;
 		for(String i : sites) {
 			if(!first) {
@@ -335,10 +460,6 @@ public class DataModelBuilder extends QueryUtils {
 		}
 		filter += ">)";
 		query.addFilter(filter);
-	}
-	
-	protected List<String> listEPAFacilitiesInBounds() {
-		return null;
 	}
 
 }

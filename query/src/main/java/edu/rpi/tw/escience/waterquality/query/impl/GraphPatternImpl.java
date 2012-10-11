@@ -173,5 +173,22 @@ public class GraphPatternImpl implements GraphPattern {
 		}
 		return left.equals(right);
 	}
+	
+	public boolean matches(GraphPatternImpl other) {
+		boolean matches = true;
+		matches = matches && (other.subject == null || subject.equals(other.subject));
+		matches = matches && (other.predicate == null || predicate.equals(other.predicate));
+		if(other.object == null && other.value == null) {
+			return matches;
+		}
+		if(other.object != null) {
+			matches = matches && object.equals(other.object);
+		}
+		else {
+			matches = matches && value.equals(other.value);
+			matches = matches && (other.valueType == null || valueType.equals(other.valueType)); 
+		}
+		return matches;
+	}
 
 }

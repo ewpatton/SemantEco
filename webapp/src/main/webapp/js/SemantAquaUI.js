@@ -12,16 +12,16 @@ var SemantAquaUI = {
 	},
 	"doGeocode": function(zip) {
 		console.trace();
-		if(SemantAqua.geocoder) {
-			SemantAqua.geocoder.geocode({"address":zip, "region":"US"},
+		if(SemantAquaUI.geocoder) {
+			SemantAquaUI.geocoder.geocode({"address":zip, "region":"US"},
 				function(pt) {
 					console.log(pt);
 					if(!pt) {
 						alert(zip + " not found");
 					}
 					else {
-						SemantAqua.map.setCenter(pt[0].geometry.location);
-						SemantAqua.map.setZoom(10);
+						SemantAquaUI.map.setCenter(pt[0].geometry.location);
+						SemantAquaUI.map.setZoom(10);
 					}
 				});
 		}
@@ -62,6 +62,7 @@ var SemantAquaUI = {
 				}
 			});
 			$("select", that).each(function() {
+				var name = this.getAttribute("name");
 				params[name] = this.value;
 			});
 		});
@@ -75,10 +76,7 @@ var SemantAquaUI = {
 				if(inputs[0].tagName == "INPUT") {
 					var type = inputs[0].type.toLowerCase();
 					if(type == "checkbox") {
-						console.debug("Processing checkbox "+param);
 						for(var i=0;i<inputs.length;i++) {
-							console.debug(params[param]);
-							console.debug($(inputs[i]).val());
 							if($.inArray($(inputs[i]).val(), params[param])>=0) {
 								console.debug("Setting "+$(inputs[i]).val()+" to true")
 								inputs[i].checked=true;
@@ -93,14 +91,32 @@ var SemantAquaUI = {
 						
 					}
 					else if(type == "text") {
+						console.debug("Setting "+$(inputs[i]).attr("name")+" to "+params[param]);
 						inputs[0].value = params[param];
 					}
 				}
 				else {
+					console.debug("Setting "+$(inputs[0]).attr("name")+" to "+params[param]);
 					inputs[0].value = params[param];
 				}
 			}
 		}
+	},
+	"createMarker": function(uri, lat, lng, icon, visible) {
+		var opts = {"clickable": true,
+				"icon": icon,
+				"position": new google.maps.LatLng(lat, lng),
+				"visible": visible
+				};
+		google.maps.event.addListener(marker, "click",
+				function() {
+			SemantAqua.action = SemantAquaUI.handleClickedMarker;
+			$.bbq.pushState({"uri": uri});
+		});
+		return new google.maps.Marker(opts);
+	},
+	"handleClickedMarker": function() {
+		$(window).trigger('show-marker-info');
 	},
 	"showSpinner": function() {
 		$("#spinner").css("display", "block");

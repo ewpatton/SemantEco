@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -16,8 +19,29 @@ public class TestRequest implements Request {
 	private Map<String, String[]> params = new TreeMap<String, String[]>();
 	
 	@Override
-	public String[] getParam(String key) {
-		return params.get(key);
+	public Object getParam(String key) {
+		String[] value = params.get(key);
+		if(value[0].startsWith("{")) {
+			try {
+				return new JSONObject(value[0]);
+			}
+			catch(JSONException e) {
+				
+			}
+			return null;
+		}
+		else if(value[0].startsWith("[")) {
+			try {
+				return new JSONArray(value[0]);
+			}
+			catch(JSONException e) {
+				
+			}
+			return null;
+		}
+		else {
+			return value[0];
+		}
 	}
 
 	@Override

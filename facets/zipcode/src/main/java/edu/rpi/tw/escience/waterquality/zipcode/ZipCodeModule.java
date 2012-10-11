@@ -81,7 +81,7 @@ public class ZipCodeModule implements Module {
 		final Logger log = request.getLogger();
 		try {
 			log.debug("Decoding zip code");
-			ZipCodeLookup zcl = ZipCodeLookup.execute(request.getParam("zip")[0],
+			ZipCodeLookup zcl = ZipCodeLookup.execute((String)request.getParam("zip"),
 					log);
 			result = zcl.toString();
 		}

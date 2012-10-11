@@ -61,10 +61,9 @@ public class TimeModule implements Module {
 		}
 		
 		// extract the time passed from the client
-		final String[] args = request.getParam(TIME_VAR);
-		String time = "";
-		if(args.length > 0) {
-			time = args[0];
+		String time = (String)request.getParam("time");
+		if(time == null || time.isEmpty()) {
+			return;
 		}
 		
 		// process request based on query type

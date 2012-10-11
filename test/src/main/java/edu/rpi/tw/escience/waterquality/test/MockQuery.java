@@ -209,4 +209,14 @@ public class MockQuery implements Query {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void setNamespace(String prefix, String namespace) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getNamespace(String prefix) {
+		throw new UnsupportedOperationException();
+	}
+
 }

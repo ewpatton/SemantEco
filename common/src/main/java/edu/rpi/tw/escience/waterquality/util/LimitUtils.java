@@ -31,7 +31,7 @@ public final class LimitUtils {
 	public static int getLimit(final Request request, final String id) {
 		int limit = 0;
 		try {
-			JSONObject limits = new JSONObject(request.getParam("limit")[0]);
+			JSONObject limits = (JSONObject)request.getParam("limits");
 			JSONObject specs = limits.getJSONObject(id);
 			limit = specs.getInt("limit");
 		}
@@ -50,7 +50,7 @@ public final class LimitUtils {
 	public static int getOffset(final Request request, final String id) {
 		int offset = 0;
 		try {
-			JSONObject limits = new JSONObject(request.getParam("limit")[0]);
+			JSONObject limits = (JSONObject)request.getParam("limits");
 			JSONObject specs = limits.getJSONObject(id);
 			offset = specs.getInt("offset");
 		}

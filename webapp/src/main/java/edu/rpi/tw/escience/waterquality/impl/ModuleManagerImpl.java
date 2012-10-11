@@ -57,12 +57,14 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	private static final String MODULE_ERROR = "Unable to instantiate module ";
 	private static final int REFRESH_RATE = 5000;
 	private static final String RES_DIR = "META-INF/res/";
+	private final DefaultFileMonitor fm;
 	
 	/**
 	 * Default constructor
 	 */
 	public ModuleManagerImpl() {
 		log.trace("ModuleManagerImpl");
+		fm = null;
 	}
 	
 	/**
@@ -74,11 +76,11 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	public ModuleManagerImpl(String path) {
 		log.trace("ModuleManagerImpl");
 		this.path = path;
+		fm = new DefaultFileMonitor(this);
 		try {
 			log.debug("Starting VFS file manager monitor");
 			FileSystemManager manager = VFS.getManager();
 			FileObject file = manager.resolveFile(path);
-			DefaultFileMonitor fm = new DefaultFileMonitor(this);
 			fm.setDelay(REFRESH_RATE);
 			fm.setRecursive(true);
 			log.debug("Monitoring "+file);
@@ -346,6 +348,13 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	@Override
 	public long getLastModified() {
 		return lastModified;
+	}
+
+	public void stopListening() {
+		fm.stop();
+		classLoaders.clear();
+		moduleMap.clear();
+		modules.clear();
 	}
 
 }

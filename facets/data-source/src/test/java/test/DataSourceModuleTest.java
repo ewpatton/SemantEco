@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -39,8 +42,32 @@ public class DataSourceModuleTest extends TestCase {
 		Map<String, String[]> params = new TreeMap<String, String[]>();
 		
 		@Override
-		public String[] getParam(String key) {
-			return params.get(key);
+		public Object getParam(String key) {
+			String[] value = params.get(key);
+			if(value == null) {
+				return null;
+			}
+			if(value[0].startsWith("{")) {
+				try {
+					return new JSONObject(value[0]);
+				}
+				catch(JSONException e) {
+					
+				}
+				return null;
+			}
+			else if(value[0].startsWith("[")) {
+				try {
+					return new JSONArray(value[0]);
+				}
+				catch(JSONException e) {
+					
+				}
+				return null;
+			}
+			else {
+				return value[0];
+			}
 		}
 
 		public void setParam(String key, String[] values) {
@@ -186,14 +213,14 @@ public class DataSourceModuleTest extends TestCase {
 			
 		}
 		try {
-			request.setParam("source", new String[] { "http://sparql.tw.rpi.edu/garbage" });
+			request.setParam("source", new String[] { "[\"http://sparql.tw.rpi.edu/garbage\"]" });
 			module.visit(model, request);
 			fail();
 		}
 		catch(IllegalArgumentException e) {
 			
 		}
-		request.setParam("source", new String[] { "http://sparql.tw.rpi.edu/source/usgs-gov", "http://sparql.tw.rpi.edu/source/epa-gov" });
+		request.setParam("source", new String[] { "[\"http://sparql.tw.rpi.edu/source/usgs-gov\"]", "[\"http://sparql.tw.rpi.edu/source/epa-gov\"]" });
 		request.setParam("state",new String[] { "RI" });
 		request.setParam("county",new String[] { "1" });
 		request.setParam("zip",new String[] { "02809" });

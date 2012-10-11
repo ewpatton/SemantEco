@@ -1,3 +1,4 @@
+<div id="TimeFacet" class="facet">
 <select name="time">
   <option value="">All data</option>
   <option value="P-1M">Past Month</option>
@@ -9,3 +10,4 @@
   <option value="P-5Y">Past Five Years</option>
   <option value="P-10Y">Past Ten Years</option>
 </select>
+</div>

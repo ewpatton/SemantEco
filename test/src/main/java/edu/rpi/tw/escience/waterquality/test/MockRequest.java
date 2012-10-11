@@ -10,7 +10,7 @@ import edu.rpi.tw.escience.waterquality.Request;
 public class MockRequest implements Request {
 
 	@Override
-	public String[] getParam(String key) {
+	public Object getParam(String key) {
 		throw new UnsupportedOperationException();
 	}
 

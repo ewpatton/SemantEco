@@ -269,4 +269,7 @@ public interface Query extends GraphComponentCollection {
 	 * @return
 	 */
 	List<GraphComponentCollection> findGraphComponentsWithPattern(GraphPattern pattern);
+	
+	void setNamespace(String prefix, String namespace);
+	String getNamespace(String prefix);
 }

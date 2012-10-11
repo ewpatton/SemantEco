@@ -4,8 +4,13 @@ var SemantAqua = {
 	"initialize": function() {
 		SemantAqua.configureConsole();
 		SemantAquaUI.configureMap();
+		$(window).trigger("initialize");
+		
+		// set up facets
 		$.bbq.pushState(SemantAquaUI.getFacetParams(),1);
 		SemantAquaUI.populateFacets();
+		
+		// bind handle state change
 		$(window).bind('hashchange', SemantAqua.handleStateChange);
 		SemantAqua.configureWebSockets();
 		if($.bbq.getState("zip") != null) {
@@ -109,6 +114,12 @@ var SemantAqua = {
 	},
 	"handleStateChange": function() {
 		var action = SemantAqua.action;
+		if(action == null) {
+			return;
+		}
+		if(typeof action == "function") {
+			action.call(window);
+		}
 		if(typeof SemantAqua[action] == "function") {
 			SemantAqua[action].call(SemantAqua);
 		}
@@ -154,6 +165,7 @@ var SemantAqua = {
 			limits.site["limit"] = Math.min(limits.site.count,
 					2*SemantAqua.limit - limits.facility.limit);
 		}
+		SemantAqua.action = null;
 		$.bbq.pushState({"limits": limits});
 		SemantAqua.generatePaging();
 		SemantAqua.getData();
@@ -198,12 +210,21 @@ var SemantAqua = {
 		};
 	},
 	"getData": function() {
-		SemantAquaUI.hideSpinner();
+		$(window).trigger("get-data");
+		//SemantAquaUI.hideSpinner();
 	},
 	"showReportSites": function() {
 		SemantAquaUI.hideSpinner();
 	},
 	"triggerUpdate": function() {
 		SemantAqua.showAddress($("#zip").val());
+	},
+	"prepareArgs": function(args) {
+		for(var i in args) {
+			if(typeof args[i] == "object") {
+				args[i] = JSON.stringify(args[i]);
+			}
+		}
+		return args;
 	}
 };

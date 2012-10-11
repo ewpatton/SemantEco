@@ -63,7 +63,7 @@ public class FacetTag extends TagSupport {
 					try {
 						ModuleJspEvaluator eval = new ModuleJspEvaluator((HttpServletResponse)pageContext.getResponse());
 						JspResource jsp = (JspResource)i;
-						String path = "resources/"+jsp.getPath();
+						String path = jsp.getPath();
 						path = path.substring(0, path.lastIndexOf('/'));
 						pageContext.getRequest().setAttribute("moduleBase", path+"/");
 						jsp.dispatch(pageContext.getServletContext(), (HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)eval);

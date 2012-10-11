@@ -15,10 +15,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 public interface Request {
 	/**
 	 * Gets a parameter specified in the URI of the REST call
-	 * @param key Named key, should use [] if it was an array on the client
+	 * @param key Named key
 	 * @return An array of strings
 	 */
-	String[] getParam(String key);
+	Object getParam(String key);
 	
 	/**
 	 * Gets a logger instance for this request that the system

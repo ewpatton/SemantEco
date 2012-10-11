@@ -32,8 +32,8 @@ public class DataModelBuilderTest extends TestCase {
 		request.setParam("zip", "02888");
 		request.setParam("lat", "41.74936");
 		request.setParam("lng", "-71.40836");
-		request.setParam("limit", "{\"facility\":{\"offset\":0,\"limit\":0},\"site\":{\"offset\":0,\"limit\":10}}");
-		request.setParam("source", "http://sparql.tw.rpi.edu/source/usgs-gov");
+		request.setParam("limits", "{\"facility\":{\"offset\":0,\"limit\":0},\"site\":{\"offset\":0,\"limit\":10}}");
+		request.setParam("source", "[\"http://sparql.tw.rpi.edu/source/usgs-gov\"]");
 		
 		config.executor.setDefault("endpoint", "http://sparql.tw.rpi.edu/virtuoso/sparql");
 		config.executor.setDefault("Content-Type", "applicaction/json");

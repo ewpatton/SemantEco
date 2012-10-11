@@ -1,6 +1,8 @@
 package test;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -18,11 +20,17 @@ public class LimitUtilsTest extends TestCase {
 		String response = "{\"site\":{\"offset\":10,\"limit\":20,\"count\":40}}";
 		
 		@Override
-		public String[] getParam(String key) {
-			if(!key.equals("limit")) {
+		public Object getParam(String key) {
+			if(!key.equals("limits")) {
 				throw new IllegalArgumentException("Did not expect key "+key);
 			}
-			return new String[] { response };
+			try {
+				return new JSONObject(response);
+			}
+			catch(JSONException e) {
+				
+			}
+			return null;
 		}
 
 		@Override

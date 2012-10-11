@@ -58,7 +58,7 @@ public final class JavaScriptGenerator {
 		String result = "\""+m.getName()+"\": ";
 		result += "function(args,success,error){" + 
 				"var a=$.extend({},SemantAquaUI.getState(),args);" +
-				"var b=$.ajax(SemantAqua.restBaseUrl+\""+cls.getSimpleName()+"/"+m.getName()+"\",{\"data\":a});" +
+				"var b=$.ajax(SemantAqua.restBaseUrl+\""+cls.getSimpleName()+"/"+m.getName()+"\",{\"data\":SemantAqua.prepareArgs(a)});" +
 				"if(success)b.done(success);" +
 				"if(error)b.fail(error);" +
 				"}";

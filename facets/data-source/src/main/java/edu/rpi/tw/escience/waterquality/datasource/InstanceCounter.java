@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,20 +35,25 @@ public class InstanceCounter extends QueryUtils {
 		this.request = request;
 		this.log = request.getLogger();
 		this.config = config;
-		String[] sources = request.getParam("source[]");
-		if(sources == null || sources.length == 0) {
+		JSONArray sources = (JSONArray)request.getParam("source");
+		if(sources == null || sources.length() == 0) {
 			throw new IllegalArgumentException("The source parameter must be supplied.");
 		}
-		for(int i=0;i<sources.length;i++) {
-			this.sources.add(sources[i]);
+		try {
+			for(int i=0;i<sources.length();i++) {
+				this.sources.add(sources.getString(i));
+			}
 		}
-		String[] state = request.getParam("state");
-		if(state == null || state.length == 0) {
+		catch(JSONException e) {
+			log.error("Unable to retrieve sources", e);
+		}
+		String state = (String)request.getParam("state");
+		if(state == null || state.isEmpty()) {
 			throw new IllegalArgumentException("State parameter not supplied. Expected two digit state abbreviation, e.g. CA.");
 		}
-		this.stateUri = getStateURI(state[0]);
+		this.stateUri = getStateURI(state);
 		try {
-			this.countyCode = request.getParam("county")[0];
+			this.countyCode = (String)request.getParam("county");
 		}
 		catch(Exception e) {
 			throw new IllegalArgumentException("County parameter not supplied.", e);
@@ -118,12 +124,12 @@ public class InstanceCounter extends QueryUtils {
 		final NamedGraphComponent measures = query.getNamedGraph(measuresGraph);
 		
 		sites.addPattern(s, rdfType, waterWaterFacility);
-		sites.addPattern(s, polHasCountyCode, countyCode, XSDDatatype.XSDint);
+		sites.addPattern(s, polHasCountyCode, request.getParam("state")+countyCode, null);
 		sites.addPattern(s, polHasPermit, permit);
 		sites.addPattern(s, wgsLat, lat);
 		sites.addPattern(s, wgsLong, lng);
 		
-		measures.addPattern(measurement, polHasPermit, s);
+		measures.addPattern(measurement, polHasPermit, permit);
 	}
 	
 	protected final void buildUSGSCounter(final Query query, final List<String> graphs) {

@@ -1,5 +1,8 @@
 package edu.rpi.tw.escience.waterquality.regulation;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -10,9 +13,21 @@ import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
+import edu.rpi.tw.escience.waterquality.query.QueryResource;
+import edu.rpi.tw.escience.waterquality.query.Variable;
+
+import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
+import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
 public class RegulationModule implements Module {
 
+	private static final String SITE_VAR = "site";
+	private static final String FACILITY_VAR = "facility";
+	private static final String POLLUTED_VAR = "polluted";
+	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
+	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
+	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+	
 	private ModuleConfiguration config = null;
 	
 	@Override
@@ -23,11 +38,10 @@ public class RegulationModule implements Module {
 	@Override
 	public void visit(OntModel model, Request request) {
 		// load the appropriate regulation ontology here
-		String[] regulations = request.getParam("regulation");
-		if(regulations.length > 0) {
-			String regulation = regulations[0];
-			model.read(regulation);
-		}
+		String regulation = (String)request.getParam("regulation");
+		model.read(POL_NS);
+		model.read(WATER_NS);
+		model.read(regulation);
 	}
 
 	@Override
@@ -72,6 +86,34 @@ public class RegulationModule implements Module {
 	@QueryMethod
 	public String queryForPollutedSites(final Request request) {
 		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		
+		query.setNamespace("pol", POL_NS);
+		
+		// Variables
+		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
+		final Variable lat = query.getVariable(VAR_NS+"lat");
+		final Variable lng = query.getVariable(VAR_NS+"lng");
+		final Variable facility = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a pol:Facility } as ?"+FACILITY_VAR);
+		final Variable polluted = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a pol:PollutedSite } as ?"+POLLUTED_VAR);
+		
+		// known uris
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource polMeasurementSite = query.getResource(POL_NS+"MeasurementSite");
+		final QueryResource wgsLat = query.getResource(WGS_NS+"lat");
+		final QueryResource wgsLong = query.getResource(WGS_NS+"long");
+		
+		// build query
+		Set<Variable> vars = new HashSet<Variable>();
+		vars.add(site);
+		vars.add(lat);
+		vars.add(lng);
+		vars.add(facility);
+		vars.add(polluted);
+		query.setVariables(vars);
+		
+		query.addPattern(site, rdfType, polMeasurementSite);
+		query.addPattern(site, wgsLat, lat);
+		query.addPattern(site, wgsLong, lng);
 		
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(request, query);
 	}
