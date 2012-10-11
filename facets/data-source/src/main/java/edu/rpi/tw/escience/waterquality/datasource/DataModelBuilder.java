@@ -117,7 +117,7 @@ public class DataModelBuilder extends QueryUtils {
 		log.trace("buildQueryForSource");
 		final List<String> graphs = retrieveStateGraphsForSource(stateUri, source);
 		List<String> sites = null;
-		String measurementGraph = null
+		String measurementGraph = null;
 		for(int i=0;i<graphs.size();i++) {
 			String graph = graphs.get(i);
 			if(graph.contains("measurement")) {
