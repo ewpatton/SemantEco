@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.waterquality.datasource;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -183,16 +184,31 @@ public class DataModelBuilder extends QueryUtils {
 		construct.addPattern(measurement, polHasCharacteristic, element);
 		construct.addPattern(measurement, polHasValue, value);
 		construct.addPattern(measurement, unitHasUnit, unit);
+		if(graphUri.contains("epa-gov")) {
+			final Variable op = query.getVariable(QUERY_NS+"op");
+			final Variable lval = query.getVariable(QUERY_NS+"lval");
+			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
+			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
+			construct.addPattern(measurement, polHasLimitOperator, op);
+			construct.addPattern(measurement, polHasLimitValue, lval);
+		}
 		
 		// build where clause
 		if(graphUri.contains("nwis")) {
 			final QueryResource polHasSite = query.getResource(POL_NS+"hasSite");
 			graph.addPattern(measurement, polHasSite, s);
 		}
-		else {
+		else if(graphUri.contains("epa-gov")) {
 			final Variable permit = query.getVariable(QUERY_NS+"permit");
+			final Variable op = query.getVariable(QUERY_NS+"op");
+			final Variable lval = query.getVariable(QUERY_NS+"lval");
 			final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
+			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
 			graph.addPattern(measurement, polHasPermit, permit);
+			graph.addFilter("regex(?measurement,\"measurements-[^/]+/version\")");
+			graph.addPattern(measurement, polHasLimitOperator, op);
+			graph.addPattern(measurement, polHasLimitValue, lval);
 		}
 		graph.addPattern(measurement, polHasCharacteristic, element);
 		if(graphUri.contains("echo")) {
@@ -439,7 +455,15 @@ public class DataModelBuilder extends QueryUtils {
 		
 		// execute and return results
 		String results = config.getQueryExecutor(request).accept("application/json").execute(query);
-		return processUriList(results);
+		List<String> uris = processUriList(results);
+		Iterator<String> i = uris.iterator();
+		while(i.hasNext()) {
+			String uri = i.next();
+			if(uri.endsWith("-")) {
+				i.remove();
+			}
+		}
+		return uris;
 	}
 	
 	/**

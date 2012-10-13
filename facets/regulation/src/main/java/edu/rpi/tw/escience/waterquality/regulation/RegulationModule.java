@@ -1,10 +1,22 @@
 package edu.rpi.tw.escience.waterquality.regulation;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
@@ -32,7 +44,36 @@ public class RegulationModule implements Module {
 	
 	@Override
 	public void visit(Model model, Request request) {
-		// we don't modify the data model at all
+		// handle EPA regulations
+		final Logger log = request.getLogger();
+		long start = System.currentTimeMillis();
+		String query = 
+				"PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>" +
+				"PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>" +
+				"SELECT ?m WHERE { " +
+				"?m a water:WaterMeasurement ; " +
+				"pol:hasValue ?val ; " +
+				"pol:hasLimitOperator ?op ; " +
+				"pol:hasLimitValue ?lval " +
+				"FILTER((?op = \"<=\" && ?val > ?lval) || " +
+				"(?op = \">=\" && ?val < ?lval) || " +
+				"(?op = \">\" && ?val <= ?lval))" +
+				"}";
+		QueryExecution qe = 
+				QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxSPARQL_11), model);
+		ResultSet rs = qe.execSelect();
+		final Resource RegulationViolation = model.getResource(POL_NS+"RegulationViolation");
+		final List<Resource> violations = new LinkedList<Resource>();
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			Resource m = qs.getResource("m");
+			log.debug("Found violating measurement "+m);
+			violations.add(m);
+		}
+		for(Resource m : violations) {
+			model.add(m, RDF.type, RegulationViolation);
+		}
+		log.info("Computing EPA closure took "+(System.currentTimeMillis()-start)+" ms");
 	}
 
 	@Override
