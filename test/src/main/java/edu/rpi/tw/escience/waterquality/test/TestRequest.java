@@ -21,6 +21,9 @@ public class TestRequest implements Request {
 	@Override
 	public Object getParam(String key) {
 		String[] value = params.get(key);
+		if(value == null) {
+			return null;
+		}
 		if(value[0].startsWith("{")) {
 			try {
 				return new JSONObject(value[0]);

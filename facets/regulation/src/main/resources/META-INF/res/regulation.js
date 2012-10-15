@@ -14,6 +14,10 @@ $(window).bind("initialize", function() {
 		console.log("regulation.js#show-marker-info");
 		RegulationModule.queryForSitePollution({}, function(data){
 			var marker = SemantAquaUI.getMarkerForUri($.bbq.getState("uri"));
+			if(marker == undefined) {
+				return;
+			}
+			
 		});
 	});
 });
