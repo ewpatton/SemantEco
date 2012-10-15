@@ -210,6 +210,7 @@ var SemantAqua = {
 		};
 	},
 	"getData": function() {
+		console.log("SemantAqua.getData");
 		$(window).trigger("get-data");
 		//SemantAquaUI.hideSpinner();
 	},
@@ -220,11 +221,19 @@ var SemantAqua = {
 		SemantAqua.showAddress($("#zip").val());
 	},
 	"prepareArgs": function(args) {
+		var result = {};
 		for(var i in args) {
+			var div = $("div.facet:has(input[name='"+i+"'], select[name='"+i+"'])");
+			if(div.hasClass("no-rest")) {
+				continue;
+			}
 			if(typeof args[i] == "object") {
-				args[i] = JSON.stringify(args[i]);
+				result[i] = JSON.stringify(args[i]);
+			}
+			else {
+				result[i] = args[i];
 			}
 		}
-		return args;
+		return result;
 	}
 };

@@ -11,6 +11,7 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import edu.rpi.tw.escience.waterquality.query.GraphComponent;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
+import edu.rpi.tw.escience.waterquality.query.Variable;
 
 /**
  * GraphComponentCollectionImpl provides a default implementation of the
@@ -84,6 +85,11 @@ public class GraphComponentCollectionImpl implements GraphComponentCollection {
 		}
 		ps.print("}");
 		return out.toString();
+	}
+
+	@Override
+	public void addBind(String expr, Variable var) {
+		components.add(new BindingImpl(expr, var));
 	}
 
 }

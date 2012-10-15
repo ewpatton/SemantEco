@@ -118,6 +118,7 @@ public class DataModelBuilder extends QueryUtils {
 		log.trace("buildQueryForSource");
 		final List<String> graphs = retrieveStateGraphsForSource(stateUri, source);
 		List<String> sites = null;
+		String uri = (String)request.getParam("uri");
 		String measurementGraph = null;
 		for(int i=0;i<graphs.size();i++) {
 			String graph = graphs.get(i);
@@ -129,7 +130,13 @@ public class DataModelBuilder extends QueryUtils {
 				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "facility");
 				int offset = LimitUtils.getOffset(request, "facility");
-				sites = listEPASitesInBounds(graphs, clat, clng, offset, limit);
+				if(uri != null && !uri.isEmpty()) {
+					sites = new ArrayList<String>();
+					sites.add((String)request.getParam("uri"));
+				}
+				else {
+					sites = listEPASitesInBounds(graphs, clat, clng, offset, limit);
+				}
 				extendQueryForEPAFacilities(query, graph, sites);
 			}
 			else if(graph.contains("nwis")) {
@@ -137,7 +144,13 @@ public class DataModelBuilder extends QueryUtils {
 				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "site");
 				int offset = LimitUtils.getOffset(request, "site");
-				sites = listUSGSSitesInBounds(graphs, clat, clng, offset, limit);
+				if(uri != null && !uri.isEmpty()) {
+					sites = new ArrayList<String>();
+					sites.add((String)request.getParam("uri"));
+				}
+				else {
+					sites = listUSGSSitesInBounds(graphs, clat, clng, offset, limit);
+				}
 				extendQueryForUSGSSites(query, graph, sites);
 			}
 			else {
@@ -187,10 +200,13 @@ public class DataModelBuilder extends QueryUtils {
 		if(graphUri.contains("epa-gov")) {
 			final Variable op = query.getVariable(QUERY_NS+"op");
 			final Variable lval = query.getVariable(QUERY_NS+"lval");
+			final Variable permit = query.getVariable(QUERY_NS+"permit");
 			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
 			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
+			final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
 			construct.addPattern(measurement, polHasLimitOperator, op);
 			construct.addPattern(measurement, polHasLimitValue, lval);
+			construct.addPattern(measurement, polHasPermit, permit);
 		}
 		
 		// build where clause
@@ -209,6 +225,7 @@ public class DataModelBuilder extends QueryUtils {
 			graph.addFilter("regex(?measurement,\"measurements-[^/]+/version\")");
 			graph.addPattern(measurement, polHasLimitOperator, op);
 			graph.addPattern(measurement, polHasLimitValue, lval);
+			graph.addPattern(measurement, polHasPermit, permit);
 		}
 		graph.addPattern(measurement, polHasCharacteristic, element);
 		if(graphUri.contains("echo")) {

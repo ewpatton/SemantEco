@@ -72,8 +72,7 @@ public interface QueryExecutor {
 	/**
 	 * Executes a SPARQL query on the combined data and ontology
 	 * models for a given request.
-	 * @param request RESTful request submitted by a client
 	 * @param query SPARQL query object to execute
 	 */
-	String executeLocalQuery(Request request, Query query);
+	String executeLocalQuery(Query query);
 }

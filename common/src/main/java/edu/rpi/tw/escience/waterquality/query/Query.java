@@ -274,4 +274,6 @@ public interface Query extends GraphComponentCollection {
 	String getNamespace(String prefix);
 
 	GraphComponentCollection createGraphComponentCollection();
+
+	QueryResource createPropertyPath(String string);
 }

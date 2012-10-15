@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
-import edu.rpi.tw.escience.waterquality.impl.ModuleManagerImpl;
 import edu.rpi.tw.escience.waterquality.util.JavaScriptGenerator;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
@@ -237,8 +236,7 @@ public class SemantAquaServlet extends WebSocketServlet {
 	
 	@Override
 	public void destroy() {
-		ModuleManagerImpl impl = (ModuleManagerImpl)ModuleManagerFactory.getInstance().getManager();
-		impl.stopListening();
+		ModuleManagerFactory.destroy();
 	}
 
 	@Override

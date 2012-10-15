@@ -1,4 +1,6 @@
 var SemantAquaUI = {
+	"markers": [],
+	"markersByUri": {},
 	"configureMap": function() {
 		var mapOptions = {
 				center: new google.maps.LatLng(37.4419, -122.1419),
@@ -102,20 +104,34 @@ var SemantAquaUI = {
 			}
 		}
 	},
-	"createMarker": function(uri, lat, lng, icon, visible) {
+	"createMarker": function(uri, lat, lng, icon, visible, label) {
 		var opts = {"clickable": true,
-				"icon": icon,
+				"icon": new google.maps.MarkerImage(icon, null, null, null, new google.maps.Size(30, 34)),
+				"title": label,
 				"position": new google.maps.LatLng(lat, lng),
 				"visible": visible
 				};
+		return new google.maps.Marker(opts);
+	},
+	"addMarker": function(marker) {
+		var uri = marker.data["site"].value;
+		SemantAquaUI.markers.push(marker);
+		SemantAquaUI.markersByUri[uri] = marker;
+		marker.setMap(SemantAquaUI.map);
 		google.maps.event.addListener(marker, "click",
 				function() {
 			SemantAqua.action = SemantAquaUI.handleClickedMarker;
 			$.bbq.pushState({"uri": uri});
 		});
-		return new google.maps.Marker(opts);
+	},
+	"getMarkers": function() {
+		return SemantAquaUI.markers;
+	},
+	"getMarkerForUri": function(uri) {
+		return SemantAquaUI.markersByUri[uri];
 	},
 	"handleClickedMarker": function() {
+		SemantAqua.action = null;
 		$(window).trigger('show-marker-info');
 	},
 	"showSpinner": function() {

@@ -567,5 +567,16 @@ public class QueryImpl implements Query {
 	public GraphComponentCollection createGraphComponentCollection() {
 		return new GraphComponentCollectionImpl();
 	}
+
+	@Override
+	public void addBind(String expr, Variable var) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public QueryResource createPropertyPath(String path) {
+		return new PropertyPathImpl(path);
+	}
 	
 }

@@ -32,6 +32,10 @@ public class DataTypeModule implements Module {
 		if(res != null) {
 			ui.addStylesheet(res);
 		}
+		res = config.getResource("data-type.js");
+		if(res != null) {
+			ui.addScript(res);
+		}
 		res = config.getResource("data-type.jsp");
 		if(res != null) {
 			ui.addFacet(res);

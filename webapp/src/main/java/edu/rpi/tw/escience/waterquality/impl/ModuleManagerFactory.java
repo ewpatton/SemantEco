@@ -47,4 +47,13 @@ public class ModuleManagerFactory {
 		return instance;
 	}
 
+	public static void destroy() {
+		ModuleManagerImpl impl = (ModuleManagerImpl)instance.manager;
+		if(impl != null) {
+			impl.stopListening();
+		}
+		instance = null;
+		instance.manager = null;
+	}
+
 }

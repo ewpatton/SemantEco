@@ -234,7 +234,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	}
 
 	@Override
-	public String executeLocalQuery(Request request, Query query) {
+	public String executeLocalQuery(Query query) {
 		log.trace("executeLocalQuery");
 		Model model = request.getCombinedModel();
 		log.debug("Module '"+owner.get().getName()+"' executing local query");

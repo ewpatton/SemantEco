@@ -1,7 +1,7 @@
 <%
 String base = (String)request.getAttribute("moduleBase");
 %>
-<div id="DataTypeFacet" class="facet">
+<div id="DataTypeFacet" class="facet no-rest">
 <input name="type" value="cleanwater" checked="checked" type="checkbox" />
 <img height="12" src="<%=base %>clean-water.png" />Clean Water<br />
 <input name="type" value="facility" checked="checked" type="checkbox" />

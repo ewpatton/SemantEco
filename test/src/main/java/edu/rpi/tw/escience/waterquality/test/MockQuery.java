@@ -224,4 +224,14 @@ public class MockQuery implements Query {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void addBind(String expr, Variable var) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public QueryResource createPropertyPath(String string) {
+		throw new UnsupportedOperationException();
+	}
+
 }

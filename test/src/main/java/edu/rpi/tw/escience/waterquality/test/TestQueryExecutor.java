@@ -15,7 +15,6 @@ import junit.framework.Assert;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
-import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.query.Query;
 
 public class TestQueryExecutor extends MockQueryExecutor {
@@ -104,7 +103,7 @@ public class TestQueryExecutor extends MockQueryExecutor {
 	}
 	
 	@Override
-	public String executeLocalQuery(Request request, Query query) {
+	public String executeLocalQuery(Query query) {
 		return "";
 	}
 	

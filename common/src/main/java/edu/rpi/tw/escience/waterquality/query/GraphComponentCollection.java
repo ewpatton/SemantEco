@@ -56,4 +56,6 @@ public interface GraphComponentCollection extends GraphComponent {
 	 * @return
 	 */
 	List<GraphComponent> getComponents();
+	
+	void addBind(String expr, Variable var);
 }
