@@ -168,6 +168,14 @@ public class TestQueryExecutor extends MockQueryExecutor {
 				}
 				else if(param.equals("query")) {
 					String matchQuery = readFile(new FileInputStream("src/test/resources/"+value));
+					String temp = query;
+					
+					// correct for platform-dependent line endings
+					temp = temp.replaceAll("\r\n", "\n");
+					temp = temp.replaceAll("\r", "\n");
+					matchQuery = matchQuery.replaceAll("\r\n", "\n");
+					matchQuery = matchQuery.replaceAll("\r", "\n");
+					
 					if(query == null || !query.equals(matchQuery)) {
 						System.err.println(query);
 						Assert.fail();
