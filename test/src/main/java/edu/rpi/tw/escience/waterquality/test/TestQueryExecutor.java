@@ -171,12 +171,14 @@ public class TestQueryExecutor extends MockQueryExecutor {
 					String temp = query;
 					
 					// correct for platform-dependent line endings
-					temp = temp.replaceAll("\r\n", "\n");
-					temp = temp.replaceAll("\r", "\n");
+					if(temp != null) {
+					    temp = temp.replaceAll("\r\n", "\n");
+					    temp = temp.replaceAll("\r", "\n");
+					}
 					matchQuery = matchQuery.replaceAll("\r\n", "\n");
 					matchQuery = matchQuery.replaceAll("\r", "\n");
 					
-					if(query == null || !query.equals(matchQuery)) {
+					if(temp == null || !temp.equals(matchQuery)) {
 						System.err.println(query);
 						Assert.fail();
 					}
