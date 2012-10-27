@@ -29,8 +29,8 @@ p {
 
 div.container {
   width: 100%;
-  height: 100%;
-  position: absolute;
+  /*height: 100%;*/
+  position: relative;
   top: -16px;
 }
 
@@ -82,7 +82,8 @@ table th, table td {
 
 div#content {
   position: relative;
-  background-color: #f2f5ff;
+  /*background-color: #f2f5ff;*/
+  background: white;
   min-width: 960px;
   width: 70%;
   margin-left: auto;
@@ -90,9 +91,19 @@ div#content {
   min-height: 100%;
   height: 110%;
   padding: 16pt;
+  padding-bottom: 0px;
   box-shadow: 0px 3px 16px #000;
   -webkit-box-shadow: 0px 3px 16px #000;
   -moz-box-shadow: 0px 3px 16px #000;
+}
+
+div#display{
+  float: left;
+  width: 80%;
+}
+
+div#map_canvas{
+  height: 720px;
 }
 
 p.welcome {
@@ -123,9 +134,10 @@ input#zip {
 }
 
 div#footer {
+  margin-top: 20px;
   width: 100%;
-  position: absolute;
-  bottom: 0;
+  /*position: absolute;*/
+  /*bottom: 0;*/
   text-align: center;
   padding-bottom: 8px;
   font-size: 8pt;
@@ -236,8 +248,28 @@ div#sparql div.big a {
 }
 
 div#page {
+    margin: 8px 0;
     text-align: center;
     width: 100%;
+}
+
+div#page a{
+  display: inline-block;
+  padding: 4px 6px;
+  border: 1px solid #003769;
+  border-radius: 2px;
+  color: black;
+  text-decoration: none;
+}
+
+div#page a:hover{
+  background:#A2C8EB; 
+}
+
+div#page a.selected{
+  background: #0070D6;
+  color: white;
+  cursor: default;
 }
 
 a img {
@@ -255,11 +287,11 @@ div.map-popup table {
     border: 1px solid black;
 }
 
-div#page a.selected {
+/*div#page a.selected {
     text-decoration: none;
     color: black;
     cursor: text;
-}
+}*/
 
 div.modal-display {
     width: 100%;
@@ -381,12 +413,43 @@ div.main {
 }
 
 div.sidebar {
-	margin-left: auto;
+/*	margin-left: auto;
 	margin-right: auto;
-	width: 100%;
+	width: 100%;*/
+  float:right;
+  width: 18%;
+  position: relative;
 }
 
 div#facets {
-	float:right;
-	width:20%;
+	/*float:right;*/
+	width:100% !important;
+}
+
+
+input[type='button'],input[type='submit']{
+    clear:both;
+    font-family: Arial,Helvetica,verdana,sans-serif;
+    text-align: center;
+    border-radius: 3px;
+    cursor: pointer;
+    /*display: block;*/
+    font-size: 13px;
+    font-weight: bold;
+    padding: 2px 5px;
+    text-align: middle;
+    text-decoration: none;
+    text-shadow: 0 -1px 0.3px rgba(0, 0, 0, 0.3);
+    /*vertical-align: middle;*/
+    /*background: #0076ca;*/
+    background: url("../images/grad_bg_sprite.png") 0 -35px repeat-x;
+    border: 1px solid #1B6CDE;
+    color: #FFFFFF;
+    height: 25px;
+    width: 57px;
+}
+
+input[type='button']:hover,input[type='submit']:hover{
+    background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
+    /*background: #4DA5E3;*/
 }
