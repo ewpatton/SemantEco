@@ -12,7 +12,7 @@ var SemantAquaUI = {
 		SemantAquaUI.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 		SemantAquaUI.geocoder = new google.maps.Geocoder();
 
-
+ 
 		SemantAquaUI.infowindowcontent = document.createElement('div');
         $(SemantAquaUI.infowindowcontent).attr("id","infowindowcontent").html("no centent");
         $(SemantAquaUI.infowindowcontent).css({height:"300px",width:"550px"});
