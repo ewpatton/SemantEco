@@ -325,8 +325,6 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-	<tomcat.username>tomcat</tomcat.username>
-	<tomcat.password>tomcat</tomcat.password>
 	<baseUrl>http://localhost:8080/semantaqua/</baseUrl>
 	<debug>true</debug>
 	<triple-store>http://sparql.tw.rpi.edu/virtuoso/sparql</triple-store>
