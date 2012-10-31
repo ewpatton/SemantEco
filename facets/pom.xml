@@ -13,6 +13,10 @@
   <packaging>pom</packaging>
   <name>semantaqua facets</name>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
   <repositories>
     <repository>
       <id>central</id>
