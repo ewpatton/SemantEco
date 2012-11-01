@@ -13,45 +13,97 @@ var SemantAquaUI = {
 		SemantAquaUI.geocoder = new google.maps.Geocoder();
 
  
-		SemantAquaUI.infowindowcontent = document.createElement('div');
-        $(SemantAquaUI.infowindowcontent).attr("id","infowindowcontent").html("no centent");
-        $(SemantAquaUI.infowindowcontent).css({height:"300px",width:"550px"});
+		SemantAquaUI.infowindowcontainer = document.createElement('div');
+        $(SemantAquaUI.infowindowcontainer).attr("id","infowindowcontainer");
+        SemantAquaUI.infowindowcontent = document.createElement('div');
+        $(SemantAquaUI.infowindowcontent).attr("id","infowindowcontent");
+        $(SemantAquaUI.infowindowcontent).appendTo(SemantAquaUI.infowindowcontainer);
+        SemantAquaUI.infowindowcontrol = document.createElement('div');
+        $(SemantAquaUI.infowindowcontrol).attr("id","infowindowcontrol");
+        $(SemantAquaUI.infowindowcontrol).appendTo(SemantAquaUI.infowindowcontainer);
 		SemantAquaUI.infowindow=new google.maps.InfoWindow({
-            content:SemantAquaUI.infowindowcontent
+            content:SemantAquaUI.infowindowcontainer
         });
 
         $(window).on("show-marker-info",function(event,marker){
         	SemantAquaUI.infowindow.data=marker.data;
         	console.log(marker.data);
-			$(SemantAquaUI.infowindowcontent).html(marker.data.label.value);
             SemantAquaUI.infowindow.open(SemantAquaUI.map,marker);
-            
-            var line1=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],
-            ['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],
-            ['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];
-            var plot1 = $.jqplot('infowindowcontent', [line1], {
-                title:SemantAquaUI.infowindow.data.label.value,
-                axes:{
-                    xaxis:{
-                        renderer:$.jqplot.DateAxisRenderer,
-                        tickOptions:{
-                            formatString:'%b&nbsp;%#d'
-                        } 
-                    },
-                    yaxis:{
-                        tickOptions:{
-                            formatString:'$%.2f'
-                        }
-                    }
-                },
-                highlighter: {
-                    show: true,
-                    sizeAdjust: 7.5
-                },
-                cursor: {
-                    show: false
-                }
+            $(SemantAquaUI.infowindowcontrol).html("");
+            $(SemantAquaUI.infowindowcontrol).html("<a>Data</a><a>Visualize 1</a><a>Visualize 2</a>");
+            $(SemantAquaUI.infowindowcontent).html(SemantAquaUI.infowindow.data.infowindowcontent);
+            $($("#infowindowcontrol a").get(0)).click(function(){
+            	$(SemantAquaUI.infowindowcontent).html(SemantAquaUI.infowindow.data.infowindowcontent);
             });
+
+            $($("#infowindowcontrol a").get(1)).click(function(){
+            	$(SemantAquaUI.infowindowcontent).html("");
+	            var plot1 = $.jqplot('infowindowcontent', [SemantAquaUI.infowindow.data.visualize1], {
+	                title:SemantAquaUI.infowindow.data.label.value,
+	                axes:{
+	                    xaxis:{
+	                        renderer:$.jqplot.DateAxisRenderer,
+	                        tickOptions:{
+	                            formatString:'%b&nbsp;%#d'
+	                        } 
+	                    },
+	                    yaxis:{
+	                        tickOptions:{
+	                            formatString:'%.5f'
+	                        }
+	                    }
+	                },
+	                series:[{label:"carbonMonoxide",lineWidth:4}],
+	                highlighter: {
+	                    show: true,
+	                    sizeAdjust: 7.5
+	                },
+	                legend: { 
+	                	show:true, 
+	                	location: 'se'
+	                },
+	                cursor: {
+	                    show: false
+	                }
+	            });
+            });
+
+			$($("#infowindowcontrol a").get(2)).click(function(){
+            	$(SemantAquaUI.infowindowcontent).html("");
+	            var plot1 = $.jqplot('infowindowcontent', [SemantAquaUI.infowindow.data.visualize1,SemantAquaUI.infowindow.data.visualize2], {
+	                title:SemantAquaUI.infowindow.data.label.value,
+	                axes:{
+	                    xaxis:{
+	                        renderer:$.jqplot.DateAxisRenderer,
+	                        tickOptions:{
+	                            formatString:'%b&nbsp;%#d'
+	                        } 
+	                    },
+	                    yaxis:{
+	                        tickOptions:{
+	                            formatString:'%.5f'
+	                        },
+	                    },
+	                    y2axis:{
+			                autoscale:true, 
+			                tickOptions:{showGridline:false}
+			            }
+	                },
+	                legend: { 
+	                	show:true, 
+	                	location: 'se'
+	                },
+	                series:[{label:"carbonMonoxide",yaxis:'yaxis',lineWidth:4}, {label:"Aves",yaxis:'y2axis'}],
+	                highlighter: {
+	                    show: true,
+	                    sizeAdjust: 7.5
+	                },
+	                cursor: {
+	                    show: false
+	                }
+	            });
+            });
+            
         })
 	},
 	"doGeocode": function(zip) {

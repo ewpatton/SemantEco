@@ -453,3 +453,33 @@ input[type='button']:hover,input[type='submit']:hover{
     background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
     /*background: #4DA5E3;*/
 }
+
+
+div#infowindowcontainer{
+  height:340px;
+  min-width:550px;
+  max-width: 680px;
+}
+
+div#infowindowcontent{
+  height:300px;
+}
+
+div#infowindowcontrol{
+  margin-top: 20px;
+}
+
+div#infowindowcontrol a{
+  cursor: pointer;
+  margin-left: 20px;
+  color:blue;
+  text-decoration: underline;
+}
+
+div#infowindowcontrol a:hover{
+  color: orange;
+}
+
+.jqplot-table-legend{
+  width: auto;
+}
