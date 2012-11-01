@@ -1,4 +1,8 @@
+//this function is facilitated by jquery, the $(document).ready(function() will make sure anything inside will run after all element on dom is ready.
+
 $(document).ready(function() {
+
+	//the icons is a object store icon resourse for diffiernt markers
 	var icons = {};
 	var facet = $("#DataTypeFacet");
 	icons["cleanwater"] = $("input[value='cleanwater'] + img", facet).attr("src");
@@ -9,8 +13,12 @@ $(document).ready(function() {
 	icons["airnotviolated"]="images/airnotviolated.png";
 	icons["airviolated"]="images/airviolated.png";
 
-
+	//craete a ojbect called DataTypeModule at window level,
+	//the reason to create it at windows level will make sure the object can be accessed everywhere
 	window["DataTypeModule"] = {};
+
+	//the ojbect contains many functions
+	//this one is to control visivlity of markers
 	DataTypeModule.shouldBeVisible = function(binding) {
 		if(binding['type']!=undefined && binding["type"].value=="air"){
 			return true;
@@ -38,6 +46,8 @@ $(document).ready(function() {
 		
 		return false;
 	};
+
+	//this one will get proper icon for marker based on data it get from the server (or fake load)
 	DataTypeModule.getIcon = function(binding) {
 		console.log(binding);
 		if(binding['type']!=undefined && binding['type'].value=="air"){
@@ -68,6 +78,9 @@ $(document).ready(function() {
 
 		return null;
 	};
+
+	//this function will gether all neccessary information to feed the coresponding createmarker function in semantaquaUI object
+	//this one gether information, the function in semantaquaUI will talk to google maps api directly
 	DataTypeModule.createMarker = function(e, binding) {
 		var uri = binding["site"].value;
 		var lat = parseFloat(binding["lat"].value);

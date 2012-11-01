@@ -1,9 +1,16 @@
+
+//beacause this object is not warpped within a $(ducument).ready(function(){}) or $(function(){}) (this two are samething),
+//this object will be at window level automatically when it is being created, so it can be refered anywhere
 var SemantAqua = {
 	"limit": 5,
 	"action": null,
+
 	"initialize": function() {
 		SemantAqua.configureConsole();
 		SemantAquaUI.configureMap();
+
+		//this line of code is facilited by jquery
+		//it will send out an "initialize" event, whoever have bind(on) (means listen) will be triggered.
 		$(window).trigger("initialize");
 		
 		// set up facets
@@ -11,12 +18,14 @@ var SemantAqua = {
 		SemantAquaUI.populateFacets();
 		 
 		// bind handle state change
+		//this line means the handleStateChange function in semantauqa object will be runned whenever it lisened a haschange event
 		$(window).bind('hashchange', SemantAqua.handleStateChange);
 		SemantAqua.configureWebSockets();
 		if($.bbq.getState("zip") != null) {
 			SemantAqua.decodeZipCode();
 		}
 	},
+	//this part is to create the console object if the browser don't have one(because the broaswer is old)
 	"configureConsole": function() {
 		if(typeof window.console == "undefined") {
 			window.console = {};
@@ -34,6 +43,8 @@ var SemantAqua = {
 			window.console.__proto__.error = function() { }
 		}
 	},
+	//this part utilize websocket technology in html5 standard to read write log to the server
+	//however, it is not a core function.
 	"configureWebSockets": function() {
 		SemantAqua.socket = null;
 		var host = null;
@@ -99,6 +110,7 @@ var SemantAqua = {
 			}
 		};
 	},
+	//this function get zip code from the input then push it to url
 	"showAddress": function(zip) {
 		zip = zip || $("#zip").val();
 		if(zip == null || zip == "") {
@@ -108,6 +120,8 @@ var SemantAqua = {
 			alert("The input zip code is not valid! Please check and input again.")
 			return;
 		}
+		//the semantAqua.action is used all over the place
+		//it appears as a string, but it can be called as a function
 		SemantAqua.action = "decodeZipCode";
 		$.bbq.pushState({"zip": zip});
 		return false;
@@ -136,6 +150,9 @@ var SemantAqua = {
 		SemantAquaUI.showSpinner();
 		ZipCodeModule.decodeZipCode({}, SemantAqua.processZipCode);
 	},
+
+	//variables in front end are stored in the url and are currently controlled by bbq, a jquery exntension that has the ability to change url after # (pound).
+	//using bbq will facilitate back button in modern browsers. because the front end page never really freashed, without bbq, any touch of back button will result in leaving the page instead of go back to previous state of the page
 	"processZipCode": function(response) {
 		var data = JSON.parse(response);
 		console.log(response);
@@ -170,6 +187,8 @@ var SemantAqua = {
 		SemantAqua.generatePaging();
 		SemantAqua.getData();
 	},
+
+	//this section is controlling the pagination below map.
 	"generatePaging": function() {
 		var limits = $.bbq.getState("limits");
 		var div = $("#page");
@@ -209,6 +228,7 @@ var SemantAqua = {
 			return false;
 		};
 	},
+	//after pushing information to url,whoever listening to "get-data" event will try to get data
 	"getData": function() {
 		console.log("SemantAqua.getData");
 		$(window).trigger("get-data");
@@ -238,6 +258,8 @@ var SemantAqua = {
 	}
 };
 
+
+//this object is used by the UIteam, to store fake data and bypass certain function and push data directly to map
 var UITeamUtilities={
 	init:function(){
 		d3.csv("a.txt", function(rows) {

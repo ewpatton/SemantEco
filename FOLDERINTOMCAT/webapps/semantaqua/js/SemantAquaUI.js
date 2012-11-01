@@ -1,6 +1,9 @@
 var SemantAquaUI = {
+	//store all reference to markers
 	"markers": [],
 	"markersByUri": {},
+
+	//initializing the map the element such as infowindow and content containers in infowindow
 	"configureMap": function() {
 		var mapOptions = {
 				center: new google.maps.LatLng(37.4419, -122.1419),
@@ -25,10 +28,17 @@ var SemantAquaUI = {
             content:SemantAquaUI.infowindowcontainer
         });
 
+		//the function below is listening on show-marker-info event,
+		//more than just an event, the trigger also passed a parameter(marker) when it trigger the event
+		//this is a really good jquery function
         $(window).on("show-marker-info",function(event,marker){
+
+        	//copy user-data from marker to infowindow itself
+        	//the user-data on marker of also get from somewhere else
         	SemantAquaUI.infowindow.data=marker.data;
         	console.log(marker.data);
             SemantAquaUI.infowindow.open(SemantAquaUI.map,marker);
+            //all container in infowindow is cleared and new data is being put into them everytime a marker is clicked
             $(SemantAquaUI.infowindowcontrol).html("");
             $(SemantAquaUI.infowindowcontrol).html("<a>Data</a><a>Visualize 1</a><a>Visualize 2</a>");
             $(SemantAquaUI.infowindowcontent).html(SemantAquaUI.infowindow.data.infowindowcontent);
@@ -106,6 +116,7 @@ var SemantAquaUI = {
             
         })
 	},
+	//decode zip code and center the map
 	"doGeocode": function(zip) {
 		console.trace();
 		if(SemantAquaUI.geocoder) {
@@ -128,6 +139,8 @@ var SemantAquaUI = {
 	"getState": function() {
 		return $.extend({}, $.bbq.getState(), SemantAquaUI.getFacetParams());
 	},
+
+	//these two function below is controlling facet bar on the side by intercting with the bbq
 	"getFacetParams": function() {
 		var params = {};
 		$("div#facets .facet").each(function() {
@@ -164,6 +177,7 @@ var SemantAquaUI = {
 		});
 		return params;
 	},
+
 	"populateFacets": function() {
 		var params = $.bbq.getState();
 		for(var param in params) {
@@ -198,6 +212,9 @@ var SemantAquaUI = {
 			}
 		}
 	},
+
+	//the function that reallly talk to google maps api and get a marker ojbect reference
+	//however, the marker is not on the map yet
 	"createMarker": function(uri, lat, lng, icon, visible, label) {
 		var opts = {"clickable": true,
 				"icon": new google.maps.MarkerImage(icon, null, null, null, new google.maps.Size(30, 34)),
@@ -207,6 +224,7 @@ var SemantAquaUI = {
 				};
 		return new google.maps.Marker(opts);
 	},
+	//add markers to the map that is created in the configure function above
 	"addMarker": function(marker) {
 		var uri = marker.data["site"].value;
 		SemantAquaUI.markers.push(marker);
@@ -216,16 +234,20 @@ var SemantAquaUI = {
 		google.maps.event.addListener(marker, "click",function() {
 			SemantAqua.action = SemantAquaUI.handleClickedMarker;
 			$.bbq.pushState({"uri": uri});
-
+			//trigger the show-marker-info event and pass the coresponding marker to tell where the infowindow should show
 			$(window).trigger('show-marker-info',marker);  
 		});
 	},
+
+	//simply return all referece of markers stored in the semantAqua object itself.
 	"getMarkers": function() {
 		return SemantAquaUI.markers;
 	},
 	"getMarkerForUri": function(uri) {
 		return SemantAquaUI.markersByUri[uri];
 	},
+
+	//
 	"handleClickedMarker": function() {
 		SemantAqua.action = null;
 		$(window).trigger('show-marker-info');
