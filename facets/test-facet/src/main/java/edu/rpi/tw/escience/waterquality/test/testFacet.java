@@ -81,7 +81,7 @@ public class testFacet implements Module{
 	@Override
 	public void visit(SemantAquaUI ui, Request request) {
 		Resource res = null;
-		res = config.getResource("test.js");
+		res = config.getResource("speciesHierarchy.js");
 		ui.addFacet(res);
 	}
 
