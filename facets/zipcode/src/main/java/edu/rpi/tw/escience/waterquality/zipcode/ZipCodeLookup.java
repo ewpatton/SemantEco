@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,43 +18,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
-/**
- * ZipCodeLookup provides the core functionality of the ZipCodeModule
- * by interacting with external web services to determine the appropriate
- * state, county, latitude, and longitude for the specified ZIP code.
- * 
- * @author ewpatton
- *
- */
-public final class ZipCodeLookup {
-	private static final String QUERY_BASE="http://ws.geonames.org/postalCodeLookupJSON?postalcode=";
-	private static final String QUERY_END="&country=US";
-	@SuppressWarnings("unused")
-	private final Logger log;
+public class ZipCodeLookup {
+	final String queryBase="http://ws.geonames.org/postalCodeLookupJSON?postalcode=";
+	final String queryEnd="&country=US";
+	final Logger log;
 	
-	private static final int TIMEOUT = 5000;
-	private static final double DEFAULT_LAT = 41.6842;
-	private static final double DEFAULT_LONG = -71.26866;
-	private static final String US_PREFIX="US:";
+	static HashMap<String, ZipCodeLookup> cached = new HashMap<String, ZipCodeLookup>();
+	static HashMap<String, String> stateLookup = null;
 	
-	private static Map<String, ZipCodeLookup> cached = new HashMap<String, ZipCodeLookup>();
-	private static Map<String, String> stateLookup = null;
-
-	private String state="";
-	private String stateAbbr="";
-	private String zip="";
-	private String county="";
-	private String city="";
-	private String countyNum="",stateNum="";
-	private double lat,lng;
-	private boolean loaded;
-	
-	/**
-	 * Retrieves a mapping of state codes from the USGS
-	 * 
-	 * @param log
-	 */
-	protected static void doStateLookup(Logger log) {
+	public static void doStateLookup(Logger log) {
 		log.trace("doStateLookup");
 		try {
 			log.debug("Contacting USGS state code web service...");
@@ -80,62 +51,42 @@ public final class ZipCodeLookup {
 		}
 	}
 	
-	/**
-	 * Initializes the cache system
-	 * 
-	 * @param log
-	 */
-	protected static void init(Logger log) {
+	public static void init(Logger log) {
 		ZipCodeLookup zcl = new ZipCodeLookup(log);
 		cached.put("02809", zcl);
 	}
 	
-	/**
-	 * Executes a ZIP code lookup and returns an object
-	 * containing the results
-	 * @param zipCode The ZIP Code to look up
-	 * @param log A log were status information can be logged
-	 * @return
-	 * @throws ServerFailedToRespondException
-	 */
-	public static ZipCodeLookup execute(String zipCode, Logger log) throws ServerFailedToRespondException {
+	public static ZipCodeLookup execute(String zipCode, Logger log) throws Exception {
 		log.trace("execute");
-		if(stateLookup==null) {
-			doStateLookup(log);
-		}
-		if(!cached.containsKey("02809")) {
-			init(log);
-		}
+		if(stateLookup==null) doStateLookup(log);
+		if(!cached.containsKey("02809")) init(log);
 		ZipCodeLookup zcl = null;
-		if(cached.containsKey(zipCode)) {
-			return cached.get(zipCode);
-		}
+		if(cached.containsKey(zipCode)) return cached.get(zipCode);
 		zcl = new ZipCodeLookup(zipCode, log);
-		if(zcl.loaded()) {
-			cached.put(zipCode, zcl);
-		}
-		else {
-			throw new IllegalArgumentException("Invalid zip code");
-		}
+		if(zcl.loaded()) cached.put(zipCode, zcl);
+		else throw new Exception("Invalid zip code");
 		return zcl;
 	}
 	
-	/**
-	 * ServerFailedToRespondException is thrown when an invalid response
-	 * or a communication timeout occurs.
-	 * 
-	 * @author ewpatton
-	 *
-	 */
-	public final class ServerFailedToRespondException extends Exception {
+	String state="";
+	String stateAbbr="";
+	String zip="";
+	String county="";
+	String city="";
+	String countyNum="",stateNum="";
+	double lat,lng;
+	boolean loaded;
+	
+	public class ServerFailedToRespondException extends Exception {
+
+		/**
+		 * 
+		 */
 		private static final long serialVersionUID = 4312453358087597654L;
 		
-		protected ServerFailedToRespondException(Exception e) {
-			super(e);
-		}
 	}
 	
-	private ZipCodeLookup(Logger log) {
+	ZipCodeLookup(Logger log) {
 		this.log = log;
 		state="Rhode Island";
 		stateAbbr="RI";
@@ -144,30 +95,27 @@ public final class ZipCodeLookup {
 		city="Bristol";
 		countyNum="001";
 		stateNum="44";
-		lat = DEFAULT_LAT;
-		lng = DEFAULT_LONG;
+		lat = 41.6842;
+		lng = -71.26866;
 	}
 	
-	private ZipCodeLookup(String zip, Logger log)
-			throws ServerFailedToRespondException {
+	ZipCodeLookup(String zip, Logger log) throws ServerFailedToRespondException {
 		log.trace("ZipCodeLookup");
 		this.log = log;
 		this.zip = zip;
-		String query = QUERY_BASE+zip+QUERY_END;
+		String query = queryBase+zip+queryEnd;
 		try {
 			log.debug("Connecting to Geonames service...");
 			long start = System.currentTimeMillis();
 			URL requestURL = new URL(query);
 			URLConnection conn = requestURL.openConnection();
-			conn.setReadTimeout(TIMEOUT);
+			conn.setReadTimeout(5000);
 			InputStream o = (InputStream)conn.getContent();
 			InputStreamReader isr = new InputStreamReader(o);
 			BufferedReader br = new BufferedReader(isr);
 			String result="";
 			String line;
-			while((line=br.readLine())!=null) {
-				result += line;
-			}
+			while((line=br.readLine())!=null) result += line;
 			br.close();
 			log.debug("...finished in "+(System.currentTimeMillis()-start)+" ms");
 			JSONObject content = new JSONObject(result);
@@ -177,13 +125,13 @@ public final class ZipCodeLookup {
 				state = content.getString("adminName1");
 				stateAbbr = content.getString("adminCode1");
 				stateNum = stateLookup.get(state.toLowerCase());
-				if(stateNum.contains(US_PREFIX)) {
-					stateNum = stateNum.replace(US_PREFIX, "");
+				if(stateNum.contains("US:")) {
+					stateNum = stateNum.replace("US:", "");
 				}
 				county = content.getString("adminName2");
 				countyNum = content.getString("adminCode2");
-				if(countyNum.contains(US_PREFIX)) {
-					countyNum = countyNum.replace(US_PREFIX, "");
+				if(countyNum.contains("US:")) {
+					countyNum = countyNum.replace("US:", "");
 				}
 				if(countyNum.contains(":")) {
 					countyNum = countyNum.split(":")[1];
@@ -195,94 +143,53 @@ public final class ZipCodeLookup {
 			}
 		}
 		catch(java.net.SocketTimeoutException e) {
-			throw new ServerFailedToRespondException(e);
+			throw new ServerFailedToRespondException();
 		}
 		catch(Exception e) {
 			log.warn("Unable to perform zip code lookup", e);
 		}
 	}
 	
-	/**
-	 * Gets the city returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public String getCity() {
 		return city;
 	}
 	
-	/**
-	 * Gets the full name of the state returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public String getStateName() {
 		return state;
 	}
 	
-	/**
-	 * Gets the state abbreviation returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public String getStateAbbreviation() {
 		return stateAbbr;
 	}
 	
-	/**
-	 * Gets the state code returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public String getStateCode() {
 		return stateNum;
 	}
 	
-	/**
-	 * Gets the county name returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public String getCountyName() {
 		return county;
 	}
 	
-	/**
-	 * Gets the full county code as it would be returned by Geonames
-	 * @return
-	 */
 	public String getCountyCode() {
 		return stateNum+":"+countyNum;
 	}
 	
-	/**
-	 * Gets the ZIP code that was requested
-	 * @return
-	 */
 	public String getZipCode() {
 		return zip;
 	}
 	
-	/**
-	 * Gets the latitude returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public double getLatitude() {
 		return lat;
 	}
 	
-	/**
-	 * Gets the longitude returned by Geonames for the ZIP code
-	 * @return
-	 */
 	public double getLongitude() {
 		return lng;
 	}
 	
-	/**
-	 * Returns whether the information was correctly loaded
-	 * @return
-	 */
 	public boolean loaded() {
 		return loaded;
 	}
 	
-	@Override
 	public String toString() {
 		JSONObject result = new JSONObject();
 		JSONObject description = new JSONObject();
