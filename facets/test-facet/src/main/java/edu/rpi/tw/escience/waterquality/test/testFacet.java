@@ -82,7 +82,7 @@ public class testFacet implements Module{
 	public void visit(SemantAquaUI ui, Request request) {
 		Resource res = null;
 		res = config.getResource("speciesHierarchy.js");
-		ui.addFacet(res);
+		ui.addScript(res);
 	}
 
 
