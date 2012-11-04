@@ -113,7 +113,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		long start = System.currentTimeMillis();
 		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
 		log.debug("Time to augment: "+(System.currentTimeMillis()-start)+" ms");
-		log.debug(query.toString().replaceAll("\n", "\n    "));
+		log.debug("Endpoint: "+endpoint);
+		log.debug("Query: "+query.toString().replaceAll("\n", "\n    "));
 		List<String> mimeTypes = new ArrayList<String>(acceptTypes);
 		if(mimeTypes.size()==0) {
 			mimeTypes.add("application/rdf+xml");
@@ -155,6 +156,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		long start = System.currentTimeMillis();
 		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
 		log.debug("Augmenting query took "+(System.currentTimeMillis()-start)+" ms");
+		log.debug("Endpoint: "+endpoint);
 		log.debug("Query: "+query);
 		String queryUri = endpoint;
 		if(endpoint.contains("?")) {
