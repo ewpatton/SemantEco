@@ -3,6 +3,7 @@ package edu.rpi.tw.escience.waterquality.dataprovider;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +12,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.Request;
@@ -90,7 +98,42 @@ public class DataModelBuilder extends QueryUtils {
 		for(String source : sources) {
 			loadDataForSource(source, model);
 		}
+		doEPAClosure(model);
 		return false;
+	}
+	
+	protected void doEPAClosure(final Model model) {
+		// handle EPA regulations
+		final Logger log = request.getLogger();
+		long start = System.currentTimeMillis();
+		String query = 
+				"PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>" +
+				"PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>" +
+				"SELECT ?m WHERE { " +
+				"?m a water:WaterMeasurement ; " +
+				"pol:hasValue ?val ; " +
+				"pol:hasLimitOperator ?op ; " +
+				"pol:hasLimitValue ?lval " +
+				"FILTER((?op = \"<=\" && ?val > ?lval) || " +
+				"(?op = \">=\" && ?val < ?lval) || " +
+				"(?op = \">\" && ?val <= ?lval))" +
+				"}";
+		QueryExecution qe = 
+				QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxSPARQL_11), model);
+		ResultSet rs = qe.execSelect();
+		final com.hp.hpl.jena.rdf.model.Resource RegulationViolation = model.getResource(POL_NS+"RegulationViolation");
+		final List<com.hp.hpl.jena.rdf.model.Resource> violations = new LinkedList<com.hp.hpl.jena.rdf.model.Resource>();
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			com.hp.hpl.jena.rdf.model.Resource m = qs.getResource("m");
+			log.debug("Found violating measurement "+m);
+			violations.add(m);
+		}
+		for(com.hp.hpl.jena.rdf.model.Resource m : violations) {
+			model.add(m, RDF.type, RegulationViolation);
+		}
+		qe.close();
+		log.info("Computing EPA closure took "+(System.currentTimeMillis()-start)+" ms");
 	}
 
 	/**
