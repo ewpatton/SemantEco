@@ -31,11 +31,7 @@ public class DataTypeModule implements Module {
 
 	@Override
 	public void visit(SemantAquaUI ui, Request request) {
-		Resource res = config.getResource("data-type.css");
-		if(res != null) {
-			ui.addStylesheet(res);
-		}
-		res = config.getResource("data-type.js");
+		Resource res = config.getResource("data-type.js");
 		if(res != null) {
 			ui.addScript(res);
 		}
