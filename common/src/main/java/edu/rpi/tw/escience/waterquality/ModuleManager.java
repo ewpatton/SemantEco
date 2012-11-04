@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.waterquality;
 
+import java.net.URI;
 import java.util.List;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -91,4 +92,6 @@ public interface ModuleManager {
 	 * @return
 	 */
 	long getLastModified();
+	
+	Domain getDomain(URI uri);
 }

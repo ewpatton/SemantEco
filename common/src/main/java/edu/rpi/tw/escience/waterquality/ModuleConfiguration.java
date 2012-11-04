@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.waterquality;
 
+import java.net.URI;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -60,5 +61,14 @@ public abstract class ModuleConfiguration extends Properties {
 	 * @return
 	 */
 	public abstract Logger getLogger();
+	
+	/**
+	 * Gets the domain named by the specified URI, optionally creating 
+	 * it if no other module has done so.
+	 * @param uri URI naming a domain
+	 * @param create true if the system should create a new domain object
+	 * @return A Domain object containing the state of the domain thus far, or null if create was false and the domain doesn't exist.
+	 */
+	public abstract Domain getDomain(URI uri, boolean create);
 
 }

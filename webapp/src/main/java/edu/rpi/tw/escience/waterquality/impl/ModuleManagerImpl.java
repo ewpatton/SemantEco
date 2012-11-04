@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleManager;
 import edu.rpi.tw.escience.waterquality.Request;
@@ -58,6 +60,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	private static final int REFRESH_RATE = 5000;
 	private static final String RES_DIR = "META-INF/res/";
 	private final DefaultFileMonitor fm;
+	private Map<URI, Domain> knownDomains = new HashMap<URI, Domain>();
 	
 	/**
 	 * Default constructor
@@ -355,6 +358,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		classLoaders.clear();
 		moduleMap.clear();
 		modules.clear();
+	}
+
+	public Domain getDomain(URI uri) {
+		return knownDomains.get(uri);
 	}
 
 }
