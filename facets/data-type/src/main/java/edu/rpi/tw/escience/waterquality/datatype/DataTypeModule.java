@@ -1,8 +1,11 @@
 package edu.rpi.tw.escience.waterquality.datatype;
 
+import java.util.List;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.Request;
@@ -36,7 +39,22 @@ public class DataTypeModule implements Module {
 		if(res != null) {
 			ui.addScript(res);
 		}
-		res = config.getResource("data-type.jsp");
+		String responseStr = "<div id=\"DataTypeFacet\" class=\"facet no-rest\">";
+		List<Domain> domains = config.listDomains();
+		for(Domain i : domains) {
+			List<String> types = i.getDataTypes();
+			for(String j : types) {
+				String label = i.getDataTypeName(j);
+				Resource icon = i.getDataTypeIcon(j);
+				responseStr += "<input name=\"type\" type=\"checkbox\" checked=\"checked\"" +
+						"value=\""+j+"\" />";
+				responseStr += "<img height=\"12\" src=\""+icon.getPath()+"\" /> ";
+				responseStr += label;
+				responseStr += "<br />";
+			}
+		}
+		responseStr += "</div>";
+		res = config.generateStringResource(responseStr);
 		if(res != null) {
 			ui.addFacet(res);
 		}
