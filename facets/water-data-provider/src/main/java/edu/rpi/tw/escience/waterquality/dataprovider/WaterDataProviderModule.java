@@ -61,7 +61,10 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 
 	@Override
 	public void visit(SemantAquaUI ui, Request request) {
-		// water data provider does not have specific UI components
+		Resource res = config.getResource("water-data-provider.js");
+		if(res != null) {
+			ui.addScript(res);
+		}
 	}
 
 	@Override
@@ -195,7 +198,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		Resource res = config.getResource("clean-water.png");
 		domain.addDataType("clean-water", "Clean Water", res);
 		res = config.getResource("facility.png");
-		domain.addDataType("facility", "Facility", res);
+		domain.addDataType("clean-facility", "Facility", res);
 		res = config.getResource("polluted-water.png");
 		domain.addDataType("polluted-water", "Polluted Water", res);
 		res = config.getResource("polluted-facility.png");
