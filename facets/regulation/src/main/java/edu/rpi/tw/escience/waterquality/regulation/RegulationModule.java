@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.waterquality.regulation;
 
+import java.net.URI;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
@@ -30,6 +32,7 @@ import edu.rpi.tw.escience.waterquality.query.Query.SortType;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Variable;
+import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
 import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
@@ -102,8 +105,23 @@ public class RegulationModule implements Module {
 	@Override
 	public void visit(SemantAquaUI ui, Request request) {
 		ui.addScript(config.getResource("regulation.js"));
-		// TODO autogen this facet in the future from a triple store
-		ui.addFacet(config.getResource("regulations.jsp"));
+		String responseStr = "<div id=\"RegulationFacet\" class=\"facet\">";
+		List<Domain> domains = config.listDomains();
+		for(Domain i : domains) {
+			List<URI> regulations = i.getRegulations();
+			if(regulations.size()>0) {
+				responseStr += i.getLabel() + ": ";
+				responseStr += "<select name=\"regulation."+NameUtils.cleanName(i.getLabel())+"\">";
+				for(URI j : regulations) {
+					responseStr += "<option value=\""+j.toString()+"\">";
+					responseStr += i.getLabelForRegulation(j);
+					responseStr += "</option>";
+				}
+				responseStr += "</select>";
+			}
+		}
+		responseStr += "</div>";
+		ui.addFacet(config.generateStringResource(responseStr));
 	}
 
 	@Override
