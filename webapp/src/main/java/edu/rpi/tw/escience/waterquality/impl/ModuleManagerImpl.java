@@ -364,4 +364,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		return knownDomains.get(uri);
 	}
 
+	@Override
+	public void registerDomain(Domain domain) {
+		knownDomains.put(domain.getUri(), domain);
+	}
+
 }

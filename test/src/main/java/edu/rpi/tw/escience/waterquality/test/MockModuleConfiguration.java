@@ -1,7 +1,10 @@
 package edu.rpi.tw.escience.waterquality.test;
 
+import java.net.URI;
+
 import org.apache.log4j.Logger;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
@@ -55,6 +58,11 @@ public class MockModuleConfiguration extends ModuleConfiguration {
 
 	@Override
 	public Logger getLogger() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Domain getDomain(URI uri, boolean create) {
 		throw new UnsupportedOperationException();
 	}
 

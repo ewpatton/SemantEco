@@ -94,4 +94,6 @@ public interface ModuleManager {
 	long getLastModified();
 	
 	Domain getDomain(URI uri);
+
+	void registerDomain(Domain domain);
 }

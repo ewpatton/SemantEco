@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
+import edu.rpi.tw.escience.waterquality.ModuleManager;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
 import edu.rpi.tw.escience.waterquality.Request;
@@ -115,7 +116,7 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 
 	@Override
 	public Domain getDomain(URI uri, boolean create) {
-		ModuleManagerImpl manager = (ModuleManagerImpl)ModuleManagerFactory.getInstance().getManager();
+		ModuleManager manager = ModuleManagerFactory.getInstance().getManager();
 		Domain domain = manager.getDomain(uri);
 		if(domain == null && create) {
 			domain = new DomainImpl(uri);

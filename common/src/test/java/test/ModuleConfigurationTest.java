@@ -1,8 +1,11 @@
 package test;
 
+import java.net.URI;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
@@ -51,6 +54,12 @@ public class ModuleConfigurationTest extends TestCase {
 
 		@Override
 		public Logger getLogger() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Domain getDomain(URI uri, boolean create) {
 			// TODO Auto-generated method stub
 			return null;
 		}
