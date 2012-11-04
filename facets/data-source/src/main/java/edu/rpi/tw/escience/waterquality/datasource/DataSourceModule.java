@@ -35,14 +35,7 @@ import edu.rpi.tw.escience.waterquality.util.NameUtils;
 public class DataSourceModule implements Module {
 
 	private ModuleConfiguration config = null;
-	private static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
-	private static final String DC_NS = "http://purl.org/dc/terms/";
-	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
-	private static final String SOURCE_VAR = "source";
 	private static final String LABEL_VAR = "label";
-	private static final String FAILURE = "{\"success\":false}";
-	private static final String BINDINGS = "bindings";
-	private static final String VALUE = "value";
 	private Logger log = Logger.getLogger(DataSourceModule.class);
 	
 	/**
@@ -51,8 +44,7 @@ public class DataSourceModule implements Module {
 	 */
 	@Override
 	public void visit(Model model, Request request) {
-		DataModelBuilder builder = new DataModelBuilder(request, config);
-		builder.build(model);
+		// data source is a UI module, it does not modify the data model at all
 	}
 
 	@Override
@@ -124,86 +116,4 @@ public class DataSourceModule implements Module {
 		this.config = config;
 	}
 
-	/**
-	 * Provides an interface for other modules to query for the available
-	 * data sources in the triple store.
-	 * 
-	 * @param params Parameters from the RESTful call
-	 * @return
-	 */
-	@QueryMethod
-	public String queryForDataSources(final Request request) {
-		final Logger log = request.getLogger();
-		log.trace("queryForDataSources");
-		Query query = config.getQueryFactory().newQuery();
-		
-		// generate variables and resources for query
-		Variable source = query.createVariable(Query.VAR_NS+SOURCE_VAR);
-		Variable label = query.createVariable(Query.VAR_NS+LABEL_VAR);
-		QueryResource dcSource = query.getResource(DC_NS+SOURCE_VAR);
-		QueryResource rdfsLabel = query.getResource(RDFS_NS+LABEL_VAR);
-		BlankNode graph = query.createBlankNode();
-		
-		// build query
-		Set<Variable> vars = new HashSet<Variable>();
-		vars.add(source);
-		vars.add(label);
-		query.setVariables(vars);
-		query.setDistinct(true);
-		NamedGraphComponent metadata = query.getNamedGraph(SEMANTAQUA_METADATA);
-		metadata.addPattern(graph, dcSource, source);
-		OptionalComponent optional = query.createOptional();
-		metadata.addGraphComponent(optional);
-		optional.addPattern(source, rdfsLabel, label);
-		
-		// execute query
-		String responseStr = FAILURE;
-		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
-		log.debug("Results: "+resultStr);
-		if(resultStr == null) {
-			return responseStr;
-		}
-		try {
-			JSONObject results = new JSONObject(resultStr);
-			JSONObject response = new JSONObject();
-			JSONArray data = new JSONArray();
-			response.put("success", true);
-			response.put("data", data);
-			results = results.getJSONObject("results");
-			JSONArray bindings = results.getJSONArray(BINDINGS);
-			for(int i=0;i<bindings.length();i++) {
-				JSONObject binding = bindings.getJSONObject(i);
-				String sourceUri = binding.getJSONObject(SOURCE_VAR).getString(VALUE);
-				String labelStr = null;
-				try {
-					labelStr = binding.getJSONObject(LABEL_VAR).getString(VALUE);
-				}
-				catch(Exception e) { }
-				if(labelStr == null) {
-					labelStr = sourceUri.substring(sourceUri.lastIndexOf('/')+1).replace('-', '.');
-				}
-				JSONObject mapping = new JSONObject();
-				mapping.put("uri", sourceUri);
-				mapping.put(LABEL_VAR, labelStr);
-				data.put(mapping);
-			}
-			responseStr = response.toString();
-		} catch (JSONException e) {
-			log.error("Unable to parse JSON results", e);
-		}
-		return responseStr;
-	}
-	
-	@QueryMethod
-	public String getSiteCounts(Request request) {
-		final Logger log = request.getLogger();
-		log.trace("getSiteCounts");
-
-		String responseStr = FAILURE;
-		InstanceCounter counter = new InstanceCounter(request, config);
-		JSONObject result = counter.build();
-		responseStr = result.toString();
-		return responseStr;
-	}
-	
 }

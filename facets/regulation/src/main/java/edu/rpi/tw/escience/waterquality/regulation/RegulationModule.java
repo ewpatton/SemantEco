@@ -41,7 +41,6 @@ public class RegulationModule implements Module {
 	private static final String POLLUTED_VAR = "polluted";
 	private static final String LABEL_VAR = "label";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
@@ -92,7 +91,6 @@ public class RegulationModule implements Module {
 		// load the appropriate regulation ontology here
 		String regulation = (String)request.getParam("regulation");
 		model.read(POL_NS);
-		model.read(WATER_NS);
 		model.read(regulation);
 	}
 

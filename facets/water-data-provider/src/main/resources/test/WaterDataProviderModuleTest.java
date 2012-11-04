@@ -21,7 +21,7 @@ import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
-import edu.rpi.tw.escience.waterquality.datasource.DataSourceModule;
+import edu.rpi.tw.escience.waterquality.dataprovider.WaterDataProviderModule;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.impl.QueryImpl;
@@ -35,7 +35,7 @@ import edu.rpi.tw.escience.waterquality.test.MockUI;
 
 import junit.framework.TestCase;
 
-public class DataSourceModuleTest extends TestCase {
+public class WaterDataProviderModuleTest extends TestCase {
 
 	private static class TestRequest extends MockRequest {
 
@@ -179,13 +179,13 @@ public class DataSourceModuleTest extends TestCase {
 	
 	@Test
 	public void testGetName() {
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		assertEquals("Data Source", module.getName());
 	}
 	
 	@Test
 	public void testVersion() {
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		assertEquals(1, module.getMajorVersion());
 		assertEquals(0, module.getMinorVersion());
 		assertNull(module.getExtraVersion());
@@ -194,7 +194,7 @@ public class DataSourceModuleTest extends TestCase {
 	@Test
 	public void testModuleConfiguration() {
 		TestModuleConfiguration config = new TestModuleConfiguration();
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 	}
 	
@@ -203,7 +203,7 @@ public class DataSourceModuleTest extends TestCase {
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		Model model = ModelFactory.createDefaultModel();
 		TestRequest request = new TestRequest();
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 		try {
 			module.visit(model, request);
@@ -240,7 +240,7 @@ public class DataSourceModuleTest extends TestCase {
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		OntModel model = ModelFactory.createOntologyModel();
 		TestRequest request = new TestRequest();
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 		module.visit(model, request);
 	}
@@ -250,7 +250,7 @@ public class DataSourceModuleTest extends TestCase {
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		MockQuery query = new MockQuery();
 		TestRequest request = new TestRequest();
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 		module.visit(query, request);
 	}
@@ -260,7 +260,7 @@ public class DataSourceModuleTest extends TestCase {
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		TestUI ui = new TestUI();
 		TestRequest request = new TestRequest();
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 		module.visit(ui, request);
 		((TestQueryExecutor)config.queryExecutor).response = getResource("/test001.json");
@@ -271,7 +271,7 @@ public class DataSourceModuleTest extends TestCase {
 	public void testQueryForDataSources() throws Exception {
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		TestRequest request = new TestRequest();
-		DataSourceModule module = new DataSourceModule();
+		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 		module.queryForDataSources(request);
 		((TestQueryExecutor)config.queryExecutor).response = getResource("/test001.json");
@@ -281,7 +281,7 @@ public class DataSourceModuleTest extends TestCase {
 	protected static String getResource(String name) throws Exception {
 		final int BUFSIZE = 1024;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		InputStream is = DataSourceModuleTest.class.getResourceAsStream(name);
+		InputStream is = WaterDataProviderModuleTest.class.getResourceAsStream(name);
 		final byte[] buffer = new byte[BUFSIZE];
 		int read = 0;
 		while((read = is.read(buffer))>0) {

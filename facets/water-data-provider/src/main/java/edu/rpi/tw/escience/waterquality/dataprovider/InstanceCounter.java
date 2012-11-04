@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.waterquality.datasource;
+package edu.rpi.tw.escience.waterquality.dataprovider;
 
 import java.util.ArrayList;
 import java.util.HashSet;
