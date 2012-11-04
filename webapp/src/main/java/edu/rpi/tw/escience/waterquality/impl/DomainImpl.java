@@ -3,19 +3,18 @@ package edu.rpi.tw.escience.waterquality.impl;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Resource;
 
 public class DomainImpl implements Domain {
 
+	private String label = null;
 	private final URI uri;
-	private Set<URI> sources = new LinkedHashSet<URI>();
-	private Set<URI> regulations = new LinkedHashSet<URI>();
+	private Map<URI, String> sources = new LinkedHashMap<URI, String>();
+	private Map<URI, String> regulations = new LinkedHashMap<URI, String>();
 	private final class DataType {
 		private String name;
 		private Resource icon;
@@ -33,8 +32,14 @@ public class DomainImpl implements Domain {
 	}
 
 	@Override
-	public void addSource(final URI sourceUri) {
-		sources.add(sourceUri);
+	public void addSource(final URI sourceUri, final String label) {
+		if(uri == null) {
+			throw new IllegalArgumentException("Data source uri cannot be null");
+		}
+		if(label == null) {
+			throw new IllegalArgumentException("Data source label cannot be null");
+		}
+		sources.put(sourceUri, label);
 	}
 
 	@Override
@@ -46,18 +51,18 @@ public class DomainImpl implements Domain {
 	}
 
 	@Override
-	public void addRegulation(final URI regulationUri) {
-		regulations.add(regulationUri);
+	public void addRegulation(final URI regulationUri, final String label) {
+		regulations.put(regulationUri, label);
 	}
 
 	@Override
 	public List<URI> getSources() {
-		return new ArrayList<URI>(sources);
+		return new ArrayList<URI>(sources.keySet());
 	}
 
 	@Override
 	public List<URI> getRegulations() {
-		return new ArrayList<URI>(regulations);
+		return new ArrayList<URI>(regulations.keySet());
 	}
 
 	@Override
@@ -81,6 +86,26 @@ public class DomainImpl implements Domain {
 			return null;
 		}
 		return dt.icon;
+	}
+
+	@Override
+	public String getLabelForSource(final URI uri) {
+		return sources.get(uri);
+	}
+	
+	@Override
+	public String getLabelForRegulation(final URI uri) {
+		return regulations.get(uri);
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
+	
+	@Override
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 }

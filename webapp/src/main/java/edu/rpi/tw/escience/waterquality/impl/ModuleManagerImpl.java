@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleManager;
+import edu.rpi.tw.escience.waterquality.ProvidesDomain;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
@@ -60,7 +63,8 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	private static final int REFRESH_RATE = 5000;
 	private static final String RES_DIR = "META-INF/res/";
 	private final DefaultFileMonitor fm;
-	private Map<URI, Domain> knownDomains = new HashMap<URI, Domain>();
+	private Map<URI, Domain> knownDomains = null;
+	private boolean initializing = true;
 	
 	/**
 	 * Default constructor
@@ -68,6 +72,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	public ModuleManagerImpl() {
 		log.trace("ModuleManagerImpl");
 		fm = null;
+		initializing = false;
 	}
 	
 	/**
@@ -101,6 +106,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		} catch (FileSystemException e) {
 			log.warn("Unable to start file manager", e);
 		}
+		initializing = false;
 	}
 	
 	@Override
@@ -307,6 +313,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			moduleMap.remove(module.getName());
 			modules.remove(module);
 		}
+		buildDomain();
 	}
 	
 	protected final void installModule(Module module, String path, InputStream properties) {
@@ -323,6 +330,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 		moduleMap.put(name, module);
 		configureModule(module, path, properties);
+		if(!initializing) {
+			buildDomain();
+		}
 	}
 	
 	protected final void configureModule(Module module, String path, InputStream properties) {
@@ -346,6 +356,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	
 	protected final void resetLastModified() {
 		lastModified = System.currentTimeMillis();
+		knownDomains = null;
 	}
 	
 	@Override
@@ -361,12 +372,68 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	public Domain getDomain(URI uri) {
+		if(knownDomains == null) {
+			return null;
+		}
 		return knownDomains.get(uri);
 	}
 
 	@Override
 	public void registerDomain(Domain domain) {
+		if(knownDomains == null) {
+			knownDomains = new LinkedHashMap<URI, Domain>();
+		}
 		knownDomains.put(domain.getUri(), domain);
+	}
+
+	@Override
+	public List<Domain> listDomains() {
+		if(knownDomains == null) {
+			buildDomain();
+		}
+		return new ArrayList<Domain>(knownDomains.values());
+	}
+	
+	protected void buildDomain() {
+		log.trace("buildDomain");
+		final Class<? extends ProvidesDomain> providerClass = ProvidesDomain.class;
+		knownDomains = new LinkedHashMap<URI, Domain>();
+		for(Module m : modules) {
+			if(providerClass.isAssignableFrom(m.getClass())) {
+				log.debug("Found domain provider "+m.getName());
+				ProvidesDomain provider = (ProvidesDomain)m;
+				provider.getDomains(new DummyRequest());
+			}
+		}
+	}
+	
+	private static class DummyRequest implements Request {
+
+		@Override
+		public Object getParam(String key) {
+			return null;
+		}
+
+		@Override
+		public Logger getLogger() {
+			return Logger.getLogger(DummyRequest.class);
+		}
+
+		@Override
+		public OntModel getModel() {
+			return null;
+		}
+
+		@Override
+		public Model getDataModel() {
+			return null;
+		}
+
+		@Override
+		public Model getCombinedModel() {
+			return null;
+		}
+		
 	}
 
 }

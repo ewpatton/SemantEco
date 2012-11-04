@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.waterquality.impl;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -123,6 +124,11 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 			manager.registerDomain(domain);
 		}
 		return domain;
+	}
+
+	@Override
+	public List<Domain> listDomains() {
+		return ModuleManagerFactory.getInstance().getManager().listDomains();
 	}
 
 }

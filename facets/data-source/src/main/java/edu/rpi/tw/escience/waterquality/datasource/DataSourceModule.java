@@ -1,28 +1,24 @@
 package edu.rpi.tw.escience.waterquality.datasource;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.BlankNode;
-import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Variable;
 import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
 /**
@@ -35,7 +31,6 @@ import edu.rpi.tw.escience.waterquality.util.NameUtils;
 public class DataSourceModule implements Module {
 
 	private ModuleConfiguration config = null;
-	private static final String LABEL_VAR = "label";
 	private Logger log = Logger.getLogger(DataSourceModule.class);
 	
 	/**
@@ -57,32 +52,47 @@ public class DataSourceModule implements Module {
 		// the data source module handles all of its customization when
 		// constructing the data model see visit(Model, Map)
 	}
+	
+	protected Map<String, String> order(final Map<String, String> map) {
+		Map<String, String> temp = new TreeMap<String, String>();
+		for(Entry<String, String> i : map.entrySet()) {
+			temp.put(i.getValue(), i.getKey());
+		}
+		return temp;
+	}
 
 	@Override
 	public void visit(SemantAquaUI ui, Request request) {
 		log.trace("visit(ui)");
-		Resource res = null;
-		res = config.getResource("test.js");
-		ui.addScript(res);
+		// get all of the sources via the available domains
+		List<Domain> domains = config.listDomains();
+		Map<String, String> labelMap = new HashMap<String, String>();
+		for(Domain i : domains) {
+			List<URI> sources = i.getSources();
+			for(URI j : sources) {
+				String label = i.getLabelForSource(j);
+				labelMap.put(j.toString(), label);
+			}
+		}
+		// order the entries by label
+		labelMap = order(labelMap);
 		try {
+			// generate facet
 			String responseText = "<div id=\"DataSourceFacet\" class=\"facet\">";
-			String response = queryForDataSources(request);
-			log.debug("Response: "+response);
-			JSONObject data = new JSONObject(response);
-			if(data.getBoolean("success")) {
-				JSONArray sources = (JSONArray)data.get("data");
-				for(int i=0;i<sources.length();i++) {
-					JSONObject mapping = sources.getJSONObject(i);
-					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+mapping.getString("uri")+"\" id=\""+NameUtils.cleanName(mapping.getString(LABEL_VAR))+"\" />";
-					responseText += "<label for=\""+NameUtils.cleanName(mapping.getString(LABEL_VAR))+"\">"+mapping.getString(LABEL_VAR)+"</label>";
+			if(labelMap.size()==0) {
+				responseText += "<i>No data sources available</i>";
+			}
+			else {
+				for(Entry<String, String> i : labelMap.entrySet()) {
+					final String label = i.getKey();
+					final String uri = i.getValue();
+					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+uri+"\" id=\""+NameUtils.cleanName(label)+"\" />";
+					responseText += "<label for=\""+NameUtils.cleanName(label)+"\">"+label+"</label>";
 					responseText += "<br />";
 				}
 			}
-			else {
-				responseText += "<i>No data sources available</i>";
-			}
 			responseText += "</div>";
-			res = config.generateStringResource(responseText);
+			Resource res = config.generateStringResource(responseText);
 			ui.addFacet(res);
 		}
 		catch(Exception e) {

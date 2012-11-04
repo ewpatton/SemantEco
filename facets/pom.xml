@@ -50,6 +50,7 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+	<module>domain</module>
 	<module>data-source</module>
 	<module>time</module>
 	<module>regulation</module>

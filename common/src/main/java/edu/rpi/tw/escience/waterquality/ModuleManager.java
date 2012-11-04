@@ -96,4 +96,6 @@ public interface ModuleManager {
 	Domain getDomain(URI uri);
 
 	void registerDomain(Domain domain);
+
+	List<Domain> listDomains();
 }

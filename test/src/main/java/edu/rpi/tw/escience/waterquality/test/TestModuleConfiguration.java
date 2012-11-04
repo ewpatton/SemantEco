@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.waterquality.test;
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -55,6 +56,12 @@ public class TestModuleConfiguration extends ModuleConfiguration {
 
 	@Override
 	public Domain getDomain(URI uri, boolean create) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Domain> listDomains() {
 		// TODO Auto-generated method stub
 		return null;
 	}

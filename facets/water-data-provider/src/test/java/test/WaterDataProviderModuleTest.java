@@ -180,7 +180,7 @@ public class WaterDataProviderModuleTest extends TestCase {
 	@Test
 	public void testGetName() {
 		WaterDataProviderModule module = new WaterDataProviderModule();
-		assertEquals("Data Source", module.getName());
+		assertEquals("Water Data Provider", module.getName());
 	}
 	
 	@Test

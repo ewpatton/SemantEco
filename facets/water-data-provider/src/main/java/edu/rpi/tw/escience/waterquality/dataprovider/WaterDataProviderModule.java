@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.waterquality.dataprovider;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +20,7 @@ import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.ProvidesDomain;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
+import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.BlankNode;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
@@ -38,6 +41,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 	private static final String VALUE = "value";
 	private static final String LABEL_VAR = "label";
 	private ModuleConfiguration config = null;
+	private static final Logger log = Logger.getLogger(WaterDataProviderModule.class);
 	
 	@Override
 	public void visit(Model model, Request request) {
@@ -61,9 +65,15 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 	}
 
 	@Override
-	public List<Domain> getDomains() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Domain> getDomains(final Request request) {
+		List<Domain> domains = new ArrayList<Domain>();
+		Domain water = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#"), true);
+		water.setLabel("Water");
+		addDataSources(water, request);
+		addRegulations(water);
+		addDataTypes(water);
+		domains.add(water);
+		return domains;
 	}
 
 	@Override
@@ -171,6 +181,42 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		JSONObject result = counter.build();
 		responseStr = result.toString();
 		return responseStr;
+	}
+	
+	protected void addRegulations(Domain domain) {
+		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl"), "EPA Regulation");
+		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ca-regulation.owl"), "CA Regulation");
+		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ma-regulation.owl"), "MA Regulation");
+		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ny-regulation.owl"), "NY Regulation");
+		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl"), "RI Regulation");
+	}
+	
+	protected void addDataTypes(Domain domain) {
+		Resource res = config.getResource("clean-water.png");
+		domain.addDataType("clean-water", "Clean Water", res);
+		res = config.getResource("facility.png");
+		domain.addDataType("facility", "Facility", res);
+		res = config.getResource("polluted-water.png");
+		domain.addDataType("polluted-water", "Polluted Water", res);
+		res = config.getResource("polluted-facility.png");
+		domain.addDataType("polluted-facility", "Poluted Facility", res);
+	}
+	
+	protected void addDataSources(final Domain domain, final Request request) {
+		String response = queryForDataSources(request);
+		try {
+			JSONObject data = new JSONObject(response);
+			JSONArray entries = data.getJSONArray("data");
+			for(int i=0;i<entries.length();i++) {
+				JSONObject entry = entries.getJSONObject(i);
+				String uri = entry.getString("uri");
+				String label = entry.getString(LABEL_VAR);
+				domain.addSource(URI.create(uri), label);
+			}
+		}
+		catch(JSONException e) {
+			log.warn("Unexpected exception", e);
+		}
 	}
 	
 }

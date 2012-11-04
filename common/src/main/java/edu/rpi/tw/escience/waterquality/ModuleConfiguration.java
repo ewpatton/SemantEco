@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.waterquality;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -70,5 +71,7 @@ public abstract class ModuleConfiguration extends Properties {
 	 * @return A Domain object containing the state of the domain thus far, or null if create was false and the domain doesn't exist.
 	 */
 	public abstract Domain getDomain(URI uri, boolean create);
+
+	public abstract List<Domain> listDomains();
 
 }

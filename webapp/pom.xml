@@ -122,6 +122,18 @@
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semantaqua-domain</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semantaqua-water-data-provider</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semantaqua-zipcode</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
@@ -246,6 +258,22 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semantaqua-data-type</artifactId>
+		  <version>4.0-SNAPSHOT</version>
+		  <type>jar</type>
+		  <overWrite>true</overWrite>
+		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
+		</artifactItem>
+		<artifactItem>
+		  <groupId>edu.rpi.tw.escience</groupId>
+		  <artifactId>semantaqua-domain</artifactId>
+		  <version>4.0-SNAPSHOT</version>
+		  <type>jar</type>
+		  <overWrite>true</overWrite>
+		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
+		</artifactItem>
+		<artifactItem>
+		  <groupId>edu.rpi.tw.escience</groupId>
+		  <artifactId>semantaqua-water-data-provider</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>

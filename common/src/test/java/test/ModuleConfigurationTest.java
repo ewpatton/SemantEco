@@ -1,6 +1,7 @@
 package test;
 
 import java.net.URI;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -60,6 +61,12 @@ public class ModuleConfigurationTest extends TestCase {
 
 		@Override
 		public Domain getDomain(URI uri, boolean create) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<Domain> listDomains() {
 			// TODO Auto-generated method stub
 			return null;
 		}
