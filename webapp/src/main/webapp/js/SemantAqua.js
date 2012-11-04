@@ -145,7 +145,7 @@ var SemantAqua = {
 			"lat":data.result.lat, "lng":data.result.lng});
 	},
 	"getLimitData": function() {
-		DataSourceModule.getSiteCounts({}, SemantAqua.processLimitData);
+		WaterDataProviderModule.getSiteCounts({}, SemantAqua.processLimitData);
 	},
 	"processLimitData": function(response) {
 		var data = JSON.parse(response);

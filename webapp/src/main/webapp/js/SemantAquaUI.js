@@ -73,7 +73,7 @@ var SemantAquaUI = {
 	"populateFacets": function() {
 		var params = $.bbq.getState();
 		for(var param in params) {
-			var inputs = $("*[name="+param+"]");
+			var inputs = $("*[name='"+param+"']");
 			if(inputs.length > 0) {
 				if(inputs[0].tagName == "INPUT") {
 					var type = inputs[0].type.toLowerCase();
