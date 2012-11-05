@@ -1,23 +1,21 @@
 package edu.rpi.tw.escience.waterquality.regulation;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
@@ -30,6 +28,7 @@ import edu.rpi.tw.escience.waterquality.query.Query.SortType;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Variable;
+import edu.rpi.tw.escience.waterquality.util.NameUtils;
 
 import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
@@ -41,7 +40,6 @@ public class RegulationModule implements Module {
 	private static final String POLLUTED_VAR = "polluted";
 	private static final String LABEL_VAR = "label";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
@@ -54,46 +52,41 @@ public class RegulationModule implements Module {
 	
 	@Override
 	public void visit(Model model, Request request) {
-		// handle EPA regulations
-		final Logger log = request.getLogger();
-		long start = System.currentTimeMillis();
-		String query = 
-				"PREFIX water: <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#>" +
-				"PREFIX pol: <http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#>" +
-				"SELECT ?m WHERE { " +
-				"?m a water:WaterMeasurement ; " +
-				"pol:hasValue ?val ; " +
-				"pol:hasLimitOperator ?op ; " +
-				"pol:hasLimitValue ?lval " +
-				"FILTER((?op = \"<=\" && ?val > ?lval) || " +
-				"(?op = \">=\" && ?val < ?lval) || " +
-				"(?op = \">\" && ?val <= ?lval))" +
-				"}";
-		QueryExecution qe = 
-				QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxSPARQL_11), model);
-		ResultSet rs = qe.execSelect();
-		final Resource RegulationViolation = model.getResource(POL_NS+"RegulationViolation");
-		final List<Resource> violations = new LinkedList<Resource>();
-		while(rs.hasNext()) {
-			QuerySolution qs = rs.next();
-			Resource m = qs.getResource("m");
-			log.debug("Found violating measurement "+m);
-			violations.add(m);
-		}
-		for(Resource m : violations) {
-			model.add(m, RDF.type, RegulationViolation);
-		}
-		qe.close();
-		log.info("Computing EPA closure took "+(System.currentTimeMillis()-start)+" ms");
 	}
 
 	@Override
 	public void visit(OntModel model, Request request) {
-		// load the appropriate regulation ontology here
-		String regulation = (String)request.getParam("regulation");
+		final Logger log = request.getLogger();
+		log.debug("Loading '"+POL_NS+"'");
 		model.read(POL_NS);
-		model.read(WATER_NS);
-		model.read(regulation);
+		// load the appropriate regulation ontology here
+		JSONObject regulation = (JSONObject)request.getParam("regulation");
+		JSONArray domains = (JSONArray)request.getParam("domain");
+		Map<String, Domain> domainMap = new HashMap<String, Domain>();
+		List<Domain> allDomains = config.listDomains();
+		for(Domain i : allDomains) {
+			domainMap.put(i.getUri().toString(), i);
+		}
+		Map<String, Domain> activeDomains = new HashMap<String, Domain>();
+		for(int i=0;i<domains.length();i++) {
+			String uri = domains.optString(i);
+			if(domainMap.containsKey(uri)) {
+				activeDomains.put(NameUtils.cleanName(domainMap.get(uri).getLabel()), domainMap.get(uri));
+			}
+		}
+		@SuppressWarnings("unchecked")
+		Iterator<String> keys = (Iterator<String>)regulation.keys();
+		while(keys.hasNext()) {
+			String key = keys.next();
+			String reg = regulation.optString(key);
+			if(reg == null || reg.equals("")) {
+				continue;
+			}
+			if(activeDomains.get(key) != null) {
+				log.debug("Loading regulation ontology '"+reg+"' for domain '"+key+"'");
+				model.read(reg);
+			}
+		}
 	}
 
 	@Override
@@ -104,8 +97,23 @@ public class RegulationModule implements Module {
 	@Override
 	public void visit(SemantAquaUI ui, Request request) {
 		ui.addScript(config.getResource("regulation.js"));
-		// TODO autogen this facet in the future from a triple store
-		ui.addFacet(config.getResource("regulations.jsp"));
+		String responseStr = "<div id=\"RegulationFacet\" class=\"facet\">";
+		List<Domain> domains = config.listDomains();
+		for(Domain i : domains) {
+			List<URI> regulations = i.getRegulations();
+			if(regulations.size()>0) {
+				responseStr += i.getLabel() + ": ";
+				responseStr += "<select name=\"regulation."+NameUtils.cleanName(i.getLabel())+"\">";
+				for(URI j : regulations) {
+					responseStr += "<option value=\""+j.toString()+"\">";
+					responseStr += i.getLabelForRegulation(j);
+					responseStr += "</option>";
+				}
+				responseStr += "</select><br />";
+			}
+		}
+		responseStr += "</div>";
+		ui.addFacet(config.generateStringResource(responseStr));
 	}
 
 	@Override

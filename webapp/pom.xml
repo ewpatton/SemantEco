@@ -122,6 +122,24 @@
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semantaqua-domain</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semantaqua-water-data-provider</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semantaqua-air-data-provider</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semantaqua-zipcode</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
@@ -251,6 +269,30 @@
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
 		</artifactItem>
+		<artifactItem>
+		  <groupId>edu.rpi.tw.escience</groupId>
+		  <artifactId>semantaqua-domain</artifactId>
+		  <version>4.0-SNAPSHOT</version>
+		  <type>jar</type>
+		  <overWrite>true</overWrite>
+		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
+		</artifactItem>
+		<artifactItem>
+		  <groupId>edu.rpi.tw.escience</groupId>
+		  <artifactId>semantaqua-water-data-provider</artifactId>
+		  <version>4.0-SNAPSHOT</version>
+		  <type>jar</type>
+		  <overWrite>true</overWrite>
+		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
+		</artifactItem>
+		<artifactItem>
+		  <groupId>edu.rpi.tw.escience</groupId>
+		  <artifactId>semantaqua-air-data-provider</artifactId>
+		  <version>4.0-SNAPSHOT</version>
+		  <type>jar</type>
+		  <overWrite>true</overWrite>
+		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
+		</artifactItem>
 	      </artifactItems>
 	    </configuration>
 	  </execution>
@@ -321,13 +363,14 @@
 
   <profiles>
     <profile>
+      <id>devel</id>
       <activation>
 	<activeByDefault>true</activeByDefault>
       </activation>
       <properties>
 	<baseUrl>http://localhost:8080/semantaqua/</baseUrl>
 	<debug>true</debug>
-	<triple-store>http://sparql.tw.rpi.edu/virtuoso/sparql</triple-store>
+	<triple-store>http://was.tw.rpi.edu/virtuoso/sparql</triple-store>
       </properties>
     </profile>
     <profile>

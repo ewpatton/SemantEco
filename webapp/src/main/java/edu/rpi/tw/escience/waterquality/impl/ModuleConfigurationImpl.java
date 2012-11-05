@@ -1,11 +1,15 @@
 package edu.rpi.tw.escience.waterquality.impl;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
+import edu.rpi.tw.escience.waterquality.ModuleManager;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
 import edu.rpi.tw.escience.waterquality.Request;
@@ -109,6 +113,22 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 			return Logger.getLogger(owner.get().getClass());
 		}
 		return null;
+	}
+
+	@Override
+	public Domain getDomain(URI uri, boolean create) {
+		ModuleManager manager = ModuleManagerFactory.getInstance().getManager();
+		Domain domain = manager.getDomain(uri);
+		if(domain == null && create) {
+			domain = new DomainImpl(uri);
+			manager.registerDomain(domain);
+		}
+		return domain;
+	}
+
+	@Override
+	public List<Domain> listDomains() {
+		return ModuleManagerFactory.getInstance().getManager().listDomains();
 	}
 
 }

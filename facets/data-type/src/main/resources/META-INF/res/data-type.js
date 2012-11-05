@@ -1,49 +1,37 @@
 $(document).ready(function() {
-	var icons = {};
-	var facet = $("#DataTypeFacet");
-	icons["cleanwater"] = $("input[value='cleanwater'] + img", facet).attr("src");
-	icons["facility"] = $("input[value='facility'] + img",facet).attr("src");
-	icons["pollutedwater"] = $("input[value='pollutedwater'] + img", facet).attr("src");
-	icons["pollutedfacility"] = $("input[value='pollutedfacility'] + img", facet).attr("src");
-	window["DataTypeModule"] = {};
+	if(window["DataTypeModule"] === undefined) {
+		window["DataTypeModule"] = {};
+	}
+	//
+	DataTypeModule.visibilityFunctions = [];
+	DataTypeModule.iconLocators = [];
+	DataTypeModule.registerVisibilityFunction = function(func) {
+		DataTypeModule.visibilityFunctions.push(func);
+	};
+	DataTypeModule.registerIconLocator = function(func) {
+		DataTypeModule.iconLocators.push(func);
+	};
+	
 	DataTypeModule.shouldBeVisible = function(binding) {
-		if(binding["polluted"].value == "true") {
-			if(binding["facility"].value == "true") {
-				return $.inArray("pollutedfacility", $.bbq.getState("type"))>=0;
-			}
-			else {
-				return $.inArray("pollutedwater", $.bbq.getState("type"))>=0;
-			}
-		}
-		else {
-			if(binding["facility"].value == "true") {
-				return $.inArray("facility", $.bbq.getState("type"))>=0;
-			}
-			else {
-				return $.inArray("cleanwater", $.bbq.getState("type"))>=0;
+		for(var i=0;i<DataTypeModule.visibilityFunctions.length;i++) {
+			var func = DataTypeModule.visibilityFunctions[i];
+			if(func.call(window, binding) == true) {
+				return true;
 			}
 		}
 		return false;
 	};
 	DataTypeModule.getIcon = function(binding) {
-		if(binding["polluted"].value == "true") {
-			if(binding["facility"].value == "true") {
-				return icons["pollutedfacility"];
-			}
-			else {
-				return icons["pollutedwater"];
-			}
-		}
-		else {
-			if(binding["facility"].value == "true") {
-				return icons["facility"];
-			}
-			else {
-				return icons["cleanwater"];
+		for(var i=0;i<DataTypeModule.iconLocators.length;i++) {
+			var func = DataTypeModule.iconLocators[i];
+			var icon = func.call(window, binding);
+			if(icon != null) {
+				return icon;
 			}
 		}
 		return null;
 	};
+	
 	DataTypeModule.createMarker = function(e, binding) {
 		var uri = binding["site"].value;
 		var lat = parseFloat(binding["lat"].value);
