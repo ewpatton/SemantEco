@@ -109,7 +109,7 @@ public class RegulationModule implements Module {
 					responseStr += i.getLabelForRegulation(j);
 					responseStr += "</option>";
 				}
-				responseStr += "</select>";
+				responseStr += "</select><br />";
 			}
 		}
 		responseStr += "</div>";

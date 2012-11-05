@@ -186,7 +186,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		return responseStr;
 	}
 	
-	protected void addRegulations(Domain domain) {
+	protected void addRegulations(final Domain domain) {
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl"), "EPA Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ca-regulation.owl"), "CA Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ma-regulation.owl"), "MA Regulation");
@@ -194,7 +194,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl"), "RI Regulation");
 	}
 	
-	protected void addDataTypes(Domain domain) {
+	protected void addDataTypes(final Domain domain) {
 		Resource res = config.getResource("clean-water.png");
 		domain.addDataType("clean-water", "Clean Water", res);
 		res = config.getResource("facility.png");

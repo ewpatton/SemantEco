@@ -57,6 +57,7 @@
 	<module>zipcode</module>
 	<module>data-type</module>
 	<module>water-data-provider</module>
+	<module>air-data-provider</module>
       </modules>
     </profile>
     <profile>
