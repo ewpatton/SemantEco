@@ -28,6 +28,7 @@ import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.events.CreateEvent;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -65,6 +66,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	private final DefaultFileMonitor fm;
 	private Map<URI, Domain> knownDomains = null;
 	private boolean initializing = true;
+	private Map<Module, List<Domain>> moduleDomainMap = null;
 	
 	/**
 	 * Default constructor
@@ -129,7 +131,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	public void buildOntologyModel(OntModel model, Request request) {
 		log.trace("buildOntologyModel");
 		for(Module module : modules) {
-			module.visit((OntModel)model, request);
+			if(shouldCallModule(module, request)) {
+				module.visit((OntModel)model, request);
+			}
 		}
 	}
 
@@ -137,7 +141,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	public void buildDataModel(Model model, Request request) {
 		log.trace("buildDataModel");
 		for(Module module : modules) {
-			module.visit((Model)model, request);
+			if(shouldCallModule(module, request)) {
+				module.visit((Model)model, request);
+			}
 		}
 	}
 
@@ -162,7 +168,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			if(module == originator) {
 				continue;
 			}
-			module.visit(query, request);
+			if(shouldCallModule(module, request)) {
+				module.visit(query, request);
+			}
 		}
 	}
 
@@ -397,14 +405,43 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	protected void buildDomain() {
 		log.trace("buildDomain");
 		final Class<? extends ProvidesDomain> providerClass = ProvidesDomain.class;
+		moduleDomainMap = new HashMap<Module, List<Domain>>();
 		knownDomains = new LinkedHashMap<URI, Domain>();
 		for(Module m : modules) {
 			if(providerClass.isAssignableFrom(m.getClass())) {
 				log.debug("Found domain provider "+m.getName());
 				ProvidesDomain provider = (ProvidesDomain)m;
-				provider.getDomains(new DummyRequest());
+				List<Domain> domains = provider.getDomains(new DummyRequest());
+				if(domains != null) {
+					moduleDomainMap.put(m, domains);
+				}
 			}
 		}
+	}
+	
+	private boolean shouldCallModule(final Module module, final Request request) {
+		List<Domain> domains = moduleDomainMap.get(module);
+		if(domains == null) {
+			return true;
+		}
+		JSONArray arr = (JSONArray)request.getParam("domain");
+		List<String> activeDomains = arrayToList(arr);
+		for(Domain d : domains) {
+			if(activeDomains.contains(d.getUri().toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private List<String> arrayToList(JSONArray arr) {
+		List<String> result = new ArrayList<String>();
+		if(arr != null) {
+			for(int i=0;i<arr.length();i++) {
+				result.add(arr.optString(i));
+			}
+		}
+		return result;
 	}
 	
 	private static class DummyRequest implements Request {
