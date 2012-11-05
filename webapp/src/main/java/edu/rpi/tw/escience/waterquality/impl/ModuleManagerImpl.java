@@ -123,7 +123,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		log.debug("Modules: "+modules.size());
 		for(Module module : modules) {
 			log.debug("Visiting module "+module.getName());
-			module.visit(ui, request);
+			try {
+				module.visit(ui, request);
+			}
+			catch(Exception e) {
+				request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+			}
 		}
 	}
 
@@ -132,7 +137,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		log.trace("buildOntologyModel");
 		for(Module module : modules) {
 			if(shouldCallModule(module, request)) {
-				module.visit((OntModel)model, request);
+				try {
+					module.visit((OntModel)model, request);
+				}
+				catch(Exception e) {
+					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+				}
 			}
 		}
 	}
@@ -142,7 +152,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		log.trace("buildDataModel");
 		for(Module module : modules) {
 			if(shouldCallModule(module, request)) {
-				module.visit((Model)model, request);
+				try {
+					module.visit((Model)model, request);
+				}
+				catch(Exception e) {
+					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+				}
 			}
 		}
 	}
@@ -169,7 +184,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				continue;
 			}
 			if(shouldCallModule(module, request)) {
-				module.visit(query, request);
+				try {
+					module.visit(query, request);
+				}
+				catch(Exception e) {
+					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+				}
 			}
 		}
 	}
@@ -411,7 +431,13 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			if(providerClass.isAssignableFrom(m.getClass())) {
 				log.debug("Found domain provider "+m.getName());
 				ProvidesDomain provider = (ProvidesDomain)m;
-				List<Domain> domains = provider.getDomains(new DummyRequest());
+				List<Domain> domains = null;
+				try {
+					domains = provider.getDomains(new DummyRequest());
+				}
+				catch(Exception e) {
+					log.warn("Module '"+m.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+				}
 				if(domains != null) {
 					moduleDomainMap.put(m, domains);
 				}
