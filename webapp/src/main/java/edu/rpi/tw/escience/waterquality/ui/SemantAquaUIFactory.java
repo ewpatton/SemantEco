@@ -62,7 +62,10 @@ public class SemantAquaUIFactory {
 	private static class NOPRequest implements Request {
 
 		@Override
-		public String[] getParam(String key) {
+		public Object getParam(String key) {
+			if("available-domains".equals(key)) {
+				return ModuleManagerFactory.getInstance().getManager().listDomains();
+			}
 			return new String[0];
 		}
 

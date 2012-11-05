@@ -141,11 +141,12 @@ var SemantAqua = {
 		console.log(response);
 		SemantAqua.action = "getLimitData";
 		$.bbq.pushState({"state":data.result.stateAbbr,
+			"stateCode":data.result.stateCode,
 			"county":data.result.countyCode,
 			"lat":data.result.lat, "lng":data.result.lng});
 	},
 	"getLimitData": function() {
-		DataSourceModule.getSiteCounts({}, SemantAqua.processLimitData);
+		WaterDataProviderModule.getSiteCounts({}, SemantAqua.processLimitData);
 	},
 	"processLimitData": function(response) {
 		var data = JSON.parse(response);

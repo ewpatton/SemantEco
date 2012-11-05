@@ -49,12 +49,32 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		this.params = new HashMap<String, String>();
 		if(params != null) {
 			for(Map.Entry<String, String[]> i : params.entrySet()) {
+				String key = i.getKey();
 				String[] value = i.getValue();
-				if(value.length>1) {
-					this.params.put(i.getKey(), arrayToString(value));
+				if(key.contains(".")) {
+					try {
+						String newPart = key.substring(key.indexOf('.')+1);
+						key = key.substring(0, key.indexOf('.'));
+						JSONObject obj = null;
+						if(null != this.params.get(key)) {
+							obj = new JSONObject(this.params.get(key));
+						}
+						else {
+							obj = new JSONObject();
+						}
+						obj.put(newPart, value[0]);
+						this.params.put(key, obj.toString());
+					}
+					catch (JSONException e) {
+					}
 				}
 				else {
-					this.params.put(i.getKey(), value[0]);
+					if(value.length>1) {
+						this.params.put(i.getKey(), arrayToString(value));
+					}
+					else {
+						this.params.put(i.getKey(), value[0]);
+					}
 				}
 			}
 		}

@@ -5,8 +5,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +202,7 @@ public class QueryImpl implements Query {
 			this.variables = null;
 		}
 		else {
-			this.variables = new HashSet<Variable>(object);
+			this.variables = new LinkedHashSet<Variable>(object);
 		}
 	}
 

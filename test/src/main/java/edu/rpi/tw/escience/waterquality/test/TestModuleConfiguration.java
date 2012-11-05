@@ -1,11 +1,14 @@
 package edu.rpi.tw.escience.waterquality.test;
 
 import java.io.File;
+import java.net.URI;
+import java.util.List;
 
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.QueryFactory;
@@ -49,6 +52,18 @@ public class TestModuleConfiguration extends ModuleConfiguration {
 	@Override
 	public Logger getLogger() {
 		return Logger.getRootLogger();
+	}
+
+	@Override
+	public Domain getDomain(URI uri, boolean create) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Domain> listDomains() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
