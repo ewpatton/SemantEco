@@ -26,12 +26,12 @@ import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.impl.QueryImpl;
 import edu.rpi.tw.escience.waterquality.test.MockModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.test.MockQuery;
 import edu.rpi.tw.escience.waterquality.test.MockQueryExecutor;
 import edu.rpi.tw.escience.waterquality.test.MockQueryFactory;
 import edu.rpi.tw.escience.waterquality.test.MockRequest;
 import edu.rpi.tw.escience.waterquality.test.MockResource;
 import edu.rpi.tw.escience.waterquality.test.MockUI;
+import edu.rpi.tw.escience.waterquality.test.TestQuery;
 
 import junit.framework.TestCase;
 
@@ -248,7 +248,7 @@ public class WaterDataProviderModuleTest extends TestCase {
 	@Test
 	public void testVisitQuery() {
 		TestModuleConfiguration config = new TestModuleConfiguration();
-		MockQuery query = new MockQuery();
+		TestQuery query = new TestQuery(Type.SELECT);
 		TestRequest request = new TestRequest();
 		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
