@@ -9,6 +9,7 @@ var SemantAqua = {
 		// set up facets
 		$.bbq.pushState(SemantAquaUI.getFacetParams(),1);
 		SemantAquaUI.populateFacets();
+		SemantAquaUI.initializeFacets();
 		
 		// bind handle state change
 		$(window).bind('hashchange', SemantAqua.handleStateChange);

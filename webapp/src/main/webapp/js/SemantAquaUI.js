@@ -104,6 +104,40 @@ var SemantAquaUI = {
 			}
 		}
 	},
+	"initializeFacets": function() {
+		var facets = $("div#facets .facet").each(function() {
+			var that = this;
+			$("input", this).change(function(e) {
+				var me = $(this);
+				var name = me.attr("name");
+				var type = me.attr("type");
+				if(type=="checkbox") {
+					var elems = $("input[name='"+name+"']:checked", that);
+					var value = [];
+					elems.each(function() {
+						value.push($(this).val());
+					});
+					var state = {};
+					state[name] = value;
+					$.bbq.pushState(state);
+				}
+				else if(type=="radio") {
+					var value = $("input[name='"+name+"']:checked", that).val();
+					var state = {};
+					state[name] = value;
+					$.bbq.pushState(state);
+				}
+			});
+			$("select", this).change(function(e) {
+				var me = $(this);
+				var name = me.attr("name");
+				var value = $("option:selected",this).val();
+				var state = {};
+				state[name] = value;
+				$.bbq.pushState(state);
+			});
+		});
+	},
 	"createMarker": function(uri, lat, lng, icon, visible, label) {
 		var opts = {"clickable": true,
 				"icon": new google.maps.MarkerImage(icon, null, null, null, new google.maps.Size(30, 34)),
