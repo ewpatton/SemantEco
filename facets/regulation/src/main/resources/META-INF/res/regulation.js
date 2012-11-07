@@ -16,6 +16,8 @@ $(window).bind("initialize", function() {
 			// hide the spinner in case of an error
 			// (otherwise the application looks like it's locked up)
 			SemantAquaUI.hideSpinner();
+			// clear the map
+			SemantAquaUI.clearMarkers();
 			// parse the JSON response
 			var json = JSON.parse(data);
 			
