@@ -164,6 +164,12 @@ var SemantAquaUI = {
 	"getMarkerForUri": function(uri) {
 		return SemantAquaUI.markersByUri[uri];
 	},
+	"clearMarkers": function() {
+		for(var i=0;i<SemantAquaUI.markers.length;i++) {
+			SemantAquaUI.markers[i].setMap(null);
+		}
+		SemantAquaUI.markers = [];
+	},
 	"handleClickedMarker": function() {
 		SemantAqua.action = null;
 		$(window).trigger('show-marker-info');
