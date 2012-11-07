@@ -110,6 +110,11 @@ var SemantAqua = {
 			return;
 		}
 		SemantAqua.action = "decodeZipCode";
+		if($.bbq.getState("zip") == zip) {
+			// handle if the "Go" button is clicked a second time without
+			// the zip code changing
+			SemantAqua.getLimitData();
+		}
 		$.bbq.pushState({"zip": zip});
 		return false;
 	},
@@ -147,6 +152,7 @@ var SemantAqua = {
 			"lat":data.result.lat, "lng":data.result.lng});
 	},
 	"getLimitData": function() {
+		SemantAquaUI.showSpinner();
 		WaterDataProviderModule.getSiteCounts({}, SemantAqua.processLimitData);
 	},
 	"processLimitData": function(response) {
