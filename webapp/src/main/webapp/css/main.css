@@ -390,3 +390,7 @@ div#facets {
 	float:right;
 	width:20%;
 }
+
+div.facet select {
+	width: 100%;
+}
