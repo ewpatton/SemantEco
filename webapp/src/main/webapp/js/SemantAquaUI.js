@@ -170,6 +170,12 @@ var SemantAquaUI = {
 		}
 		SemantAquaUI.markers = [];
 	},
+	"showMarker": function(marker) {
+		marker.setVisible(true);
+	},
+	"hideMarker": function(marker) {
+		marker.setVisible(false);
+	},
 	"handleClickedMarker": function() {
 		SemantAqua.action = null;
 		$(window).trigger('show-marker-info');
