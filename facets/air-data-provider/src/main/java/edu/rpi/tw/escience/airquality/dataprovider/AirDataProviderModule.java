@@ -39,6 +39,66 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(Model model, Request request) {
 		// TODO build air model here (cf {@link WaterDataProviderModule#visit(Model, Request)})
+		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		final QueryResource polHasCounty = query.getResource(POL_NS+"hasCounty");
+		final QueryResource polHasState = query.getResource(POL_NS+"hasState");
+		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
+		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
+		final Variable unit = query.getVariable(QUERY_NS+"unit");
+		final Variable value = query.getVariable(QUERY_NS+"value");
+		final Variable site = query.getVariable(QUERY_NS+"site");
+		final Variable element = query.getVariable(QUERY_NS+"element");
+		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
+		final QueryResource atLocation = query.getResource(PROV_NS+"atLocation");
+		final QueryResource hasMeasurement = query.getResource(POL_NS +"hasMeasurement");
+
+		final QueryResource type = query.getResource(RDF_NS+"type");
+
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource airSite = query.getResource(AIR_NS+"AirSite");
+
+
+		String countyCode = (String) request.getParam("county");
+		String stateCode = (String) request.getParam("stateCode");
+		String stateAbbr = (String) request.getParam("state");
+		//test values
+		countyCode = "001";
+		stateCode = "08";
+		
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/air-measurement-data");
+		graph.addPattern(measurement, polHasCounty, countyCode,null);
+		graph.addPattern(measurement, polHasState, stateCode,null);
+		//new patterns to test
+		graph.addPattern(measurement, polHasCharacteristic, element);
+		graph.addPattern(measurement, polHasValue, value);
+		graph.addPattern(measurement, unitHasUnit, unit);
+		graph.addPattern(measurement, atLocation, site);
+
+		
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/air-monitoring-sites");
+		graph2.addPattern(site, wgsLat, lat);
+		graph2.addPattern(site, wgsLong, lng);
+
+		//new construct patterns to test
+		final GraphComponentCollection construct = query.getConstructComponent();
+		construct.addPattern(measurement, polHasCounty, countyCode,null);
+		construct.addPattern(measurement, polHasState, stateCode,null);
+		construct.addPattern(measurement, polHasCharacteristic, element);
+		construct.addPattern(measurement, polHasValue, value);
+		construct.addPattern(measurement, unitHasUnit, unit);
+		construct.addPattern(site, hasMeasurement, measurement);
+
+		construct.addPattern(site, type, airSite);
+		construct.addPattern(site, wgsLat, lat);
+		construct.addPattern(site, wgsLong, lng);
+
+
+		//return true;
+		config.getQueryExecutor(request).accept("text/turtle").execute(query, model);			
 	}
 
 	@Override
