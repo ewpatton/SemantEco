@@ -71,7 +71,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		}
 		
 		// TODO build air model here (cf {@link WaterDataProviderModule#visit(Model, Request)})
-		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		final QueryResource polHasCounty = query.getResource(POL_NS+"hasCounty");
 		final QueryResource polHasState = query.getResource(POL_NS+"hasState");
