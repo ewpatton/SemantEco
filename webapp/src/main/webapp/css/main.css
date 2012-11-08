@@ -426,7 +426,6 @@ div#facets {
 	width:100% !important;
 }
 
-
 input[type='button'],input[type='submit']{
     clear:both;
     font-family: Arial,Helvetica,verdana,sans-serif;
@@ -452,4 +451,8 @@ input[type='button'],input[type='submit']{
 input[type='button']:hover,input[type='submit']:hover{
     background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
     /*background: #4DA5E3;*/
+}
+
+div.facet select {
+	width: 100%;
 }

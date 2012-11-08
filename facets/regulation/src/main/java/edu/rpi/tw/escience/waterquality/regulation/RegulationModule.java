@@ -1,6 +1,9 @@
 package edu.rpi.tw.escience.waterquality.regulation;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -84,7 +87,25 @@ public class RegulationModule implements Module {
 			}
 			if(activeDomains.get(key) != null) {
 				log.debug("Loading regulation ontology '"+reg+"' for domain '"+key+"'");
-				model.read(reg);
+				try {
+					final URL url = new URL(reg);
+					final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+					conn.connect();
+					final String type = conn.getContentType();
+					final InputStream content = conn.getInputStream();
+					if(type.equals("application/rdf+xml")) {
+						model.read(content, reg);
+					}
+					else if(type.equals("text/turtle")) {
+						model.read(content, reg, "TTL");
+					}
+					else if(type.equals("text/n3")) {
+						model.read(content, reg, "N3");
+					}
+				}
+				catch(Exception e) {
+					log.warn("Had a problem reading the regulation file '"+reg+"'", e);
+				}
 			}
 		}
 	}
