@@ -32,7 +32,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String AIR_NS = "http://was.tw.rpi.edu/ontology/semanteco/air/air.owl#";
+	private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 
@@ -145,7 +145,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	public List<Domain> getDomains(Request request) {
 		log.trace("getDomains");
 		List<Domain> domains = new ArrayList<Domain>();
-		Domain air = config.getDomain(URI.create("http://was.tw.rpi.edu/ontology/semanteco/air/air.owl#"), true);
+		Domain air = config.getDomain(URI.create("http://was.tw.rpi.edu/semanteco/air/air.owl#"), true);
 		air.setLabel("Air");
 		addDataSources(air, request);
 		addRegulations(air);
