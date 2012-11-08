@@ -49,6 +49,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(Model model, Request request) {
 		this.log = request.getLogger();
+		log.debug("Visiting AirDataProviderModule building data model");
 		this.config = config;
 		this.request = request;
 		this.stateAbbr = (String)request.getParam("state");
@@ -103,16 +104,19 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		construct.addPattern(measurement, polHasCharacteristic, element);
 		construct.addPattern(measurement, polHasValue, value);
 		construct.addPattern(measurement, unitHasUnit, unit);		
+		//return true;
 		//return config.getQueryExecutor(request).accept("application/json").execute(query);			
 	}
 
 	@Override
 	public void visit(OntModel model, Request request) {
+		request.getLogger().debug("AirDataProviderModule loading air.owl");
 		model.read(AIR_NS);
 	}
 
 	@Override
 	public void visit(Query query, Request request) {
+		request.getLogger().debug("AirDataProviderModule updating query");
 		if(query.getType() != Type.SELECT) {
 			return;
 		}
