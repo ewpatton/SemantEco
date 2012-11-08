@@ -130,7 +130,7 @@ public class testFacet implements Module{
 		Resource res2 = config.getResource("speciesHierarchy.jsp");
 
 		ui.addScript(res);
-		ui.addScript(res2);
+		ui.addFacet(res2);
 
 	}
 
