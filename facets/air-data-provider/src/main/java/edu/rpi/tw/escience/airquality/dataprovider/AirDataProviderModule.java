@@ -105,7 +105,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		construct.addPattern(measurement, polHasValue, value);
 		construct.addPattern(measurement, unitHasUnit, unit);		
 		//return true;
-		//return config.getQueryExecutor(request).accept("application/json").execute(query);			
+		config.getQueryExecutor(request).accept("text/turtle").execute(query, model);			
 	}
 
 	@Override
