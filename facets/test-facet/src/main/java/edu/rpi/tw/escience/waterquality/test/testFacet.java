@@ -171,6 +171,7 @@ public class testFacet implements Module{
 	
 	@QueryMethod
 	public String queryBirdPopulationData(Request request){
+		//this works for eBird only
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
 		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
@@ -235,7 +236,7 @@ public class testFacet implements Module{
 		//graph.addPattern(measurement, long, long,null);
 		//graph.addPattern(measurement, long, long,null);
 
-
+//http://sparql.tw.rpi.edu/source/epa-air/id/aqs-site/08-001-3001
 
 		
 		// ?m void:inDataSet <http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19>
@@ -319,8 +320,8 @@ txn:CommonNameID ?commonName .
 
 	@QueryMethod
 	public String queryBirdTaxonomy(Request request) throws IOException, JSONException{	
-		/*
-		 * this was for testing, now using real sparql data
+		
+		// * this was for testing, now using real sparql data
 		JSONArray data = new JSONArray();
 		data.put(new JSONObject().put("Acanthis", "Fringillidae"));
 		data.put(new JSONObject().put("Fringillidae", "Passeriformes"));
@@ -334,8 +335,8 @@ txn:CommonNameID ?commonName .
 		data.put(new JSONObject().put("Aves", "Chordata"));
 		data.put(new JSONObject().put("Chordata", "Animalia"));
 		return data.toString();
-		*/
 		
+		/*
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
 		final Variable child = query.getVariable(VAR_NS+ "child");
@@ -397,7 +398,7 @@ txn:CommonNameID ?commonName .
 		}
 		return responseStr;
 		
-		
+		*/
 		//return config.getQueryExecutor(request).accept("application/json").execute(query);		
 		
 

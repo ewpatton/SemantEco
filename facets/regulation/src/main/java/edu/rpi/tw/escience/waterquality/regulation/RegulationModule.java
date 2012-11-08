@@ -268,6 +268,70 @@ public class RegulationModule implements Module {
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}
 	
+	
+
+	@QueryMethod
+	public String queryForSiteMeasurements(Request request) {
+		final String siteUri = (String)request.getParam("uri");
+		if(siteUri == null) {
+			return "{\"error\":\"No uri parameter supplied\"}";
+		}
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		
+		query.setNamespace("pol", POL_NS);
+		query.setNamespace("xsd", XSD_NS);
+		
+		// Variables
+		final Variable element = query.getVariable(VAR_NS+"element");
+		final Variable permit = query.getVariable(VAR_NS+"permit");
+		final Variable type = query.getVariable(VAR_NS+"type");
+		final Variable value = query.getVariable(VAR_NS+"value");
+		final Variable unit = query.getVariable(VAR_NS+"unit");
+		final Variable time = query.getVariable(VAR_NS+"time");
+		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		
+		final Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(element);
+		vars.add(permit);
+		vars.add(type);
+		vars.add(value);
+		vars.add(unit);
+		vars.add(time);
+		vars.add(measurement);
+		
+		// Resources
+		final QueryResource site = query.getResource(siteUri);
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
+		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+		final QueryResource polRegulationViolation = query.getResource(POL_NS+"RegulationViolation");
+		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
+		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
+		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
+		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
+		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
+		
+		query.addPattern(site, polHasMeasurement, measurement);
+		query.addPattern(measurement, rdfType, polRegulationViolation);
+		query.addPattern(measurement, polHasCharacteristic, element);
+		query.addPattern(measurement, polHasValue, value);
+		query.addPattern(measurement, unitHasUnit, unit);
+		query.addPattern(measurement, timeInXSDDateTime, time);
+		OptionalComponent optional = query.createOptional();
+		query.addGraphComponent(optional);
+		optional.addPattern(measurement, polHasPermit, permit);
+		optional = query.createOptional();
+		query.addGraphComponent(optional);
+		optional.addPattern(measurement, rdfType, type);
+		optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
+		
+		extendQueryForLimits(query);
+
+		query.addOrderBy(time, SortType.ASC);
+
+		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
+	}
+	
 	protected void extendQueryForLimits(final Query query) {
 		final Variable limit = query.getVariable(VAR_NS+"limit");
 		final Variable op = query.getVariable(VAR_NS+"op");

@@ -106,8 +106,8 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		String stateCode = (String) request.getParam("stateCode");
 		String stateAbbr = (String) request.getParam("state");
 		//test values
-		//countyCode = "001";
-		//stateCode = "08";
+		countyCode = "001";
+		stateCode = "08";
 		
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/air-measurement-data");
 		graph.addPattern(measurement, polHasCounty, countyCode,null);
@@ -119,13 +119,10 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		graph.addPattern(measurement, atLocation, site);
 
 		
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/http://was.tw.rpi.edu/air-monitoring-sites");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/air-monitoring-sites");
 		graph2.addPattern(site, wgsLat, lat);
-		graph2.addPattern(site, wgsLong, lat);
+		graph2.addPattern(site, wgsLong, lng);
 
-
-
-		
 		//new construct patterns to test
 		final GraphComponentCollection construct = query.getConstructComponent();
 		construct.addPattern(measurement, polHasCounty, countyCode,null);
@@ -137,7 +134,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 		construct.addPattern(site, type, airSite);
 		construct.addPattern(site, wgsLat, lat);
-		construct.addPattern(site, wgsLong, lat);
+		construct.addPattern(site, wgsLong, lng);
 
 
 		//return true;
