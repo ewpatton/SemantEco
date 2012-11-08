@@ -92,7 +92,7 @@ public class InstanceCounter extends QueryUtils {
 	}
 	
 	protected final void buildEPACounter(final Query query, final List<String> graphs) {
-		log.trace("buildUSGSCounter");
+		log.trace("buildEPACounter");
 		String siteGraph, measuresGraph;
 		if(graphs.get(0).contains("measurement")) {
 			measuresGraph = graphs.get(0);
