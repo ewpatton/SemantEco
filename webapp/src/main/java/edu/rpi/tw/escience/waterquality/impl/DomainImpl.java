@@ -107,5 +107,28 @@ public class DomainImpl implements Domain {
 	public void setLabel(String label) {
 		this.label = label;
 	}
+	
+	@Override
+	public boolean equals(final Object other) {
+		if(this == other) {
+			return true;
+		}
+		if(other == null) {
+			return false;
+		}
+		if(this.getClass() != other.getClass()) {
+			return false;
+		}
+		DomainImpl o = (DomainImpl)other;
+		return this.uri.equals(o.uri);
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int value = 1;
+		value = value * prime + uri.hashCode();
+		return value;
+	}
 
 }

@@ -46,8 +46,23 @@ $(document).ready(function() {
 		marker.data = binding;
 		$(window).trigger("render-marker", marker);
 	};
+	
+	DataTypeModule.refreshMapIcons = function() {
+		var markers = SemantAquaUI.getMarkers();
+		for(var i=0;i<markers.length;i++) {
+			var m = markers[i];
+			if(DataTypeModule.shouldBeVisible(m.data)) {
+				SemantAquaUI.showMarker(m);
+			}
+			else {
+				SemantAquaUI.hideMarker(m);
+			}
+		}
+	};
+	
 	$(window).bind("create-marker", DataTypeModule.createMarker);
 	$(window).bind("render-marker", function(e, marker) {
 		SemantAquaUI.addMarker(marker);
 	});
+	$("#DataTypeFacet input[name='type']").change(DataTypeModule.refreshMapIcons);
 });
