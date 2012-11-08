@@ -186,7 +186,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	
 	protected void addRegulations(final Domain domain) {
 		// TODO query for regulations and add them here
-		domain.addRegulation(URI.create("http://was.tw.rpi.edu/ontology/semanteco/regulations/EPA-air-regulation.owl"), "EPA Regulation");
+		domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/EPA-air-regulation.owl"), "EPA Regulation");
 	}
 	
 	protected void addDataTypes(final Domain domain) {
