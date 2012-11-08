@@ -92,7 +92,11 @@ public class InstanceCounter extends QueryUtils {
 	}
 	
 	protected final void buildEPACounter(final Query query, final List<String> graphs) {
-		log.trace("buildUSGSCounter");
+		log.trace("buildEPACounter");
+		if(graphs == null || graphs.size() == 0) {
+			log.warn("Unable to find any EPA graphs for "+stateUri);
+			return;
+		}
 		String siteGraph, measuresGraph;
 		if(graphs.get(0).contains("measurement")) {
 			measuresGraph = graphs.get(0);
@@ -134,6 +138,10 @@ public class InstanceCounter extends QueryUtils {
 	
 	protected final void buildUSGSCounter(final Query query, final List<String> graphs) {
 		log.trace("buildUSGSCounter");
+		if(graphs == null || graphs.size() == 0) {
+			log.warn("Unable to find any USGS graphs for "+stateUri);
+			return;
+		}
 		String siteGraph, measuresGraph;
 		if(graphs.get(0).contains("measurement")) {
 			measuresGraph = graphs.get(0);
