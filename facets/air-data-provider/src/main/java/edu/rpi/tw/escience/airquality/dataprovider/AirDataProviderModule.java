@@ -147,7 +147,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(OntModel model, Request request) {
 		request.getLogger().debug("AirDataProviderModule loading air.owl");
-		model.read(AIR_NS);
+		model.read(AIR_NS, "TTL");
 	}
 
 	@Override

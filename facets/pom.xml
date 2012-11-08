@@ -58,6 +58,7 @@
 	<module>data-type</module>
 	<module>water-data-provider</module>
 	<module>air-data-provider</module>
+	<module>industry</module>
       </modules>
     </profile>
     <profile>

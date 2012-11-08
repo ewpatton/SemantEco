@@ -224,7 +224,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		res = config.getResource("polluted-water.png");
 		domain.addDataType("polluted-water", "Polluted Water", res);
 		res = config.getResource("polluted-facility.png");
-		domain.addDataType("polluted-facility", "Poluted Facility", res);
+		domain.addDataType("polluted-facility", "Polluted Facility", res);
 	}
 	
 	protected void addDataSources(final Domain domain, final Request request) {
