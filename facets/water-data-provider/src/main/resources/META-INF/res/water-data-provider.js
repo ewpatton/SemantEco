@@ -6,7 +6,15 @@ $(window).bind("initialize", function() {
 	icons[1] = [];
 	icons[1][0] = $("input[value='clean-facility']+img").attr("src");
 	icons[1][1] = $("input[value='polluted-facility']+img").attr("src");
+	
 	DataTypeModule.registerVisibilityFunction(function(b) {
+		if(b["isWater"] == undefined) {
+			return false;
+		}
+		var water = b["isWater"]["value"] == "true";
+		if(!water) {
+			return false;
+		}
 		var facility = b["facility"]["value"]=="true";
 		var polluted = b["polluted"]["value"]=="true";
 		var str="";
@@ -25,7 +33,15 @@ $(window).bind("initialize", function() {
 		}
 		return $("input[value='"+str+"']")[0].checked;
 	});
+	
 	DataTypeModule.registerIconLocator(function(b) {
+		if(b["isWater"] == undefined) {
+			return null;
+		}
+		var water = b["isWater"]["value"] == "true";
+		if(!water) {
+			return null;
+		}
 		var facility = b["facility"]["value"]=="true" ? 1 : 0;
 		var polluted = b["polluted"]["value"]=="true" ? 1 : 0;
 		return icons[facility][polluted];
