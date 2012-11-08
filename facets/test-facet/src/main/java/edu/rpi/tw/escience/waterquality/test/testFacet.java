@@ -128,9 +128,12 @@ public class testFacet implements Module{
 		Resource res = null;
 		res = config.getResource("speciesHierarchy.js");
 		Resource res2 = config.getResource("speciesHierarchy.jsp");
-
 		ui.addScript(res);
 		ui.addFacet(res2);
+		res = config.getResource("jstree/jquery.jstree.js");
+		ui.addScript(res);
+		res = config.getResource("jstree/themes/default/style.css");
+		ui.addStylesheet(res);
 
 	}
 
