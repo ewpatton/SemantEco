@@ -334,6 +334,8 @@ txn:CommonNameID ?commonName .
 		data.put(new JSONObject().put("Falconiformes", "Aves"));
 		data.put(new JSONObject().put("Aves", "Chordata"));
 		data.put(new JSONObject().put("Chordata", "Animalia"));
+		data.put(new JSONObject().put("Animalia", ""));
+
 		return data.toString();
 		
 		/*
