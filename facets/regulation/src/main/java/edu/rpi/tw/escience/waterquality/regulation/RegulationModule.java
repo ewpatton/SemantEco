@@ -276,6 +276,13 @@ public class RegulationModule implements Module {
 		if(siteUri == null) {
 			return "{\"error\":\"No uri parameter supplied\"}";
 		}
+		
+		final String chemicalString = (String)request.getParam("chemical");
+		if(chemicalString == null) {
+			return "{\"error\":\"No chemical parameter supplied\"}";
+		}
+		
+		
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		
 		query.setNamespace("pol", POL_NS);
@@ -301,10 +308,13 @@ public class RegulationModule implements Module {
 		
 		// Resources
 		final QueryResource site = query.getResource(siteUri);
+		final QueryResource chemical = query.getResource(chemicalString);
+
+		
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
 		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
-		final QueryResource polRegulationViolation = query.getResource(POL_NS+"RegulationViolation");
+		//final QueryResource polRegulationViolation = query.getResource(POL_NS+"RegulationViolation");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
@@ -312,8 +322,8 @@ public class RegulationModule implements Module {
 		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
 		
 		query.addPattern(site, polHasMeasurement, measurement);
-		query.addPattern(measurement, rdfType, polRegulationViolation);
-		query.addPattern(measurement, polHasCharacteristic, element);
+		//query.addPattern(measurement, rdfType, polRegulationViolation);
+		query.addPattern(measurement, polHasCharacteristic, chemical);
 		query.addPattern(measurement, polHasValue, value);
 		query.addPattern(measurement, unitHasUnit, unit);
 		query.addPattern(measurement, timeInXSDDateTime, time);
@@ -323,7 +333,7 @@ public class RegulationModule implements Module {
 		optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, rdfType, type);
-		optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
+		//optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
 		
 		extendQueryForLimits(query);
 

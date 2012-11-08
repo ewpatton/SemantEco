@@ -66,5 +66,6 @@
   </profiles>
   <modules>
     <module>semantaqua-species-dataprovider</module>
+    <module>semantaqua-characteristics-facet</module>
   </modules>
 </project>
