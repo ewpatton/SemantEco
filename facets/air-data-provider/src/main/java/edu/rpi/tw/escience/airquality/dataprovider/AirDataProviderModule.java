@@ -19,6 +19,7 @@ import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
+import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
@@ -31,13 +32,52 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String AIR_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/air.owl#";
+	private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
+	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
+	private static final String PROV_NS = "http://www.w3.org/ns/prov#";
+	private static final String LAT = "lat";
+	private static final String LONG = "long";
+	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+
+
+
 	private static final String ISAIR_VAR = "isAir";
 	private ModuleConfiguration config = null;
-	private static final Logger log = Logger.getLogger(AirDataProviderModule.class);
+	private static Logger log = Logger.getLogger(AirDataProviderModule.class);
+	private String countyCode = null;
+	private String stateAbbr = null;
+	private String stateCode = null;
+	private Request request = null;
+
 	
 	@Override
 	public void visit(Model model, Request request) {
+		this.log = request.getLogger();
+		log.debug("Visiting AirDataProviderModule building data model");
+		this.config = config;
+		this.request = request;
+		this.stateAbbr = (String)request.getParam("state");
+		if(stateAbbr == null || stateAbbr.isEmpty()) {
+			throw new IllegalArgumentException("State parameter not supplied. Expected two digit state abbreviation, e.g. CA.");
+		}
+		try {
+			this.countyCode = (String)request.getParam("county");
+		}
+		catch(Exception e) {
+			throw new IllegalArgumentException("County parameter not supplied.", e);
+		}
+		
+		try {
+			this.stateCode = (String)request.getParam("stateCode");
+		}
+		catch(Exception e) {
+			throw new IllegalArgumentException("County parameter not supplied.", e);
+		}
+		
 		// TODO build air model here (cf {@link WaterDataProviderModule#visit(Model, Request)})
 		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
@@ -103,11 +143,13 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	@Override
 	public void visit(OntModel model, Request request) {
-		model.read(AIR_NS);
+		request.getLogger().debug("AirDataProviderModule loading air.owl");
+		model.read(AIR_NS, "TTL");
 	}
 
 	@Override
 	public void visit(Query query, Request request) {
+		request.getLogger().debug("AirDataProviderModule updating query");
 		if(query.getType() != Type.SELECT) {
 			return;
 		}
@@ -136,7 +178,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	public List<Domain> getDomains(Request request) {
 		log.trace("getDomains");
 		List<Domain> domains = new ArrayList<Domain>();
-		Domain air = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/air.owl#"), true);
+		Domain air = config.getDomain(URI.create("http://was.tw.rpi.edu/semanteco/air/air.owl#"), true);
 		air.setLabel("Air");
 		addDataSources(air, request);
 		addRegulations(air);
@@ -177,7 +219,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	
 	protected void addRegulations(final Domain domain) {
 		// TODO query for regulations and add them here
-		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/EPA-air-regulation.owl"), "EPA Regulation");
+		domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/EPA-air-regulation.owl"), "EPA Regulation");
 	}
 	
 	protected void addDataTypes(final Domain domain) {
