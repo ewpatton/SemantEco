@@ -285,7 +285,6 @@ public class RegulationModule implements Module {
 		final Variable type = query.getVariable(VAR_NS+"type");
 		final Variable value = query.getVariable(VAR_NS+"value");
 		final Variable unit = query.getVariable(VAR_NS+"unit");
-		final Variable time = query.getVariable(VAR_NS+"time");
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
@@ -294,7 +293,6 @@ public class RegulationModule implements Module {
 		vars.add(type);
 		vars.add(value);
 		vars.add(unit);
-		vars.add(time);
 		vars.add(measurement);
 		
 		// Resources
@@ -306,7 +304,6 @@ public class RegulationModule implements Module {
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
-		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
 		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
 		
 		query.addPattern(site, polHasMeasurement, measurement);
@@ -314,7 +311,6 @@ public class RegulationModule implements Module {
 		query.addPattern(measurement, polHasCharacteristic, element);
 		query.addPattern(measurement, polHasValue, value);
 		query.addPattern(measurement, unitHasUnit, unit);
-		query.addPattern(measurement, timeInXSDDateTime, time);
 		OptionalComponent optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, polHasPermit, permit);
@@ -324,8 +320,6 @@ public class RegulationModule implements Module {
 		optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
 		
 		extendQueryForLimits(query);
-
-		query.addOrderBy(time, SortType.ASC);
 
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}
