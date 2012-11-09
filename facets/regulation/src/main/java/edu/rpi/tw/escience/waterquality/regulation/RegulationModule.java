@@ -46,7 +46,6 @@ public class RegulationModule implements Module {
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
-	private static final String TIME_NS = "http://www.w3.org/2006/time#";
 	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 	private static final String PROP_VAR = "p";
@@ -245,7 +244,6 @@ public class RegulationModule implements Module {
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
-		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
 		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
 		
 		query.addPattern(site, polHasMeasurement, measurement);
@@ -253,7 +251,6 @@ public class RegulationModule implements Module {
 		query.addPattern(measurement, polHasCharacteristic, element);
 		query.addPattern(measurement, polHasValue, value);
 		query.addPattern(measurement, unitHasUnit, unit);
-		query.addPattern(measurement, timeInXSDDateTime, time);
 		OptionalComponent optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, polHasPermit, permit);
