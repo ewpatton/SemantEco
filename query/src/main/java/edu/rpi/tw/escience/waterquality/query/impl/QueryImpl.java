@@ -130,8 +130,7 @@ public class QueryImpl implements Query {
 
 	@Override
 	public UnionComponent createUnion() {
-		// TODO Auto-generated method stub
-		return null;
+		return new UnionComponentImpl();
 	}
 
 	@Override

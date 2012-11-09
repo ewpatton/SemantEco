@@ -243,7 +243,8 @@ public interface Query extends GraphComponentCollection {
 	 * @param subject
 	 * @param predicate
 	 * @param object
-	 * @return
+	 * @return A list of GraphComponentCollection objects containing the specified pattern. 
+	 * The list will be of length zero if no collections were found.
 	 */
 	List<GraphComponentCollection> findGraphComponentsWithPattern(QueryResource subject,
 			QueryResource predicate, QueryResource object);

@@ -52,8 +52,10 @@ public class ModuleManagerFactory {
 		if(impl != null) {
 			impl.stopListening();
 		}
+		if(instance != null) {
+			instance.manager = null;
+		}
 		instance = null;
-		instance.manager = null;
 	}
 
 }

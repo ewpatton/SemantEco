@@ -16,6 +16,7 @@ import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
+import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
@@ -36,6 +37,8 @@ public class TimeModule implements Module {
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String TIME_NS = "http://www.w3.org/2006/time#";
 	private static final String TIME_VAR = "time";
+	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
+	private static final String DC_NS = "http://purl.org/dc/terms/";
 	
 	@Override
 	public void visit(final Model model, final Request request) {
@@ -62,13 +65,10 @@ public class TimeModule implements Module {
 		
 		// extract the time passed from the client
 		String time = (String)request.getParam("time");
-		if(time == null || time.isEmpty()) {
-			return;
-		}
 		
 		// process request based on query type
-		updateWhereClause(query, time);
-		if(query.getType().equals(Type.CONSTRUCT)) {
+		boolean updated = updateWhereClause(query, time);
+		if(query.getType().equals(Type.CONSTRUCT) && updated) {
 			handleConstructQuery(query);
 		}
 	}
@@ -81,7 +81,7 @@ public class TimeModule implements Module {
 		query.getConstructComponent().addPattern(measurement, timeInXSDDateTime, timeVar);
 	}
 	
-	protected void updateWhereClause(final Query query, final String deltaT) {
+	protected boolean updateWhereClause(final Query query, final String deltaT) {
 		// find components that mention the type of the measurement
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
@@ -89,23 +89,35 @@ public class TimeModule implements Module {
 		
 		// if there are no graphs, we can't do anything
 		if(graphs.size() == 0) {
-			return;
+			// alt version
+			final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
+			graphs = query.findGraphComponentsWithPattern(measurement, polHasCharacteristic, null);
+			if(graphs.size() == 0) {
+				return false;
+			}
 		}
 		
 		final GraphComponentCollection graph = graphs.get(0);
 		final Variable timeVar = query.getVariable(VAR_NS+TIME_VAR);
 		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
+		final QueryResource dcDate = query.getResource(DC_NS+"date");
+		final UnionComponent union = query.createUnion();
 		
 		// add item to the found graph
-		graph.addPattern(measurement, timeInXSDDateTime, timeVar);
+		GraphComponentCollection coll = union.getUnionComponent(0);
+		coll.addPattern(measurement, timeInXSDDateTime, timeVar);
+		coll = union.getUnionComponent(1);
+		coll.addPattern(measurement, dcDate, timeVar);
+		graph.addGraphComponent(union);
 
 		// process the deltaT from the client and add a filter
-		if(deltaT.isEmpty()) {
-			return;
+		if(deltaT == null || deltaT.isEmpty()) {
+			return true;
 		}
 		final Calendar time = processTimeParam(deltaT);
 		final String xsdTime = sdf.format(time);
 		graph.addFilter("?"+TIME_VAR+" > xsd:dateTime(\""+xsdTime+"\")");
+		return true;
 	}
 
 	@Override
