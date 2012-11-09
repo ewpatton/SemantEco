@@ -317,7 +317,7 @@ public class RegulationModule implements Module {
 		optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, polHasLimitOperator, op);
-		optional.addPattern(measurement, polHasLimitValue, op);
+		optional.addPattern(measurement, polHasLimitValue, limit);
 	}
 	
 	protected void addOpMatch(final Query query, 
