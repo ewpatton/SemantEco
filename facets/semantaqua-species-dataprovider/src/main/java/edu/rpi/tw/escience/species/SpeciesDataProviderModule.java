@@ -87,7 +87,6 @@ public class SpeciesDataProviderModule implements Module {
 
 		ui.addScript(res);
 		ui.addFacet(res2);
-
 	}
 
 	
