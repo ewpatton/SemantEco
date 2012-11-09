@@ -234,6 +234,7 @@ public class RegulationModule implements Module {
 		vars.add(unit);
 		vars.add(time);
 		vars.add(measurement);
+		query.setVariables(vars);
 		
 		// Resources
 		final QueryResource site = query.getResource(siteUri);
