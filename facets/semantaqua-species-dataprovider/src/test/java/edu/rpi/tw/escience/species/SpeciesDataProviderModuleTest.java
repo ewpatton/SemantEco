@@ -41,6 +41,7 @@ public class SpeciesDataProviderModuleTest extends TestCase {
 		module.visit((Query)null, null);
 	}
 	
+	/*
 	@Test
 	public void testVisitUI() {
 		SpeciesDataProviderModule module = new SpeciesDataProviderModule();
@@ -48,6 +49,7 @@ public class SpeciesDataProviderModuleTest extends TestCase {
 		module.setModuleConfiguration(config);
 		module.visit((SemantAquaUI)null, null);
 	}
+	*/
 	
 	@Test
 	public void testProperties() {
