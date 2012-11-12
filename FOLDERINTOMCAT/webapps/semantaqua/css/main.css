@@ -461,6 +461,7 @@ div#infowindowcontainer{
   height:360px;
   min-width:550px;
   max-width: 680px;
+  overflow: scroll;
 }
 
 div#infowindowcontent{

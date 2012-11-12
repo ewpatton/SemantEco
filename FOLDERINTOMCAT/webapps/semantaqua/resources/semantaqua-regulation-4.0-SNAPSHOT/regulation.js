@@ -33,9 +33,9 @@ $(window).bind("initialize", function() {
 		console.log("regulation.js#show-marker-info");
 		var marker=marker;
 		
-
+		$("#spinner").show();
 		RegulationModule.queryForSitePollution({}, function(data){
-			
+			$("#spinner").hide();
 			console.log("data retrieved in queryForSitePollution");
 			console.log(data);
 
