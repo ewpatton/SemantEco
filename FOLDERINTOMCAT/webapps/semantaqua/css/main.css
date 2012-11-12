@@ -426,7 +426,6 @@ div#facets {
 	width:100% !important;
 }
 
-
 input[type='button'],input[type='submit']{
     clear:both;
     font-family: Arial,Helvetica,verdana,sans-serif;
@@ -454,9 +453,12 @@ input[type='button']:hover,input[type='submit']:hover{
     /*background: #4DA5E3;*/
 }
 
+div.facet select {
+	width: 100%;
+}
 
 div#infowindowcontainer{
-  height:340px;
+  height:360px;
   min-width:550px;
   max-width: 680px;
 }
@@ -467,6 +469,7 @@ div#infowindowcontent{
 
 div#infowindowcontrol{
   margin-top: 20px;
+  line-height: 21px;
 }
 
 div#infowindowcontrol a{
@@ -482,4 +485,79 @@ div#infowindowcontrol a:hover{
 
 .jqplot-table-legend{
   width: auto;
+}
+
+.lightbox{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+}
+
+.lightbox .lb_shadow{
+    width: 100%;
+    height: 100%;
+    background: url("../images/bg.png") repeat scroll 0 0;
+}
+
+.lightbox .positioner{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y:auto;
+}
+
+.lightbox .lb_container{
+    position: relative;
+    width: 70%;
+    height: 90%;
+    margin: 0 auto;
+    top: 30px;
+    background: white;
+    border-radius: 4px;
+}
+
+.lightbox .lb_container .lb_closebutton{
+    /*position: absolute;*/
+    float: right;
+    position: relative;
+    right: 5px;
+    top: 5px;
+    cursor: pointer;
+    display: block;
+    height: 24px;
+    width: 15px;
+    background: url("../images/close.png") no-repeat;
+}
+
+.lightbox .lb_container .lb_closebutton:hover{
+    background-color: #D0E5F5;
+}
+
+.lightbox .lb_container .lb_content{
+    position: relative;
+}
+
+.lb_content .leftcolumn{
+    float: left;
+}
+
+.lb_content .selectscontainer{
+
+}
+
+.lb_content .rightcolumn{
+    float: right;
+}
+
+.lb_content .specietree{
+    height: 300px;
+    width: 300px;
+    background: #EEE;
+}
+
+.clear{
+    clear: both;
 }
