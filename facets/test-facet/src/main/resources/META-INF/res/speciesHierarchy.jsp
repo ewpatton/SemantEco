@@ -2,13 +2,13 @@
  <table cellpadding="0" cellspacing="0">
       <tr>
 	    <td colspan="2">
-		   <input type=button onClick=" initial_hierachy()" value="initial tree"/>
+		   
 		   
 		</td>
 	  </tr>
 	 <tr>
           <td  ><div id="text"  ><textarea name ="search" id="search_info" style="overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press(event)"></textarea></div>
-		  <td style="width:20%"><input type=button onClick=" search_node()" value="search"/></td>
+		  <td style="width:20%" ><input type=button onClick=" search_node()" value="search" id="append"/></td>
 		  </td>         
       
      </tr>

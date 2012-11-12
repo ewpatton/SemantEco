@@ -1,15 +1,35 @@
- $(window).bind("initialize", function() {
+ var jsonHier;
+ var class_hierachy=new Array();
+ 
+$(window).bind("initialize", function() {
         	       testFacet.queryBirdTaxonomy({}, function (data){
-        	    		   alert(data);
+        	    		  jsonHier=JSON.parse(data);
+        	    		  initial_hierachy();
+        	    		  
+        	    		          	    		  
         	       }
         	       );
         	});
  
- var class_hierachy=[["Aves",null],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["sharpShinnedHawk","Accipiter"],["commonRedpoll","Acanthis"]];
+ //var class_hierachy=[["Aves",null],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["sharpShinnedHawk","Accipiter"],["commonRedpoll","Acanthis"]];
+
+
  var show=new Array();
  var len=0;
+
  
 function initial_hierachy(){
+	//alert(jsonHier);
+	for (var i=0;i<jsonHier.length;i++){
+		if(jsonHier[i]["parentId"]==""){
+			class_hierachy.push(new Array(jsonHier[i]["Label"],null));
+		}
+	}
+	
+	iterative_build(class_hierachy[0][0]);
+	
+	
+	
 	var temp_div=document.getElementById('tree');
 	temp_div.innerHTML="";
 	var ul=document.createElement("ul");
@@ -79,6 +99,22 @@ function append_node(current, parent){
 	}
 }	
 
+
+function iterative_build(str){
+	 var temp_array=new Array();
+	 for (var i=0;i<jsonHier.length;i++){
+		 	temp=jsonHier[i]["parentId"].indexOf("#");		 	
+			if(jsonHier[i]["parentId"].substring(temp+1)==str){
+				class_hierachy.push(new Array(jsonHier[i]["Label"],jsonHier[i]["parentId"].substring(temp+1)));
+				temp_array.push(jsonHier[i]["Label"]);
+			}
+	 }
+	 for (var i=0;i<temp_array.length;i++){
+			 iterative_build(temp_array[i]); 
+	 }
+	 
+}
+
 document.onkeydown = keyDown;
 
 function keyDown(){
@@ -130,7 +166,6 @@ function press(event){
  }
 
 function match(str){
-
      //alert(document.getElementById('textarea2').value);
      var temp =document.getElementById('search_info').value;
      

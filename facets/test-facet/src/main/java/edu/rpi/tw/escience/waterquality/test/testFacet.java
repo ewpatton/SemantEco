@@ -141,7 +141,7 @@ public class testFacet implements Module{
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return null;
+		return "Species";
 	}
 
 
@@ -326,17 +326,76 @@ txn:CommonNameID ?commonName .
 		
 		// * this was for testing, now using real sparql data
 		JSONArray data = new JSONArray();
-		data.put(new JSONObject().put("Acanthis", "Fringillidae"));
-		data.put(new JSONObject().put("Fringillidae", "Passeriformes"));
-		data.put(new JSONObject().put("Passeriformes", "Aves"));
-		data.put(new JSONObject().put("Aves", "Chordata"));
-		data.put(new JSONObject().put("Chordata", "Animalia"));
+		JSONObject a=new JSONObject();
+		a.put("Label", "Acanthis");
+		a.put("id","http://example.com#Acanthis");
+		a.put("parentId", "http://example.com#Fringillidae");
+		data.put(a);
 		
-		data.put(new JSONObject().put("Accipiter", "Accipitridae"));
-		data.put(new JSONObject().put("Accipitridae", "Falconiformes"));
-		data.put(new JSONObject().put("Falconiformes", "Aves"));
-		data.put(new JSONObject().put("Aves", "Chordata"));
-		data.put(new JSONObject().put("Chordata", "Animalia"));
+		JSONObject b=new JSONObject();
+		b.put("Label", "Fringillidae");
+		b.put("id","http://example.com#Fringillidae");
+		b.put("parentId", "http://example.com#Passeriformes");
+		data.put(b);
+		
+		JSONObject c=new JSONObject();
+		c.put("Label", "Passeriformes");
+		c.put("id","http://example.com#Passeriformes");
+		c.put("parentId", "http://example.com#Aves");
+		data.put(c);
+		
+	/*	JSONObject d=new JSONObject();
+		d.put("Label", "Aves");
+		d.put("id","http://example.com#Aves");
+		d.put("parentId", "http://example.com#Chordata");
+		data.put(d);
+		
+		*/
+		
+	/*	JSONObject e=new JSONObject();
+		e.put("Label", "Chordata");
+		e.put("id","http://example.com#Chordata");
+		e.put("parentId", "http://example.com#Animalia");
+		data.put(e);
+		*/
+		
+		JSONObject f=new JSONObject();
+		f.put("Label", "Accipiter");
+		f.put("id","http://example.com#Accipiter");
+		f.put("parentId", "http://example.com#Accipitridae");
+		data.put(f);
+		
+		JSONObject g=new JSONObject();
+		g.put("Label", "Accipitridae");
+		g.put("id","http://example.com#Accipitridae");
+		g.put("parentId", "http://example.com#Falconiformes");
+		data.put(g);
+		
+		JSONObject h=new JSONObject();
+		h.put("Label", "Falconiformes");
+		h.put("id","http://example.com#Falconiformes");
+		h.put("parentId", "http://example.com#Aves");
+		data.put(h);
+		
+		JSONObject i=new JSONObject();
+		i.put("Label", "Aves");
+		i.put("id","http://example.com#Aves");
+		i.put("parentId", "http://example.com#Chordata");
+		data.put(i);
+		
+		JSONObject j=new JSONObject();
+		j.put("Label", "Chordata");
+		j.put("id","http://example.com#Chordata");
+		j.put("parentId", "http://example.com#Animalia");
+		data.put(j);
+		
+		JSONObject k=new JSONObject();
+		k.put("Label", "Animalia");
+		k.put("id","http://example.com#Animalia");
+		k.put("parentId", "");
+		data.put(k);
+		
+		
 		return data.toString();
 		
 		/*
