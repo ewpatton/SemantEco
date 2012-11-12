@@ -201,11 +201,11 @@ var SemantAquaUI = {
 				else if(type == "text") {
 					params[name] = this.value;
 				}
-				// else {
-				// 	console.warn("Facet "+that.getAttribute("id")+
-				// 			" uses input type "+type+
-				// 			" which is not supported.");
-				// }
+				else {
+					console.warn("Facet "+that.attr("id")+
+							" uses input type "+type+
+							" which is not supported.");
+				}
 			});
 			$("select", that).each(function() {
 				var name = this.getAttribute("name");

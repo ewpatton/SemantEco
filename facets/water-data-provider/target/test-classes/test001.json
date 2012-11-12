@@ -1,5 +1,0 @@
-{ "head": { "link": [], "vars": ["s"] },
-  "results": { "distinct": false, "ordered": true, "bindings": [
-    { "source": { "type": "uri", "value": "http://sparql.tw.rpi.edu/source/usgs-gov" }},
-    { "source": { "type": "uri", "value": "http://sparql.tw.rpi.edu/source/epa-gov" }},
-    ]}}
