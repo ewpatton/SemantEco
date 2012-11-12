@@ -118,7 +118,6 @@ public class FoiaDmrAgent {
 			else
 				strBuilder.append(FoiaUtil.double2Str(measuredValue));
 			strBuilder.append("\",");
-			//			VQMX     005      128- 132     MeasVio Percent – Quantity Max 
 			strBuilder.append("\""); 		
 			strBuilder.append(FoiaUtil.procNumStr(rcd.substring(127, 132).trim(), rcd, false));
 			strBuilder.append("\",");
