@@ -8,6 +8,9 @@ $(window).bind("initialize", function() {
 	icons[1][1] = $("input[value='polluted-air-facility']+img").attr("src");
 	
 	DataTypeModule.registerVisibilityFunction(function(b) {
+		if(b["isAir"] == undefined) {
+			return false;
+		}
 		var air = b["isAir"]["value"] == "true";
 		if(!air) {
 			return false;
@@ -29,6 +32,9 @@ $(window).bind("initialize", function() {
 	});
 	
 	DataTypeModule.registerIconLocator(function(b) {
+		if(b["isAir"] == undefined) {
+			return null;
+		}
 		var air = b["isAir"]["value"] == "true";
 		if(!air) {
 			return null;
