@@ -3,6 +3,7 @@ package edu.rpi.tw.escience.waterquality.dataprovider;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,19 +24,27 @@ import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.BlankNode;
+import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Variable;
+
+import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
+import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
 public class WaterDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
+	private static final String SITE_VAR = "site";
+	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String DC_NS = "http://purl.org/dc/terms/";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String SOURCE_VAR = "source";
 	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
+	private static final String ISWATER_VAR = "isWater";
 	private static final String FAILURE = "{\"success\":false}";
 	private static final String BINDINGS = "bindings";
 	private static final String VALUE = "value";
@@ -56,7 +65,20 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 
 	@Override
 	public void visit(Query query, Request request) {
-
+		if(query.getType() != Type.SELECT) {
+			return;
+		}
+		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource polMeasurementSite = query.getResource(POL_NS+"MeasurementSite");
+		List<GraphComponentCollection> graphs = query.findGraphComponentsWithPattern(site, rdfType, polMeasurementSite);
+		if(graphs != null && graphs.size() > 0) {
+			query.setNamespace("water", WATER_NS);
+			final Variable isWater = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a water:WaterSite } as ?"+ISWATER_VAR);
+			Set<Variable> vars = new LinkedHashSet<Variable>(query.getVariables());
+			vars.add(isWater);
+			query.setVariables(vars);
+		}
 	}
 
 	@Override
@@ -202,7 +224,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		res = config.getResource("polluted-water.png");
 		domain.addDataType("polluted-water", "Polluted Water", res);
 		res = config.getResource("polluted-facility.png");
-		domain.addDataType("polluted-facility", "Poluted Facility", res);
+		domain.addDataType("polluted-facility", "Polluted Facility", res);
 	}
 	
 	protected void addDataSources(final Domain domain, final Request request) {
