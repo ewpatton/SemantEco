@@ -539,10 +539,16 @@ div#infowindowcontrol a:hover{
 
 .lightbox .lb_container .lb_content{
     position: relative;
+    padding:0 25px 0 25px;
 }
 
 .lb_content .leftcolumn{
     float: left;
+    width: 70%;
+}
+
+.leftcolumn #lightboxchart{
+    margin-top: 2%;
 }
 
 .lb_content .selectscontainer{
@@ -551,12 +557,12 @@ div#infowindowcontrol a:hover{
 
 .lb_content .rightcolumn{
     float: right;
+    width: 25%;
+    background: #EEE;
 }
 
 .lb_content .specietree{
     height: 300px;
-    width: 300px;
-    background: #EEE;
 }
 
 .clear{

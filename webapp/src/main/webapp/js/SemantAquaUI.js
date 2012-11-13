@@ -40,14 +40,18 @@ var SemantAquaUI = {
             //all container in infowindow is cleared and new data is being put into them everytime a marker is clicked
             $(SemantAquaUI.infowindowcontrol).html("");
             $(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
-            $(SemantAquaUI.infowindowcontent).html(marker.data);
+            $(SemantAquaUI.infowindowcontent).html(marker.tabledata);
 
             function leftcoloumgenerater(){
             	var leftcolumn=$(document.createElement('div')).addClass("leftcolumn");
             	var selectscontainer=$(document.createElement('div')).addClass("selectscontainer").appendTo(leftcolumn);
+            	$(document.createElement('div')).attr("id","lightboxchart").appendTo(leftcolumn);
 
             	var selectforchemical = $('<select id="selectforchemical" class="selects" />').appendTo(selectscontainer);
-            	chemicals=["dynamically","generated","select","options"];
+            	chemicals=[];
+            	$(".chemicals").each(function(){
+            		chemicals.push($(this).html());
+            	});
 				for(var i=0;i<chemicals.length;i++) {
 				    $("<option />", {value: chemicals[i], text: chemicals[i]}).appendTo(selectforchemical);
 				}
@@ -65,44 +69,50 @@ var SemantAquaUI = {
             $($("#infowindowcontrol a").get(0)).click(function(){
 
 				leftcoloumgenerater().appendTo(".lb_content");
+				$(".lightbox .lb_container").css({"width":"60%"});
+				$(".leftcolumn").css({"width":"100%"});
 				SemantAquaUI.lightbox.show();
 
 				$(".characterssubmit").click(function(e){
 					
 					$.bbq.pushState({"chemical":$("#selectforchemical").value});
+					$("#lightboxchart").empty();
 
-					RegulationModule.queryForSiteMeasurements({},function(data){
+					function queryForSiteMeasurementsCallback(data){
+			            var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0].visualize1], {
+			                title:marker.data.label.value,
+			                axes:{
+			                    xaxis:{
+			                        renderer:$.jqplot.DateAxisRenderer,
+			                        tickOptions:{
+			                            formatString:'%b&nbsp;%#d'
+			                        } 
+			                    },
+			                    yaxis:{
+			                        tickOptions:{
+			                            formatString:'%.5f'
+			                        }
+			                    }
+			                },
+			                series:[{label:$("#selectforchemical").val(),lineWidth:4}],
+			                highlighter: {
+			                    show: true,
+			                    sizeAdjust: 7.5
+			                },
+			                legend: { 
+			                	show:true, 
+			                	location: 'se'
+			                },
+			                cursor: {
+			                    show: false
+			                }
+			            });
+					}
 
-						// $(SemantAquaUI.infowindowcontent).html("");
-			            // var plot1 = $.jqplot('infowindowcontent', [SemantAquaUI.infowindow.data.visualize1], {
-			            //     title:SemantAquaUI.infowindow.data.label.value,
-			            //     axes:{
-			            //         xaxis:{
-			            //             renderer:$.jqplot.DateAxisRenderer,
-			            //             tickOptions:{
-			            //                 formatString:'%b&nbsp;%#d'
-			            //             } 
-			            //         },
-			            //         yaxis:{
-			            //             tickOptions:{
-			            //                 formatString:'%.5f'
-			            //             }
-			            //         }
-			            //     },
-			            //     series:[{label:"carbonMonoxide",lineWidth:4}],
-			            //     highlighter: {
-			            //         show: true,
-			            //         sizeAdjust: 7.5
-			            //     },
-			            //     legend: { 
-			            //     	show:true, 
-			            //     	location: 'se'
-			            //     },
-			            //     cursor: {
-			            //         show: false
-			            //     }
-			            // });
-					});
+					queryForSiteMeasurementsCallback("abc");
+
+					RegulationModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallbackAAAAAA(data));
+				
 				});
 
             	
@@ -114,41 +124,53 @@ var SemantAquaUI = {
 
             	leftcoloumgenerater().appendTo(".lb_content");
             	rightcolumngenerater().appendTo(".lb_content");
+            	$(".lightbox .lb_container").css({"width":"70%"});
 				SemantAquaUI.lightbox.show();
 
-	            // var plot1 = $.jqplot('infowindowcontent', [SemantAquaUI.infowindow.data.visualize1,SemantAquaUI.infowindow.data.visualize2], {
-	            //     title:SemantAquaUI.infowindow.data.label.value,
-	            //     axes:{
-	            //         xaxis:{
-	            //             renderer:$.jqplot.DateAxisRenderer,
-	            //             tickOptions:{
-	            //                 formatString:'%b&nbsp;%#d'
-	            //             } 
-	            //         },
-	            //         yaxis:{
-	            //             tickOptions:{
-	            //                 formatString:'%.5f'
-	            //             },
-	            //         },
-	            //         y2axis:{
-			          //       autoscale:true, 
-			          //       tickOptions:{showGridline:false}
-			          //   }
-	            //     },
-	            //     legend: { 
-	            //     	show:true, 
-	            //     	location: 'se'
-	            //     },
-	            //     series:[{label:"carbonMonoxide",yaxis:'yaxis',lineWidth:4}, {label:"Aves",yaxis:'y2axis'}],
-	            //     highlighter: {
-	            //         show: true,
-	            //         sizeAdjust: 7.5
-	            //     },
-	            //     cursor: {
-	            //         show: false
-	            //     }
-	            // });
+				$(".characterssubmit").click(function(e){
+					$("#lightboxchart").empty();
 
+					$.bbq.pushState({"chemical":$("#selectforchemical").value});
+
+					function queryForNearbySpeciesCounts(data){
+						var plot1 = $.jqplot('lightboxchart', [UITeamUtilities.markerdata[0].visualize1,UITeamUtilities.markerdata[0].visualize2], {
+			                title:marker.data.label.value,
+			                axes:{
+			                    xaxis:{
+			                        renderer:$.jqplot.DateAxisRenderer,
+			                        tickOptions:{
+			                            formatString:'%b&nbsp;%#d'
+			                        } 
+			                    },
+			                    yaxis:{
+			                        tickOptions:{
+			                            formatString:'%.5f'
+			                        },
+			                    },
+			                    y2axis:{
+					                autoscale:true, 
+					                tickOptions:{showGridline:false}
+					            }
+			                },
+			                legend: { 
+			                	show:true, 
+			                	location: 'se'
+			                },
+			                series:[{label:$("#selectforchemical").val(),yaxis:'yaxis',lineWidth:4}, {label:"Aves",yaxis:'y2axis'}],
+			                highlighter: {
+			                    show: true,
+			                    sizeAdjust: 7.5
+			                },
+			                cursor: {
+			                    show: false
+			                }
+			            });
+					}
+
+					queryForNearbySpeciesCounts("abc");
+				});
+
+	        
             });
             
         })
@@ -201,11 +223,11 @@ var SemantAquaUI = {
 				else if(type == "text") {
 					params[name] = this.value;
 				}
-				else {
-					console.warn("Facet "+that.attr("id")+
-							" uses input type "+type+
-							" which is not supported.");
-				}
+				// else {
+				// 	console.warn("Facet "+that.getAttribute("id")+
+				// 			" uses input type "+type+
+				// 			" which is not supported.");
+				// }
 			});
 			$("select", that).each(function() {
 				var name = this.getAttribute("name");
@@ -343,6 +365,7 @@ $(document).ready(function(){
     $.globalEval("var lightbox={};");
     SemantAquaUI.lightbox={};
     lightbox=SemantAquaUI.lightbox;
+    lightbox.clean=null;
 
     lightbox.init=function(){
         $(".lb_content").click(function(e){
@@ -355,6 +378,9 @@ $(document).ready(function(){
 
         $(".lightbox .lb_shadow,.lightbox .lb_closebutton").click(function(){
             $(".lb_content").empty();
+            if(lightbox.clean){
+            	lightbox.clean();
+            }
             $(".lightbox").fadeOut(300,function(){
             });
         });
