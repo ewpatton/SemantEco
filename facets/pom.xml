@@ -58,14 +58,12 @@
 	<module>water-data-provider</module>
 	<module>air-data-provider</module>
 	<module>industry</module>
+	<module>semantaqua-species-dataprovider</module>
+	<module>semantaqua-characteristics-facet</module>
       </modules>
     </profile>
     <profile>
       <id>parent-only</id>
     </profile>
   </profiles>
-  <modules>
-    <module>semantaqua-species-dataprovider</module>
-    <module>semantaqua-characteristics-facet</module>
-  </modules>
 </project>

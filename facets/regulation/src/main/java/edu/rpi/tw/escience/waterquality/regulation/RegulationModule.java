@@ -266,9 +266,6 @@ public class RegulationModule implements Module {
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}
 	
-	
-
-	
 	protected void extendQueryForLimits(final Query query) {
 		final Variable limit = query.getVariable(VAR_NS+"limit");
 		final Variable op = query.getVariable(VAR_NS+"op");
