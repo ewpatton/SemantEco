@@ -134,7 +134,7 @@ public class CharacteristicsModule implements Module {
 			return "{\"error\":\"No uri parameter supplied\"}";
 		}
 		
-		final String chemicalString = (String)request.getParam("chemical");
+		final String chemicalString = (String)request.getParam("characteristic");
 		if(chemicalString == null) {
 			return "{\"error\":\"No chemical parameter supplied\"}";
 		}

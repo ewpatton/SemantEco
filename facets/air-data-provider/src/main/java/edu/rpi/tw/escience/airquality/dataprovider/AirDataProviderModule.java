@@ -32,7 +32,9 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
+	//private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
+	private static final String AIR_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/air.owl#";
+
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 	private static final String PROV_NS = "http://www.w3.org/ns/prov#";
@@ -144,7 +146,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(OntModel model, Request request) {
 		request.getLogger().debug("AirDataProviderModule loading air.owl");
-		model.read(AIR_NS, "TTL");
+		model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 	}
 
 	@Override
