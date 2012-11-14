@@ -588,6 +588,87 @@ txn:CommonNameID ?commonName .
 
 		
 	}
+	
+	
+
+	@QueryMethod
+	public String queryForNearbySpeciesCounts(Request request){
+		//this works for eBird only
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		//Variables
+		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");	
+		
+		assert(countyCode != null);
+		assert(stateAbbr != null);
+		
+		//URIs
+		//final QueryResource dataSet = query.getResource("http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19");
+		final QueryResource dataSet = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4");
+		//<http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4>
+		final QueryResource inDataSet = query.getResource("http://rdfs.org/ns/void#inDataset");
+		                                             //http://rdfs.org/ns/void#inDataset	
+		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
+		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		final Variable count = query.getVariable(QUERY_NS+"count");
+		final Variable date = query.getVariable(QUERY_NS+"date");
+		final Variable commonName = query.getVariable(VAR_NS+"commonName");
+
+
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
+		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
+		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
+
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(measurement);
+		vars.add(count);
+		vars.add(date);
+		vars.add(commonName);
+		vars.add(lat);
+		vars.add(lng);
+
+		
+		//vars.add(measurement);
+
+		query.setVariables(vars);
+		//query pattern
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		graph.addPattern(measurement, inDataSet, dataSet);
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph.addPattern(measurement, birdCount, count);
+		graph.addPattern(measurement, obsDate, date);
+		graph.addPattern(measurement, hasCommonName, commonName);
+		graph.addPattern(measurement, wgsLat, lat);
+		graph.addPattern(measurement, wgsLong, lng);
+		
+		//we want to get their lat, long, category, commonName, observation date/time observation started, observationCount, 
+		//http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID
+		//http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/observation_count
+		//http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/observation_date
+		
+		//graph.addPattern(measurement, lat, lat,null);
+		//graph.addPattern(measurement, long, long,null);
+		//graph.addPattern(measurement, long, long,null);
+
+//http://sparql.tw.rpi.edu/source/epa-air/id/aqs-site/08-001-3001
+
+		
+		// ?m void:inDataSet <http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19>
+		return config.getQueryExecutor(request).accept("application/json").execute(query);		
+	}
+
+
+
+	
+	
 
 	@QueryMethod
 	public String queryChemicalTaxonomy(Request request) throws IOException, JSONException{	

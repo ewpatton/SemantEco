@@ -87,6 +87,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		final QueryResource polHasState = query.getResource(POL_NS+"hasState");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
+		final QueryResource airAirMeasurement = query.getResource(AIR_NS+"AirMeasurement");
 		final Variable unit = query.getVariable(QUERY_NS+"unit");
 		final Variable value = query.getVariable(QUERY_NS+"value");
 		final Variable site = query.getVariable(QUERY_NS+"site");
@@ -127,6 +128,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 		//new construct patterns to test
 		final GraphComponentCollection construct = query.getConstructComponent();
+		construct.addPattern(measurement, type, airAirMeasurement);
 		construct.addPattern(measurement, polHasCounty, countyCode,null);
 		construct.addPattern(measurement, polHasState, stateCode,null);
 		construct.addPattern(measurement, polHasCharacteristic, element);
