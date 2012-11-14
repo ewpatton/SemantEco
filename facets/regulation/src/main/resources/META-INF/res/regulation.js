@@ -29,20 +29,36 @@ $(window).bind("initialize", function() {
 	});
 	
 	// set the action for when the UI raises the "show-marker-info" event
-	$(window).bind("show-marker-info", function() {
+	$(window).bind("show-marker-info", function(event,marker) {
 		console.log("regulation.js#show-marker-info");
+		var marker=marker;
 		
-		// call the auto-generated AJAX method to get the polluted measurements
+		$("#spinner").show();
 		RegulationModule.queryForSitePollution({}, function(data){
+			$("#spinner").hide();
+			console.log("data retrieved in queryForSitePollution");
+			console.log(data);
+
+			// call the auto-generated AJAX method to get the polluted measurements
+
+			data="<div>THE LOADED DATA DOES NOT CONTAIN ENOUGH DATA TO GENERATE A FORM, USE FAKE DATA STILL</div><table border=1><tr><td>MeasurementId</td><td>monitorSite</td><td>Chemical</td><td>hasValue</td><td>hasUnit</td><td>DateCollected</td><td>RegulationViolation</td></tr><tr><td>AirMeasurement_1a</td><td>01-073-0023</td><td class='chemicals'>SO2</td><td>0.00076</td><td>ppm</td><td>1/1/2012</td><td>no</td></tr><tr><td>AirMeasurement_1b</td><td>01-073-0023</td><td class='chemicals'>CO2</td><td>0.00096</td><td>ppm</td><td>2/1/2012</td><td>yes</td></tr><tr><td>AirMeasurement_1c</td><td>01-073-0023</td><td class='chemicals'>HCl</td><td>0.00086</td><td>ppm</td><td>3/1/2012</td><td>no</td></tr><tr><td>AirMeasurement_1c</td><td>01-073-0023</td><td class='chemicals'>Hg</td><td>0.00096</td><td>ppm</td><td>4/1/2012</td><td>no</td></tr><tr><td>AirMeasurement_1c</td><td>01-073-0023</td><td class='chemicals'>Cl2</td><td>0.00086</td><td>ppm</td><td>5/1/2012</td><td>no</td></tr></table>";
+
+			marker.tabledata=data;
+			$(window).trigger('pop-infowindow',marker);
+			//THE LOADED DATA DOES NOT CONTAIN ENOUGH DATA TO GENERATE A FORM, USE FAKE DATA STILL
 			
+
 			// retrieve the marker for the currently selected URI
 			// (to use as the source of the info box)
-			var marker = SemantAquaUI.getMarkerForUri($.bbq.getState("uri"));
-			if(marker == undefined) {
-				return;
-			}
+
+			//no need to receive the marker, the event click trigger will pass it to listener
+			// var marker = SemantAquaUI.getMarkerForUri($.bbq.getState("uri"));
+			// if(marker == undefined) {
+			// 	return;
+			// }
 			// TODO process SPARQL results here and create the table and info window
 			// also consider charts and other forms of presentation
 		});
+
 	});
 });

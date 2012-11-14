@@ -228,7 +228,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		domain.addDataType("clean-air", "Clean Air", res);
 		res = config.getResource("clean-air-facility.png");
 		domain.addDataType("clean-air-facility", "Clean Air Facility", res);
-		res = config.getResource("polluted-air");
+		res = config.getResource("polluted-air.png");
 		domain.addDataType("polluted-air", "Polluted Air", res);
 		res = config.getResource("polluted-air-facility.png");
 		domain.addDataType("polluted-air-facility", "Polluted Air Facility", res);

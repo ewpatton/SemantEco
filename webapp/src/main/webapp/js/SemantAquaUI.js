@@ -58,7 +58,7 @@ var SemantAquaUI = {
 					params[name] = this.value;
 				}
 				else {
-					console.warn("Facet "+that.getAttribute("id")+
+					console.warn("Facet "+that.attr("id")+
 							" uses input type "+type+
 							" which is not supported.");
 				}
