@@ -165,7 +165,7 @@ public class RegulationModule implements Module {
 	 * 
 	 */
 	@QueryMethod
-	public String queryForPollutedSites(final Request request) {
+	public String queryForSites(final Request request) {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		
 		query.setNamespace("pol", POL_NS);

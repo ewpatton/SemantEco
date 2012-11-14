@@ -12,7 +12,7 @@ $(window).bind("initialize", function() {
 		console.log("regulation.js#get-data");
 		
 		// call the auto-generated AJAX method to get the set of polluted sites
-		RegulationModule.queryForPollutedSites({}, function(data) {
+		RegulationModule.queryForSites({}, function(data) {
 			// hide the spinner in case of an error
 			// (otherwise the application looks like it's locked up)
 			SemantAquaUI.hideSpinner();
