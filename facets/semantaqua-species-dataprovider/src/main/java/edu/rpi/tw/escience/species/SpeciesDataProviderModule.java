@@ -23,6 +23,7 @@ import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
+import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
@@ -39,6 +40,11 @@ public class SpeciesDataProviderModule implements Module {
 	//private static final String TIME_NS = "http://www.w3.org/2006/time#";
 	private static final String GEOSPECIES_NS = "http://rdf.geospecies.org/ont/geospecies.owl#";
 	public static final String  TXN_NS = "http://lod.taxonconcept.org/ontology/txn.owl#";
+	public static final String  EBIRD_NS = "http://ebird#";
+	public static final String  EBIRD_DATA_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
+
+	
+
 	private static final String WILDLIFE_NS = "http://www.semanticweb.org/ontologies/2012/2/wildlife.owl#";
 	private static final String HEALTHEFFECT_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl";
 	private static final String PROV_NS = "http://www.w3.org/ns/prov#";
@@ -62,6 +68,7 @@ public class SpeciesDataProviderModule implements Module {
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
 
+
 	private ModuleConfiguration config = null;
 	
 	@Override
@@ -77,6 +84,11 @@ public class SpeciesDataProviderModule implements Module {
 	@Override
 	public void visit(final Query query, final Request request) {
 		// TODO modify queries
+		/*
+		 * //you're "joining" on the scientific name, for now
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		graph2.addPattern(species, hasLabel, scientificName);
+		 */
 	}
 	
 	@Override
@@ -88,10 +100,58 @@ public class SpeciesDataProviderModule implements Module {
 		ui.addScript(res);
 		ui.addFacet(res2);
 	}
+	
+	@QueryMethod
+	public String queryParams(Request request) throws JSONException
+	{
+		if(request.getParam("species") != null){// && request.getParam("species").length() > 0) {
+			//throw new IllegalArgumentException("The source parameter must be supplied");
+			//note that this is going to be a json object
+			JSONArray speciesParams = (JSONArray)request.getParam("species");
+			
+			for(int i = 0; i < speciesParams.length(); i++)
+			{
+			
+				JSONObject objectInArray = speciesParams.getJSONObject(i);
+				request.getLogger().error("JSON Object: " + objectInArray.toString());
+				//here is where you do the union
+				
+			}
+		
+			//iterate over the species and create a union clause
+			//iterate over jason entity uris
+			//graph2.addPattern(species, hasLabel, scientificName);	
+			
+		}
+		return null;
+		
+	}
+	
+	
+	/*
+	String speciesParams = (String)request.getParam("species");
+	if(speciesParams != null && speciesParams.length() > 0) {
+		//throw new IllegalArgumentException("The source parameter must be supplied");
+		//note that this is going to be a json object
+		JSONObject jsonSpecies = new JSONObject(species);
+		//iterate over the species and create a union clause
+		//iterate over jason entity uris
+		graph2.addPattern(species, hasLabel, scientificName);		
+		
+			
+		
+	}
+	*/
 
 	
 	@QueryMethod
 	public String queryForNearbySpeciesCounts(Request request){
+		
+		//two graphs for this:
+		//http://was.tw.rpi.edu/ebird-taxonomy
+		//http://was.tw.rpi.edu/ebird-data
+		//namespace of scientificName: http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/
+		
 		//this works for eBird only
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
@@ -114,15 +174,26 @@ public class SpeciesDataProviderModule implements Module {
 		final Variable count = query.getVariable(QUERY_NS+"count");
 		final Variable date = query.getVariable(QUERY_NS+"date");
 		final Variable commonName = query.getVariable(VAR_NS+"commonName");
+		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
+		final Variable species = query.getVariable(VAR_NS + "species");
 
 
 		final Variable lat = query.getVariable(QUERY_NS+LAT);
 		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable label = query.getVariable(QUERY_NS+LABEL_VAR);
+
+
+		
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
 		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
 		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
 		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
+		
+		//query based on the species name, you are doing this across two graphs
 		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
+		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
+		final QueryResource hasLabel = query.getResource(RDFS_NS+ "label");
+
 
 		//build query
 		Set<Variable> vars = new LinkedHashSet<Variable>();
@@ -130,9 +201,11 @@ public class SpeciesDataProviderModule implements Module {
 		vars.add(count);
 		vars.add(date);
 		vars.add(commonName);
+		vars.add(scientificName);
 		vars.add(lat);
 		vars.add(lng);
-
+		vars.add(label);
+		vars.add(species);
 		
 		//vars.add(measurement);
 
@@ -145,8 +218,60 @@ public class SpeciesDataProviderModule implements Module {
 		graph.addPattern(measurement, birdCount, count);
 		graph.addPattern(measurement, obsDate, date);
 		graph.addPattern(measurement, hasCommonName, commonName);
+		graph.addPattern(measurement, hasScientificName, scientificName);
 		graph.addPattern(measurement, wgsLat, lat);
 		graph.addPattern(measurement, wgsLong, lng);
+		
+		//you're "joining" on the scientific name, for now
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		graph2.addPattern(species, hasLabel, scientificName);		
+		
+		//before we do this, test that queryForNearbySpeciesCounts works
+		/*
+		String speciesParams = (String)request.getParam("species");
+		if(speciesParams != null && speciesParams.length() > 0) {
+			//throw new IllegalArgumentException("The source parameter must be supplied");
+			//note that this is going to be a json object
+			JSONObject jsonSpecies = new JSONObject(species);
+			//iterate over the species and create a union clause
+			//iterate over jason entity uris
+			graph2.addPattern(species, hasLabel, scientificName);				
+			
+		}
+		*/
+		
+		 // add item to the found graph
+		/*
+		final UnionComponent union = query.createUnion();
+		 
+        GraphComponentCollection coll = union.getUnionComponent(0);
+        coll.addPattern(measurement, timeInXSDDateTime, timeVar);
+        coll = union.getUnionComponent(1);
+        coll.addPattern(measurement, dcDate, timeVar);
+        graph.addGraphComponent(union);		
+		
+		*/
+
+		
+		/*
+		select * where {
+
+			graph <http://was.tw.rpi.edu/ebird-taxonomy>{
+
+
+			?species rdfs:label ?l .
+			?species rdfs:subClassOf ?superClass  option(transitive) .
+			}
+
+			graph <http://was.tw.rpi.edu/ebird-data> {
+
+			?m <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/scientific_name> ?l .
+
+			}
+			}
+		*/
+		
+	
 		
 		//we want to get their lat, long, category, commonName, observation date/time observation started, observationCount, 
 		//http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID
@@ -163,9 +288,6 @@ public class SpeciesDataProviderModule implements Module {
 		// ?m void:inDataSet <http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19>
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 	}
-
-
-	
 	
 	@QueryMethod
 	public String queryBirdTaxonomy(Request request) throws IOException, JSONException{	

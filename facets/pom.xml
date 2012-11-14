@@ -57,6 +57,8 @@
 	<module>data-type</module>
 	<module>water-data-provider</module>
 	<module>air-data-provider</module>
+    	<module>semantaqua-species-dataprovider</module>
+    	<module>semantaqua-characteristics-facet</module>
 	<module>industry</module>
       </modules>
     </profile>
