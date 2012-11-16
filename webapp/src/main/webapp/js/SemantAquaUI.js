@@ -149,14 +149,9 @@ var SemantAquaUI = {
 			            });
 					}
 
-					// queryForSiteMeasurementsCallback("abc");
-
 					CharacteristicsModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallback);
 				
 				});
-
-            	
-
 
             });
 
@@ -168,12 +163,33 @@ var SemantAquaUI = {
 				SemantAquaUI.lightbox.show();
 
 				$(".characterssubmit").click(function(e){
+
+					$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
+					console.log($.bbq.getState("characteristic"));
 					$("#lightboxchart").empty();
+					$(".lb_loading").show();
 
-					$.bbq.pushState({"chemical":$("#selectforchemical").value});
-
-					function queryForNearbySpeciesCounts(data){
-						var plot1 = $.jqplot('lightboxchart', [UITeamUtilities.markerdata[0].visualize1,UITeamUtilities.markerdata[0].visualize2], {
+					function queryForSiteMeasurementsCallback(data){
+						$(".lb_loading").hide();
+						console.log("queryForSiteMeasurementsCallback");
+						console.log(data);
+						data=JSON.parse(data);
+						var chartseries1=[];
+						var bindings = data.results.bindings;
+						var max=0;
+						var min=0;
+						for(var i=0;i<bindings.length;i++) {
+							chartseries1.push([bindings[i].time.value,bindings[i].value.value]);
+							if(bindings[i].value.value+100>max && bindings[i].value.value<3000){
+								max=bindings[i].value.value+100;
+								console.log(max);
+							}
+							if(bindings[i].value.value-100<min){
+								min=bindings[i].value.value-100;
+							}
+						}
+						console.log(chartseries1);
+			            var plot1 = $.jqplot('lightboxchart', [UITeamUtilities.markerdata[0].visualize1,UITeamUtilities.markerdata[0].visualize2], {
 			                title:marker.data.label.value,
 			                axes:{
 			                    xaxis:{
@@ -207,7 +223,8 @@ var SemantAquaUI = {
 			            });
 					}
 
-					queryForNearbySpeciesCounts("abc");
+					testFacet.queryForNearbySpeciesCounts({},queryForSiteMeasurementsCallback);
+
 				});
 
 	        
@@ -423,6 +440,7 @@ $(document).ready(function(){
             }
             $(".lightbox").fadeOut(300,function(){
             	$("body").css({overflow:"auto"});
+            	$("lb_loading").hide();
             });
         });
     }
