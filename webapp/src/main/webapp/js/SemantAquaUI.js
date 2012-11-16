@@ -94,10 +94,10 @@ var SemantAquaUI = {
 					$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
 					console.log($.bbq.getState("characteristic"));
 					$("#lightboxchart").empty();
-					$("#spinner").show();
+					$(".lb_loading").show();
 
 					function queryForSiteMeasurementsCallback(data){
-						$("#spinner").hide();
+						$(".lb_loading").hide();
 						console.log("queryForSiteMeasurementsCallback");
 						console.log(data);
 						data=JSON.parse(data);
@@ -422,12 +422,14 @@ $(document).ready(function(){
             	lightbox.clean();
             }
             $(".lightbox").fadeOut(300,function(){
+            	$("body").css({overflow:"auto"});
             });
         });
     }
 
     lightbox.show=function(){
         $(".lightbox").show();
+        $("body").css({overflow:"hidden"});
         $(".lightbox .lb_container").fadeIn(500,function(){
         });
     };
