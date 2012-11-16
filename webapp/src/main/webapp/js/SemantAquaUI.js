@@ -55,14 +55,15 @@ var SemantAquaUI = {
             		var ifexist=false;
             		var self=this;
             		if($(selectforcharacteristic).children().each(function(){
-            			if($(this).val()==$(self).html()){
+            			if($(this).html()==$(self).html()){
             				ifexist=true;
             			}
             		}));
             		if(!ifexist){
-            			$("<option />", {value: $(this).html(), text: $(this).html()}).appendTo(selectforcharacteristic);
+            			$("<option />", {value: $(this).data("value"), text: $(this).html()}).addClass("characteristics").appendTo(selectforcharacteristic);
             		}
             	});
+
 
             	$('<input type="submit" class="characterssubmit" />').appendTo(selectscontainer);
 				return leftcolumn;
@@ -89,12 +90,34 @@ var SemantAquaUI = {
 				SemantAquaUI.lightbox.show();
 
 				$(".characterssubmit").click(function(e){
-					
-					$.bbq.pushState({"chemical":$("#selectforchemical").value});
+
+					$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
+					console.log($.bbq.getState("characteristic"));
 					$("#lightboxchart").empty();
+					$("#spinner").show();
 
 					function queryForSiteMeasurementsCallback(data){
-			            var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0].visualize1], {
+						$("#spinner").hide();
+						console.log("queryForSiteMeasurementsCallback");
+						console.log(data);
+						data=JSON.parse(data);
+						var chartseries1=[];
+						var bindings = data.results.bindings;
+						var max=0;
+						var min=0;
+						for(var i=0;i<bindings.length;i++) {
+							chartseries1.push([bindings[i].time.value,bindings[i].value.value]);
+							if(bindings[i].value.value+100>max && bindings[i].value.value<3000){
+								max=bindings[i].value.value+100;
+								console.log(max);
+							}
+							if(bindings[i].value.value-100<min){
+								min=bindings[i].value.value-100;
+							}
+						}
+						console.log(chartseries1);
+			            var plot1 = $.jqplot("lightboxchart", [chartseries1], {
+			            // var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0]["visualize1"]], {
 			                title:marker.data.label.value,
 			                axes:{
 			                    xaxis:{
@@ -104,12 +127,14 @@ var SemantAquaUI = {
 			                        } 
 			                    },
 			                    yaxis:{
+			                    	max:3000,
+			                    	min:min,
 			                        tickOptions:{
-			                            formatString:'%.5f'
+			                            formatString:'%.0f'
 			                        }
 			                    }
 			                },
-			                series:[{label:$("#selectforchemical").val(),lineWidth:4}],
+			                series:[{label:$("#selectforcharacteristic").html(),lineWidth:4}],
 			                highlighter: {
 			                    show: true,
 			                    sizeAdjust: 7.5
@@ -124,9 +149,9 @@ var SemantAquaUI = {
 			            });
 					}
 
-					queryForSiteMeasurementsCallback("abc");
+					// queryForSiteMeasurementsCallback("abc");
 
-					RegulationModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallbackAAAAAA(data));
+					CharacteristicsModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallback);
 				
 				});
 
