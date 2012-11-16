@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.waterquality.test;
 
 //import com.google.common.io.CharStreams;
+import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -54,6 +55,7 @@ public class testFacet implements Module{
 	private static final String e1_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4/params/enhancement/1/";
 	public static final String e2_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	public static final String EPA_AIR_NS = "http://was.tw.rpi.edu/ontology/semanteco/regulations/EPA-air-regulation.owl#";
 	private static final String FAILURE = "{\"success\":false}";
 	private ModuleConfiguration config = null;
 	private static final String BINDINGS = "bindings";
@@ -318,6 +320,21 @@ txn:CommonNameID ?commonName .
 }}
 	 */
 
+	
+	@QueryMethod
+	public String queryAqiInstances(Request request){
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		final Set<Variable> vars = new LinkedHashSet<Variable>();
+		final Variable airMeasurement = query.getVariable(QUERY_NS+"airMeasurement");
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		vars.add(airMeasurement);
+		query.setVariables(vars);
+		final QueryResource HazardousAirMeasurement = query.getResource(EPA_AIR_NS+"Hazardous1AQICO");
+		query.addPattern(airMeasurement, rdfType, HazardousAirMeasurement);
+		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
+	}
+	
+	
 	@QueryMethod
 	public String queryeBirdTaxonomy(Request request) throws IOException, JSONException{	
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	

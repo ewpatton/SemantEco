@@ -5,9 +5,13 @@ import java.io.ByteArrayOutputStream;
 
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
@@ -59,17 +63,24 @@ public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		try {
 			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(byteStream);
-			return executeOwlapiQuery(query, ontology);
+			return executeOwlapiQuery(query, ontology, manager);
 		} catch (OWLOntologyCreationException e) {
 			log.warn("OWL API unable to parse combined model exported by Jena.");
 		}
 		return "{\"error\":\"Unable to process query using OWL API\"}";
 	}
 	
-	protected String executeOwlapiQuery(final Query query, final OWLOntology ontology) {
+	protected String executeOwlapiQuery(final Query query, final OWLOntology ontology, OWLOntologyManager manager) {
 		PelletReasoner reasoner = PelletReasonerFactory.getInstance().createReasoner(ontology);
 		// TODO process query object here
+		OWLDataFactory dataFactory = manager.getOWLDataFactory();
+		OWLClass PollutedSites = dataFactory.getOWLClass(IRI.create("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedSite"));	
+		reasoner.precomputeInferences(InferenceType.CLASS_ASSERTIONS);
+		reasoner.getInstances(PollutedSites, false);
 		return null;
+		
+		
+		
 	}
 
 }
