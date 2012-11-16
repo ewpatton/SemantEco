@@ -70,8 +70,15 @@ var SemantAquaUI = {
 
             function rightcolumngenerater(){
             	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
-            	var specietree=$(document.createElement('div')).addClass("specietree").html("This is where the tree goes").appendTo(rightcolumn);
+            	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map"/></td></td>         </tr><tr><td  style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id=show_map></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:120%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
+            	testFacet.queryBirdTaxonomy({}, function (data){
+    	    		  //jsonHier=JSON.parse(data);
+    	    		  initial_hierachy1();	 	          	    		  
+    	              });
+            	
+            	
             	return rightcolumn;
+            	
             }
 
             $($("#infowindowcontrol a").get(0)).click(function(){
@@ -402,3 +409,199 @@ $(document).ready(function(){
 
     lightbox.init();
 });
+
+
+
+
+
+
+function initial_hierachy1(){
+	//alert(class_hierachy);
+	
+	
+	
+	
+	var temp_div=document.getElementById('tree_map');
+	temp_div.innerHTML="";
+	var ul=document.createElement("ul");
+	var li=document.createElement("li");
+	var a=document.createElement("a");
+	a.href="#";
+	var text=document.createTextNode(class_hierachy[0][0]);
+	var temp_id="map"+"0";
+	li.id=temp_id;
+	a.appendChild(text); 
+	li.appendChild(a); 
+	ul.appendChild(li); 
+	temp_div.appendChild(ul); 
+	document.getElementById('description_map').appendChild(temp_div);
+	    //alert("success");
+	var i=0+1;
+	if (i<class_hierachy.length){
+   	for (var i=1;i<class_hierachy.length;i++){ 
+			append_node1(i,temp_id);
+		}
+   }
+	$(function () {
+		$("#tree_map")
+			.jstree({
+				"themes" : {
+  					 "theme" : "default",
+  					 "dots" : true,
+ 					 "icons" : true,
+			 	     "url": "themes/default/style.css"
+					},
+
+				 "plugins" : ["themes","html_data","ui"] })
+					// 1) if using the UI plugin bind to select_node
+	
+					.bind("select_node.jstree", function (event, data) { 
+					// `data.rslt.obj` is the jquery extended node that was clicked
+					    var temp=data.rslt.obj.attr("id");
+					    var temp_id=parseInt(temp.substring(3));
+						alert(class_hierachy[temp_id][0]);
+						alert(class_hierachy[temp_id][1]);
+				})
+					// 2) if not using the UI plugin - the Anchor tags work as expected
+					//    so if the anchor has a HREF attirbute - the page will be changed
+			//    you can actually prevent the default, etc (normal jquery usage)
+					.delegate("a", "click", function (event, data) { event.preventDefault(); })
+	});
+
+}
+function append_node1(current, parent){
+   var temp_judge=parent;
+   temp_judge=parseInt(temp_judge.substring(3));
+   if(class_hierachy[current][1]==class_hierachy[temp_judge][0]){
+		var temp_div=document.getElementById(parent);
+		var ul=document.createElement("ul");
+		var li=document.createElement("li");
+		var a=document.createElement("a");
+		a.href="#";
+		var text=document.createTextNode(class_hierachy[current][0]);
+		var temp_id="map"+current.toString();
+		li.id=temp_id;
+		a.appendChild(text); 
+		li.appendChild(a); 
+		ul.appendChild(li); 
+		temp_div.appendChild(ul); 
+	 	    //alert("success");
+		var i=current+1;
+		if (i<class_hierachy.length){
+   		for (var i=current+1;i<class_hierachy.length;i++){ 
+				append_node1(i,"map"+current);
+		}
+   }
+	}
+}	
+
+
+
+document.onkeydown = keyDown1;
+
+function keyDown1(){
+    if(event.keyCode==8){
+    	var temp =document.getElementById('search_info_map').value;
+    
+   	var cprStr=temp;
+    	if(cprStr.length!=1&&cprStr.length!=0){             
+    		cprStr=cprStr.substring(0,cprStr.length-1);
+    
+   		show=[];
+   		len=0;
+   		for (i in class_hierachy){
+    			if(cprStr==class_hierachy[i][0].substring(0,cprStr.length)){
+   	    		len=show.push(class_hierachy[i][0]);
+       		}
+    		} 
+   	 }
+	 else{
+	show=[]
+        }
+   	 //alert("Have "+len+" compatible records");
+	  var div1=document.getElementById('show_map');
+  	  div1.innerHTML="";
+  	  htmlStr=""
+  	  for (i in show){
+     	  htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">"
+      	  htmlStr+=show[i];
+		  htmlStr+="</a>"
+         htmlStr+="</br>";
+    }
+	  div1.innerHTML+=htmlStr;
+   	  //alert(show);
+    }
+    
+}
+
+
+function press1(event){
+var e=event.srcElement;
+    if(event.keyCode!=13){
+        if(event.keyCode!=8){
+    var realkey = String.fromCharCode(event.keyCode);
+        match1(realkey);
+	     return false;
+        }
+        
+    }
+}
+
+function match1(str){
+    //alert(document.getElementById('textarea2').value);
+    var temp =document.getElementById('search_info_map').value;
+    
+    
+    var cprStr=temp+str;
+
+    show=[];
+    len=0;
+    for (i in class_hierachy){
+    	if(cprStr==class_hierachy[i][0].substring(0,cprStr.length)){
+   	    len=show.push(class_hierachy[i][0]);
+       }
+    } 
+    //alert("Have "+len+" compatible records");
+var div1=document.getElementById('show_map');
+    div1.innerHTML="";
+    htmlStr=""
+    for (i in show){
+	 	htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose1(this)\">"
+       htmlStr+=show[i];
+		htmlStr+="</a>"
+       htmlStr+="</br>";
+    }
+div1.innerHTML+=htmlStr;
+}
+function choose1(str){
+	var temp=str.childNodes[0].nodeValue;
+	document.getElementById('search_info_map').value=temp;
+	document.getElementById('show_map').innerHTML="";
+}
+
+function search_node1(){
+	 var temp =document.getElementById('search_info_map').value;
+	 var flag=0;
+	 for (var i=0;i<class_hierachy.length;i++){
+	 	if(temp==class_hierachy[i][0]){
+			flag=1;
+			var temp_id="map"+i;
+			if(document.all){
+				
+				document.getElementById(temp_id).firstChild.click();
+			}
+			else{
+				var evt = document.createEvent("MouseEvents");  
+	 				evt.initEvent("click", true, true);  
+			  	    document.getElementById(temp_id).childNodes[1].dispatchEvent(evt);  
+			}
+			//alert(" found !");
+			break;
+		}
+	 }
+	 if(flag==0){
+	 	alert(" not found !")
+	 }
+	 document.getElementById('search_info_map').value="";
+	 document.getElementById('show_map').innerHTML="";
+}
