@@ -381,10 +381,9 @@ public class SpeciesDataProviderModule implements Module {
 			//GraphComponentCollection coll = union.getUnionComponent(0);
 			GraphComponentCollection coll;
 			
-			union.getUnionComponent(i)
-
-			//coll.addPattern(species, hasLabel, scientificName);	
 			
+
+			//for each element in the bbq state array for "species" key
 			for(int i = 0; i < speciesParams.length(); i++)
 			{
 				//JSONObject objectInArray = speciesParams.getJSONObject(i);
@@ -420,17 +419,17 @@ public class SpeciesDataProviderModule implements Module {
 			    		//just use the pattern species subClassOf speciesSelection
 		    			final QueryResource addedSpecies = query.getResource(speciesInArray);
 		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
-						coll = union.getUnionComponent(0);
-						coll.addGraphComponent(query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy"));
+						coll = union.getUnionComponent(i);
+						//final NamedGraphComponent graph3 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+						//coll.addGraphComponent(graph3);
 						
 						
 						//ebird taxonomy graph
-						final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
 
 				        coll.addPattern(species, subClassOf, addedSpecies);	
 				        coll.addPattern(species, hasLabel, scientificName);	
-				        //ebird data graph
-				        coll.addPattern(addedSpecies, hasLabel, scientificName);			    			
+				        //ebird data graph (already handled in the first part of the query)
+				      //  graph3.addPattern(addedSpecies, hasLabel, scientificName);			    			
 
 
 			    		/*
@@ -447,14 +446,15 @@ public class SpeciesDataProviderModule implements Module {
 			    	}
 			    	else{
 					    request.getLogger().error("(no results for on queryIfTaxonomicCategory)");
+					  final QueryResource addedSpecies = query.getResource(speciesInArray);
+						coll = union.getUnionComponent(i);
+				        coll.addPattern(addedSpecies, hasLabel, scientificName);		
 			    	}
 				}
 				else{
-				    request.getLogger().error("(failure)");
+				    request.getLogger().error("(failure to queryIfTaxonomicCategory)");
 				}			      			    
-				final QueryResource addedSpecies = query.getResource(speciesInArray);
-				coll = union.getUnionComponent(i);
-		        coll.addPattern(addedSpecies, hasLabel, scientificName);				
+						
 			}			
 		}
 		else if (((JSONArray) request.getParam("species")).length() == 1){
