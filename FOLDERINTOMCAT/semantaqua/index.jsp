@@ -88,9 +88,10 @@
         <div class="lb_shadow">
             <div class="positioner">
                 <div class="lb_container" style="display:none;">
+                    <div class="lb_loading"><img src="images/spinner.gif" alt="Processing..."/><br/>Processing your request...</div>
                     <div class="lb_closebutton"></div>
                     <div class="clear"></div>
-                    <div class="lb_content">
+                    <div class="lb_content" id="id_lb_content">
                         
                     </div>
                 </div>
