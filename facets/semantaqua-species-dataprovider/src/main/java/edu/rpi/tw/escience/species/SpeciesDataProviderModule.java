@@ -226,7 +226,29 @@ public class SpeciesDataProviderModule implements Module {
 		graph.addPattern(measurement, hasScientificName, scientificName);
 		graph.addPattern(measurement, wgsLat, lat);
 		graph.addPattern(measurement, wgsLong, lng);
-		
+	
+		/*
+		 * 
+		 you need to optionally union all subclasses for a measurement. this is how it was done in s2s.
+		 
+		 pattern:
+		 //addedSpecies, hasLabel, scientificName
+		  
+		  
+		  
+		  */
+		 
+		 /*
+		function organismConstraint($organisms) {
+	        file_put_contents("/tmp/debug.log", print_r("\n\ngot to Organism Constraint\n\n", TRUE), FILE_APPEND);
+	        $arr = array();
+	        for ($i = 0; $i < count($organisms); ++$i)
+	                array_push($arr, '{ GRAPH <http://dataone.tw.rpi.edu/inf> { ?organismsSubclass skos:broaderTransitive <'.$organisms[$i].'> } . }' . "\n");
+	   //     return implode('UNION ', $arr) . '?organism a ?organismsSubclass . ?dataset sbc:hasKeyword ?organism .' . "\n";
+	      return implode('UNION ', $arr) . '?dataset sbc:hasKeyword ?organismsSubclass .' . "\n";
+
+	}
+	*/
 		
 		
 		
