@@ -27,6 +27,7 @@ import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
+import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
@@ -102,29 +103,34 @@ public class SpeciesDataProviderModule implements Module {
 	}
 	
 	@QueryMethod
+	public String queryParams2(Request request) throws JSONException
+	{
+		Class cls = request.getParam("species").getClass();  
+	    return ("The type of the object is: " + cls.getName());  
+		//return request.getParam("species").toString();
+		//return null;	
+	}
+	
+	@QueryMethod
 	public String queryParams(Request request) throws JSONException
 	{
 		if(request.getParam("species") != null){// && request.getParam("species").length() > 0) {
 			//throw new IllegalArgumentException("The source parameter must be supplied");
 			//note that this is going to be a json object
-			JSONArray speciesParams = (JSONArray)request.getParam("species");
-			
+			JSONArray speciesParams = (JSONArray)request.getParam("species");			
 			for(int i = 0; i < speciesParams.length(); i++)
 			{
-			
-				JSONObject objectInArray = speciesParams.getJSONObject(i);
+				//JSONObject objectInArray = speciesParams.getJSONObject(i);
+				String objectInArray = speciesParams.getString(i);				
 				request.getLogger().error("JSON Object: " + objectInArray.toString());
-				//here is where you do the union
-				
+				//here is where you do the union	
 			}
 		
 			//iterate over the species and create a union clause
 			//iterate over jason entity uris
-			//graph2.addPattern(species, hasLabel, scientificName);	
-			
+			//graph2.addPattern(species, hasLabel, scientificName);			
 		}
 		return null;
-		
 	}
 	
 	
@@ -145,7 +151,7 @@ public class SpeciesDataProviderModule implements Module {
 
 	
 	@QueryMethod
-	public String queryForNearbySpeciesCounts(Request request){
+	public String queryForNearbySpeciesCounts(Request request) throws JSONException{
 		
 		//two graphs for this:
 		//http://was.tw.rpi.edu/ebird-taxonomy
@@ -204,7 +210,6 @@ public class SpeciesDataProviderModule implements Module {
 		vars.add(scientificName);
 		vars.add(lat);
 		vars.add(lng);
-		vars.add(label);
 		vars.add(species);
 		
 		//vars.add(measurement);
@@ -221,11 +226,61 @@ public class SpeciesDataProviderModule implements Module {
 		graph.addPattern(measurement, hasScientificName, scientificName);
 		graph.addPattern(measurement, wgsLat, lat);
 		graph.addPattern(measurement, wgsLong, lng);
+	
+		/*
+		 * 
+		 you need to optionally union all subclasses for a measurement. this is how it was done in s2s.
+		 
+		 pattern:
+		 //addedSpecies, hasLabel, scientificName
+		  
+		  
+		  
+		  */
+		 
+		 /*
+		function organismConstraint($organisms) {
+	        file_put_contents("/tmp/debug.log", print_r("\n\ngot to Organism Constraint\n\n", TRUE), FILE_APPEND);
+	        $arr = array();
+	        for ($i = 0; $i < count($organisms); ++$i)
+	                array_push($arr, '{ GRAPH <http://dataone.tw.rpi.edu/inf> { ?organismsSubclass skos:broaderTransitive <'.$organisms[$i].'> } . }' . "\n");
+	   //     return implode('UNION ', $arr) . '?organism a ?organismsSubclass . ?dataset sbc:hasKeyword ?organism .' . "\n";
+	      return implode('UNION ', $arr) . '?dataset sbc:hasKeyword ?organismsSubclass .' . "\n";
+
+	}
+	*/
 		
-		//you're "joining" on the scientific name, for now
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
-		graph2.addPattern(species, hasLabel, scientificName);		
 		
+		
+		if(request.getParam("species") != null){// && request.getParam("species").length() > 0) {
+			//throw new IllegalArgumentException("The source parameter must be supplied");
+			//note that this is going to be a json array of strings
+			//you're "joining" on the scientific name, for now
+			JSONArray speciesParams = (JSONArray)request.getParam("species");	
+			final UnionComponent union = query.createUnion();
+			final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+			graph2.addGraphComponent(union);
+			//GraphComponentCollection coll = union.getUnionComponent(0);
+			GraphComponentCollection coll;
+
+			//coll.addPattern(species, hasLabel, scientificName);			
+			for(int i = 0; i < speciesParams.length(); i++)
+			{
+				//JSONObject objectInArray = speciesParams.getJSONObject(i);
+				String speciesInArray = speciesParams.getString(i);				
+				//request.getLogger().error("JSON Object: " + speciesInArray.toString());
+				//here is where you do the union			
+				//put the species returned into a resource
+				final QueryResource addedSpecies = query.getResource(speciesInArray);
+				coll = union.getUnionComponent(i);
+		        coll.addPattern(addedSpecies, hasLabel, scientificName);				
+			}			
+		}
+		else{
+			final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+			graph2.addPattern(species, hasLabel, scientificName);		
+		}
+				
 		//before we do this, test that queryForNearbySpeciesCounts works
 		/*
 		String speciesParams = (String)request.getParam("species");

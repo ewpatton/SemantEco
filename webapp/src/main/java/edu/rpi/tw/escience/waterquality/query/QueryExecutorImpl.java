@@ -41,12 +41,12 @@ import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
  */
 public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	
-	private String endpoint = null;
-	private WeakReference<Module> owner = null;
-	private Logger log = Logger.getLogger(QueryExecutorImpl.class);
-	private List<String> acceptTypes = new LinkedList<String>();
+	protected String endpoint = null;
+	protected WeakReference<Module> owner = null;
+	protected Logger log = Logger.getLogger(QueryExecutorImpl.class);
+	protected List<String> acceptTypes = new LinkedList<String>();
 	private static final int BUFSIZE = 1024;
-	private Request request = null;
+	protected Request request = null;
 	
 	/**
 	 * Creates a new QueryExecutorImpl for the specified module that
@@ -59,6 +59,19 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			this.owner = new WeakReference<Module>(owner);
 		}
 		endpoint = tripleStore;
+	}
+	
+	/**
+	 * This protected method is used to support the {@link Object#clone()}
+	 * method.
+	 * @param other The QueryExecutorImpl to clone.
+	 */
+	protected QueryExecutorImpl(final QueryExecutorImpl other) {
+		this.endpoint = other.endpoint;
+		this.owner = other.owner;
+		this.log = other.log;
+		this.acceptTypes = new LinkedList<String>(other.acceptTypes);
+		this.request = other.request;
 	}
 
 	@Override

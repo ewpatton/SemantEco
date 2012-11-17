@@ -157,7 +157,7 @@ public class CharacteristicsModule implements Module {
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(element);
 		vars.add(permit);
-		vars.add(type);
+		//vars.add(type);
 		vars.add(value);
 		vars.add(unit);
 		vars.add(time);
@@ -187,7 +187,8 @@ public class CharacteristicsModule implements Module {
 		optional.addPattern(measurement, polHasPermit, permit);
 		optional = query.createOptional();
 		query.addGraphComponent(optional);
-		optional.addPattern(measurement, rdfType, type);
+		//commiting out below because it is binding and sending lines for every kind of measurement, WaterMeasurement, Measurement
+		//optional.addPattern(measurement, rdfType, type);
 		//optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
 		
 		//query this 
