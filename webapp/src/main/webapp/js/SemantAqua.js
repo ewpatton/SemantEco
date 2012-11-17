@@ -273,8 +273,27 @@ var UITeamUtilities={
 			},
 			"RegulationViolation":"no",
 			"infowindowcontent":"<div>THE LOADED DATA IS DO NOT CONTAIN ENOUGH DATA TO GENERATE THE FORM, USE FAKE DATA STILL</div><table border=1><tr><td>MeasurementId</td><td>monitorSite</td><td>hasCounty</td><td>hasValue</td><td>hasUnit</td><td>DateCollected</td><td>RegulationViolation</td></tr><tr><td>AirMeasurement_1a</td><td>01-073-0023</td><td>-</td><td>0.00076</td><td>ppm</td><td>1/1/2012</td><td>no</td></tr><tr><td>AirMeasurement_1b</td><td>01-073-0023</td><td>-</td><td>0.00096</td><td>ppm</td><td>2/1/2012</td><td>yes</td></tr><tr><td>AirMeasurement_1c</td><td>01-073-0023</td><td>-</td><td>0.00086</td><td>ppm</td><td>3/1/2012</td><td>no</td></tr><tr><td>AirMeasurement_1c</td><td>01-073-0023</td><td>-</td><td>0.00096</td><td>ppm</td><td>4/1/2012</td><td>no</td></tr><tr><td>AirMeasurement_1c</td><td>01-073-0023</td><td>-</td><td>0.00086</td><td>ppm</td><td>5/1/2012</td><td>no</td></tr></table>",
-			"visualize1":[['1/1/2012', 0.00076], ['2/1/2012', 0.00096], ['3/1/2012', 0.00086], ['4/1/2012', 0.00096],['5/1/2012', 0.00086]],
-			"visualize2":[['3/1/2012', 15],['3/19/2012',12],['3/22/2012',8]]
+			"visualize1":[['1/1/2012', 50], ['2/1/2012', 289], ['3/1/2012', 120], ['4/1/2012', 20],['4/1/2012', 50],['4/1/2012', 10],['5/1/2012', 50],['5/1/2012', 10],['5/1/2012', 10],['5/1/2012', 60]],
+			"visualize2":[['3/1/2012', 15],['3/19/2012',12],['3/22/2012',8]],
+			"visualize3":[
+["2007-10-31",21 ],
+["2007-10-31",25 ],
+["2007-10-31",50 ],
+["2007-10-31",520 ],
+["2007-10-31",631 ],
+["2007-11-30",16 ],
+["2007-11-30",22 ],
+["2007-11-30",33 ],
+["2007-11-30",633 ],
+["2007-12-31",11 ],
+["2007-12-31",14 ],
+["2007-12-31",23 ],
+["2007-12-31",575 ],
+["2008-01-31",13 ],
+["2008-01-31",19 ],
+["2008-01-31",417 ],
+["2008-01-31",759 ]
+]
 		};
 
 		UITeamUtilities.markerdata[1]={

@@ -99,53 +99,67 @@ var SemantAquaUI = {
 					function queryForSiteMeasurementsCallback(data){
 						$(".lb_loading").hide();
 						console.log("queryForSiteMeasurementsCallback");
-						console.log(data);
+						// console.log(data);
 						data=JSON.parse(data);
 						var chartseries1=[];
 						var bindings = data.results.bindings;
 						var max=0;
 						var min=0;
 						for(var i=0;i<bindings.length;i++) {
-							chartseries1.push([bindings[i].time.value,bindings[i].value.value]);
-							if(bindings[i].value.value+100>max && bindings[i].value.value<3000){
+							chartseries1.push([bindings[i].time.value,Math.round( bindings[i].value.value )]);
+							console.log(bindings[i].time.value+","+Math.round( bindings[i].value.value ));
+							if(bindings[i].value.value+100>max){
 								max=bindings[i].value.value+100;
-								console.log(max);
 							}
 							if(bindings[i].value.value-100<min){
 								min=bindings[i].value.value-100;
 							}
 						}
-						console.log(chartseries1);
+						if(max>3000){
+							max=3000;
+						}
+						if(min<-100){
+							min=-100;
+						}
 			            var plot1 = $.jqplot("lightboxchart", [chartseries1], {
-			            // var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0]["visualize1"]], {
+			            // var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0]["visualize3"]], {
 			                title:marker.data.label.value,
 			                axes:{
 			                    xaxis:{
 			                        renderer:$.jqplot.DateAxisRenderer,
 			                        tickOptions:{
-			                            formatString:'%b&nbsp;%#d'
+			                            formatString:'%Y-%m-%d'
 			                        } 
 			                    },
 			                    yaxis:{
-			                    	max:3000,
-			                    	min:min,
+			                    	// max:max,
+			                    	// min:min,
 			                        tickOptions:{
-			                            formatString:'%.0f'
+			                            formatString:'%d'
 			                        }
 			                    }
 			                },
-			                series:[{label:$("#selectforcharacteristic").html(),lineWidth:4}],
+			                series:[{
+			                           	label:$("#selectforcharacteristic").html()
+			                           	// ,lineWidth:4
+			                           }],
 			                highlighter: {
-			                    show: true,
-			                    sizeAdjust: 7.5
-			                },
-			                legend: { 
-			                	show:true, 
-			                	location: 'se'
-			                },
-			                cursor: {
-			                    show: false
-			                }
+					            show: true,
+					            showTooltip:false
+					        }
+					        ,legend: { 
+					        	show:true, 
+					        	location: 'se'
+					        	label:""
+					        }
+					        ,cursor: {
+						      show: true,
+						      intersectionThreshold :5,
+						      showHorizontalLine:true,
+						      showCursorLegend :true,
+						      showTooltip:true,
+						      followMouse:true
+						    }
 			            });
 					}
 
@@ -208,18 +222,23 @@ var SemantAquaUI = {
 					                tickOptions:{showGridline:false}
 					            }
 			                },
-			                legend: { 
-			                	show:true, 
-			                	location: 'se'
-			                },
 			                series:[{label:$("#selectforchemical").val(),yaxis:'yaxis',lineWidth:4}, {label:"Aves",yaxis:'y2axis'}],
 			                highlighter: {
-			                    show: true,
-			                    sizeAdjust: 7.5
-			                },
-			                cursor: {
-			                    show: false
-			                }
+					            show: true,
+					            showTooltip:false
+					        }
+					        ,legend: { 
+					        	show:true, 
+					        	location: 'se'
+					        }
+					        ,cursor: {
+						      show: true,
+						      intersectionThreshold :5,
+						      showHorizontalLine:true,
+						      showCursorLegend :true,
+						      showTooltip:true,
+						      followMouse:true
+						    }
 			            });
 					}
 
@@ -649,4 +668,50 @@ function search_node1(){
 	 }
 	 document.getElementById('search_info_map').value="";
 	 document.getElementById('show_map').innerHTML="";
+}
+
+
+
+function m(){
+	lightbox.show();
+	var plot1 = $.jqplot("id_lb_content", [UITeamUtilities.markerdata[0]["visualize3"]], {
+        title:"abc",
+        axes:{
+            xaxis:{
+                renderer:$.jqplot.DateAxisRenderer,
+                tickOptions:{
+                    formatString:'%Y-%m-%d'
+                } 
+            },
+            yaxis:{
+            	// max:max,
+            	// min:min,
+                tickOptions:{
+                    formatString:'%d'
+                }
+            }
+        },
+        series:[{
+                   	label:"abc"
+                   	// ,lineWidth:4
+                   }],
+        highlighter: {
+            show: true,
+            showTooltip:false
+        }
+        ,legend: { 
+        	show:true, 
+        	location: 'se'
+        }
+        ,cursor: {
+	      show: true,
+	      intersectionThreshold :5,
+	      showHorizontalLine:true,
+	      showCursorLegend :true,
+	      showTooltip:true,
+	      followMouse:true,
+	      // showVerticalLine:true,
+	      // tooltipLocation:'sw'
+	    }
+    });
 }
