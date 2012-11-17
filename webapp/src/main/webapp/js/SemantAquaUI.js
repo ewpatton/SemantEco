@@ -149,7 +149,7 @@ var SemantAquaUI = {
 					        }
 					        ,legend: { 
 					        	show:true, 
-					        	location: 'se'
+					        	location: 'se',
 					        	label:""
 					        }
 					        ,cursor: {
