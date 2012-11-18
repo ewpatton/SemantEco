@@ -103,23 +103,9 @@ var SemantAquaUI = {
 						data=JSON.parse(data);
 						var chartseries1=[];
 						var bindings = data.results.bindings;
-						var max=0;
-						var min=0;
 						for(var i=0;i<bindings.length;i++) {
 							chartseries1.push([bindings[i].time.value,Math.round( bindings[i].value.value )]);
 							console.log(bindings[i].time.value+","+Math.round( bindings[i].value.value ));
-							if(bindings[i].value.value+100>max){
-								max=bindings[i].value.value+100;
-							}
-							if(bindings[i].value.value-100<min){
-								min=bindings[i].value.value-100;
-							}
-						}
-						if(max>3000){
-							max=3000;
-						}
-						if(min<-100){
-							min=-100;
 						}
 			            var plot1 = $.jqplot("lightboxchart", [chartseries1], {
 			            // var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0]["visualize3"]], {
@@ -132,8 +118,6 @@ var SemantAquaUI = {
 			                        } 
 			                    },
 			                    yaxis:{
-			                    	// max:max,
-			                    	// min:min,
 			                        tickOptions:{
 			                            formatString:'%d'
 			                        }
@@ -141,7 +125,6 @@ var SemantAquaUI = {
 			                },
 			                series:[{
 			                           	label:$("#selectforcharacteristic").html()
-			                           	// ,lineWidth:4
 			                           }],
 			                highlighter: {
 					            show: true,
@@ -171,6 +154,8 @@ var SemantAquaUI = {
 
 			$($("#infowindowcontrol a").get(1)).click(function(){
 
+
+
             	leftcoloumgenerater().appendTo(".lb_content");
             	rightcolumngenerater().appendTo(".lb_content");
             	$(".lightbox .lb_container").css({"width":"70%"});
@@ -183,66 +168,95 @@ var SemantAquaUI = {
 					$("#lightboxchart").empty();
 					$(".lb_loading").show();
 
+					
+
 					function queryForSiteMeasurementsCallback(data){
-						$(".lb_loading").hide();
 						console.log("queryForSiteMeasurementsCallback");
 						console.log(data);
 						data=JSON.parse(data);
 						var chartseries1=[];
 						var bindings = data.results.bindings;
-						var max=0;
-						var min=0;
 						for(var i=0;i<bindings.length;i++) {
-							chartseries1.push([bindings[i].time.value,bindings[i].value.value]);
-							if(bindings[i].value.value+100>max && bindings[i].value.value<3000){
-								max=bindings[i].value.value+100;
-								console.log(max);
-							}
-							if(bindings[i].value.value-100<min){
-								min=bindings[i].value.value-100;
-							}
+							chartseries1.push([bindings[i].time.value,Math.round( bindings[i].value.value )]);
 						}
 						console.log(chartseries1);
-			            var plot1 = $.jqplot('lightboxchart', [UITeamUtilities.markerdata[0].visualize1,UITeamUtilities.markerdata[0].visualize2], {
-			                title:marker.data.label.value,
-			                axes:{
-			                    xaxis:{
-			                        renderer:$.jqplot.DateAxisRenderer,
-			                        tickOptions:{
-			                            formatString:'%b&nbsp;%#d'
-			                        } 
-			                    },
-			                    yaxis:{
-			                        tickOptions:{
-			                            formatString:'%.5f'
-			                        },
-			                    },
-			                    y2axis:{
-					                autoscale:true, 
-					                tickOptions:{showGridline:false}
-					            }
-			                },
-			                series:[{label:$("#selectforchemical").val(),yaxis:'yaxis',lineWidth:4}, {label:"Aves",yaxis:'y2axis'}],
-			                highlighter: {
-					            show: true,
-					            showTooltip:false
-					        }
-					        ,legend: { 
-					        	show:true, 
-					        	location: 'se'
-					        }
-					        ,cursor: {
-						      show: true,
-						      intersectionThreshold :5,
-						      showHorizontalLine:true,
-						      showCursorLegend :true,
-						      showTooltip:true,
-						      followMouse:true
-						    }
-			            });
+			            
+			            //this part is only for development
+			            var tempcounty=$.bbq.getState("county");
+			            var tempstate=$.bbq.getState("state");
+						$.bbq.pushState({"county":"019"});
+						$.bbq.pushState({"state": "MD"});
+						$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
+						//
+					
+						function queryForNearbySpeciesCountsCallback(data){
+
+							//this part is only for development
+							$.bbq.pushState({"county":tempcounty});
+							$.bbq.pushState({"state": tempstate});
+							//
+
+							$(".lb_loading").hide();
+
+							console.log("queryForNearbySpeciesCountsCallback");
+							console.log(data);
+							data=JSON.parse(data);
+							// console.log(data);
+							var nearbySpecies=[];
+							var bindings = data.results.bindings;
+							for(var i=0;i<bindings.length;i++) {
+								nearbySpecies.push([bindings[i].date.value,Math.round( bindings[i].count.value )]);
+							}
+							console.log(nearbySpecies);
+
+							var plot1 = $.jqplot('lightboxchart', [chartseries1,nearbySpecies], {
+				                title:marker.data.label.value,
+				                axes:{
+				                    xaxis:{
+				                        renderer:$.jqplot.DateAxisRenderer,
+				                        tickOptions:{
+				                            formatString:'%b&nbsp;%#d'
+				                        } 
+				                    },
+				                    yaxis:{
+				                        tickOptions:{
+				                            formatString:'%d'
+				                        },
+				                    },
+				                    y2axis:{
+						                autoscale:true, 
+						                tickOptions:{showGridline:false}
+						            }
+				                },
+				                series:[{
+				                	label:$("#selectforchemical").val()
+				                	,yaxis:'yaxis',lineWidth:4}
+				                	,{label:"Aves",yaxis:'y2axis'}]
+				                ,highlighter: {
+						            show: true,
+						            showTooltip:true
+						        }
+						        ,legend: { 
+						        	show:true, 
+						        	location: 'se'
+						        }
+						        ,cursor: {
+							      show: true,
+							      intersectionThreshold :5,
+							      showHorizontalLine:true,
+							      showCursorLegend :true,
+							      showTooltip:true,
+							      followMouse:true
+							    }
+				            });
+						}
+
+						SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
+
+
 					}
 
-					testFacet.queryForNearbySpeciesCounts({},queryForSiteMeasurementsCallback);
+					CharacteristicsModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallback);
 
 				});
 
