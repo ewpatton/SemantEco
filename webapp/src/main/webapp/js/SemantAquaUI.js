@@ -92,7 +92,6 @@ var SemantAquaUI = {
 				$(".characterssubmit").click(function(e){
 
 					$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
-					console.log($.bbq.getState("characteristic"));
 					$("#lightboxchart").empty();
 					$(".lb_loading").show();
 
@@ -124,7 +123,7 @@ var SemantAquaUI = {
 			                    }
 			                },
 			                series:[{
-			                           	label:$("#selectforcharacteristic").html()
+			                           	label:$("#selectforcharacteristic option:selected").html()
 			                           }],
 			                highlighter: {
 					            show: true,
@@ -139,7 +138,6 @@ var SemantAquaUI = {
 						      show: true,
 						      intersectionThreshold :5,
 						      showHorizontalLine:true,
-						      showCursorLegend :true,
 						      showTooltip:true,
 						      followMouse:true
 						    }
@@ -229,9 +227,9 @@ var SemantAquaUI = {
 						            }
 				                },
 				                series:[{
-				                	label:$("#selectforchemical").val()
+				                	label:$("#selectforcharacteristic option:selected").html()
 				                	,yaxis:'yaxis',lineWidth:4}
-				                	,{label:"Aves",yaxis:'y2axis'}]
+				                	,{label:"Species",yaxis:'y2axis'}]
 				                ,highlighter: {
 						            show: true,
 						            showTooltip:true
@@ -244,7 +242,6 @@ var SemantAquaUI = {
 							      show: true,
 							      intersectionThreshold :5,
 							      showHorizontalLine:true,
-							      showCursorLegend :true,
 							      showTooltip:true,
 							      followMouse:true
 							    }
@@ -704,24 +701,25 @@ function m(){
                     formatString:'%d'
                 }
             }
-        },
-        series:[{
-                   	label:"abc"
-                   	// ,lineWidth:4
-                   }],
-        highlighter: {
-            show: true,
-            showTooltip:false
         }
         ,legend: { 
         	show:true, 
-        	location: 'se'
+        	location: 'se',
+        	rendererOptions: {numberColumns: 2}
         }
+        ,series:[{
+                   	label:"abc"
+                   	// ,lineWidth:4
+                   }]
+        ,highlighter: {
+            show: true,
+            showTooltip:false
+        }
+        
         ,cursor: {
 	      show: true,
 	      intersectionThreshold :5,
 	      showHorizontalLine:true,
-	      showCursorLegend :true,
 	      showTooltip:true,
 	      followMouse:true,
 	      // showVerticalLine:true,

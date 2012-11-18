@@ -535,7 +535,7 @@ div#infowindowcontrol a:hover{
 .lightbox .lb_container .lb_loading img {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 25%;
+  margin-top: 150px;
   width: 48px;
 }
 
