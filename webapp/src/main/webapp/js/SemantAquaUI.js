@@ -213,7 +213,7 @@ var SemantAquaUI = {
 				                    xaxis:{
 				                        renderer:$.jqplot.DateAxisRenderer,
 				                        tickOptions:{
-				                            formatString:'%b&nbsp;%#d'
+				                            formatString:'%Y-%m-%d'
 				                        } 
 				                    },
 				                    yaxis:{
