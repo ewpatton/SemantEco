@@ -180,18 +180,23 @@ var SemantAquaUI = {
 						console.log(chartseries1);
 			            
 			            //this part is only for development
-			            var tempcounty=$.bbq.getState("county");
-			            var tempstate=$.bbq.getState("state");
-						$.bbq.pushState({"county":"019"});
-						$.bbq.pushState({"state": "MD"});
-						$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
+			            if(UITeamUtilities.species){
+			            	var tempcounty=$.bbq.getState("county");
+			            	var tempstate=$.bbq.getState("state");
+							$.bbq.pushState({"county":"019"});
+							$.bbq.pushState({"state": "MD"});
+							$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
+			            }
 						//
+			            
 					
 						function queryForNearbySpeciesCountsCallback(data){
 
 							//this part is only for development
-							$.bbq.pushState({"county":tempcounty});
-							$.bbq.pushState({"state": tempstate});
+							if(UITeamUtilities.species){
+								$.bbq.pushState({"county":tempcounty});
+								$.bbq.pushState({"state": tempstate});
+							}
 							//
 
 							$(".lb_loading").hide();
