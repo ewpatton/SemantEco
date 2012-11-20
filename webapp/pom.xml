@@ -324,14 +324,6 @@
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
 		</artifactItem>
-<artifactItem>
-                  <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semantaqua-test-facet</artifactId>
-                  <version>4.0-SNAPSHOT</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
-                </artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semantaqua-domain</artifactId>
