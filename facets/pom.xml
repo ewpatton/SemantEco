@@ -60,8 +60,6 @@
     	<module>semantaqua-species-dataprovider</module>
     	<module>semantaqua-characteristics-facet</module>
 	<module>industry</module>
-	<module>semantaqua-species-dataprovider</module>
-	<module>semantaqua-characteristics-facet</module>
       </modules>
     </profile>
     <profile>
