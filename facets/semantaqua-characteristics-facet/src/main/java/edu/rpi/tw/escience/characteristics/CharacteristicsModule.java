@@ -4,8 +4,6 @@ import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,9 +20,7 @@ import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.characteristics.DataModelBuilder;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
@@ -37,18 +33,10 @@ import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
 public class CharacteristicsModule implements Module {
 	
-	private static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
-	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String DC_NS = "http://purl.org/dc/terms/";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
-	private static final String SOURCE_VAR = "source";
-	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
-	private static final String ISWATER_VAR = "isWater";
 	private static final String FAILURE = "{\"success\":false}";
 	private static final String BINDINGS = "bindings";
-	private static final String VALUE = "value";
-	private static final String LABEL_VAR = "label";
 	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 	private static final String TIME_NS = "http://www.w3.org/2006/time#";
@@ -208,7 +196,6 @@ public class CharacteristicsModule implements Module {
 		// Variables
 		final Variable element = query.getVariable(VAR_NS+"element");
 		final Variable permit = query.getVariable(VAR_NS+"permit");
-		final Variable type = query.getVariable(VAR_NS+"type");
 		final Variable value = query.getVariable(VAR_NS+"value");
 		final Variable unit = query.getVariable(VAR_NS+"unit");
 		final Variable time = query.getVariable(VAR_NS+"time");
@@ -217,7 +204,6 @@ public class CharacteristicsModule implements Module {
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(element);
 		vars.add(permit);
-		//vars.add(type);
 		vars.add(value);
 		vars.add(unit);
 		vars.add(time);
@@ -226,18 +212,14 @@ public class CharacteristicsModule implements Module {
 		// Resources
 		final QueryResource site = query.getResource(siteUri);
 		final QueryResource chemical = query.getResource(chemicalString);
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
 		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
-		//final QueryResource polRegulationViolation = query.getResource(POL_NS+"RegulationViolation");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
 		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
-		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
 		
 		query.addPattern(site, polHasMeasurement, measurement);
-		//query.addPattern(measurement, rdfType, polRegulationViolation);
 		query.addPattern(measurement, polHasCharacteristic, chemical);
 		query.addPattern(measurement, polHasValue, value);
 		query.addPattern(measurement, unitHasUnit, unit);
