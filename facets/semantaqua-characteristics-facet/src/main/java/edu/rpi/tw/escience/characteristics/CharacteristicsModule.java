@@ -287,7 +287,24 @@ public class CharacteristicsModule implements Module {
 			return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
 		}
 		
-		return config.getQueryExecutor(request).accept("application/json").execute(query);
+		String results = config.getQueryExecutor(request).accept("application/json").execute(query);
+		List<String> testUris = processUriList(results);
+		JSONArray response = new JSONArray();
+		for(String i : testUris) {
+			if(i.contains("#")) {
+				String[] parts = i.split("#");
+				response.put(parts[1]);
+			}
+			else if(i.contains("http://")) {
+				String[] parts = i.split("/");
+				response.put(parts[parts.length-1]);
+			}
+			else {
+				response.put(i);
+			}
+		}
+		
+		return response.toString();
 	}
 
 	// move QueryUtils to common package and remove this block later...
