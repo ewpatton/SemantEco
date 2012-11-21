@@ -222,7 +222,7 @@ public class RegulationModule implements Module {
 		final Variable type = query.getVariable(VAR_NS+"type");
 		final Variable value = query.getVariable(VAR_NS+"value");
 		final Variable unit = query.getVariable(VAR_NS+"unit");
-		final Variable time = query.getVariable(VAR_NS+"time");
+		//final Variable time = query.getVariable(VAR_NS+"time");
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
@@ -231,7 +231,7 @@ public class RegulationModule implements Module {
 		vars.add(type);
 		vars.add(value);
 		vars.add(unit);
-		vars.add(time);
+		//vars.add(time);
 		vars.add(measurement);
 		query.setVariables(vars);
 		
@@ -261,7 +261,7 @@ public class RegulationModule implements Module {
 		
 		extendQueryForLimits(query);
 
-		query.addOrderBy(time, SortType.ASC);
+		//query.addOrderBy(time, SortType.ASC);
 
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}

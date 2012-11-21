@@ -2,7 +2,10 @@ package edu.rpi.tw.escience.waterquality.time;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -13,7 +16,9 @@ import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
+import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.waterquality.query.Query.SortType;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.UnionComponent;
@@ -71,6 +76,16 @@ public class TimeModule implements Module {
 		if(query.getType().equals(Type.CONSTRUCT) && updated) {
 			handleConstructQuery(query);
 		}
+		else if(query.getType().equals(Type.SELECT) && updated) {
+			final Variable timeVar = query.getVariable(VAR_NS+TIME_VAR);
+			Set<Variable> vars = query.getVariables();
+			if(vars != null) {
+				vars = new LinkedHashSet<Variable>(vars);
+				vars.add(timeVar);
+				query.setVariables(vars);
+			}
+			query.addOrderBy(timeVar, SortType.DESC);
+		}
 	}
 	
 	protected void handleConstructQuery(final Query query) {
@@ -81,17 +96,29 @@ public class TimeModule implements Module {
 		query.getConstructComponent().addPattern(measurement, timeInXSDDateTime, timeVar);
 	}
 	
+	protected void removeOptionals(final List<GraphComponentCollection> graphs) {
+		Iterator<GraphComponentCollection> i = graphs.iterator();
+		while(i.hasNext()) {
+			GraphComponentCollection graph = i.next();
+			if(graph instanceof OptionalComponent) {
+				i.remove();
+			}
+		}
+	}
+	
 	protected boolean updateWhereClause(final Query query, final String deltaT) {
 		// find components that mention the type of the measurement
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
 		List<GraphComponentCollection> graphs = query.findGraphComponentsWithPattern(measurement, rdfType, null);
+		removeOptionals(graphs);
 		
 		// if there are no graphs, we can't do anything
 		if(graphs.size() == 0) {
 			// alt version
 			final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 			graphs = query.findGraphComponentsWithPattern(measurement, polHasCharacteristic, null);
+			removeOptionals(graphs);
 			if(graphs.size() == 0) {
 				return false;
 			}
