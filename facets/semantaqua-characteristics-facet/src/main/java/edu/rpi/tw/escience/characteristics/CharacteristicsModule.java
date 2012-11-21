@@ -1,9 +1,9 @@
 package edu.rpi.tw.escience.characteristics;
 
-import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +40,7 @@ public class CharacteristicsModule implements Module {
 	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 	private static final String TIME_NS = "http://www.w3.org/2006/time#";
+	private static final String ENHANCE_NS = "http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-ri/vocab/enhancement/1/";
 	private ModuleConfiguration config = null;
 	private static final Logger log = Logger.getLogger(CharacteristicsModule.class);
 
@@ -237,7 +238,164 @@ public class CharacteristicsModule implements Module {
 
 	@QueryMethod
 	public String getTestsForCharacteristic(final Request request) {
-		return null;
+		final String siteUri = (String)request.getParam("uri");
+		final String characteristicUri = (String)request.getParam("visualizedCharacteristic");
+		
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		
+		// prevents the time module from modifying the query...
+		query.getVariable(VAR_NS+"time");
+		
+		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		final Variable testVar = query.getVariable(VAR_NS+"test");
+		final Variable permit = query.getVariable(VAR_NS+"permit");
+		final QueryResource test_type = query.getResource(ENHANCE_NS+"test_type");
+		final QueryResource hasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
+		final QueryResource characteristic = query.getResource(characteristicUri);
+		final QueryResource site = query.getResource(siteUri);
+		final QueryResource hasPermit = query.getResource(POL_NS+"hasPermit");
+		
+		final Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(testVar);
+		query.setVariables(vars);
+		query.setDistinct(true);
+		
+		String stateUri = getStateURI(request, (String)request.getParam("state"));
+		List<String> graphs = retrieveStateGraphsForSource(request, stateUri, "http://sparql.tw.rpi.edu/source/epa-gov");
+		if(graphs.size()==2) {
+			String measuresUri = null;
+			String sitesUri = null;
+			for(int i=0;i<graphs.size();i++) {
+				if(graphs.get(i).contains("measurement")) {
+					measuresUri = graphs.get(i);
+				}
+				else if(graphs.get(i).contains("facilities")||graphs.get(i).contains("foia-")) {
+					sitesUri = graphs.get(i);
+				}
+			}
+			if(measuresUri == null || sitesUri == null) {
+				return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
+			}
+			NamedGraphComponent sites = query.getNamedGraph(sitesUri);
+			sites.addPattern(site, hasPermit, permit);
+			NamedGraphComponent named = query.getNamedGraph(measuresUri);
+			named.addPattern(measurement, hasCharacteristic, characteristic);
+			named.addPattern(measurement, hasPermit, permit);
+			named.addPattern(measurement, test_type, testVar);
+		}
+		else {
+			return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
+		}
+		
+		return config.getQueryExecutor(request).accept("application/json").execute(query);
+	}
+
+	// move QueryUtils to common package and remove this block later...
+	public static final String INSTANCE_HUB_STATES = "http://logd.tw.rpi.edu/source/twc-rpi-edu/dataset/instance-hub-us-states-and-territories/version/2011-Apr-09";
+	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	public static final String RESULTS_BLOCK = "results";
+	public static final String STATE_VAR = "state";
+	public static final String DC_NS = "http://purl.org/dc/terms/";
+	public static final String LOGD_ENDPOINT = "http://logd.tw.rpi.edu/sparql?output=sparqljson";
+	public static final String VALUE = "value";
+	public static final String GRAPH_VAR = "graph";
+	public static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
+	public static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
+	public static final String SOURCE_VAR = "source";
+	
+	protected final String getStateURI(final Request request, final String state) {
+		log.trace("retrieveStateGraphsForSource");
+		String stateUri = null;
+		
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		query.setVariables(null);
+		NamedGraphComponent graph = query.getNamedGraph(INSTANCE_HUB_STATES);
+		QueryResource stateVar = query.getVariable(QUERY_NS+STATE_VAR);
+		QueryResource identifier = query.getResource(DC_NS+"identifier");
+		graph.addPattern(stateVar, identifier, state, null);
+		
+		// execute query
+		String results = config.getQueryExecutor(request).execute(LOGD_ENDPOINT, query);
+		if(results != null) {
+			try {
+				JSONObject response = new JSONObject(results);
+				if(response.getJSONObject(RESULTS_BLOCK) != null && 
+					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS) != null &&
+					response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS).length() > 0) {
+					JSONArray bindings = response.getJSONObject(RESULTS_BLOCK).getJSONArray(BINDINGS);
+					for(int i=0;i<bindings.length();i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						if(binding.getJSONObject(STATE_VAR) != null && binding.getJSONObject(STATE_VAR).getString(VALUE) != null) {
+							stateUri = binding.getJSONObject(STATE_VAR).getString(VALUE);
+							break;
+						}
+					}
+				}
+			} catch (JSONException e) {
+				log.error("Could not parse JSON results", e);
+			}
+		}
+		return stateUri;
+	}
+	
+	/**
+	 * Retrieves a list of graphs from {@link #SEMANTAQUA_METADATA} related to
+	 * the specified state and source.
+	 * 
+	 * @param state State uri in instance hub
+	 * @param source Source entity, e.g. http://sparql.tw.rpi.edu/source/epa-gov
+	 * @return List of URIs representing graphs in the SPARQL endpoint
+	 */
+	protected List<String> retrieveStateGraphsForSource(final Request request, final String state, final String source) {
+		log.trace("retrieveStateGraphsForSource");
+		final List<String> graphs = new ArrayList<String>();
+		
+		// get graphs from sparql.tw.rpi.edu related to (stateUri, source)
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		query.setVariables(null);
+		NamedGraphComponent graph = query.getNamedGraph(SEMANTAQUA_METADATA);
+		QueryResource graphVar = query.getVariable(QUERY_NS+GRAPH_VAR);
+		QueryResource topicProp = query.getResource(SIOC_NS+"topic");
+		QueryResource sourceProp = query.getResource(DC_NS+SOURCE_VAR);
+		graph.addPattern(graphVar, topicProp, query.getResource(state));
+		graph.addPattern(graphVar, sourceProp, query.getResource(source));
+		
+		// execute query
+		String results = config.getQueryExecutor(request).accept("application/json").execute(query);
+		graphs.addAll(processUriList(results));
+		return graphs;
+	}
+	
+	/**
+	 * Processes the results of a SPARQL query into a list of
+	 * entries of the first variable in the SELECT statement
+	 * @param sparqlJson JSON results for a SPARQL query
+	 * @return
+	 */
+	protected final List<String> processUriList(final String sparqlJson) {
+		log.trace("processUriList");
+		
+		List<String> uris = new ArrayList<String>();
+		try {
+			JSONObject results = new JSONObject(sparqlJson);
+			JSONArray vars = results.getJSONObject("head").getJSONArray("vars");
+			String var = vars.getString(0);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray("bindings");
+			for(int i=0;i<bindings.length();i++) {
+				try {
+					JSONObject binding = bindings.getJSONObject(i);
+					uris.add(binding.getJSONObject(var).getString("value"));
+				}
+				catch(Exception e) {
+					log.warn("Unable to process binding in result", e);
+				}
+			}
+		}
+		catch(Exception e) {
+			log.warn("Unable to retrieve URI list from SPARQL", e);
+		}
+		return uris;
 	}
 
 }
