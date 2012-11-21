@@ -235,4 +235,9 @@ public class CharacteristicsModule implements Module {
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}
 
+	@QueryMethod
+	public String getTestsForCharacteristic(final Request request) {
+		return null;
+	}
+
 }
