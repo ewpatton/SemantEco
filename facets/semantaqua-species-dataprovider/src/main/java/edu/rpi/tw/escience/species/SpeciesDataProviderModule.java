@@ -134,24 +134,7 @@ public class SpeciesDataProviderModule implements Module {
 	}
 	
 	
-	/*
-	String speciesParams = (String)request.getParam("species");
-	if(speciesParams != null && speciesParams.length() > 0) {
-		//throw new IllegalArgumentException("The source parameter must be supplied");
-		//note that this is going to be a json object
-		JSONObject jsonSpecies = new JSONObject(species);
-		//iterate over the species and create a union clause
-		//iterate over jason entity uris
-		 * 
-		 * 
-		 
-		 
-		 after you select bbq arguments
-		 scientificName subClassOf <selection>
-		graph2.addPattern(species, hasLabel, scientificName);		
-				
-	}
-	*/
+
 	
 	
 	public String queryIfTaxonomicCategory(Request request, String speciesInArray) throws JSONException {
@@ -670,7 +653,209 @@ public class SpeciesDataProviderModule implements Module {
 		
 	}
 
+	
+	@QueryMethod
+	public String queryIfSiblingsExist(Request request) throws JSONException{
+		/*
+		 * 
+		 * 
+		//this works for eBird only
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		//Variables
+		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");	
+		
+		assert(countyCode != null);
+		assert(stateAbbr != null);
+		
+		//URIs
+		//final QueryResource dataSet = query.getResource("http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19");
+		final QueryResource dataSet = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4");
+		//<http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4>
+		final QueryResource inDataSet = query.getResource("http://rdfs.org/ns/void#inDataset");
+		                                             //http://rdfs.org/ns/void#inDataset	
+		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
+		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		final Variable count = query.getVariable(QUERY_NS+"count");
+		final Variable date = query.getVariable(QUERY_NS+"date");
+		final Variable commonName = query.getVariable(VAR_NS+"commonName");
+		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
+		final Variable species = query.getVariable(VAR_NS + "species");
 
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable label = query.getVariable(QUERY_NS+LABEL_VAR);
+		
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
+		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
+		
+		//query based on the species name, you are doing this across two graphs
+		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
+		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
+		final QueryResource hasLabel = query.getResource(RDFS_NS+ "label");
+		
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(measurement);
+		vars.add(count);
+		vars.add(date);
+		vars.add(commonName);
+		vars.add(scientificName);
+		vars.add(lat);
+		vars.add(lng);
+		vars.add(species);
+		
+		//vars.add(measurement);
+
+		query.setVariables(vars);
+		//query pattern
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		graph.addPattern(measurement, inDataSet, dataSet);
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph.addPattern(measurement, birdCount, count);
+		graph.addPattern(measurement, obsDate, date);
+		graph.addPattern(measurement, hasCommonName, commonName);
+		graph.addPattern(measurement, hasScientificName, scientificName);
+		graph.addPattern(measurement, wgsLat, lat);
+		graph.addPattern(measurement, wgsLong, lng); 
+		 * 
+		 * 
+		 */
+		String singletonSpecies ="";
+			
+		//count(?measurement)
+		//?measurement ofEntity ?type
+		//?type subClassOf ?class
+		//species subClassof ?class
+		JSONArray speciesParams = (JSONArray)request.getParam("species");			
+
+		//only call this if there is only one! so here we assume there is one parameter
+		if(speciesParams != null && speciesParams.length() == 1) {			
+			singletonSpecies = speciesParams.getString(0);							
+		}
+		
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");	
+		
+		final Variable parent = query.getVariable(VAR_NS+ "parent");
+		final Variable measurement = query.getVariable(VAR_NS+ "measurement");
+		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
+		final Variable siblingScientificName = query.getVariable(VAR_NS + "scientific_name");
+
+		final Variable sibling = query.getVariable(VAR_NS+ "sibling");
+
+
+		//final Variable count = query.createVariableExpression("count(?measurement) as ?"+ measurement);
+
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource species = query.getResource(singletonSpecies);
+
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		//vars.add(measurement);
+		//vars.add(parent);
+		vars.add(sibling);
+		query.setVariables(vars);
+
+		graph.addPattern(species, subClassOf, parent); 
+		graph.addPattern(sibling, subClassOf, parent); 
+        graph.addPattern(species, hasLabel, scientificName);	
+        graph.addPattern(sibling, hasLabel, siblingScientificName);	
+		graph.addFilter("?sibling != <" + singletonSpecies + ">");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		
+		//if this works we can just then do "get sbiling data" now
+
+		graph2.addPattern(measurement, hasScientificName, scientificName); //selected species
+		graph2.addPattern(measurement, hasScientificName, siblingScientificName); //sibling only if type matches
+
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
+		String responseStr = FAILURE;
+		log.debug("Results: "+resultStr);
+		if(resultStr == null) {
+			return responseStr;
+		}
+		try {
+			JSONObject results = new JSONObject(resultStr);
+			JSONObject response = new JSONObject();
+			JSONArray data = new JSONArray();
+			response.put("success", true);
+			response.put("data", data);
+			String superclassId = null;
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				String siblingVar = binding.getJSONObject("sibling").getString("value");
+				//String subclassLabel = binding.getJSONObject("label").getString("value");
+
+				try {
+					//superclassId = binding.getJSONObject("parent").getString("value");
+				}
+				catch(Exception e) { }
+				//if(labelStr == null) {
+				//	labelStr = sourceUri.substring(sourceUri.lastIndexOf('/')+1).replace('-', '.');
+				//}
+				JSONObject mapping = new JSONObject();
+				mapping.put("sibling", siblingVar);
+				//mapping.put("label", subclassLabel);
+				//mapping.put("parent", superclassId);
+				data.put(mapping);
+			}
+			responseStr = response.toString();
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return responseStr;
+		
+	
+		
+		/*
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph.addPattern(measurement, birdCount, count);
+		graph.addPattern(measurement, obsDate, date);
+		graph.addPattern(measurement, hasCommonName, commonName);
+		*/
+
+//only do this if there is one selected species
+		//also, update a field in the response that we have additional data
+		//visualizeCharacteristic, getTestForCharacteristic
+		
+
+	}
+
+	/*
+	String speciesParams = (String)request.getParam("species");
+	if(speciesParams != null && speciesParams.length() > 0) {
+		//throw new IllegalArgumentException("The source parameter must be supplied");
+		//note that this is going to be a json object
+		JSONObject jsonSpecies = new JSONObject(species);
+		//iterate over the species and create a union clause
+		//iterate over jason entity uris
+		 * 
+		 * 
+		 
+		 
+		 after you select bbq arguments
+		 scientificName subClassOf <selection>
+		graph2.addPattern(species, hasLabel, scientificName);		
+		.createVariableExpression
+		cf. the Regulation module
+				
+	}
+	*/
+	
+	
 
 	@QueryMethod
 	public String queryeBirdTaxonomy(Request request) throws IOException, JSONException{	
@@ -731,11 +916,8 @@ public class SpeciesDataProviderModule implements Module {
 				} catch (JSONException e) {
 					log.error("Unable to parse JSON results", e);
 				}
-				return responseStr;
-				
-				
+				return responseStr;			
 	}
-	
 	
 	@Override
 	public String getName() {
