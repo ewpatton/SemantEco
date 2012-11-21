@@ -229,12 +229,6 @@ public class CharacteristicsModule implements Module {
 		optional.addPattern(measurement, polHasPermit, permit);
 		optional = query.createOptional();
 		query.addGraphComponent(optional);
-		//commiting out below because it is binding and sending lines for every kind of measurement, WaterMeasurement, Measurement
-		//optional.addPattern(measurement, rdfType, type);
-		//optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
-		
-		//query this 
-		//extendQueryForLimits(query);
 
 		query.addOrderBy(time, SortType.ASC);
 
