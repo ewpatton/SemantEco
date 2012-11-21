@@ -63,7 +63,7 @@ $(window).bind("initialize", function() {
 						var result = bindings[i];
 						var element = result["element"].value;
 						var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
-						var time = "2012";
+						var time = bindings[i].time.value;
 						// if(found[label+time]) 
 						// 	continue;
 						// found[label+time] = true;
