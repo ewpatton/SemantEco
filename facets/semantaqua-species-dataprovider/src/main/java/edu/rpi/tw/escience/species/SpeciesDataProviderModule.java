@@ -90,6 +90,7 @@ public class SpeciesDataProviderModule implements Module {
 		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
 		graph2.addPattern(species, hasLabel, scientificName);
 		 */
+		
 	}
 	
 	@Override
@@ -100,6 +101,10 @@ public class SpeciesDataProviderModule implements Module {
 
 		ui.addScript(res);
 		ui.addFacet(res2);
+		res = config.getResource("jstree/jquery.jstree.js");
+		ui.addScript(res);
+		res = config.getResource("jstree/themes/default/style.css");
+		ui.addStylesheet(res);
 	}
 	
 	@QueryMethod
@@ -921,7 +926,7 @@ public class SpeciesDataProviderModule implements Module {
 	
 	@Override
 	public String getName() {
-		return "SpeciesDataProvider";
+		return "Species";
 	}
 
 	@Override
