@@ -574,10 +574,10 @@ function initial_hierachy1(){
 					.bind("select_node.jstree", function (event, data) { 
 					// `data.rslt.obj` is the jquery extended node that was clicked
 					    var temp=data.rslt.obj.attr("id");
-					    //var temp_id=parseInt(temp.substring(3));
+					    var temp_id=parseInt(temp.substring(3));
 						//alert(class_hierachy[temp_id][0]);
 						//alert(class_hierachy[temp_id][1]);
-						$.bbq.pushState({"species":class_hierachy[temp][2]});
+						$.bbq.pushState({"species":class_hierachy[temp_id][2]});
 				})
 					// 2) if not using the UI plugin - the Anchor tags work as expected
 					//    so if the anchor has a HREF attirbute - the page will be changed
