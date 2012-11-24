@@ -75,8 +75,8 @@ $(window).bind("initialize", function() {
 						var op = result["op"].value;
 						var limit = result["limit"].value;
 						contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td class='characteristics' data-value='"+ element +"'>";
-						contents += label+"</td><td>"+value+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+value+"\',\'"+unit+"\',"+ false+","+marker.data.facility.value+",\'"+encodeURIComponent(marker.data.site.value)+"\')\">?</a></td><td>";
-						contents += op+" "+limit+" "+unit+"<a href=\"javascript:openProvWindow(\'"+element.substring(element.indexOf('#')+1)+"\',\'"+limit+"\',\'"+unit+"\',"+ true+")\">?</a></td><td>"+time+"</td>";
+						contents += label+"</td><td>"+value+" "+unit+"</td><td>";
+						contents += op+" "+limit+" "+unit+"</td><td>"+time+"</td>";
 						//var curSpecies=result["species"].value;
 						var curSpecies=result["species"];
 						//alert(curSpecies)

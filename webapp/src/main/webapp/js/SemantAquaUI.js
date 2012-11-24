@@ -92,7 +92,7 @@ var SemantAquaUI = {
 			    }); 
 
 				return leftcolumn;
-            }
+            };
 
             function rightcolumngenerater(){
             	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
@@ -105,6 +105,84 @@ var SemantAquaUI = {
             	
             	return rightcolumn;
        
+            };
+
+            function chartgenerator(mesurementData,nearbySpeciesData){
+            	var chartdata=[];
+            	
+            	var chartseries1=[];
+				for(var i=0;i<mesurementData.length;i++) {
+					chartseries1.push([mesurementData[i].time.value,Math.round( mesurementData[i].value.value )]);
+				}
+				chartdata.push(chartseries1);
+
+				var speciesnames=[];
+				var speciessobj={};
+				for(var i=0;i<nearbySpeciesData.length;i++){
+					if(!speciessobj[nearbySpeciesData[i]["commonName"]["value"]]){
+						speciessobj[nearbySpeciesData[i]["commonName"]["value"]]=[];
+						speciesnames.push(nearbySpeciesData[i]["commonName"]["value"]);
+					}
+					speciessobj[nearbySpeciesData[i]["commonName"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
+				}
+				console.log(speciessobj);
+				console.log(speciesnames);
+
+				var series=[];
+				series.push({
+							label:$("#selectforcharacteristic option:selected").html()
+							,yaxis:'yaxis',lineWidth:4
+						});
+				
+				for(var i=0;i<speciesnames.length;i++){
+					chartdata.push(speciessobj[speciesnames[i]]);
+					series.push({
+							label:speciesnames[i],yaxis:'y2axis'
+						})
+				}
+
+				console.log(chartdata);
+
+				$.jqplot("lightboxchart", chartdata, {
+			        title:marker.data.label.value
+			        ,series:series
+			        ,axes:{
+			            xaxis:{
+					        renderer:$.jqplot.DateAxisRenderer,
+					        tickOptions:{
+					            formatString:'%Y-%m-%d'
+					        } 
+					    },
+					    yaxis:{
+					        tickOptions:{
+					            formatString:'%d'
+					        },
+					    },
+					    y2axis:{
+					        autoscale:true, 
+					        tickOptions:{showGridline:true}
+					    }
+			        }
+			        ,legend: { 
+			        	show:true, 
+			        	location: 'se',
+			        	rendererOptions: {numberColumns: 2}
+			        }
+			        ,highlighter: {
+			            show: true,
+			            showTooltip:true
+			        }
+			        
+			        ,cursor: {
+				      show: false,
+				      intersectionThreshold :5,
+				      showHorizontalLine:true,
+				      showTooltip:true,
+				      followMouse:true,
+				      // showVerticalLine:true,
+				      // tooltipLocation:'sw'
+				    }
+			    });
             }
 
             $($("#infowindowcontrol a").get(0)).click(function(){
@@ -126,50 +204,9 @@ var SemantAquaUI = {
 					function queryForSiteMeasurementsCallback(data){
 						$(".lb_loading").hide();
 						console.log("queryForSiteMeasurementsCallback");
-						// console.log(data);
 						data=JSON.parse(data);
-						var chartseries1=[];
-						var bindings = data.results.bindings;
-						for(var i=0;i<bindings.length;i++) {
-							chartseries1.push([bindings[i].time.value,Math.round( bindings[i].value.value )]);
-							console.log(bindings[i].time.value+","+Math.round( bindings[i].value.value ));
-						}
-			            var plot1 = $.jqplot("lightboxchart", [chartseries1], {
-			            // var plot1 = $.jqplot("lightboxchart", [UITeamUtilities.markerdata[0]["visualize3"]], {
-			                title:marker.data.label.value,
-			                axes:{
-			                    xaxis:{
-			                        renderer:$.jqplot.DateAxisRenderer,
-			                        tickOptions:{
-			                            formatString:'%Y-%m-%d'
-			                        } 
-			                    },
-			                    yaxis:{
-			                        tickOptions:{
-			                            formatString:'%d'
-			                        }
-			                    }
-			                },
-			                series:[{
-			                           	label:$("#selectforcharacteristic option:selected").html()
-			                           }],
-			                highlighter: {
-					            show: true,
-					            showTooltip:false
-					        }
-					        ,legend: { 
-					        	show:true, 
-					        	location: 'se',
-					        	label:""
-					        }
-					        ,cursor: {
-						      show: true,
-						      intersectionThreshold :5,
-						      showHorizontalLine:true,
-						      showTooltip:true,
-						      followMouse:true
-						    }
-			            });
+						mesurementData=data.results.bindings;
+						chartgenerator(mesurementData,[]);
 					}
 
 					CharacteristicsModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallback);
@@ -190,7 +227,14 @@ var SemantAquaUI = {
 				$(".characterssubmit").click(function(e){
 
 					$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
-					console.log($.bbq.getState("characteristic"));
+					// console.log($.bbq.getState("characteristic"));
+
+					
+					// if(!$.bbq.getState("species")){
+					// 	alert("Please select species on the left");
+					// 	return false;
+					// }
+
 					$("#lightboxchart").empty();
 					$(".lb_loading").show();
 
@@ -198,87 +242,45 @@ var SemantAquaUI = {
 
 					function queryForSiteMeasurementsCallback(data){
 						console.log("queryForSiteMeasurementsCallback");
-						console.log(data);
+						console.log("data:"+data);
 						data=JSON.parse(data);
-						var chartseries1=[];
-						var bindings = data.results.bindings;
-						for(var i=0;i<bindings.length;i++) {
-							chartseries1.push([bindings[i].time.value,Math.round( bindings[i].value.value )]);
-						}
-						console.log(chartseries1);
+						mesurementData=data.results.bindings;
 			            
 			            //this part is only for development
 			            if(UITeamUtilities.species){
 			            	var tempcounty=$.bbq.getState("county");
 			            	var tempstate=$.bbq.getState("state");
+			            	var tempspecies=$.bbq.getState("species");
 							$.bbq.pushState({"county":"019"});
 							$.bbq.pushState({"state": "MD"});
 							$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
 			            }
 						//
-			            
 					
-						function queryForNearbySpeciesCountsCallback(data){
+						function queryForNearbySpeciesCountsCallback(data2){
 
 							//this part is only for development
 							if(UITeamUtilities.species){
 								$.bbq.pushState({"county":tempcounty});
 								$.bbq.pushState({"state": tempstate});
+								$.bbq.pushState({"species":tempspecies});
 							}
 							//
 
 							$(".lb_loading").hide();
 
 							console.log("queryForNearbySpeciesCountsCallback");
-							console.log(data);
-							data=JSON.parse(data);
-							// console.log(data);
-							var nearbySpecies=[];
-							var bindings = data.results.bindings;
-							for(var i=0;i<bindings.length;i++) {
-								nearbySpecies.push([bindings[i].date.value,Math.round( bindings[i].count.value )]);
+							console.log("data:"+data2);
+							if(data2){
+								data2=JSON.parse(data2);
+								nearbySpeciesData=data2.results.bindings;
+								chartgenerator(mesurementData,nearbySpeciesData);
 							}
-							console.log(nearbySpecies);
+							else{
+								console.log("Empty data from queryForNearbySpeciesCounts");
+								chartgenerator(mesurementData,[]);
+							}
 
-							var plot1 = $.jqplot('lightboxchart', [chartseries1,nearbySpecies], {
-				                title:marker.data.label.value,
-				                axes:{
-				                    xaxis:{
-				                        renderer:$.jqplot.DateAxisRenderer,
-				                        tickOptions:{
-				                            formatString:'%Y-%m-%d'
-				                        } 
-				                    },
-				                    yaxis:{
-				                        tickOptions:{
-				                            formatString:'%d'
-				                        },
-				                    },
-				                    y2axis:{
-						                autoscale:true, 
-						                tickOptions:{showGridline:false}
-						            }
-				                },
-				                series:[{
-				                	label:$("#selectforcharacteristic option:selected").html()
-				                	,yaxis:'yaxis',lineWidth:4}
-				                	,{label:"Species",yaxis:'y2axis'}]
-				                ,highlighter: {
-						            show: true,
-						            showTooltip:true
-						        }
-						        ,legend: { 
-						        	show:true, 
-						        	location: 'se'
-						        }
-						        ,cursor: {
-							      show: true,
-							      intersectionThreshold :5,
-							      showHorizontalLine:true,
-							      showTooltip:true,
-							      followMouse:true
-							    }
-				            });
 						}
 
 						SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
@@ -727,39 +729,68 @@ function search_node1(){
 
 function m(){
 	lightbox.show();
-	var plot1 = $.jqplot("id_lb_content", [UITeamUtilities.markerdata[0]["visualize3"]], {
-        title:"abc",
-        axes:{
+	var chartdata=[];
+	chartdata.push(UITeamUtilities.markerdata[0]["visualize3"]);
+	
+	var testnames=[];
+	var testsobj={};
+	for(var i=0;i<UITeamUtilities.species.length;i++){
+		if(!testsobj[UITeamUtilities.species[i][0]]){
+			testsobj[UITeamUtilities.species[i][0]]=[];
+			testnames.push(UITeamUtilities.species[i][0]);
+		}
+		testsobj[UITeamUtilities.species[i][0]].push([UITeamUtilities.species[i][1],UITeamUtilities.species[i][2]]);
+	}
+	console.log(testsobj);
+	console.log(testnames);
+
+	var series=[];
+	series.push({
+				label:"abc"
+				,yaxis:'yaxis',lineWidth:4
+			});
+	
+	for(var i=0;i<testnames.length;i++){
+		chartdata.push(testsobj[testnames[i]]);
+		series.push({
+				label:testnames[i],yaxis:'y2axis'
+			})
+	}
+
+	console.log(chartdata);
+
+	var plot5 = $.jqplot("id_lb_content", chartdata, {
+        title:"abc"
+        ,series:series
+        ,axes:{
             xaxis:{
-                renderer:$.jqplot.DateAxisRenderer,
-                tickOptions:{
-                    formatString:'%Y-%m-%d'
-                } 
-            },
-            yaxis:{
-            	// max:max,
-            	// min:min,
-                tickOptions:{
-                    formatString:'%d'
-                }
-            }
+		        renderer:$.jqplot.DateAxisRenderer,
+		        tickOptions:{
+		            formatString:'%Y-%m-%d'
+		        } 
+		    },
+		    yaxis:{
+		        tickOptions:{
+		            formatString:'%d'
+		        },
+		    },
+		    y2axis:{
+		        autoscale:true, 
+		        tickOptions:{showGridline:true}
+		    }
         }
         ,legend: { 
         	show:true, 
         	location: 'se',
         	rendererOptions: {numberColumns: 2}
         }
-        ,series:[{
-                   	label:"abc"
-                   	// ,lineWidth:4
-                   }]
         ,highlighter: {
             show: true,
-            showTooltip:false
+            showTooltip:true
         }
         
         ,cursor: {
-	      show: true,
+	      show: false,
 	      intersectionThreshold :5,
 	      showHorizontalLine:true,
 	      showTooltip:true,
