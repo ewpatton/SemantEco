@@ -51,6 +51,7 @@ var SemantAquaUI = {
             	$(document.createElement('div')).attr("id","lightboxchart").appendTo(leftcolumn);
 
             	var selectforcharacteristic = $('<select id="selectforcharacteristic" class="selects" />').appendTo(selectscontainer);
+    			$("<option />", {value: "", text: ""}).addClass("characteristics").appendTo(selectforcharacteristic);
             	$(".characteristics").each(function(){
             		var ifexist=false;
             		var self=this;
@@ -63,9 +64,33 @@ var SemantAquaUI = {
             			$("<option />", {value: $(this).data("value"), text: $(this).html()}).addClass("characteristics").appendTo(selectforcharacteristic);
             		}
             	});
+            	var selectfortest = $('<select id="selectfortest" class="selects" />').hide().appendTo(selectscontainer);
 
+            	var characteristicssubmit=$('<input type="submit" class="characterssubmit" />').attr("disabled", "disabled").appendTo(selectscontainer);
+            	
+            	$(selectforcharacteristic).change(function() 
+			    { 
+			 
+			        var value = $(selectforcharacteristic).val(); 
+			        CharacteristicsModule.getTestsForCharacteristic({
+			        	"visualizedCharacteristic":$(selectforcharacteristic).val()
+			        }, function(d) {
+			        	d=JSON.parse(d);
+			        	console.log(d);
+			        	if (d.length!=0){
+		        			$(selectfortest).empty().show();
+			        		for(var i=0;i<d.length;i++){
+			        			$("<option />", {value: d[i], text: d[i]}).addClass("tests").appendTo(selectfortest);
+			        		}
+			        	 	$(characteristicssubmit).removeAttr("disabled");  
+			        	}
+			        	else{
+			        		$(selectfortest).empty().hide();
+			        	 	$(characteristicssubmit).removeAttr("disabled");  
+			        	}
+			     	});
+			    }); 
 
-            	$('<input type="submit" class="characterssubmit" />').appendTo(selectscontainer);
 				return leftcolumn;
             }
 
@@ -79,7 +104,7 @@ var SemantAquaUI = {
             	
             	
             	return rightcolumn;
-            	
+       
             }
 
             $($("#infowindowcontrol a").get(0)).click(function(){
@@ -91,6 +116,9 @@ var SemantAquaUI = {
 
 				$(".characterssubmit").click(function(e){
 
+					if($("#selectfortest").val()){
+						$.bbq.pushState({"TestsForCharacteristic":$("#selectfortest").val()});
+					}
 					$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
 					$("#lightboxchart").empty();
 					$(".lb_loading").show();
