@@ -525,7 +525,7 @@ $(document).ready(function(){
 
 function initial_hierachy1(){
 	//alert(class_hierachy);
-	alert("class hierarchy has"+class_hierachy.length);
+	//alert("class hierarchy has"+class_hierachy.length);
 	
 	
 	

@@ -53,12 +53,12 @@ function initial_hierachy(){
 		}
 	}
 	//alert(class_hierachy);
-	alert(jsonHier.length);
+	//alert(jsonHier.length);
 	for (var i=0;i<class_hierachy_temp.length;i++){
 		iterative_build(class_hierachy_temp[i][0]);
 		//alert(jsonHier.length);
 	}
-	alert("class hierarchy has"+class_hierachy.length);
+	//alert("class hierarchy has"+class_hierachy.length);
 	
 	
 	var temp_div=document.getElementById('tree');
