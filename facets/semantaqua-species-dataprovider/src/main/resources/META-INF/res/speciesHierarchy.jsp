@@ -7,18 +7,18 @@
 		</td>
 	  </tr>
 	 <tr>
-          <td  ><div id="text"  ><textarea name ="search" id="search_info" style="overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press(event)"></textarea></div>
-		  <td style="width:20%" ><input type=button onClick=" search_node()" value="search" id="append"/></td>
+          <td><div id="text"><textarea name ="search" id="search_info" style="overflow:hidden;padding:0 ;width:100%;height:25px;resize: none;" placeholder="Type message here!" onKeyPress="press(event)"></textarea></div>
+		  <td style="width:20%" ><input style="position: relative;top: -10px;" type=button onClick=" search_node()" value="search" id="append"/></td>
 		  </td>         
       
      </tr>
          <tr>
-          <td  style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id=show></div></td>
+          <td  colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show"></div></td>
          </tr>
 	<tr>
           <td colspan="2">       
            <div id="description" style=" border:1px solid #111111; overFlow: auto;  " >
-			<div id="tree" class="demo" style="width:120%;height:100px;">
+			<div id="tree" class="demo" style="width:100%;height:100px;">
 
 			</div>
 
