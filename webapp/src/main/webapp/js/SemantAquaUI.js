@@ -72,10 +72,10 @@ var SemantAquaUI = {
             function rightcolumngenerater(){
             	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
             	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map"/></td></td>         </tr><tr><td  style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id=show_map></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:120%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
-            	testFacet.queryBirdTaxonomy({}, function (data){
-    	    		  //jsonHier=JSON.parse(data);
-    	    		  initial_hierachy1();	 	          	    		  
-    	              });
+            	// testFacet.queryBirdTaxonomy({}, function (data){
+    	    		  // //jsonHier=JSON.parse(data);
+    	    		  // initial_hierachy1();	 	          	    		  
+    	        //       });
             	
             	
             	return rightcolumn;
