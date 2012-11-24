@@ -1,7 +1,7 @@
  var jsonHier;
  var class_hierachy=new Array();
  var temp_array;
- 
+ var class_hierachy_temp=new Array();
 
  
 $(window).bind("initialize", function() {
@@ -24,7 +24,7 @@ $(window).bind("initialize", function() {
  
 function initial_hierachy(){
 	//alert(jsonHier);
-	var class_hierachy_temp=new Array();
+	
 	var flag=0;
 	for (var i=0;i<jsonHier.length;i++){
 		flag=0;

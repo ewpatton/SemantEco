@@ -72,10 +72,10 @@ var SemantAquaUI = {
             function rightcolumngenerater(){
             	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
             	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map"/></td></td>         </tr><tr><td  style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id=show_map></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:120%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
-            	// testFacet.queryBirdTaxonomy({}, function (data){
+            	SpeciesDataProviderModule.queryeBirdTaxonomy({}, function (data){
     	    		  // //jsonHier=JSON.parse(data);
-    	    		  // initial_hierachy1();	 	          	    		  
-    	        //       });
+            		initial_hierachy1();	 	          	    		  
+    	               });
             	
             	
             	return rightcolumn;
@@ -497,31 +497,39 @@ $(document).ready(function(){
 
 function initial_hierachy1(){
 	//alert(class_hierachy);
-	
+	alert("class hierarchy has"+class_hierachy.length);
 	
 	
 	
 	var temp_div=document.getElementById('tree_map');
 	temp_div.innerHTML="";
-	var ul=document.createElement("ul");
-	var li=document.createElement("li");
-	var a=document.createElement("a");
-	a.href="#";
-	var text=document.createTextNode(class_hierachy[0][0]);
-	var temp_id="map"+"0";
-	li.id=temp_id;
-	a.appendChild(text); 
-	li.appendChild(a); 
-	ul.appendChild(li); 
-	temp_div.appendChild(ul); 
-	document.getElementById('description_map').appendChild(temp_div);
-	    //alert("success");
-	var i=0+1;
-	if (i<class_hierachy.length){
-   	for (var i=1;i<class_hierachy.length;i++){ 
-			append_node1(i,temp_id);
+	
+	for (var i=0;i<class_hierachy_temp.length;i++){
+		var ul=document.createElement("ul");
+		var li=document.createElement("li");
+		var a=document.createElement("a");
+		a.href="#";
+		var text=document.createTextNode(class_hierachy_temp[i][0]);
+		var temp_root="map"+i;
+		li.id=temp_root;
+		a.appendChild(text); 
+		li.appendChild(a); 
+		ul.appendChild(li); 
+		temp_div.appendChild(ul); 
+		document.getElementById('description_map').appendChild(temp_div);
+		    //alert("success");
+		
+		var j;
+	    for ( j=class_hierachy_temp.length;j<class_hierachy.length;j++){ 
+	    	
+			append_node1(j,temp_root);
 		}
-   }
+	    
+	}
+	
+	
+	
+	
 	$(function () {
 		$("#tree_map")
 			.jstree({
@@ -538,9 +546,10 @@ function initial_hierachy1(){
 					.bind("select_node.jstree", function (event, data) { 
 					// `data.rslt.obj` is the jquery extended node that was clicked
 					    var temp=data.rslt.obj.attr("id");
-					    var temp_id=parseInt(temp.substring(3));
-						alert(class_hierachy[temp_id][0]);
-						alert(class_hierachy[temp_id][1]);
+					    //var temp_id=parseInt(temp.substring(3));
+						//alert(class_hierachy[temp_id][0]);
+						//alert(class_hierachy[temp_id][1]);
+						$.bbq.pushState({"species":class_hierachy[temp][2]});
 				})
 					// 2) if not using the UI plugin - the Anchor tags work as expected
 					//    so if the anchor has a HREF attirbute - the page will be changed
