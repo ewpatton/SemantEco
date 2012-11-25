@@ -573,11 +573,12 @@ function initial_hierachy1(){
 	
 					.bind("select_node.jstree", function (event, data) { 
 					// `data.rslt.obj` is the jquery extended node that was clicked
-					    var temp=data.rslt.obj.attr("id");
-					    var temp_id=parseInt(temp.substring(3));
+						getSelectedValue1()
+						//var temp=data.rslt.obj.attr("id");
+					    //var temp_id=parseInt(temp.substring(3));
 						//alert(class_hierachy[temp_id][0]);
 						//alert(class_hierachy[temp_id][1]);
-						$.bbq.pushState({"species":class_hierachy[temp_id][2]});
+						//$.bbq.pushState({"species":class_hierachy[temp_id][2]});
 				})
 					// 2) if not using the UI plugin - the Anchor tags work as expected
 					//    so if the anchor has a HREF attirbute - the page will be changed
@@ -586,6 +587,19 @@ function initial_hierachy1(){
 	});
 
 }
+
+function getSelectedValue1() {  
+    var nodes = $.jstree._reference($("#tree_map")).get_selected();
+    var temp=new Array();
+    $.each(nodes, function(i, n) { 
+    	 var temp_id=this.id;
+	     var temp_id1=parseInt(temp_id.substring(3));
+         temp.push(class_hierachy[temp_id1][2]);
+         
+    }); 
+    $.bbq.pushState({"species":temp});
+}  
+
 function append_node1(current, parent){
    var temp_judge=parent;
    temp_judge=parseInt(temp_judge.substring(3));

@@ -101,10 +101,11 @@ function initial_hierachy(){
 	
 					.bind("select_node.jstree", function (event, data) { 
 					// `data.rslt.obj` is the jquery extended node that was clicked
-					    var temp=data.rslt.obj.attr("id");
+						getSelectedValue();
+					    //var temp=data.rslt.obj.attr("id");
 						//alert(class_hierachy[temp][0]);
 						//alert(class_hierachy[temp][1]);
-					    $.bbq.pushState({"species":class_hierachy[temp][2]});
+					    //$.bbq.pushState({"species":class_hierachy[temp][2]});
 				})
 				    
 				
@@ -116,6 +117,18 @@ function initial_hierachy(){
 	});
 
 }
+
+function getSelectedValue() {  
+    var nodes = $.jstree._reference($("#tree")).get_selected();
+    var temp=new Array();
+    $.each(nodes, function(i, n) {  
+          temp.push(class_hierachy[this.id][2]);
+         
+    }); 
+    $.bbq.pushState({"species":temp});
+}  
+
+
 function append_node(current, parent){
     if(class_hierachy[current][1]==class_hierachy[parent][0]){
 		var temp_div=document.getElementById(parent);
