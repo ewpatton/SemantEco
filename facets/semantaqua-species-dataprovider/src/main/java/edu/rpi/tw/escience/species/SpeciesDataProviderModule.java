@@ -773,7 +773,7 @@ public class SpeciesDataProviderModule implements Module {
 
 		graph.addPattern(species, subClassOf, parent); 
 		graph.addPattern(sibling, subClassOf, parent); 
-        graph.addPattern(species, hasLabel, scientificName);	
+        // graph.addPattern(species, hasLabel, scientificName);	
         graph.addPattern(sibling, hasLabel, siblingScientificName);	
 		graph.addFilter("?sibling != <" + singletonSpecies + ">");
 		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
