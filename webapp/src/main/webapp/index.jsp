@@ -68,7 +68,6 @@
       <div class="sidebar">
 		<div id="facets" style="float:right;width:20%">
 		  <module:facets />
-		  <input type="button" id="fakeload" value="load" />
 	</div>
       </div>
 	<!-- <div id="display" style="width: 100%; height: 720px"> -->
