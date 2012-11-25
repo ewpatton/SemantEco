@@ -20,6 +20,7 @@ import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
+import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
@@ -53,10 +54,21 @@ public class CharacteristicsModule implements Module {
 		
 		
 	}
+	@Override
+    public void visit(final SemantAquaUI ui, final Request request) {
+            // TODO add resources to display
+            Resource res = null;
+            res = config.getResource("characteristicHierarchy.js");
+            Resource res2 = config.getResource("characteristicHierarchy.jsp");
 
+            ui.addScript(res);
+            ui.addFacet(res2);
+    }
+	
+	
 	@Override
 	public void visit(final OntModel model, final Request request) {
-		// TODO populate ontology model
+
 	}
 	
 	//first check ifg bbbq state is null for chemical
@@ -145,10 +157,6 @@ public class CharacteristicsModule implements Module {
 	
 	
 	
-	@Override
-	public void visit(final SemantAquaUI ui, final Request request) {
-		// TODO add resources to display
-	}
 
 	@Override
 	public String getName() {
