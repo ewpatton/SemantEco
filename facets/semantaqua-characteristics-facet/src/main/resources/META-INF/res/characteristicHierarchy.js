@@ -23,7 +23,7 @@ $(window).bind("initialize", function() {
 
  
 function initial_hierachy_ch(){
-	alert(jsonHier_ch);
+	//alert(jsonHier_ch);
 	//alert("aaa");
 	var flag=0;
 	for (var i=0;i<jsonHier_ch.length;i++){
