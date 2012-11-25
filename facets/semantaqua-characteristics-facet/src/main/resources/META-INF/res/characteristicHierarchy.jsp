@@ -18,7 +18,7 @@
 	<tr>
           <td colspan="2">       
            <div id="description_ch" style=" border:1px solid #111111; overFlow: auto;  " >
-			<div id="tree_ch" class="demo_ch" style="width:120%;height:100px;">
+			<div id="tree_ch" class="demo_ch" style="width:100px;height:100px;">
 
 			</div>
 
