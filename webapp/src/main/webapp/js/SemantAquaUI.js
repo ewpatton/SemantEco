@@ -143,7 +143,7 @@ var SemantAquaUI = {
 
 				console.log(chartdata);
 
-				$.jqplot("lightboxchart", chartdata, {
+				var jqplot = $.jqplot("lightboxchart", chartdata, {
 			        title:marker.data.label.value
 			        ,series:series
 			        ,axes:{
@@ -183,6 +183,10 @@ var SemantAquaUI = {
 				      // tooltipLocation:'sw'
 				    }
 			    });
+
+				$(window).resize(function(){
+	                plot.replot( { resetAxes: true } );
+	            });
             }
 
             $($("#infowindowcontrol a").get(0)).click(function(){
@@ -269,14 +273,44 @@ var SemantAquaUI = {
 
 							console.log("queryForNearbySpeciesCountsCallback");
 							console.log("data:"+data2);
-							if(data2){
+
+
+							if(data2 && (JSON.parse(data2)).results.bindings.length!=0){
 								data2=JSON.parse(data2);
-								nearbySpeciesData=data2.results.bindings;
+								var nearbySpeciesData=data2.results.bindings;
 								chartgenerator(mesurementData,nearbySpeciesData);
 							}
 							else{
 								console.log("Empty data from queryForNearbySpeciesCounts");
-								chartgenerator(mesurementData,[]);
+								
+								//to getting siblings we need to push this particular species
+								$.bbq.pushState({"species":["http://ebird#Bubo_sumatranus"]});
+								
+								function queryIfSiblingsExistCallback(data){
+									data=JSON.parse(data);
+									data=data.data;
+									var species=[];
+									var confirmtext="No result for the selected species, would you want to see data for\n";
+									for(var i=0;i<data.length;i++){
+										species.push(data[i]["sibling"]);
+										confirmtext+=data[i]["sibling"]+"\n";
+									}
+									console.log(species);
+									var con=confirm(confirmtext);
+									if(con){
+										console.log("yes I would");
+										$.bbq.pushState({"species":species});
+										console.log("this is after pushState");
+										console.log($.bbq.getState("species"));
+										SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
+										return false;
+									}
+									else{
+										chartgenerator(mesurementData,[]);
+									}
+								};
+								
+								SpeciesDataProviderModule.queryIfSiblingsExist({}, queryIfSiblingsExistCallback);
 							}
 
 						}
