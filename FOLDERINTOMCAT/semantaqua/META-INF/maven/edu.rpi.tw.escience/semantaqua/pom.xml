@@ -168,13 +168,7 @@
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
- <dependency>
-      <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-characteristics-facet</artifactId>
-      <version>4.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-<dependency>
+    <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semantaqua-species-dataprovider</artifactId>
       <version>4.0-SNAPSHOT</version>
@@ -308,30 +302,6 @@
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
 		</artifactItem>
-		<artifactItem>
-		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-domain</artifactId>
-		  <version>4.0-SNAPSHOT</version>
-		  <type>jar</type>
-		  <overWrite>true</overWrite>
-		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
-		</artifactItem>
-		<artifactItem>
-		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-water-data-provider</artifactId>
-		  <version>4.0-SNAPSHOT</version>
-		  <type>jar</type>
-		  <overWrite>true</overWrite>
-		  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
-		</artifactItem>
-<artifactItem>
-                  <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semantaqua-test-facet</artifactId>
-                  <version>4.0-SNAPSHOT</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
-                </artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semantaqua-domain</artifactId>

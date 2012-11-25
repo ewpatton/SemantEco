@@ -450,7 +450,10 @@ input[type='button'],input[type='submit']{
 
 input[type='button']:hover,input[type='submit']:hover{
     background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
-    /*background: #4DA5E3;*/
+}
+
+input[type='button']:disabled,input[type='submit']:disabled{
+    background: #8A8A8A;
 }
 
 div.facet select {
@@ -535,7 +538,7 @@ div#infowindowcontrol a:hover{
 .lightbox .lb_container .lb_loading img {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 25%;
+  margin-top: 150px;
   width: 48px;
 }
 

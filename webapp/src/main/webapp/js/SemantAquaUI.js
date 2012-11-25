@@ -160,7 +160,7 @@ var SemantAquaUI = {
 					    },
 					    y2axis:{
 					        autoscale:true, 
-					        tickOptions:{showGridline:true}
+					        tickOptions:{showGridline:false}
 					    }
 			        }
 			        ,legend: { 
@@ -774,7 +774,7 @@ function m(){
 		    },
 		    y2axis:{
 		        autoscale:true, 
-		        tickOptions:{showGridline:true}
+		        tickOptions:{showGridline:false}
 		    }
         }
         ,legend: { 
