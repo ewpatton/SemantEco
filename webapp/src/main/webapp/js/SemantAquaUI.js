@@ -185,7 +185,7 @@ var SemantAquaUI = {
 			    });
 
 				$(window).resize(function(){
-	                plot.replot( { resetAxes: true } );
+	                jqplot.replot( { resetAxes: true } );
 	            });
             }
 
@@ -249,7 +249,7 @@ var SemantAquaUI = {
 						mesurementData=data.results.bindings;
 			            
 			            //this part is only for development
-			            if(UITeamUtilities.species){
+			            if(UITeamUtilities.exampleSpecies){
 			            	var tempcounty=$.bbq.getState("county");
 			            	var tempstate=$.bbq.getState("state");
 			            	var tempspecies=$.bbq.getState("species");
@@ -262,7 +262,7 @@ var SemantAquaUI = {
 						function queryForNearbySpeciesCountsCallback(data2){
 
 							//this part is only for development
-							if(UITeamUtilities.species){
+							if(UITeamUtilities.exampleSpecies){
 								$.bbq.pushState({"county":tempcounty});
 								$.bbq.pushState({"state": tempstate});
 								$.bbq.pushState({"species":tempspecies});
@@ -519,7 +519,9 @@ $(document).ready(function(){
     $.globalEval("var lightbox={};");
     SemantAquaUI.lightbox={};
     lightbox=SemantAquaUI.lightbox;
-    lightbox.clean=null;
+    lightbox.clean=function(){
+    	$(window).unbind("resize");
+    };
 
     lightbox.init=function(){
         $(".lb_content").click(function(e){

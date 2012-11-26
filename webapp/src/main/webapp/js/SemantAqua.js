@@ -249,7 +249,7 @@ var SemantAqua = {
 
 //this object is used by the UIteam, to store fake data and bypass certain function and push data directly to map
 var UITeamUtilities={
-	species:true,
+	exampleSpecies:false,
 
 	init:function(){
 		// d3.csv("a.txt", function(rows) {
