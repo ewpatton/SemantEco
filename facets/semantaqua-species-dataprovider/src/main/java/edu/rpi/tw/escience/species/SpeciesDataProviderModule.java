@@ -739,7 +739,7 @@ public class SpeciesDataProviderModule implements Module {
 		//species subClassof ?class
 		JSONArray speciesParams = (JSONArray)request.getParam("species");			
 
-		//only call this if there is only one! so here we assume there is one parameter
+		//*****only call this if there is only one! so here we assume there is one parameter
 		if(speciesParams != null && speciesParams.length() == 1) {			
 			singletonSpecies = speciesParams.getString(0);							
 		}
@@ -754,6 +754,8 @@ public class SpeciesDataProviderModule implements Module {
 		final Variable measurement = query.getVariable(VAR_NS+ "measurement");
 		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
 		final Variable siblingScientificName = query.getVariable(VAR_NS + "scientific_name");
+		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
 
 		final Variable sibling = query.getVariable(VAR_NS+ "sibling");
 
@@ -782,6 +784,8 @@ public class SpeciesDataProviderModule implements Module {
 
 		graph2.addPattern(measurement, hasScientificName, scientificName); //selected species
 		graph2.addPattern(measurement, hasScientificName, siblingScientificName); //sibling only if type matches
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
 
 		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 		String responseStr = FAILURE;
@@ -859,8 +863,6 @@ public class SpeciesDataProviderModule implements Module {
 				
 	}
 	*/
-	
-	
 
 	@QueryMethod
 	public String queryeBirdTaxonomy(Request request) throws IOException, JSONException{	
