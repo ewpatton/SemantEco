@@ -184,6 +184,9 @@ var SemantAquaUI = {
 				    }
 			    });
 
+
+				jqplot.replot( { resetAxes: true } );
+				
 				$(window).resize(function(){
 	                jqplot.replot( { resetAxes: true } );
 	            });
@@ -209,6 +212,7 @@ var SemantAquaUI = {
 						$(".lb_loading").hide();
 						console.log("queryForSiteMeasurementsCallback");
 						data=JSON.parse(data);
+						console.log(data);
 						mesurementData=data.results.bindings;
 						chartgenerator(mesurementData,[]);
 					}
@@ -284,10 +288,17 @@ var SemantAquaUI = {
 								console.log("Empty data from queryForNearbySpeciesCounts");
 								
 								//to getting siblings we need to push this particular species
-								$.bbq.pushState({"species":["http://ebird#Bubo_sumatranus"]});
+								$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
 								
+								console.log("states before calling queryIfSiblingsExist")
+								console.log($.bbq.getState("state"));
+								console.log($.bbq.getState("county"));
+								console.log($.bbq.getState("species"));
+
 								function queryIfSiblingsExistCallback(data){
 									data=JSON.parse(data);
+									console.log("returned species from queryIfSiblingsExist : "+data);
+									console.log(data);
 									data=data.data;
 									var species=[];
 									var confirmtext="No result for the selected species, would you want to see data for\n";
@@ -295,7 +306,12 @@ var SemantAquaUI = {
 										species.push(data[i]["sibling"]);
 										confirmtext+=data[i]["sibling"]+"\n";
 									}
+
 									console.log(species);
+									if(species.length!=0){
+										chartgenerator(mesurementData,[]);
+										return false;
+									}
 									var con=confirm(confirmtext);
 									if(con){
 										console.log("yes I would");
