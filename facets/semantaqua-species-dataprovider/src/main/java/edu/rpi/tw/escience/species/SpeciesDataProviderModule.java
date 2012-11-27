@@ -43,9 +43,6 @@ public class SpeciesDataProviderModule implements Module {
 	public static final String  TXN_NS = "http://lod.taxonconcept.org/ontology/txn.owl#";
 	public static final String  EBIRD_NS = "http://ebird#";
 	public static final String  EBIRD_DATA_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
-
-	
-
 	private static final String WILDLIFE_NS = "http://www.semanticweb.org/ontologies/2012/2/wildlife.owl#";
 	private static final String HEALTHEFFECT_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl";
 	private static final String PROV_NS = "http://www.w3.org/ns/prov#";
@@ -322,13 +319,13 @@ public class SpeciesDataProviderModule implements Module {
 		vars.add(scientificName);
 		vars.add(lat);
 		vars.add(lng);
-		vars.add(species);
+		//vars.add(species);
 		
 		//vars.add(measurement);
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -659,8 +656,7 @@ public class SpeciesDataProviderModule implements Module {
 	}
 
 	
-	@QueryMethod
-	public String queryIfSiblingsExist(Request request) throws JSONException{
+	
 		/*
 		 * 
 		 * 
@@ -731,6 +727,8 @@ public class SpeciesDataProviderModule implements Module {
 		 * 
 		 * 
 		 */
+	@QueryMethod
+	public String queryIfSiblingsExist(Request request) throws JSONException{
 		String singletonSpecies ="";
 			
 		//count(?measurement)
@@ -778,14 +776,14 @@ public class SpeciesDataProviderModule implements Module {
         // graph.addPattern(species, hasLabel, scientificName);	
         graph.addPattern(sibling, hasLabel, siblingScientificName);	
 		graph.addFilter("?sibling != <" + singletonSpecies + ">");
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
 		
 		//if this works we can just then do "get sbiling data" now
 
 		graph2.addPattern(measurement, hasScientificName, scientificName); //selected species
 		graph2.addPattern(measurement, hasScientificName, siblingScientificName); //sibling only if type matches
-		graph.addPattern(measurement, countyCoded, countyCode,null);
-		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph2.addPattern(measurement, countyCoded, countyCode,null);
+		graph2.addPattern(measurement, stateAbbrev, stateAbbr,null);
 
 		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 		String responseStr = FAILURE;

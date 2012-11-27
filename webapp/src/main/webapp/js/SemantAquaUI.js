@@ -119,11 +119,11 @@ var SemantAquaUI = {
 				var speciesnames=[];
 				var speciessobj={};
 				for(var i=0;i<nearbySpeciesData.length;i++){
-					if(!speciessobj[nearbySpeciesData[i]["commonName"]["value"]]){
-						speciessobj[nearbySpeciesData[i]["commonName"]["value"]]=[];
-						speciesnames.push(nearbySpeciesData[i]["commonName"]["value"]);
+					if(!speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]]){
+						speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]]=[];
+						speciesnames.push(nearbySpeciesData[i]["scientific_name"]["value"]);
 					}
-					speciessobj[nearbySpeciesData[i]["commonName"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
+					speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
 				}
 				console.log(speciessobj);
 				console.log(speciesnames);
@@ -131,7 +131,7 @@ var SemantAquaUI = {
 				var series=[];
 				series.push({
 							label:$("#selectforcharacteristic option:selected").html()
-							,yaxis:'yaxis',lineWidth:4
+							,yaxis:'yaxis'
 						});
 				
 				for(var i=0;i<speciesnames.length;i++){
@@ -145,6 +145,12 @@ var SemantAquaUI = {
 
 				var jqplot = $.jqplot("lightboxchart", chartdata, {
 			        title:marker.data.label.value
+			        ,seriesDefaults: {
+			        	lineWidth:2
+			        	,markerOptions: {
+			        		size:7
+			        	}
+			        }
 			        ,series:series
 			        ,axes:{
 			            xaxis:{
@@ -165,12 +171,14 @@ var SemantAquaUI = {
 			        }
 			        ,legend: { 
 			        	show:true, 
-			        	location: 'se',
+			        	location: 's',
+			        	placement: 'outside',
 			        	rendererOptions: {numberColumns: 2}
 			        }
 			        ,highlighter: {
 			            show: true,
-			            showTooltip:true
+			            showTooltip:true,
+			            bringSeriesToFront:true
 			        }
 			        
 			        ,cursor: {
@@ -183,10 +191,7 @@ var SemantAquaUI = {
 				      // tooltipLocation:'sw'
 				    }
 			    });
-
-
 				jqplot.replot( { resetAxes: true } );
-				
 				$(window).resize(function(){
 	                jqplot.replot( { resetAxes: true } );
 	            });
@@ -210,7 +215,7 @@ var SemantAquaUI = {
 
 					function queryForSiteMeasurementsCallback(data){
 						$(".lb_loading").hide();
-						console.log("queryForSiteMeasurementsCallback");
+						console.log("queryForSiteMeasurementsCallback. Data:");
 						data=JSON.parse(data);
 						console.log(data);
 						mesurementData=data.results.bindings;
@@ -252,26 +257,9 @@ var SemantAquaUI = {
 						data=JSON.parse(data);
 						mesurementData=data.results.bindings;
 			            
-			            //this part is only for development
-			            if(UITeamUtilities.exampleSpecies){
-			            	var tempcounty=$.bbq.getState("county");
-			            	var tempstate=$.bbq.getState("state");
-			            	var tempspecies=$.bbq.getState("species");
-							$.bbq.pushState({"county":"019"});
-							$.bbq.pushState({"state": "MD"});
-							$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
-			            }
-						//
+			            
 					
 						function queryForNearbySpeciesCountsCallback(data2){
-
-							//this part is only for development
-							if(UITeamUtilities.exampleSpecies){
-								$.bbq.pushState({"county":tempcounty});
-								$.bbq.pushState({"state": tempstate});
-								$.bbq.pushState({"species":tempspecies});
-							}
-							//
 
 							$(".lb_loading").hide();
 
@@ -287,18 +275,22 @@ var SemantAquaUI = {
 							else{
 								console.log("Empty data from queryForNearbySpeciesCounts");
 								
+								//this part is only for development
 								//to getting siblings we need to push this particular species
-								$.bbq.pushState({"species":["http://ebird#Megascops_asio","http://ebird#Strigidae"]});
+					            if(UITeamUtilities.nearSpecies){
+					            	var tempcounty=$.bbq.getState("county");
+					            	var tempstate=$.bbq.getState("state");
+					            	var tempspecies=$.bbq.getState("species");
+									$.bbq.pushState({"county":"019"});
+									$.bbq.pushState({"state": "MD"});
+									$.bbq.pushState({"species":["http://ebird#Megascops_cooperi"]});
+					            }
+								//
 								
-								console.log("states before calling queryIfSiblingsExist")
-								console.log($.bbq.getState("state"));
-								console.log($.bbq.getState("county"));
-								console.log($.bbq.getState("species"));
-
+								
 								function queryIfSiblingsExistCallback(data){
+
 									data=JSON.parse(data);
-									console.log("returned species from queryIfSiblingsExist : "+data);
-									console.log(data);
 									data=data.data;
 									var species=[];
 									var confirmtext="No result for the selected species, would you want to see data for\n";
@@ -306,19 +298,23 @@ var SemantAquaUI = {
 										species.push(data[i]["sibling"]);
 										confirmtext+=data[i]["sibling"]+"\n";
 									}
-
-									console.log(species);
-									if(species.length!=0){
-										chartgenerator(mesurementData,[]);
-										return false;
-									}
+									console.log("returned sibling species : "+species);
 									var con=confirm(confirmtext);
 									if(con){
 										console.log("yes I would");
-										$.bbq.pushState({"species":species});
-										console.log("this is after pushState");
+										// $.bbq.pushState({"species":species});
+										$.bbq.pushState({"species":["http://ebird#Megascops_asio", "http://ebird#Bubo_virginianus"]});
+										console.log("this is getState after push species to state");
 										console.log($.bbq.getState("species"));
 										SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
+
+										//this part is only for development
+										if(UITeamUtilities.nearSpecies){
+											$.bbq.pushState({"county":tempcounty});
+											$.bbq.pushState({"state": tempstate});
+											$.bbq.pushState({"species":tempspecies});
+										}
+										//
 										return false;
 									}
 									else{
@@ -846,6 +842,7 @@ function m(){
         ,legend: { 
         	show:true, 
         	location: 'se',
+        	placement: 'outside',
         	rendererOptions: {numberColumns: 2}
         }
         ,highlighter: {

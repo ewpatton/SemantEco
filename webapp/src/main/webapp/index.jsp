@@ -23,7 +23,7 @@
 
     <script language="javascript" type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
     <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" />
-    <script type="text/javascript" src="js/jqplot/plugins/jqplot.highlighter.min.js"></script>
+    <script type="text/javascript" src="js/jqplot/plugins/jqplot.highlighter.js"></script>
     <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
     <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
     <module:scripts />
