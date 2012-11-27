@@ -25,6 +25,7 @@ import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
 import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
 import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
+import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 //import edu.rpi.tw.escience.waterquality.dataprovider.WaterDataProviderModule;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
@@ -33,7 +34,7 @@ import edu.rpi.tw.escience.waterquality.query.Query.SortType;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
 public class CharacteristicsModule implements Module {
-	
+	private static final String CHARACTERISTIC_NS = "http://was.tw.rpi.edu/semanteco/water/cuashiCharacteristics.owl#";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String FAILURE = "{\"success\":false}";
@@ -50,17 +51,14 @@ public class CharacteristicsModule implements Module {
 	public void visit(Model model, Request request) {
 		//DataModelBuilder builder = new DataModelBuilder(request, config);
 		//builder.build(model);
-		
-		
-		
 	}
+	
 	@Override
     public void visit(final SemantAquaUI ui, final Request request) {
             // TODO add resources to display
             Resource res = null;
             res = config.getResource("characteristicHierarchy.js");
             Resource res2 = config.getResource("characteristicHierarchy.jsp");
-
             ui.addScript(res);
             ui.addFacet(res2);
     }
@@ -68,28 +66,169 @@ public class CharacteristicsModule implements Module {
 	
 	@Override
 	public void visit(final OntModel model, final Request request) {
-
+		//model.read(CHARACTERISTIC_NS);
 	}
 	
 	//first check ifg bbbq state is null for chemical
 	//new Query().findGraphComponentsWithPattern(?measurement, pol:hasCharacteristic, null)
 	//returns a list of graphComponent. should be a singleon list, check on what it returns when empty
     //if not empty, graph.addpattern();
-	@Override
-	public void visit(final Query query, final Request request) {
-		String characteristic = (String)request.getParam("characteristic");
-		if(characteristic != null && characteristic.length() > 0) {
-			//throw new IllegalArgumentException("The source parameter must be supplied");
-			final Variable measurement = query.getVariable(VAR_NS+"measurement");
-			final QueryResource hasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
-			List<GraphComponentCollection> graphs = query.findGraphComponentsWithPattern(measurement, hasCharacteristic, null);
-			if ( graphs.size() > 0){
-				GraphComponentCollection graph = graphs.get(0);
-				final QueryResource characteristicResource = query.getResource(POL_NS+characteristic);			
-				graph.addPattern(measurement, hasCharacteristic, characteristicResource);			
-			}	
-		}	
+	
+	
+	
+	
+	public String queryIfTaxonomicCharacteristicCategory(Request request, String characteristicInArray){
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final Variable speciesVariable = query.getVariable(VAR_NS + "characteristic");	
+		final QueryResource addedCharacteristic = query.getResource(characteristicInArray);
+		graph.addPattern(speciesVariable, subClassOf , addedCharacteristic);				
+		String responseStr = FAILURE;
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);	
+			log.debug("Results: "+resultStr);
+			if(resultStr == null) {
+				return responseStr;
+			}
+			try {
+				JSONObject results = new JSONObject(resultStr);
+				JSONObject response = new JSONObject();
+				JSONArray data = new JSONArray();
+				response.put("success", true);
+				response.put("data", data);
+				results = results.getJSONObject("results");
+				JSONArray bindings = results.getJSONArray(BINDINGS);
+				for(int j=0;j <bindings.length();j++) {
+					JSONObject binding = bindings.getJSONObject(j);
+					String speciesId = binding.getJSONObject("characteristic").getString("value");
+					JSONObject mapping = new JSONObject();
+					mapping.put("characteristic", speciesId);
+					data.put(mapping);
+				}
+				responseStr = response.toString();
+			} catch (JSONException e) {
+				log.error("Unable to parse JSON results", e);
+			}
+			return responseStr;	
+		
+		
 	}
+	
+	public void visit(final Query query, final Request request) {	
+		
+		final Variable element = query.getVariable(QUERY_NS+"element");
+		String singletonCharacteristic ="";
+		
+		if(request.getParam("characteristic") != null && ((JSONArray) request.getParam("characteristic")).length() > 1  ){
+			
+		JSONArray characteristicParams = (JSONArray)request.getParam("characteristic");			
+		final UnionComponent union = query.createUnion();
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+		graph2.addGraphComponent(union);
+		GraphComponentCollection coll;
+		
+		for(int i = 0; i < characteristicParams.length(); i++)
+		{
+			String characteristicInArray = null;
+			try {
+				characteristicInArray = characteristicParams.getString(i);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}				
+			String resultStr = queryIfTaxonomicCharacteristicCategory(request, characteristicInArray);
+			if(resultStr != "FAILURE"){
+			    request.getLogger().error(resultStr);
+			    JSONObject results = null;
+				try {
+					results = new JSONObject(resultStr);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    JSONArray data = null;
+				try {
+					data = (JSONArray) results.get("data");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    	if(data.length() > 0){
+			    		final QueryResource addedCharacteristic = query.getResource(characteristicInArray);
+		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+						coll = union.getUnionComponent(i);
+				        coll.addPattern(element, subClassOf, addedCharacteristic);	
+			    	}
+			    	else{
+					    request.getLogger().error("(no results for queryIfTaxonomicCharacteristicCategory)");
+					 // final QueryResource addedSpecies = query.getResource(characteristicInArray);
+					//	coll = union.getUnionComponent(i);
+				   //     coll.addPattern(addedSpecies, hasLabel, scientificName);	
+					//	graph.addPattern(measurement, hasCharacteristic, characteristicResource);			
+
+			    	}
+			}
+			else{
+			    request.getLogger().error("(failure to queryIfTaxonomicCharacteristicCategory)");
+			}	
+			
+		}
+	}
+		else if (((JSONArray) request.getParam("characteristic")).length() == 1){
+		    request.getLogger().error("(got to else if where species == 1)");
+
+			JSONArray characteristicParams = (JSONArray)request.getParam("characteristic");	
+			String characteristicInArray = null;
+			try {
+				characteristicInArray = characteristicParams.getString(0);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+			String resultStr = queryIfTaxonomicCharacteristicCategory(request, characteristicInArray);
+			if(resultStr != "FAILURE"){
+			    request.getLogger().error("subclassOf results: " + resultStr);
+			    JSONObject results = null;
+				try {
+					results = new JSONObject(resultStr);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    JSONArray data = null;
+				try {
+					data = (JSONArray) results.get("data");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
+			    request.getLogger().error("data.length : " + data.length());
+			    final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+				final QueryResource addedCharacteristic = query.getResource(characteristicInArray);
+			    	if(data.length() > 0){			    		
+			    		//just use the pattern species subClassOf speciesSelection
+		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+
+					    request.getLogger().error("addedCharacteristic: " + addedCharacteristic.toString());
+					    request.getLogger().error("element: " + element.toString());
+					    request.getLogger().error("subclassof: " + subClassOf.toString());
+
+				        graph2.addPattern(element, subClassOf, addedCharacteristic);	
+			    	}
+			    	else{
+					    request.getLogger().error("(no results for queryIfTaxonomicCharacteristicCategory)");
+					//	graph2.addPattern(addedSpecies, hasLabel, scientificName);		
+			    	}
+				}		
+		}
+		else{
+			//final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+	//		graph2.addPattern(species, hasLabel, scientificName);		
+		}		
+	}
+	
 	
 	@QueryMethod
 	public String queryCharacteristicTaxonomy(Request request) throws IOException, JSONException{
@@ -110,8 +249,7 @@ public class CharacteristicsModule implements Module {
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
 		graph.addPattern(id, subClassOf, parent);
 		graph.addPattern(id, hasLabel, label);
-		String responseStr = FAILURE;
-		
+		String responseStr = FAILURE;	
 		
 		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 		////return config.getQueryExecutor(request).accept("application/json").execute(query);
@@ -157,6 +295,9 @@ public class CharacteristicsModule implements Module {
 	
 	
 	
+
+
+
 
 	@Override
 	public String getName() {
@@ -228,6 +369,12 @@ public class CharacteristicsModule implements Module {
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
 		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
 		
+		//OptionalComponent optional = query.createOptional();
+		final Variable limit = query.getVariable(VAR_NS+"limit");
+		final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
+
+
+		
 		query.addPattern(site, polHasMeasurement, measurement);
 		query.addPattern(measurement, polHasCharacteristic, chemical);
 		query.addPattern(measurement, polHasValue, value);
@@ -236,6 +383,8 @@ public class CharacteristicsModule implements Module {
 		OptionalComponent optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, polHasPermit, permit);
+		optional.addPattern(measurement, polHasLimitValue, limit);
+
 		optional = query.createOptional();
 		query.addGraphComponent(optional);
 

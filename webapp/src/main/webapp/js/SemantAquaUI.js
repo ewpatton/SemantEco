@@ -111,10 +111,15 @@ var SemantAquaUI = {
             	var chartdata=[];
             	
             	var chartseries1=[];
+            	var limitThreshold=[];
+            	var limitThresholdValue=mesurementData[0].limit.value;
 				for(var i=0;i<mesurementData.length;i++) {
 					chartseries1.push([mesurementData[i].time.value,Math.round( mesurementData[i].value.value )]);
+					// chartseries1.push([mesurementData[i].time.value,mesurementData[i].value.value]);
+					limitThreshold.push([mesurementData[i].time.value,Math.round( mesurementData[i].limit.value )]);
+					// limitThreshold.push([mesurementData[i].time.value,mesurementData[i].limit.value]);
 				}
-				chartdata.push(chartseries1);
+				chartdata.push(chartseries1,limitThreshold);
 
 				var speciesnames=[];
 				var speciessobj={};
@@ -130,9 +135,19 @@ var SemantAquaUI = {
 
 				var series=[];
 				series.push({
-							label:$("#selectforcharacteristic option:selected").html()
-							,yaxis:'yaxis'
-						});
+					label:$("#selectforcharacteristic option:selected").html()
+					,yaxis:'yaxis'
+				});
+
+				series.push({
+					label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
+					,yaxis:'yaxis'
+					,showMarker: false
+					,highlighter:{
+						show:false
+						,bringSeriesToFront:false
+					}
+				});
 				
 				for(var i=0;i<speciesnames.length;i++){
 					chartdata.push(speciessobj[speciesnames[i]]);
@@ -161,7 +176,7 @@ var SemantAquaUI = {
 					    },
 					    yaxis:{
 					        tickOptions:{
-					            formatString:'%d'
+					            formatString:'%.2f'
 					        },
 					    },
 					    y2axis:{
@@ -242,7 +257,7 @@ var SemantAquaUI = {
 
 					
 					if(!$.bbq.getState("species")){
-						alert("Please select species on the left");
+						alert("Please select species on the right");
 						return false;
 					}
 
