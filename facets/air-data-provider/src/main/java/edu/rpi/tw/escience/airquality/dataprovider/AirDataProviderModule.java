@@ -230,12 +230,12 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		// change to icon names here should also occur in air-data-provider.js
 		Resource res = config.getResource("clean-air.png");
 		domain.addDataType("clean-air", "Clean Air", res);
-		res = config.getResource("clean-air-facility.png");
-		domain.addDataType("clean-air-facility", "Clean Air Facility", res);
+//		res = config.getResource("clean-air-facility.png");
+//		domain.addDataType("clean-air-facility", "Clean Air Facility", res);
 		res = config.getResource("polluted-air.png");
 		domain.addDataType("polluted-air", "Polluted Air", res);
-		res = config.getResource("polluted-air-facility.png");
-		domain.addDataType("polluted-air-facility", "Polluted Air Facility", res);
+//		res = config.getResource("polluted-air-facility.png");
+//		domain.addDataType("polluted-air-facility", "Polluted Air Facility", res);
 	}
 
 }
