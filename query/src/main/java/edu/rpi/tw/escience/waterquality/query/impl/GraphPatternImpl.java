@@ -103,7 +103,10 @@ public class GraphPatternImpl implements GraphPattern {
 	public String toString() {
 		String result = subject+" "+predicate+" ";
 		if(object == null) {
-			if(value.contains("\"")) {
+			if(value == null) {
+				result += "null";
+			}
+			else if(value.contains("\"")) {
 				result += "\"\"\""+value+"\"\"\"";
 			}
 			else {
