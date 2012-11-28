@@ -43,6 +43,9 @@ public class CharacteristicsModule implements Module {
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 	private static final String TIME_NS = "http://www.w3.org/2006/time#";
 	private static final String ENHANCE_NS = "http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-ri/vocab/enhancement/1/";
+	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+	private static final String PROP_VAR = "p";
+	
 	private ModuleConfiguration config = null;
 	private static final Logger log = Logger.getLogger(CharacteristicsModule.class);
 
@@ -350,6 +353,14 @@ public class CharacteristicsModule implements Module {
 		final Variable unit = query.getVariable(VAR_NS+"unit");
 		final Variable time = query.getVariable(VAR_NS+"time");
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		final Variable supers = query.getVariable(VAR_NS+"supers");
+		final Variable supers2 = query.getVariable(VAR_NS+"supers2");
+		final Variable op = query.getVariable(VAR_NS+"op");
+		final Variable dt = query.getVariable(VAR_NS+"dt");
+		final Variable bn = query.createBlankNode();
+		final Variable res = query.getVariable(VAR_NS+"res");
+		final Variable cls = query.getVariable(VAR_NS+"cls");
+		final Variable p = query.getVariable(VAR_NS+PROP_VAR);
 		
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(element);
@@ -358,6 +369,7 @@ public class CharacteristicsModule implements Module {
 		vars.add(unit);
 		vars.add(time);
 		vars.add(measurement);
+		vars.add(op);
 		
 		// Resources
 		final QueryResource site = query.getResource(siteUri);
@@ -368,6 +380,11 @@ public class CharacteristicsModule implements Module {
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
 		final QueryResource timeInXSDDateTime = query.getResource(TIME_NS+"inXSDDateTime");
+		final QueryResource propPath = query.createPropertyPath("rdf:rest*/rdf:first");
+		final QueryResource owlOnProperty = query.getResource(OWL_NS+"onProperty");
+		final QueryResource owlHasValue = query.getResource(OWL_NS+"hasValue");
+		final QueryResource owlSomeValuesFrom = query.getResource(OWL_NS+"someValuesFrom");
+		final QueryResource owlWithRestrictions = query.getResource(OWL_NS+"withRestrictions");
 		
 		//OptionalComponent optional = query.createOptional();
 		final Variable limit = query.getVariable(VAR_NS+"limit");
@@ -380,7 +397,28 @@ public class CharacteristicsModule implements Module {
 		query.addPattern(measurement, polHasValue, value);
 		query.addPattern(measurement, unitHasUnit, unit);
 		query.addPattern(measurement, timeInXSDDateTime, time);
+		
+		// limits based on ontology
 		OptionalComponent optional = query.createOptional();
+		query.addGraphComponent(optional);
+		optional.addPattern(supers, owlOnProperty, polHasCharacteristic);
+		optional.addPattern(supers, owlHasValue, chemical);
+		optional.addPattern(cls, propPath, supers);
+		optional.addPattern(cls, propPath, supers2);
+		optional.addPattern(supers2, owlOnProperty, polHasValue);
+		optional.addPattern(supers2, owlSomeValuesFrom, dt);
+		optional.addPattern(dt, owlWithRestrictions, res);
+		optional.addPattern(res, propPath, bn);
+		optional.addPattern(bn, p, limit);
+		optional.addFilter("datatype(?limit) = xsd:double");
+		
+		addOpMatch(query, optional, "xsd:minInclusive", "<=", op);
+		addOpMatch(query, optional, "xsd:maxInclusive", ">=", op);
+		addOpMatch(query, optional, "xsd:minExclusive", "<", op);
+		addOpMatch(query, optional, "xsd:maxExclusive", ">", op);
+		
+		// limits based on epa vocab (i.e. pol:hasLimitValue)
+		optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, polHasPermit, permit);
 		optional.addPattern(measurement, polHasLimitValue, limit);
@@ -391,6 +429,16 @@ public class CharacteristicsModule implements Module {
 		query.addOrderBy(time, SortType.ASC);
 
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
+	}
+	
+	protected void addOpMatch(final Query query, 
+			final GraphComponentCollection graph, 
+			final String xsdOp, final String mathOp, 
+			final Variable mathVar) {
+		OptionalComponent optional = query.createOptional();
+		graph.addGraphComponent(optional);
+		optional.addFilter("?"+PROP_VAR+" = "+xsdOp);
+		optional.addBind("\""+mathOp+"\"", mathVar);
 	}
 
 	@QueryMethod
