@@ -615,5 +615,42 @@ public class CharacteristicsModule implements Module {
 		}
 		return uris;
 	}
+	
+	/**
+	 * Queries the graph for all of the characteristics present.
+	 * Expects the zip, state, county, and site parameters.
+	 * @param request Object encapsulating a RESTful request
+	 * @return A JSON-encoded object containing a success code or
+	 * a SPARQL/JSON result.
+	 */
+	@QueryMethod
+	public String getCharacteristicsForSite(final Request request) {
+		if(request.getParam("site")==null) {
+			log.error("Expected parameter site missing in REST call");
+			return FAILURE;
+		}
+		if(!(request.getParam("site") instanceof String)) {
+			log.error("Expected a single site as a string");
+			return FAILURE;
+		}
+		
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		
+		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
+		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
+		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
+		final QueryResource site = query.getResource((String)request.getParam("site"));
+		
+		final Variable measure = query.getVariable(VAR_NS+"measure");
+		final Variable element = query.getVariable(VAR_NS+"element");
+		final Variable label = query.getVariable(VAR_NS+"label");
+		
+		query.addPattern(site, polHasMeasurement, measure);
+		query.addPattern(measure, polHasCharacteristic, element);
+		OptionalComponent optional = query.createOptional();
+		optional.addPattern(element, rdfsLabel, label);
+		
+		return config.getQueryExecutor(request).executeLocalQuery(query);
+	}
 
 }
