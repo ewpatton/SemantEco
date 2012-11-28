@@ -70,6 +70,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	private static final String child = "child";
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
+	private static final String ISBIRD_VAR = "isBird";
 
 
 	private ModuleConfiguration config = null;
@@ -77,21 +78,84 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(final Model model, final Request request) {
 		// TODO populate data model
+		// would have to load the bird data for the particular county/state
+		//do a construct similar to airDataProvider and waterDataProvider
+		
+		//get the state and county from params
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");
+		String site = (String) request.getParam("uri");
+
+		assert(countyCode != null);
+		assert(stateAbbr != null);
+		
+		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		final Variable s = query.getVariable(QUERY_NS+"s");
+		final GraphComponentCollection construct = query.getConstructComponent();
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource birdSite = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite");
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable label = query.getVariable(QUERY_NS+"label");
+		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
+		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		
+		
+		//species site and measurement (count)
+
+		//just the uri, lat and long.
+		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
+		
+		construct.addPattern(s, rdfType, birdSite );
+		construct.addPattern(s, rdfsLabel, label);
+		construct.addPattern(s, wgsLat, lat);
+		construct.addPattern(s, wgsLong, lng);
+		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
+		//sites are per measurement
+		graph.addPattern(s, rdfType, birdSite );
+		graph.addPattern(s, rdfsLabel, label);
+		graph.addPattern(s, wgsLat, lat);
+		graph.addPattern(s, wgsLong, lng);
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		
+		//run the config execugte....
+			
 	}
 
 	@Override
 	public void visit(final OntModel model, final Request request) {
 		model.read(BIRD_NS);
+		//create a bird.owl that importas pollution.owl and asserts a subclass of Measurement site
+		//that is a BirdSite used as class enchancement in the rdf eBird data.
+		//in the enhancement, need to promote4 location to a uri, and make it a subclass, BirdSite.
+		//check if the label shows up. try on a subset.
+		//
+
+
 	}
 
 	@Override
 	public void visit(final Query query, final Request request) {
 		// TODO modify queries
-		/*
-		 * //you're "joining" on the scientific name, for now
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
-		graph2.addPattern(species, hasLabel, scientificName);
-		 */
+		request.getLogger().debug("AirDataProviderModule updating query");
+		if(query.getType() != Type.SELECT) {
+			return;
+		}
+		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource polMeasurementSite = query.getResource(POL_NS+"MeasurementSite");
+		List<GraphComponentCollection> graphs = query.findGraphComponentsWithPattern(site, rdfType, polMeasurementSite);
+		if(graphs != null && graphs.size() > 0) {
+		//	query.setNamespace("air", AIR_NS);
+			final Variable isAir = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a <http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite> } as ?"+ISBIRD_VAR);
+			Set<Variable> vars = new LinkedHashSet<Variable>(query.getVariables());
+			vars.add(isAir);
+			query.setVariables(vars);
+		}
 		
 	}
 	
@@ -335,6 +399,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		//	graph2.addPattern(species, hasLabel, scientificName);		
 
 	}
+	
 	
 	
 
