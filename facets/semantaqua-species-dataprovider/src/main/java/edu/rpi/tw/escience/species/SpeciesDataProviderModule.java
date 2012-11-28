@@ -135,10 +135,73 @@ public class SpeciesDataProviderModule implements Module {
 		return null;
 	}
 	
-	
+	/*
+	 This method will let the calling UI client know if the class is a leaf or a non-leaf node in the class hierarchy.
+	 checks the bbq state value for the key: "queryIfTaxonomicCategoryForJsTree",
 
+	so for testing:
+	$.bbq.pushState({"queryIfTaxonomicCategoryForJstree":"http://ebird#Struthionidae"})
+
+	returns:
+	{"data":[{"species":"http://ebird#Struthio_camelus"},{"species":"http://ebird#Struthio_camelus_molybdophanes"}],"success":true}
+
+	but if I try with a leaf node:
+	$.bbq.pushState({"queryIfTaxonomicCategoryForJstree":"http://ebird#Nothocercus_bonapartei_frantzii"})
+
+	you get:
+	{"data":[],"success":true}
+	 */
+	@QueryMethod
+	public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONException {
+		
+		String candidateTaxonomicCategory = (String) request.getParam("queryIfTaxonomicCategoryForJstree");	
+	    request.getLogger().error("json object is: " + candidateTaxonomicCategory);
+	  //  String candidateTaxonomicCategoryString  = candidateTaxonomicCategory.toString();
+		if(candidateTaxonomicCategory == null){
+			return null;
+		}
+		else{
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final Variable speciesVariable = query.getVariable(VAR_NS + "species");	
+		final QueryResource addedSpecies = query.getResource(candidateTaxonomicCategory);
+		graph.addPattern(speciesVariable, subClassOf , addedSpecies);				
+		String responseStr = FAILURE;
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);	
+			log.debug("Results: "+resultStr);
+			if(resultStr == null) {
+				return responseStr;
+			}
+			try {
+				JSONObject results = new JSONObject(resultStr);
+				JSONObject response = new JSONObject();
+				JSONArray data = new JSONArray();
+				response.put("success", true);
+				response.put("data", data);
+				results = results.getJSONObject("results");
+				JSONArray bindings = results.getJSONArray(BINDINGS);
+				for(int j=0;j <bindings.length();j++) {
+					JSONObject binding = bindings.getJSONObject(j);
+					String speciesId = binding.getJSONObject("species").getString("value");
+					JSONObject mapping = new JSONObject();
+					mapping.put("species", speciesId);
+					data.put(mapping);
+				}
+				responseStr = response.toString();
+			} catch (JSONException e) {
+				log.error("Unable to parse JSON results", e);
+			}
+			return responseStr;		
+		}
+	}
 	
 	
+	
+	/*
+	 This method will 
+	 */
 	public String queryIfTaxonomicCategory(Request request, String speciesInArray) throws JSONException {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
@@ -267,6 +330,200 @@ public class SpeciesDataProviderModule implements Module {
 		//	graph2.addPattern(species, hasLabel, scientificName);		
 
 	}
+	
+	
+
+	@QueryMethod
+	public String queryForNearbySpeciesCountsByLocality(Request request) throws JSONException{
+		
+		/*
+SELECT  ?scientific_name ?count ?location ?date
+WHERE 
+ {
+    graph <http://was.tw.rpi.edu/ebird-data-big> {
+    ?measurement <http://rdfs.org/ns/void#inDataset> <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4> . 
+    ?measurement <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4/params/enhancement/1/countyCoded> "019" . 
+    ?measurement <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4/params/enhancement/1/stateCoded> "MD" .
+?measurement <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality> ?location .
+    ?measurement <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/scientific_name> ?scientific_name . 
+    ?measurement <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/observation_count> ?count . 
+    ?measurement <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/observation_date> ?date . 
+    ?measurement <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat . 
+    ?measurement <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long . 
+    
+    "Castle Haven Rd"
+}
+} ORDER BY ?location
+		 */
+		
+/*would it be better for matthew if i have a json with the locality and date as the key, and then a json array with key/values for location,
+		
+		*/
+		
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		//Variables
+		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");	
+		
+		assert(countyCode != null);
+		assert(stateAbbr != null);
+		
+		//URIs
+		//final QueryResource dataSet = query.getResource("http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19");
+		final QueryResource dataSet = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4");
+		//<http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4>
+		final QueryResource inDataSet = query.getResource("http://rdfs.org/ns/void#inDataset");
+		                                             //http://rdfs.org/ns/void#inDataset	
+		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
+		final Variable measurement = query.getVariable(VAR_NS+"measurement");
+		final Variable count = query.getVariable(QUERY_NS+"count");
+		final Variable date = query.getVariable(QUERY_NS+"date");
+		final Variable commonName = query.getVariable(VAR_NS+"commonName");
+		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
+		final Variable species = query.getVariable(VAR_NS + "species");
+		final Variable locality = query.getVariable(VAR_NS + "locality");
+
+
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable label = query.getVariable(QUERY_NS+LABEL_VAR);
+		
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
+		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
+		final QueryResource localityProperty = query.getResource(e2_NS + "locality");
+
+		
+		//query based on the species name, you are doing this across two graphs
+		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
+		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
+		final QueryResource hasLabel = query.getResource(RDFS_NS+ "label");
+		
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(measurement);
+		vars.add(count);
+		vars.add(date);
+		vars.add(commonName);
+		vars.add(scientificName);
+		vars.add(lat);
+		vars.add(lng);
+		//vars.add(species);
+		
+		//vars.add(measurement);
+
+		query.setVariables(vars);
+		//query pattern
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
+		graph.addPattern(measurement, inDataSet, dataSet);
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph.addPattern(measurement, birdCount, count);
+		graph.addPattern(measurement, obsDate, date);
+		graph.addPattern(measurement, hasCommonName, commonName);
+		graph.addPattern(measurement, hasScientificName, scientificName);
+		graph.addPattern(measurement, wgsLat, lat);
+		graph.addPattern(measurement, wgsLong, lng);
+	
+	
+		//here we are binding the search to specific species
+		if(request.getParam("species") != null && ((JSONArray) request.getParam("species")).length() > 1  ){// && request.getParam("species").length() > 0) {
+		    request.getLogger().error("species length: " + ((JSONArray) request.getParam("species")).length());
+
+		    request.getLogger().error("(got to else if where species > 1)");
+
+			//note that this is going to be a json array of strings
+			//you're "joining" on the scientific name, for now
+			JSONArray speciesParams = (JSONArray)request.getParam("species");	
+			final UnionComponent union = query.createUnion();
+			final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+			graph2.addGraphComponent(union);
+			//GraphComponentCollection coll = union.getUnionComponent(0);
+			GraphComponentCollection coll;
+			//for each element in the bbq state array for "species" key
+			for(int i = 0; i < speciesParams.length(); i++)
+			{
+				//JSONObject objectInArray = speciesParams.getJSONObject(i);
+				String speciesInArray = speciesParams.getString(i);				
+				
+				String resultStr = queryIfTaxonomicCategory(request, speciesInArray);
+				//if there are any bindings union up				
+				if(resultStr != "FAILURE"){
+			    request.getLogger().error("subclassOf results: " + resultStr);
+			    JSONObject results = new JSONObject(resultStr);
+			    JSONArray data = (JSONArray) results.get("data");
+			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
+			    request.getLogger().error("data.length : " + data.length());
+
+			    	if(data.length() > 0){			    		
+			    		//just use the pattern species subClassOf speciesSelection
+		    			final QueryResource addedSpecies = query.getResource(speciesInArray);
+		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+						coll = union.getUnionComponent(i);
+						//final NamedGraphComponent graph3 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+						//coll.addGraphComponent(graph3);					
+						//ebird taxonomy graph
+				        coll.addPattern(species, subClassOf, addedSpecies);	
+				        coll.addPattern(species, hasLabel, scientificName);	
+				        //ebird data graph (already handled in the first part of the query)
+				        //graph3.addPattern(addedSpecies, hasLabel, scientificName);			    			
+			    		
+			    	}
+			    	else{
+					    request.getLogger().error("(no results for queryIfTaxonomicCategory)");
+					  final QueryResource addedSpecies = query.getResource(speciesInArray);
+						coll = union.getUnionComponent(i);
+				        coll.addPattern(addedSpecies, hasLabel, scientificName);		
+			    	}
+				}
+				else{
+				    request.getLogger().error("(failure to queryIfTaxonomicCategory)");
+				}			      			    					
+			}			
+		}	
+		else if (((JSONArray) request.getParam("species")).length() == 1){
+		    request.getLogger().error("(got to else if where species == 1)");
+
+			JSONArray speciesParams = (JSONArray)request.getParam("species");	
+			String speciesInArray = speciesParams.getString(0);		
+			String resultStr = queryIfTaxonomicCategory(request, speciesInArray);
+			if(resultStr != "FAILURE"){
+			    request.getLogger().error("subclassOf results: " + resultStr);
+			    JSONObject results = new JSONObject(resultStr);
+			    JSONArray data = (JSONArray) results.get("data");
+			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
+			    request.getLogger().error("data.length : " + data.length());
+			    final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+				final QueryResource addedSpecies = query.getResource(speciesInArray);
+			    	if(data.length() > 0){			    		
+			    		//just use the pattern species subClassOf speciesSelection
+		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+
+					    request.getLogger().error("addedSpecies: " + addedSpecies.toString());
+					    request.getLogger().error("species: " + species.toString());
+					    request.getLogger().error("subclassof: " + subClassOf.toString());
+
+				        graph2.addPattern(species, subClassOf, addedSpecies);	
+				        graph2.addPattern(species, hasLabel, scientificName);				       
+			    	}
+			    	else{
+					    request.getLogger().error("(no results for queryIfTaxonomicCategory)");
+						graph2.addPattern(addedSpecies, hasLabel, scientificName);		
+			    	}
+				}		
+		}
+		else{
+			final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+			graph2.addPattern(species, hasLabel, scientificName);		
+		}
+	    request.getLogger().error("query is : " + query.toString());
+
+		return config.getQueryExecutor(request).accept("application/json").execute(query);		
+	}
+	
 	
 	@QueryMethod
 	public String queryForNearbySpeciesCounts(Request request) throws JSONException{
@@ -882,6 +1139,73 @@ public class SpeciesDataProviderModule implements Module {
 				
 	}
 	*/
+	
+	
+
+	@QueryMethod
+	public String queryeBirdTaxonomyRoots(Request request) throws IOException, JSONException{	
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		//Variables
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");		
+		//URIs
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(label);
+		vars.add(parent);
+		query.setVariables(vars);
+		//query.addPattern(site, inDataSet, dataSet);
+				final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+				graph.addPattern(id, subClassOf, parent);
+				graph.addPattern(id, hasLabel, label);
+				//get only the subclasses of the subclasses of OWL thing
+				String responseStr = FAILURE;
+				
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
+				////return config.getQueryExecutor(request).accept("application/json").execute(query);
+				log.debug("Results: "+resultStr);
+				if(resultStr == null) {
+					return responseStr;
+				}
+				try {
+					JSONObject results = new JSONObject(resultStr);
+					JSONObject response = new JSONObject();
+					JSONArray data = new JSONArray();
+					response.put("success", true);
+					response.put("data", data);
+					String superclassId = null;
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for(int i=0;i<bindings.length();i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						String subclassId = binding.getJSONObject("child").getString("value");
+						String subclassLabel = binding.getJSONObject("label").getString("value");
+
+						try {
+							superclassId = binding.getJSONObject("parent").getString("value");
+						}
+						catch(Exception e) { }
+						//if(labelStr == null) {
+						//	labelStr = sourceUri.substring(sourceUri.lastIndexOf('/')+1).replace('-', '.');
+						//}
+						JSONObject mapping = new JSONObject();
+						mapping.put("id", subclassId);
+						mapping.put("label", subclassLabel);
+						mapping.put("parent", superclassId);
+						data.put(mapping);
+					}
+					responseStr = response.toString();
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				return responseStr;			
+	}
+	
+	
 
 	@QueryMethod
 	public String queryeBirdTaxonomy(Request request) throws IOException, JSONException{	

@@ -76,10 +76,6 @@ public class CharacteristicsModule implements Module {
 	//new Query().findGraphComponentsWithPattern(?measurement, pol:hasCharacteristic, null)
 	//returns a list of graphComponent. should be a singleon list, check on what it returns when empty
     //if not empty, graph.addpattern();
-	
-	
-	
-	
 	public String queryIfTaxonomicCharacteristicCategory(Request request, String characteristicInArray){
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
@@ -177,7 +173,7 @@ public class CharacteristicsModule implements Module {
 			}	
 			
 		}
-	}
+		}
 		else if (((JSONArray) request.getParam("characteristic")).length() == 1){
 		    request.getLogger().error("(got to else if where species == 1)");
 
@@ -430,7 +426,7 @@ public class CharacteristicsModule implements Module {
 
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}
-	
+
 	protected void addOpMatch(final Query query, 
 			final GraphComponentCollection graph, 
 			final String xsdOp, final String mathOp, 

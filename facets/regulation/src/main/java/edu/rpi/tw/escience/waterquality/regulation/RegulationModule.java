@@ -238,6 +238,7 @@ public class RegulationModule implements Module {
 		query.setVariables(vars);
 		
 		// Resources
+		String ENHANCE_NS = "http://sparql.tw.rpi.edu/source/epa-gov/dataset/echo-measurements-ri/vocab/enhancement/1/";
 		final QueryResource site = query.getResource(siteUri);
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
@@ -247,6 +248,10 @@ public class RegulationModule implements Module {
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
 		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
+		final QueryResource test_type = query.getResource(ENHANCE_NS+"test_type");
+		final Variable testVar = query.getVariable(VAR_NS+"test");
+
+
 		
 		query.addPattern(site, polHasMeasurement, measurement);
 		query.addPattern(measurement, rdfType, polRegulationViolation);
@@ -259,6 +264,9 @@ public class RegulationModule implements Module {
 		optional = query.createOptional();
 		query.addGraphComponent(optional);
 		optional.addPattern(measurement, rdfType, type);
+		optional.addPattern(measurement, test_type, testVar);
+
+		optional.addPattern(measurement, rdfsSubClassOf, polRegulationViolation);
 		optional.addPattern(type, rdfsSubClassOf, polRegulationViolation);
 		
 		extendQueryForLimits(query);
