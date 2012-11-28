@@ -357,6 +357,7 @@ public class CharacteristicsModule implements Module {
 		final Variable res = query.getVariable(VAR_NS+"res");
 		final Variable cls = query.getVariable(VAR_NS+"cls");
 		final Variable p = query.getVariable(VAR_NS+PROP_VAR);
+		final Variable limit = query.getVariable(VAR_NS+"limit");
 		
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(element);
@@ -366,6 +367,7 @@ public class CharacteristicsModule implements Module {
 		vars.add(time);
 		vars.add(measurement);
 		vars.add(op);
+		vars.add(limit);
 		
 		// Resources
 		final QueryResource site = query.getResource(siteUri);
@@ -381,12 +383,8 @@ public class CharacteristicsModule implements Module {
 		final QueryResource owlHasValue = query.getResource(OWL_NS+"hasValue");
 		final QueryResource owlSomeValuesFrom = query.getResource(OWL_NS+"someValuesFrom");
 		final QueryResource owlWithRestrictions = query.getResource(OWL_NS+"withRestrictions");
-		
 		//OptionalComponent optional = query.createOptional();
-		final Variable limit = query.getVariable(VAR_NS+"limit");
 		final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
-
-
 		
 		query.addPattern(site, polHasMeasurement, measurement);
 		query.addPattern(measurement, polHasCharacteristic, chemical);
@@ -406,7 +404,7 @@ public class CharacteristicsModule implements Module {
 		optional.addPattern(dt, owlWithRestrictions, res);
 		optional.addPattern(res, propPath, bn);
 		optional.addPattern(bn, p, limit);
-		optional.addFilter("datatype(?limit) = xsd:double");
+		optional.addFilter("datatype(?limit) = xsd:decimal");
 		
 		addOpMatch(query, optional, "xsd:minInclusive", "<=", op);
 		addOpMatch(query, optional, "xsd:maxInclusive", ">=", op);
