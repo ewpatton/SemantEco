@@ -111,12 +111,14 @@ var SemantAquaUI = {
             	var chartdata=[];
             	
             	var chartseries1=[];
+            	
             	var limitThreshold=[];
             	var limitThresholdValue=mesurementData[0].limit.value;
+            	var unit=mesurementData[0].unit.value;
 				for(var i=0;i<mesurementData.length;i++) {
-					chartseries1.push([mesurementData[i].time.value,Math.round( mesurementData[i].value.value )]);
+					chartseries1.push([mesurementData[i].time.value,Math.round( mesurementData[i].value.value*100 )/100]);
 					// chartseries1.push([mesurementData[i].time.value,mesurementData[i].value.value]);
-					limitThreshold.push([mesurementData[i].time.value,Math.round( mesurementData[i].limit.value )]);
+					limitThreshold.push([mesurementData[i].time.value,Math.round( mesurementData[i].limit.value*100 )/100]);
 					// limitThreshold.push([mesurementData[i].time.value,mesurementData[i].limit.value]);
 				}
 				chartdata.push(chartseries1,limitThreshold);
@@ -180,6 +182,9 @@ var SemantAquaUI = {
 					        },
 					    },
 					    y2axis:{
+					    	tickOptions:{
+					            formatString:'%d'
+					        },
 					        autoscale:true, 
 					        tickOptions:{showGridline:false}
 					    }
@@ -188,7 +193,8 @@ var SemantAquaUI = {
 			        	show:true, 
 			        	location: 's',
 			        	placement: 'outside',
-			        	rendererOptions: {numberColumns: 2}
+			        	rendererOptions: {numberColumns: 2},
+			        	marginTop:30
 			        }
 			        ,highlighter: {
 			            show: true,
