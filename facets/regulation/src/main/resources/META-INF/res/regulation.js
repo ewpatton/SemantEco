@@ -36,17 +36,17 @@ $(window).bind("initialize", function() {
 		$("#spinner").show();
 		RegulationModule.queryForSitePollution({}, function(data){
 			$("#spinner").hide();
-			console.log("data retrieved in queryForSitePollution");
+			console.log("data retrieved in queryForSitePollution. Data(below):");
 			data=JSON.parse(data);
 			console.log(data);
-			console.log(marker);
+			// console.log(marker);
 			// call the auto-generated AJAX method to get the polluted measurements
 
 			//////////////////////////////////////////////////////////////////
 		    var contents = "";
 		    if(marker.data.label.value != '')
 		      contents += "<div class='top'>Site: "+marker.data.label.value+"</div>";
-		  	console.log(data.results);
+		  	// console.log(data.results);
 		    var bindings = data.results.bindings;
 		    var found = {};
 		    var effects = {};

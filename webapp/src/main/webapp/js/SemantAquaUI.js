@@ -41,29 +41,46 @@ var SemantAquaUI = {
             $(SemantAquaUI.infowindowcontent).html(marker.tabledata);
             $(SemantAquaUI.infowindowcontrol).html("");
             console.log($(".characteristics").length);
-            if($(".characteristics").length != 0){
+            // if($(".characteristics").length != 0){
+            if(true){
             	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
             }
 
             function leftcoloumgenerater(){
+            	$(".lb_loading").show();
             	var leftcolumn=$(document.createElement('div')).addClass("leftcolumn");
             	var selectscontainer=$(document.createElement('div')).addClass("selectscontainer").appendTo(leftcolumn);
             	$(document.createElement('div')).attr("id","lightboxchart").appendTo(leftcolumn);
 
             	var selectforcharacteristic = $('<select id="selectforcharacteristic" class="selects" />').appendTo(selectscontainer);
-    			$("<option />", {value: "", text: ""}).addClass("characteristics").appendTo(selectforcharacteristic);
-            	$(".characteristics").each(function(){
-            		var ifexist=false;
-            		var self=this;
-            		if($(selectforcharacteristic).children().each(function(){
-            			if($(this).html()==$(self).html()){
-            				ifexist=true;
-            			}
-            		}));
-            		if(!ifexist){
-            			$("<option />", {value: $(this).data("value"), text: $(this).html()}).addClass("characteristics").appendTo(selectforcharacteristic);
-            		}
-            	});
+    			$("<option />", {value: "", text: ""}).appendTo(selectforcharacteristic);
+            	
+    			CharacteristicsModule.getCharacteristicsForSite({}, function(data) { 
+    				$(".lb_loading").hide();
+    				data=JSON.parse(data);
+    				data=data.results.bindings;
+
+    				for(var i=0;i<data.length;i++){
+    					var uri=data[i]["element"]["value"];
+    					var label=uri.substr(uri.indexOf("#")+1).replace(/_/g," ");
+    					var ifexist=false;
+	            		if($(selectforcharacteristic).children().each(function(){
+	            			if($(this).html()==label){
+	            				ifexist=true;
+	            			}
+	            		}));
+	            		if(!ifexist){
+	            			$("<option />", {value: uri, text: label}).addClass("characteristics").appendTo(selectforcharacteristic);
+	            		}
+    				}
+
+    				// $(".characteristics").each(function(){
+	            		
+	       //      	});
+    			});
+
+            	
+
             	var selectfortest = $('<select id="selectfortest" class="selects" />').hide().appendTo(selectscontainer);
 
             	var characteristicssubmit=$('<input type="submit" class="characterssubmit" />').attr("disabled", "disabled").appendTo(selectscontainer);
@@ -236,7 +253,7 @@ var SemantAquaUI = {
 
 					function queryForSiteMeasurementsCallback(data){
 						$(".lb_loading").hide();
-						console.log("queryForSiteMeasurementsCallback. Data:");
+						console.log("queryForSiteMeasurementsCallback. Data(below):");
 						data=JSON.parse(data);
 						console.log(data);
 						mesurementData=data.results.bindings;
