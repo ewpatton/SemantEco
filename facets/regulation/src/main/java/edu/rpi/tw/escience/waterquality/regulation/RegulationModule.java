@@ -314,7 +314,7 @@ public class RegulationModule implements Module {
 		optional.addPattern(dt, owlWithRestrictions, res);
 		optional.addPattern(res, propPath, bn);
 		optional.addPattern(bn, p, limit);
-		optional.addFilter("datatype(?limit) = xsd:double");
+		optional.addFilter("datatype(?limit) = xsd:decimal");
 
 		addOpMatch(query, optional, "xsd:minInclusive", "<=", op);
 		addOpMatch(query, optional, "xsd:maxInclusive", ">=", op);
