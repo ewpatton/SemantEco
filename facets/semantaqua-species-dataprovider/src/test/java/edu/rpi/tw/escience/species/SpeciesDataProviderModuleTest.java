@@ -38,7 +38,7 @@ public class SpeciesDataProviderModuleTest extends TestCase {
 		SpeciesDataProviderModule module = new SpeciesDataProviderModule();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((Query)null, null);
+		//module.visit((Query)null, null);
 	}
 	
 	/*
