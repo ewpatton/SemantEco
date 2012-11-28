@@ -3,7 +3,9 @@ package edu.rpi.tw.escience.species;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,8 +19,10 @@ import org.json.JSONObject;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
+import edu.rpi.tw.escience.waterquality.ProvidesDomain;
 import edu.rpi.tw.escience.waterquality.QueryMethod;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
@@ -31,7 +35,7 @@ import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
-public class SpeciesDataProviderModule implements Module {
+public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
@@ -42,6 +46,7 @@ public class SpeciesDataProviderModule implements Module {
 	private static final String GEOSPECIES_NS = "http://rdf.geospecies.org/ont/geospecies.owl#";
 	public static final String  TXN_NS = "http://lod.taxonconcept.org/ontology/txn.owl#";
 	public static final String  EBIRD_NS = "http://ebird#";
+	public static final String  BIRD_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#";
 	public static final String  EBIRD_DATA_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
 	private static final String WILDLIFE_NS = "http://www.semanticweb.org/ontologies/2012/2/wildlife.owl#";
 	private static final String HEALTHEFFECT_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl";
@@ -76,7 +81,7 @@ public class SpeciesDataProviderModule implements Module {
 
 	@Override
 	public void visit(final OntModel model, final Request request) {
-		// TODO populate ontology model
+		model.read(BIRD_NS);
 	}
 
 	@Override
@@ -1377,6 +1382,30 @@ WHERE
 	@Override
 	public void setModuleConfiguration(final ModuleConfiguration config) {
 		this.config = config;
+	}
+
+	@Override
+	public List<Domain> getDomains(final Request request) {
+		List<Domain> domains = new ArrayList<Domain>();
+		Domain bird = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#"), true);
+		addDataSources(bird, request);
+		addRegulations(bird);
+		addDataTypes(bird);
+		domains.add(bird);
+		return domains;
+	}
+	
+	protected void addRegulations(final Domain domain) {
+		
+	}
+	
+	protected void addDataTypes(final Domain domain) {
+		Resource res = config.getResource("ebird.png");
+		domain.addDataType("birds", "Bird Species", res);
+	}
+	
+	protected void addDataSources(final Domain domain, final Request request) {
+		domain.addSource(URI.create("http://ebird#"), "eBird");
 	}
 
 }
