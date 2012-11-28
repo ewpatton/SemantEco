@@ -639,7 +639,7 @@ public class CharacteristicsModule implements Module {
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
-		final QueryResource site = query.getResource((String)request.getParam("site"));
+		final QueryResource site = query.getResource((String)request.getParam("uri"));
 		
 		final Variable measure = query.getVariable(VAR_NS+"measure");
 		final Variable element = query.getVariable(VAR_NS+"element");
