@@ -625,11 +625,11 @@ public class CharacteristicsModule implements Module {
 	 */
 	@QueryMethod
 	public String getCharacteristicsForSite(final Request request) {
-		if(request.getParam("site")==null) {
+		if(request.getParam("uri")==null) {
 			log.error("Expected parameter site missing in REST call");
 			return FAILURE;
 		}
-		if(!(request.getParam("site") instanceof String)) {
+		if(!(request.getParam("uri") instanceof String)) {
 			log.error("Expected a single site as a string");
 			return FAILURE;
 		}
