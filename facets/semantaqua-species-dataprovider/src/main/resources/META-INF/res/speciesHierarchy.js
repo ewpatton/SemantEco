@@ -5,6 +5,29 @@
 
  
 $(window).bind("initialize", function() {
+	var birdIcon = $("input[value='ebird']+img").attr("src");
+	
+	DataTypeModule.registerVisibilityFunction(function(b) {
+		if(b["isBird"] == undefined) {
+			return false;
+		}
+		var bird = b["isBird"]["value"] == "true";
+		if(!bird) {
+			return false;
+		}
+		return $("input[value='ebird']")[0].checked;
+	});
+	
+	DataTypeModule.registerIconLocator(function(b) {
+		if(b["isBird"] == undefined) {
+			return null;
+		}
+		var bird = b["isBird"]["value"] == "true";
+		if(!bird) {
+			return null;
+		}
+		return birdIcon;
+	});
         	       SpeciesDataProviderModule.queryeBirdTaxonomy({}, function (data){
         	    		  jsonHier=JSON.parse(data);
         	    		  jsonHier=jsonHier["data"];
