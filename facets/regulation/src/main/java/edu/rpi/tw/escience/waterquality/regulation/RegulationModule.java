@@ -91,7 +91,7 @@ public class RegulationModule implements Module {
 					conn.connect();
 					final String type = conn.getContentType();
 					final InputStream content = conn.getInputStream();
-					if(type.equals("application/rdf+xml")) {
+					if(type.equals("application/rdf+xml") || type.equals("text/xml")) {
 						model.read(content, reg);
 					}
 					else if(type.equals("text/turtle")) {
@@ -99,6 +99,9 @@ public class RegulationModule implements Module {
 					}
 					else if(type.equals("text/n3")) {
 						model.read(content, reg, "N3");
+					}
+					else {
+						log.warn("Unexpected content type "+type+" received for '"+reg+"'");
 					}
 				}
 				catch(Exception e) {
