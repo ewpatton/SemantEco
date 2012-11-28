@@ -357,6 +357,10 @@ public class SpeciesDataProviderModule implements Module {
 	*/
 		//here we are binding the search to specific species
 		if(request.getParam("species") != null && ((JSONArray) request.getParam("species")).length() > 1  ){// && request.getParam("species").length() > 0) {
+		    request.getLogger().error("species length: " + ((JSONArray) request.getParam("species")).length());
+
+		    request.getLogger().error("(got to else if where species > 1)");
+
 			//note that this is going to be a json array of strings
 			//you're "joining" on the scientific name, for now
 			JSONArray speciesParams = (JSONArray)request.getParam("species");	
@@ -365,9 +369,6 @@ public class SpeciesDataProviderModule implements Module {
 			graph2.addGraphComponent(union);
 			//GraphComponentCollection coll = union.getUnionComponent(0);
 			GraphComponentCollection coll;
-			
-			
-
 			//for each element in the bbq state array for "species" key
 			for(int i = 0; i < speciesParams.length(); i++)
 			{
@@ -392,31 +393,26 @@ public class SpeciesDataProviderModule implements Module {
 				
 				//here is where I can check results of subClassOf hierarchy query, and then union it
 				String resultStr = queryIfTaxonomicCategory(request, speciesInArray);
-				//if there are any bindings union up
-				
+				//if there are any bindings union up				
 				if(resultStr != "FAILURE"){
-			    request.getLogger().error(resultStr);
+			    request.getLogger().error("subclassOf results: " + resultStr);
 			    JSONObject results = new JSONObject(resultStr);
 			    JSONArray data = (JSONArray) results.get("data");
-			    	if(data.length() > 0){
-			    	//loop over JSONArray and access "species" key
-			    		
+			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
+			    request.getLogger().error("data.length : " + data.length());
+
+			    	if(data.length() > 0){			    		
 			    		//just use the pattern species subClassOf speciesSelection
 		    			final QueryResource addedSpecies = query.getResource(speciesInArray);
 		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
 						coll = union.getUnionComponent(i);
 						//final NamedGraphComponent graph3 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
-						//coll.addGraphComponent(graph3);
-						
-						
+						//coll.addGraphComponent(graph3);					
 						//ebird taxonomy graph
-
 				        coll.addPattern(species, subClassOf, addedSpecies);	
 				        coll.addPattern(species, hasLabel, scientificName);	
 				        //ebird data graph (already handled in the first part of the query)
-				      //  graph3.addPattern(addedSpecies, hasLabel, scientificName);			    			
-
-
+				        //graph3.addPattern(addedSpecies, hasLabel, scientificName);			    			
 			    		/*
 			    		for(int n = 0; n < data.length(); n++)
 			    		{
@@ -430,7 +426,7 @@ public class SpeciesDataProviderModule implements Module {
 			    		*/
 			    	}
 			    	else{
-					    request.getLogger().error("(no results for on queryIfTaxonomicCategory)");
+					    request.getLogger().error("(no results for queryIfTaxonomicCategory)");
 					  final QueryResource addedSpecies = query.getResource(speciesInArray);
 						coll = union.getUnionComponent(i);
 				        coll.addPattern(addedSpecies, hasLabel, scientificName);		
@@ -438,16 +434,39 @@ public class SpeciesDataProviderModule implements Module {
 				}
 				else{
 				    request.getLogger().error("(failure to queryIfTaxonomicCategory)");
-				}			      			    
-						
+				}			      			    					
 			}			
-		}
+		}	
 		else if (((JSONArray) request.getParam("species")).length() == 1){
+		    request.getLogger().error("(got to else if where species == 1)");
+
 			JSONArray speciesParams = (JSONArray)request.getParam("species");	
 			String speciesInArray = speciesParams.getString(0);		
-			final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
-			final QueryResource addedSpecies = query.getResource(speciesInArray);
-			graph2.addPattern(addedSpecies, hasLabel, scientificName);		
+			String resultStr = queryIfTaxonomicCategory(request, speciesInArray);
+			if(resultStr != "FAILURE"){
+			    request.getLogger().error("subclassOf results: " + resultStr);
+			    JSONObject results = new JSONObject(resultStr);
+			    JSONArray data = (JSONArray) results.get("data");
+			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
+			    request.getLogger().error("data.length : " + data.length());
+			    final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+				final QueryResource addedSpecies = query.getResource(speciesInArray);
+			    	if(data.length() > 0){			    		
+			    		//just use the pattern species subClassOf speciesSelection
+		    			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+
+					    request.getLogger().error("addedSpecies: " + addedSpecies.toString());
+					    request.getLogger().error("species: " + species.toString());
+					    request.getLogger().error("subclassof: " + subClassOf.toString());
+
+				        graph2.addPattern(species, subClassOf, addedSpecies);	
+				        graph2.addPattern(species, hasLabel, scientificName);				       
+			    	}
+			    	else{
+					    request.getLogger().error("(no results for queryIfTaxonomicCategory)");
+						graph2.addPattern(addedSpecies, hasLabel, scientificName);		
+			    	}
+				}		
 		}
 		else{
 			final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
@@ -510,6 +529,8 @@ public class SpeciesDataProviderModule implements Module {
 
 		
 		// ?m void:inDataSet <http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19>
+	    request.getLogger().error("query is : " + query.toString());
+
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 	}
 	
@@ -756,7 +777,7 @@ public class SpeciesDataProviderModule implements Module {
 		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
 
 		final Variable sibling = query.getVariable(VAR_NS+ "sibling");
-
+		query.setDistinct(true);
 
 		//final Variable count = query.createVariableExpression("count(?measurement) as ?"+ measurement);
 
