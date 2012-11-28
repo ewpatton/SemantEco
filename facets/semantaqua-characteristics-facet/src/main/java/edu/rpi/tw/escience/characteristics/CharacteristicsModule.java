@@ -358,6 +358,7 @@ public class CharacteristicsModule implements Module {
 		final Variable cls = query.getVariable(VAR_NS+"cls");
 		final Variable p = query.getVariable(VAR_NS+PROP_VAR);
 		final Variable limit = query.getVariable(VAR_NS+"limit");
+		final Variable supers3 = query.getVariable(VAR_NS+"supers3");
 		
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(element);
@@ -401,6 +402,8 @@ public class CharacteristicsModule implements Module {
 		optional.addPattern(cls, propPath, supers2);
 		optional.addPattern(supers2, owlOnProperty, polHasValue);
 		optional.addPattern(supers2, owlSomeValuesFrom, dt);
+		optional.addPattern(supers3, owlOnProperty, unitHasUnit);
+		optional.addPattern(supers3, owlHasValue, unit);
 		optional.addPattern(dt, owlWithRestrictions, res);
 		optional.addPattern(res, propPath, bn);
 		optional.addPattern(bn, p, limit);
