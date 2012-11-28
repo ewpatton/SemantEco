@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.waterquality.query;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -252,6 +253,16 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	public String executeLocalQuery(Query query) {
 		log.trace("executeLocalQuery");
 		Model model = request.getCombinedModel();
+		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
+			try {
+				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
+				model.write(fos);
+				fos.close();
+			}
+			catch(Exception e) {
+				// do nothing
+			}
+		}
 		log.debug("Module '"+owner.get().getName()+"' executing local query");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 		mgr.augmentQuery(query, request, owner.get());
