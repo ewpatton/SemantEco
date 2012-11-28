@@ -161,8 +161,18 @@ var SemantAqua = {
 		var limits = {"site": {}, "facility": {}};
 		limits.site["offset"] = 0;
 		limits.facility["offset"] = 0;
-		limits.site["count"] = parseInt(data.site);
-		limits.facility["count"] = parseInt(data.facility);
+		if(data.site == undefined) {
+			limits.site["count"] = 0;
+		}
+		else {
+			limits.site["count"] = parseInt(data.site);
+		}
+		if(data.facility == undefined) {
+			limits.facility["count"] = 0;
+		}
+		else {
+			limits.facility["count"] = parseInt(data.facility);
+		}
 		if(data.facility > data.site) {
 			limits.site["limit"] = Math.min(SemantAqua.limit, limits.site.count);
 			limits.facility["limit"] = Math.min(limits.facility.count,
