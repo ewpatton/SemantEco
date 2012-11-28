@@ -75,20 +75,19 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 
 	private ModuleConfiguration config = null;
 	
+	/**
+	 this executes the query on the remote endpoint and provides the results to the model passed in
+	 */
 	@Override
 	public void visit(final Model model, final Request request) {
 		// TODO populate data model
-		// would have to load the bird data for the particular county/state
-		//do a construct similar to airDataProvider and waterDataProvider
-		
+		// would have to load the bird site data for the particular county/state
 		//get the state and county from params
 		String countyCode = (String) request.getParam("county");
 		String stateAbbr = (String) request.getParam("state");
 		String site = (String) request.getParam("uri");
-
 		assert(countyCode != null);
-		assert(stateAbbr != null);
-		
+		assert(stateAbbr != null);	
 		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		final Variable s = query.getVariable(QUERY_NS+"s");
 		final GraphComponentCollection construct = query.getConstructComponent();
@@ -101,19 +100,17 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
-		
-		
+		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/typed/locality/locality"); //update locality property namespace********
+		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
 		//species site and measurement (count)
-
 		//just the uri, lat and long.
 		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
-		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
-		
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");	
 		construct.addPattern(s, rdfType, birdSite );
 		construct.addPattern(s, rdfsLabel, label);
 		construct.addPattern(s, wgsLat, lat);
-		construct.addPattern(s, wgsLong, lng);
-		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
+		construct.addPattern(s, wgsLong, lng);	
+		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
 		//sites are per measurement
 		graph.addPattern(s, rdfType, birdSite );
 		graph.addPattern(s, rdfsLabel, label);
@@ -121,9 +118,10 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		graph.addPattern(s, wgsLong, lng);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
-		
-		//run the config execugte....
-			
+		graph.addPattern(measurement, locality, s);	
+		//this executes the query on the remote endpoint and provides the results to the model passed in
+		config.getQueryExecutor(request).accept("application/json").execute(query, model);
+
 	}
 
 	@Override
@@ -487,7 +485,7 @@ WHERE
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -652,7 +650,7 @@ WHERE
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -1124,7 +1122,7 @@ WHERE
         // graph.addPattern(species, hasLabel, scientificName);	
         graph.addPattern(sibling, hasLabel, siblingScientificName);	
 		graph.addFilter("?sibling != <" + singletonSpecies + ">");
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-big");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
 		
 		//if this works we can just then do "get sbiling data" now
 
