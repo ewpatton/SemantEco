@@ -1388,6 +1388,7 @@ WHERE
 	public List<Domain> getDomains(final Request request) {
 		List<Domain> domains = new ArrayList<Domain>();
 		Domain bird = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#"), true);
+		bird.setLabel("Bird");
 		addDataSources(bird, request);
 		addRegulations(bird);
 		addDataTypes(bird);
