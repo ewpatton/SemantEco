@@ -114,7 +114,7 @@ var SemantAquaUI = {
             function rightcolumngenerater(){
             	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
             	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
-            	SpeciesDataProviderModule.queryeBirdTaxonomy({}, function (data){
+            	SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
     	    		  // //jsonHier=JSON.parse(data);
             		initial_hierachy1();	 	          	    		  
     	               });
@@ -666,12 +666,16 @@ function initial_hierachy1(){
 	
 					.bind("select_node.jstree", function (event, data) { 
 					// `data.rslt.obj` is the jquery extended node that was clicked
-						getSelectedValue1()
-						//var temp=data.rslt.obj.attr("id");
-					    //var temp_id=parseInt(temp.substring(3));
+						
+						
+						var temp=data.rslt.obj.attr("id");
+					    var temp_id=parseInt(temp.substring(3));
 						//alert(class_hierachy[temp_id][0]);
 						//alert(class_hierachy[temp_id][1]);
 						//$.bbq.pushState({"species":class_hierachy[temp_id][2]});
+						$.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy[temp_id][2]});
+						ajax_node1();
+						getSelectedValue1();
 				})
 					// 2) if not using the UI plugin - the Anchor tags work as expected
 					//    so if the anchor has a HREF attirbute - the page will be changed
@@ -710,14 +714,63 @@ function append_node1(current, parent){
 		ul.appendChild(li); 
 		temp_div.appendChild(ul); 
 	 	    //alert("success");
-		var i=current+1;
+		/*var i=current+1;
 		if (i<class_hierachy.length){
    		for (var i=current+1;i<class_hierachy.length;i++){ 
 				append_node1(i,"map"+current);
 		}
-   }
+   		}*/
 	}
 }	
+
+function ajax_node1() {
+	SpeciesDataProviderModule.queryeBirdTaxonomySubClasses({}, function(data) {
+		jsonHier = JSON.parse(data);
+		jsonHier = jsonHier["data"];
+		var flag=0;
+		var id=0;
+		if (jsonHier.length == 0) {
+			//alert("null");
+		} else {
+			for ( var parent = 0; parent < class_hierachy.length; parent++) {
+				if (jsonHier[0]["id"] == class_hierachy[parent][2]) {
+					flag = 1;
+					break;
+				}
+			}
+			if (flag == 1) {
+				//alert("error");
+			} else {
+				//alert("success");
+				for ( var i = 0; i < jsonHier.length; i++) {
+					for ( var parent = 0; parent < class_hierachy.length; parent++) {
+						var temp=jsonHier[i]["parent"].indexOf("#");
+						if (jsonHier[i]["parent"].substring(temp+1) == class_hierachy[parent][0]) {
+							id=parent;
+							var temp_div = document.getElementById(parent);
+							var ul = document.createElement("ul");
+							var li = document.createElement("li");
+							var a = document.createElement("a");
+							a.href = "#";
+							var text = document.createTextNode(jsonHier[i]["label"]);
+							li.id = "map"+class_hierachy.length;
+							a.appendChild(text);
+							li.appendChild(a);
+							ul.appendChild(li);
+							temp_div.appendChild(ul);
+							// alert("success");
+							class_hierachy.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+							break;
+						}
+					}
+				}
+			}
+		}
+		var tree = jQuery.jstree._reference("#" + id);
+        tree.refresh();
+	});
+}
+
 
 
 
@@ -740,16 +793,16 @@ function keyDown1(){
     		} 
    	 }
 	 else{
-	show=[]
+	show=[];
         }
    	 //alert("Have "+len+" compatible records");
 	  var div1=document.getElementById('show_map');
   	  div1.innerHTML="";
-  	  htmlStr=""
+  	  htmlStr="";
   	  for (i in show){
-     	  htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">"
+     	  htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
       	  htmlStr+=show[i];
-		  htmlStr+="</a>"
+		  htmlStr+="</a>";
          htmlStr+="</br>";
     }
 	  div1.innerHTML+=htmlStr;
