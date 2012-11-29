@@ -130,15 +130,21 @@ var SemantAquaUI = {
             	var chartseries1=[];
             	
             	var limitThreshold=[];
-            	var limitThresholdValue=mesurementData[0].limit.value;
+            	var limitThresholdValue=""
             	var unit=mesurementData[0].unit.value;
 				for(var i=0;i<mesurementData.length;i++) {
-					chartseries1.push([mesurementData[i].time.value,Math.round( mesurementData[i].value.value*100 )/100]);
+					chartseries1.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].value.value*100 )/100]);
 					// chartseries1.push([mesurementData[i].time.value,mesurementData[i].value.value]);
-					limitThreshold.push([mesurementData[i].time.value,Math.round( mesurementData[i].limit.value*100 )/100]);
+					if(mesurementData[i].limit){
+						limitThreshold.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].limit.value*100 )/100]);
+					}
 					// limitThreshold.push([mesurementData[i].time.value,mesurementData[i].limit.value]);
 				}
-				chartdata.push(chartseries1,limitThreshold);
+				chartdata.push(chartseries1);
+				if(limitThreshold.length!=0){
+					limitThresholdValue=mesurementData[0].limit.value;
+					chartdata.push(limitThreshold);
+				}
 
 				var speciesnames=[];
 				var speciessobj={};
@@ -157,16 +163,17 @@ var SemantAquaUI = {
 					label:$("#selectforcharacteristic option:selected").html()
 					,yaxis:'yaxis'
 				});
-
-				series.push({
-					label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
-					,yaxis:'yaxis'
-					,showMarker: false
-					,highlighter:{
-						show:false
-						,bringSeriesToFront:false
-					}
-				});
+				if(limitThreshold.length!=0){
+					series.push({
+						label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
+						,yaxis:'yaxis'
+						,showMarker: false
+						,highlighter:{
+							show:false
+							,bringSeriesToFront:false
+						}
+					});
+				}
 				
 				for(var i=0;i<speciesnames.length;i++){
 					chartdata.push(speciessobj[speciesnames[i]]);
