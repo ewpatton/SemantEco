@@ -100,7 +100,10 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
-		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality/locality"); //update locality property namespace********
+		//not correct http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality/locality
+		// what is in the rdf: 
+		//@prefix e1: <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/> .
+		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality"); //update locality property namespace********
 		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
 		//species site and measurement (count)
 		//just the uri, lat and long.
@@ -121,8 +124,8 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		graph.addPattern(measurement, locality, s);	
 
 		//this executes the query on the remote endpoint and provides the results to the model passed in
-		config.getQueryExecutor(request).accept("application/json").execute(query, model);
-
+		//config.getQueryExecutor(request).accept("application/json").execute(query, model);
+		config.getQueryExecutor(request).accept("application/rdf+xml").execute(query, model);
 	}
 
 	@Override
@@ -631,7 +634,8 @@ WHERE
 		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
 		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
 		final QueryResource hasLabel = query.getResource(RDFS_NS+ "label");
-		
+		final QueryResource siteUri = query.getResource(site);
+
 		
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		//vars.add(measurement);
@@ -644,23 +648,15 @@ WHERE
 		
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
-		graph.addPattern(measurement, locality, s);	
-		graph.addPattern(measurement, count, count);	
-		graph.addPattern(measurement, species, species);	
-		graph.addPattern(measurement, date, date);	
-
+		graph.addPattern(measurement, locality, siteUri);	
 		graph.addPattern(measurement, birdCount, count);
 		graph.addPattern(measurement, obsDate, date);
 		graph.addPattern(measurement, hasCommonName, commonName);
 		graph.addPattern(measurement, hasScientificName, scientificName);
 		
-		
-		graph.addPattern(measurement, wgsLat, lat);
-		graph.addPattern(measurement, wgsLong, lng);
-		
-		//all they need is 
+		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 
-		return site;
+		
 	}
 	
 	
