@@ -85,7 +85,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		//get the state and county from params
 		String countyCode = (String) request.getParam("county");
 		String stateAbbr = (String) request.getParam("state");
-		String site = (String) request.getParam("uri");
+		//String site = (String) request.getParam("uri");
 		assert(countyCode != null);
 		assert(stateAbbr != null);	
 		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -100,7 +100,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
-		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/typed/locality/locality"); //update locality property namespace********
+		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality/locality"); //update locality property namespace********
 		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
 		//species site and measurement (count)
 		//just the uri, lat and long.
@@ -110,15 +110,16 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		construct.addPattern(s, rdfsLabel, label);
 		construct.addPattern(s, wgsLat, lat);
 		construct.addPattern(s, wgsLong, lng);	
-		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
 		//sites are per measurement
 		graph.addPattern(s, rdfType, birdSite );
 		graph.addPattern(s, rdfsLabel, label);
-		graph.addPattern(s, wgsLat, lat);
-		graph.addPattern(s, wgsLong, lng);
+		graph.addPattern(measurement, wgsLat, lat);
+		graph.addPattern(measurement, wgsLong, lng);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
 		graph.addPattern(measurement, locality, s);	
+
 		//this executes the query on the remote endpoint and provides the results to the model passed in
 		config.getQueryExecutor(request).accept("application/json").execute(query, model);
 
@@ -139,7 +140,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(final Query query, final Request request) {
 		// TODO modify queries
-		request.getLogger().debug("AirDataProviderModule updating query");
+		request.getLogger().debug("SpeciesDataProviderModule updating query");
 		if(query.getType() != Type.SELECT) {
 			return;
 		}
@@ -485,7 +486,7 @@ WHERE
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -594,6 +595,76 @@ WHERE
 	
 	
 	@QueryMethod
+	public String queryForSpeciesForASite(Request request) throws JSONException{
+		//this should be performed on the loaded OWL Model
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");
+		String site = (String) request.getParam("uri");
+		assert(countyCode != null);
+		assert(stateAbbr != null);
+		assert(site != null);
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		final Variable s = query.getVariable(QUERY_NS+"s");
+		final GraphComponentCollection construct = query.getConstructComponent();
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource birdSite = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite");
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable label = query.getVariable(QUERY_NS+"label");
+		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
+		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality"); //update locality property namespace********
+		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
+		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
+		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");	
+		final Variable count = query.getVariable(QUERY_NS+"count");
+		final Variable date = query.getVariable(QUERY_NS+"date");
+		final Variable commonName = query.getVariable(VAR_NS+"commonName");
+		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
+		final Variable species = query.getVariable(VAR_NS + "species");
+		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
+		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
+		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
+		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
+		final QueryResource hasLabel = query.getResource(RDFS_NS+ "label");
+		
+		
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		//vars.add(measurement);
+		vars.add(count);
+		vars.add(date);
+		//vars.add(commonName);
+		vars.add(scientificName);
+		query.setVariables(vars);
+
+		
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph.addPattern(measurement, locality, s);	
+		graph.addPattern(measurement, count, count);	
+		graph.addPattern(measurement, species, species);	
+		graph.addPattern(measurement, date, date);	
+
+		graph.addPattern(measurement, birdCount, count);
+		graph.addPattern(measurement, obsDate, date);
+		graph.addPattern(measurement, hasCommonName, commonName);
+		graph.addPattern(measurement, hasScientificName, scientificName);
+		
+		
+		graph.addPattern(measurement, wgsLat, lat);
+		graph.addPattern(measurement, wgsLong, lng);
+		
+		//all they need is 
+
+		return site;
+	}
+	
+	
+	@QueryMethod
 	public String queryForNearbySpeciesCounts(Request request) throws JSONException{
 			
 		//this works for eBird only
@@ -650,7 +721,7 @@ WHERE
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -1122,7 +1193,7 @@ WHERE
         // graph.addPattern(species, hasLabel, scientificName);	
         graph.addPattern(sibling, hasLabel, siblingScientificName);	
 		graph.addFilter("?sibling != <" + singletonSpecies + ">");
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
 		
 		//if this works we can just then do "get sbiling data" now
 
