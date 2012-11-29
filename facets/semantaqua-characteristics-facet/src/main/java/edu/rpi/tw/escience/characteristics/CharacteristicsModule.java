@@ -400,6 +400,7 @@ public class CharacteristicsModule implements Module {
 		optional.addPattern(supers, owlHasValue, chemical);
 		optional.addPattern(cls, propPath, supers);
 		optional.addPattern(cls, propPath, supers2);
+		optional.addPattern(cls, propPath, supers3);
 		optional.addPattern(supers2, owlOnProperty, polHasValue);
 		optional.addPattern(supers2, owlSomeValuesFrom, dt);
 		optional.addPattern(supers3, owlOnProperty, unitHasUnit);
