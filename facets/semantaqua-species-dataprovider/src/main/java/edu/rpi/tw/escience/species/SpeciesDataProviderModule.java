@@ -643,17 +643,14 @@ WHERE
 		vars.add(date);
 		//vars.add(commonName);
 		vars.add(scientificName);
-		query.setVariables(vars);
-
-		
+		query.setVariables(vars);	
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
 		graph.addPattern(measurement, locality, siteUri);	
 		graph.addPattern(measurement, birdCount, count);
 		graph.addPattern(measurement, obsDate, date);
 		graph.addPattern(measurement, hasCommonName, commonName);
-		graph.addPattern(measurement, hasScientificName, scientificName);
-		
+		graph.addPattern(measurement, hasScientificName, scientificName);	
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 
 		

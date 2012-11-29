@@ -5,7 +5,7 @@
 
  
 $(window).bind("initialize", function() {
-	var birdIcon = $("input[value='ebird']+img").attr("src");
+	var birdIcon = $("input[value='birds']+img").attr("src");
 	
 	DataTypeModule.registerVisibilityFunction(function(b) {
 		if(b["isBird"] == undefined) {
@@ -15,7 +15,7 @@ $(window).bind("initialize", function() {
 		if(!bird) {
 			return false;
 		}
-		return $("input[value='ebird']")[0].checked;
+		return $("input[value='birds']")[0].checked;
 	});
 	
 	DataTypeModule.registerIconLocator(function(b) {
