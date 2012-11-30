@@ -78,7 +78,7 @@ public class CharacteristicsModule implements Module {
     //if not empty, graph.addpattern();
 	public String queryIfTaxonomicCharacteristicCategory(Request request, String characteristicInArray){
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
 		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final Variable speciesVariable = query.getVariable(VAR_NS + "characteristic");	
@@ -116,6 +116,17 @@ public class CharacteristicsModule implements Module {
 	
 	public void visit(final Query query, final Request request) {	
 		
+		/*
+		 * adds a constraint on the characteristics based on jstree selection  
+		 */
+		
+		if(!query.hasVariable(VAR_NS+"element")) {
+			
+		return;
+		}
+		
+		
+		
 		final Variable element = query.getVariable(QUERY_NS+"element");
 		String singletonCharacteristic ="";
 		
@@ -123,7 +134,7 @@ public class CharacteristicsModule implements Module {
 			
 		JSONArray characteristicParams = (JSONArray)request.getParam("characteristic");			
 		final UnionComponent union = query.createUnion();
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
 		graph2.addGraphComponent(union);
 		GraphComponentCollection coll;
 		
@@ -204,7 +215,7 @@ public class CharacteristicsModule implements Module {
 				}
 			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
 			    request.getLogger().error("data.length : " + data.length());
-			    final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+			    final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
 				final QueryResource addedCharacteristic = query.getResource(characteristicInArray);
 			    	if(data.length() > 0){			    		
 			    		//just use the pattern species subClassOf speciesSelection
@@ -245,7 +256,7 @@ public class CharacteristicsModule implements Module {
 		vars.add(label);
 		vars.add(parent);
 		query.setVariables(vars);
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/characteristics-cuahsi-ontology");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
 		graph.addPattern(id, subClassOf, parent);
 		graph.addPattern(id, hasLabel, label);
 		String responseStr = FAILURE;	
