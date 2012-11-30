@@ -5,14 +5,14 @@
 
  
 $(window).bind("initialize", function() {
-					CharacteristicsModule.queryCharacteristicTaxonomy({}, function (data){
+					/*CharacteristicsModule.queryCharacteristicTaxonomy({}, function (data){
         	    		  jsonHier_ch=JSON.parse(data);
         	    		  jsonHier_ch=jsonHier_ch["data"];
         	    		  initial_hierachy_ch();
         	    		  
         	    		          	    		  
         	       }
-        	       );
+        	       );*/
         	});
  
  //var class_hierachy_ch=[["Aves",null],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["sharpShinnedHawk","Accipiter"],["commonRedpoll","Acanthis"]];
