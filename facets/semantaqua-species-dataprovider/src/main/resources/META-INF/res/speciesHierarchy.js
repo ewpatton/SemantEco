@@ -2,7 +2,7 @@
  var class_hierachy=new Array();
  var temp_array;
  var class_hierachy_temp=new Array();
-
+ var class_hierachy_map=new Array();
  
 $(window).bind("initialize", function() {
 	var birdIcon = $("input[value='birds']+img").attr("src");
@@ -123,7 +123,9 @@ function initial_hierachy(){
   					 "icons" : true,
 			 	     "url": "themes/default/style.css"
 					},
-
+					 
+				"core" : { "initially_open" : [ "0" ] },
+				
 				 "plugins" : ["themes","html_data","ui"] })
 					// 1) if using the UI plugin bind to select_node
 	
@@ -153,9 +155,22 @@ function getSelectedValue() {
     var nodes = $.jstree._reference($("#tree")).get_selected();
     var temp=new Array();
     $.each(nodes, function(i, n) {  
-          temp.push(class_hierachy[this.id][2]);
-         
+    	
+    	for (var i=0;i< nodes.length;i++){
+    		if(class_hierachy[this.id][1]==class_hierachy[nodes[i].id][0]){
+    			$.jstree._reference($("#tree")).deselect_node(nodes[i]);
+    			//alert(nodes[i].id);
+    			break;
+    		}
+    		
+    	};
+    
     }); 
+    
+    nodes = $.jstree._reference($("#tree")).get_selected();
+    $.each(nodes, function(i, n) {  
+    	temp.push(class_hierachy[this.id][2]);
+    });
     $.bbq.pushState({"species":temp});
 }  
 
@@ -222,10 +237,12 @@ function ajax_node() {
 						}
 					}
 				}
+				var tree = jQuery.jstree._reference("#" + id);
+		        tree.refresh();
+		        document.getElementById(id).firstChild.click();
 			}
 		}
-		var tree = jQuery.jstree._reference("#" + id);
-        tree.refresh();
+		
 	});
 }
 
