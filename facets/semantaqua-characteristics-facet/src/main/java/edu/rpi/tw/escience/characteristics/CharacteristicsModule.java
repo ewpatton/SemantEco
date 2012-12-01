@@ -71,6 +71,207 @@ public class CharacteristicsModule implements Module {
 	public void visit(final OntModel model, final Request request) {
 		//model.read(CHARACTERISTIC_NS);
 	}
+
+@QueryMethod
+public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONException {
+		
+		String candidateTaxonomicCategory = (String) request.getParam("queryIfCharacteristicTaxonomicCategoryForJstree");	
+	    request.getLogger().error("json object is: " + candidateTaxonomicCategory);
+	  //  String candidateTaxonomicCategoryString  = candidateTaxonomicCategory.toString();
+		if(candidateTaxonomicCategory == null){
+			return null;
+		}
+		else{
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
+		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final Variable characteristicVariable = query.getVariable(VAR_NS + "characteristic");	
+		final QueryResource addedSpecies = query.getResource(candidateTaxonomicCategory);
+		graph.addPattern(characteristicVariable, subClassOf , addedSpecies);				
+		String responseStr = FAILURE;
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);	
+			log.debug("Results: "+resultStr);
+			if(resultStr == null) {
+				return responseStr;
+			}
+			try {
+				JSONObject results = new JSONObject(resultStr);
+				JSONObject response = new JSONObject();
+				JSONArray data = new JSONArray();
+				response.put("success", true);
+				response.put("data", data);
+				results = results.getJSONObject("results");
+				JSONArray bindings = results.getJSONArray(BINDINGS);
+				for(int j=0;j <bindings.length();j++) {
+					JSONObject binding = bindings.getJSONObject(j);
+					String speciesId = binding.getJSONObject("characteristic").getString("value");
+					JSONObject mapping = new JSONObject();
+					mapping.put("characteristic", speciesId);
+					data.put(mapping);
+				}
+				responseStr = response.toString();
+			} catch (JSONException e) {
+				log.error("Unable to parse JSON results", e);
+			}
+			return responseStr;		
+		}
+	}
+	
+	
+	
+
+	@QueryMethod
+	public String queryCharacteristicsTaxonomyRoots(Request request) throws IOException, JSONException{	
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		//Variables
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");		
+		//URIs
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource owlTaxonomy = query.getResource("http://www.w3.org/2002/07/owl#Thing");
+
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(label);
+		vars.add(parent);
+		query.setVariables(vars);
+		//query.addPattern(site, inDataSet, dataSet);
+				final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
+				graph.addPattern(id, subClassOf, parent);
+				graph.addPattern(id, subClassOf, owlTaxonomy);
+
+				graph.addPattern(id, hasLabel, label);
+				//get only the subclasses of the subclasses of OWL thing
+				String responseStr = FAILURE;
+				
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
+				////return config.getQueryExecutor(request).accept("application/json").execute(query);
+				log.debug("Results: "+resultStr);
+				if(resultStr == null) {
+					return responseStr;
+				}
+				try {
+					JSONObject results = new JSONObject(resultStr);
+					JSONObject response = new JSONObject();
+					JSONArray data = new JSONArray();
+					response.put("success", true);
+					response.put("data", data);
+					String superclassId = null;
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for(int i=0;i<bindings.length();i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						String subclassId = binding.getJSONObject("child").getString("value");
+						String subclassLabel = binding.getJSONObject("label").getString("value");
+
+						try {
+							superclassId = binding.getJSONObject("parent").getString("value");
+						}
+						catch(Exception e) { }
+						//if(labelStr == null) {
+						//	labelStr = sourceUri.substring(sourceUri.lastIndexOf('/')+1).replace('-', '.');
+						//}
+						JSONObject mapping = new JSONObject();
+						mapping.put("id", subclassId);
+						mapping.put("label", subclassLabel);
+						mapping.put("parent", superclassId);
+						data.put(mapping);
+					}
+					responseStr = response.toString();
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				return responseStr;			
+	}
+	
+		
+
+	
+
+	@QueryMethod
+	public String queryCharacteristicsTaxonomySubClasses(Request request) throws IOException, JSONException{	
+		
+		String classRequiresSubclassesString = (String) request.getParam("queryCharacteristicsTaxonomySubClasses");	
+		if(classRequiresSubclassesString == null){
+			return null;
+		}
+		
+		
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
+		//Variables
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");		
+		//URIs
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		
+		//final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
+		final QueryResource classRequiresSubclasses = query.getResource(classRequiresSubclassesString);
+
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(label);
+		vars.add(parent);
+		query.setVariables(vars);
+		//query.addPattern(site, inDataSet, dataSet);
+				final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
+				graph.addPattern(id, subClassOf, parent);
+				graph.addPattern(id, subClassOf, classRequiresSubclasses);
+
+				graph.addPattern(id, hasLabel, label);
+				//get only the subclasses of the subclasses of OWL thing
+				String responseStr = FAILURE;
+				
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
+				////return config.getQueryExecutor(request).accept("application/json").execute(query);
+				log.debug("Results: "+resultStr);
+				if(resultStr == null) {
+					return responseStr;
+				}
+				try {
+					JSONObject results = new JSONObject(resultStr);
+					JSONObject response = new JSONObject();
+					JSONArray data = new JSONArray();
+					response.put("success", true);
+					response.put("data", data);
+					String superclassId = null;
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for(int i=0;i<bindings.length();i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						String subclassId = binding.getJSONObject("child").getString("value");
+						String subclassLabel = binding.getJSONObject("label").getString("value");
+
+						try {
+							superclassId = binding.getJSONObject("parent").getString("value");
+						}
+						catch(Exception e) { }
+						//if(labelStr == null) {
+						//	labelStr = sourceUri.substring(sourceUri.lastIndexOf('/')+1).replace('-', '.');
+						//}
+						JSONObject mapping = new JSONObject();
+						mapping.put("id", subclassId);
+						mapping.put("label", subclassLabel);
+						mapping.put("parent", superclassId);
+						data.put(mapping);
+					}
+					responseStr = response.toString();
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				return responseStr;			
+	}
+	
+	
+
+	
+
 	
 	//first check ifg bbbq state is null for chemical
 	//new Query().findGraphComponentsWithPattern(?measurement, pol:hasCharacteristic, null)
