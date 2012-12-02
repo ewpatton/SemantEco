@@ -6,6 +6,7 @@
  
 $(window).bind("initialize", function() {
 			CharacteristicsModule.queryCharacteristicsTaxonomyRoots({}, function (data){
+						
         	    		  jsonHier_ch=JSON.parse(data);
         	    		  jsonHier_ch=jsonHier_ch["data"];
         	    		  initial_hierachy_ch();
@@ -46,8 +47,8 @@ function initial_hierachy_ch(){
 		
 			}
 			if(flag1==0){
-				class_hierachy_ch_temp.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,jsonHier_ch[i]["id"]));
-				class_hierachy_ch.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,jsonHier_ch[i]["id"]));
+				class_hierachy_ch_temp.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,null));
+				class_hierachy_ch.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,null));
 				//jsonHier_ch.remove(i);
 			}
 		}
@@ -102,7 +103,8 @@ function initial_hierachy_ch(){
   					 "icons" : true,
 			 	     "url": "themes/default/style.css"
 					},
-
+				 "core" : { "initially_open" : [ "0_ch" ] },
+				 
 				 "plugins" : ["themes","html_data","ui"] })
 					// 1) if using the UI plugin bind to select_node
 	
@@ -111,8 +113,10 @@ function initial_hierachy_ch(){
 						 var temp=data.rslt.obj.attr("id");
 							//alert(class_hierachy[temp][0]);
 							//alert(class_hierachy[temp][1]);
-						  temp=temp.substring(0,1);
-						  $.bbq.pushState({"queryCharacteristicsTaxonomySubClasses":class_hierachy_ch[temp][2]}):
+						  var index=temp.indexOf("_");
+						  temp=temp.substring(0,index);
+						  //alert(temp);
+						  $.bbq.pushState({"queryCharacteristicsTaxonomySubClasses":class_hierachy_ch[temp][2]});
 					      ajax_node_ch();
 						  getSelectedValue_ch();
 				})
@@ -133,7 +137,13 @@ function getSelectedValue_ch() {
     $.each(nodes, function(i, n) {  
     	
     	for (var i=0;i< nodes.length;i++){
-    		if(class_hierachy_ch[this.id][1]==class_hierachy_ch[nodes[i].id][0]){
+    		var temp_id=this.id;
+    		var index=temp_id.indexOf("_");
+   	     	var temp_id1=parseInt(temp_id.substring(0,index));
+   	     	var temp_id2=nodes[i].id;
+   	        index=temp_id2.indexOf("_");
+	        var temp_id3=parseInt(temp_id2.substring(0,index));
+    		if(class_hierachy_ch[temp_id1][1]==class_hierachy_ch[temp_id3][0]){
     			$.jstree._reference($("#tree_ch")).deselect_node(nodes[i]);
     			//alert(nodes[i].id);
     			break;
@@ -146,7 +156,8 @@ function getSelectedValue_ch() {
     nodes = $.jstree._reference($("#tree_ch")).get_selected();
     $.each(nodes, function(i, n) {  
     	 var temp_id=this.id;
-	     var temp_id1=parseInt(temp_id.substring(0,1));
+    	 var index=temp_id.indexOf("_");
+	     var temp_id1=parseInt(temp_id.substring(0,index));
          temp.push(class_hierachy_ch[temp_id1][2]);
          
     }); 
@@ -156,7 +167,8 @@ function getSelectedValue_ch() {
 
 function append_node_ch(current, parent){
 	var temp_judge=parent;
-	temp_judge=parseInt(temp_judge.substring(0,1));
+	var index=temp_judge.indexOf("_");
+	temp_judge=parseInt(temp_judge.substring(0,index));
     if(class_hierachy_ch[current][1]==class_hierachy_ch[temp_judge][0]){
 		var temp_div=document.getElementById(parent);
 		var ul=document.createElement("ul");
@@ -200,6 +212,7 @@ function ajax_node_ch() {
 						var temp=jsonHier_ch[i]["parent"].indexOf("#");
 						if (jsonHier_ch[i]["parent"].substring(temp+1) == class_hierachy_ch[parent][0]) {
 							id=parent;
+							parent=parent+"_ch";
 							var temp_div = document.getElementById(parent);
 							var ul = document.createElement("ul");
 							var li = document.createElement("li");
@@ -212,7 +225,7 @@ function ajax_node_ch() {
 							ul.appendChild(li);
 							temp_div.appendChild(ul);
 							// alert("success");
-							class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+							class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier_ch[i]["id"]));
 							break;
 						}
 					}
