@@ -5,14 +5,14 @@
 
  
 $(window).bind("initialize", function() {
-					/*CharacteristicsModule.queryCharacteristicTaxonomy({}, function (data){
+			CharacteristicsModule.queryCharacteristicsTaxonomyRoots({}, function (data){
         	    		  jsonHier_ch=JSON.parse(data);
         	    		  jsonHier_ch=jsonHier_ch["data"];
         	    		  initial_hierachy_ch();
         	    		  
         	    		          	    		  
         	       }
-        	       );*/
+        	       );
         	});
  
  //var class_hierachy_ch=[["Aves",null],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["sharpShinnedHawk","Accipiter"],["commonRedpoll","Acanthis"]];
@@ -52,13 +52,19 @@ function initial_hierachy_ch(){
 			}
 		}
 	}
-	//alert(class_hierachy_ch);
-	//alert(jsonHier_ch.length);
-	for (var i=0;i<class_hierachy_ch_temp.length;i++){
-		iterative_build_ch(class_hierachy_ch_temp[i][0]);
-		//alert(jsonHier_ch.length);
+	
+	
+	for (var j=0;j<class_hierachy_ch_temp.length;j++){
+		 for (var i=0;i<jsonHier_ch.length;i++){
+			 	var temp=jsonHier_ch[i]["parent"].indexOf("#");		 	
+				if(jsonHier_ch[i]["parent"].substring(temp+1)==class_hierachy_ch_temp[j][0]){
+					class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier_ch[i]["id"]));
+					
+					//jsonHier.remove(i);
+				}
+		 }
+		
 	}
-	//alert("class hierarchy has"+class_hierachy_ch.length);
 	
 	
 	var temp_div=document.getElementById('tree_ch');
@@ -102,11 +108,13 @@ function initial_hierachy_ch(){
 	
 					.bind("select_node.jstree", function (event, data) { 
 					// `data.rslt.obj` is the jquery extended node that was clicked
-						getSelectedValue_ch();
-					    //var temp=data.rslt.obj.attr("id");
-						//alert(class_hierachy_ch[temp][0]);
-						//alert(class_hierachy_ch[temp][1]);
-					    //$.bbq.pushState({"species":class_hierachy_ch[temp][2]});
+						 var temp=data.rslt.obj.attr("id");
+							//alert(class_hierachy[temp][0]);
+							//alert(class_hierachy[temp][1]);
+						  temp=temp.substring(0,1);
+						  $.bbq.pushState({"queryCharacteristicsTaxonomySubClasses":class_hierachy_ch[temp][2]}):
+					      ajax_node_ch();
+						  getSelectedValue_ch();
 				})
 				    
 				
@@ -122,6 +130,20 @@ function initial_hierachy_ch(){
 function getSelectedValue_ch() {  
     var nodes = $.jstree._reference($("#tree_ch")).get_selected();
     var temp=new Array();
+    $.each(nodes, function(i, n) {  
+    	
+    	for (var i=0;i< nodes.length;i++){
+    		if(class_hierachy_ch[this.id][1]==class_hierachy_ch[nodes[i].id][0]){
+    			$.jstree._reference($("#tree_ch")).deselect_node(nodes[i]);
+    			//alert(nodes[i].id);
+    			break;
+    		}
+    		
+    	};
+    
+    }); 
+    
+    nodes = $.jstree._reference($("#tree_ch")).get_selected();
     $.each(nodes, function(i, n) {  
     	 var temp_id=this.id;
 	     var temp_id1=parseInt(temp_id.substring(0,1));
@@ -149,30 +171,59 @@ function append_node_ch(current, parent){
 		ul.appendChild(li); 
 		temp_div.appendChild(ul); 
 	 	    //alert("success");
-		var i=current+1;
-		if (i<class_hierachy_ch.length){
-    		for (var i=current+1;i<class_hierachy_ch.length;i++){ 
-				append_node_ch(i,current+"_ch");
-    		}
-		}
+		
 	}
 }	
 
 
-function iterative_build_ch(str){
-	 var temp_array=new Array();
-	 for (var i=0;i<jsonHier_ch.length;i++){
-		 	temp=jsonHier_ch[i]["parent"].indexOf("#");		 	
-			if(jsonHier_ch[i]["parent"].substring(temp+1)==str){
-				class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier_ch[i]["id"]));
-				temp_array.push(jsonHier_ch[i]["label"]);
-				//jsonHier_ch.remove(i);
+function ajax_node_ch() {
+	CharacteristicsModule.queryCharacteristicsTaxonomySubClasses({}, function(data) {
+		jsonHier_ch = JSON.parse(data);
+		jsonHier_ch = jsonHier_ch["data"];
+		var flag=0;
+		var id=0;
+		if (jsonHier_ch.length == 0) {
+			//alert("null");
+		} else {
+			for ( var parent = 0; parent < class_hierachy_ch.length; parent++) {
+				if (jsonHier_ch[0]["id"] == class_hierachy_ch[parent][2]) {
+					flag = 1;
+					break;
+				}
 			}
-	 }
-	 for (var i=0;i<temp_array.length;i++){
-			 iterative_build_ch(temp_array[i]); 
-	 }
-	 
+			if (flag == 1) {
+				//alert("error");
+			} else {
+				//alert("success");
+				for ( var i = 0; i < jsonHier_ch.length; i++) {
+					for ( var parent = 0; parent < class_hierachy_ch.length; parent++) {
+						var temp=jsonHier_ch[i]["parent"].indexOf("#");
+						if (jsonHier_ch[i]["parent"].substring(temp+1) == class_hierachy_ch[parent][0]) {
+							id=parent;
+							var temp_div = document.getElementById(parent);
+							var ul = document.createElement("ul");
+							var li = document.createElement("li");
+							var a = document.createElement("a");
+							a.href = "#";
+							var text = document.createTextNode(jsonHier_ch[i]["label"]);
+							li.id = class_hierachy_ch.length+"_ch";
+							a.appendChild(text);
+							li.appendChild(a);
+							ul.appendChild(li);
+							temp_div.appendChild(ul);
+							// alert("success");
+							class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+							break;
+						}
+					}
+				}
+				var tree = jQuery.jstree._reference("#" + id+"_ch");
+		        tree.refresh();
+		        document.getElementById(id+"_ch").firstChild.click();
+			}
+		}
+		
+	});
 }
 
 document.onkeydown = keyDown_ch;
