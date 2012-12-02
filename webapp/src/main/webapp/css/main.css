@@ -45,6 +45,10 @@ div.table-wrapper {
   overflow: scroll;
 }
 
+.table-wrapper td{
+  text-align: center;
+}
+
 div#header {
   min-width: 960px; 
   background-color: #2a5799;
@@ -78,6 +82,10 @@ table th {
 
 table th, table td {
   padding: 4pt;
+}
+
+table .odd{
+  background: #eee;
 }
 
 div#content {
