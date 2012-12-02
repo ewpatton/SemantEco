@@ -294,7 +294,6 @@ public class RegulationModule implements Module {
 		final Variable bn = query.createBlankNode();
 		final Variable p = query.getVariable(VAR_NS+PROP_VAR);
 
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
 		final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
@@ -303,10 +302,11 @@ public class RegulationModule implements Module {
 		final QueryResource owlSomeValuesFrom = query.getResource(OWL_NS+"someValuesFrom");
 		final QueryResource owlWithRestrictions = query.getResource(OWL_NS+"withRestrictions");
 		final QueryResource propPath = query.createPropertyPath("rdf:rest*/rdf:first");
+		final QueryResource propPath2 = query.createPropertyPath("rdf:type/owl:equivalentClass?");
 
 		OptionalComponent optional = query.createOptional();
 		query.addGraphComponent(optional);
-		optional.addPattern(measurement, rdfType, cls);
+		optional.addPattern(measurement, propPath2, cls);
 		optional.addPattern(cls, owlIntersectionOf, list);
 		optional.addPattern(list, propPath, supers);
 		optional.addPattern(supers, owlOnProperty, polHasValue);
