@@ -246,10 +246,7 @@ var SemantAquaUI = {
 	            }
 
 	            $($("#infowindowcontrol a").get(0)).click(function(){
-	            	console.log("before call");
-	            	console.log(leftcoloumgenerater);
 					leftcoloumgenerater().appendTo(".lb_content");
-	            	console.log("af call");
 					$(".lightbox .lb_container").css({"width":"60%"});
 					$(".leftcolumn").css({"width":"100%"});
 					SemantAquaUI.lightbox.show();

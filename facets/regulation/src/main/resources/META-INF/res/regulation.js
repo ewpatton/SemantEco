@@ -47,7 +47,7 @@ $(window).bind("initialize", function() {
 				data=JSON.parse(data);
 				console.log(data);
 				var contents = "";
-			    if(marker.data.label.value != '')
+			    if(marker.data.label && marker.data.label.value != '')
 			      contents += "<div class='top'>Site: "+marker.data.label.value+"</div>";
 			  	// console.log(data.results);
 			    var bindings = data.results.bindings;
