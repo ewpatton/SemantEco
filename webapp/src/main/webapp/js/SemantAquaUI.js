@@ -42,12 +42,17 @@ var SemantAquaUI = {
             $(SemantAquaUI.infowindowcontrol).html("");
             // if($(".characteristics").length != 0){
             
+            leftcoloumgenerater=null;
+            rightcolumngenerater=null;
+            chartgenerator=null;
+
             if(!marker.data.isBird){
             	if(true){
 	            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
 	            }
 
-	            function leftcoloumgenerater(){
+	            leftcoloumgenerater=function(){
+	            	console.log("not bird");
 	            	$(".lb_loading").show();
 	            	var leftcolumn=$(document.createElement('div')).addClass("leftcolumn");
 	            	var selectscontainer=$(document.createElement('div')).addClass("selectscontainer").appendTo(leftcolumn);
@@ -110,7 +115,7 @@ var SemantAquaUI = {
 					return leftcolumn;
 	            };
 
-	            function rightcolumngenerater(){
+	            rightcolumngenerater=function(){
 	            	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
 	            	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
 	            	SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
@@ -124,7 +129,7 @@ var SemantAquaUI = {
 	       
 	            };
 
-	            function chartgenerator(mesurementData,nearbySpeciesData){
+	            chartgenerator=function(mesurementData,nearbySpeciesData){
 	            	var chartdata=[];
 	            	
 	            	var chartseries1=[];
@@ -241,8 +246,10 @@ var SemantAquaUI = {
 	            }
 
 	            $($("#infowindowcontrol a").get(0)).click(function(){
-
+	            	console.log("before call");
+	            	console.log(leftcoloumgenerater);
 					leftcoloumgenerater().appendTo(".lb_content");
+	            	console.log("af call");
 					$(".lightbox .lb_container").css({"width":"60%"});
 					$(".leftcolumn").css({"width":"100%"});
 					SemantAquaUI.lightbox.show();
@@ -382,11 +389,12 @@ var SemantAquaUI = {
 		        
 	            });
             }
-            else{
-	            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all data for this site</a>");
+            else
+            {
+            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all data for this site</a>");
 	            
 
-	            function leftcoloumgenerater(){
+	            leftcoloumgenerater=function(){
 	            	$(".lb_loading").show();
 	            	var leftcolumn=$(document.createElement('div')).addClass("leftcolumn");
 	            	$(document.createElement('div')).attr("id","lightboxchart").appendTo(leftcolumn);            	
@@ -394,7 +402,7 @@ var SemantAquaUI = {
 					return leftcolumn;
 	            };
 
-	            function rightcolumngenerater(){
+	            rightcolumngenerater=function(){
 	           //  	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
 	           //  	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
 	           //  	SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
@@ -408,7 +416,7 @@ var SemantAquaUI = {
 	       
 	            };
 
-	            function chartgenerator(speciesData){
+	            chartgenerator=function(speciesData){
 	            	var chartdata=[];
 	            	
 
@@ -858,7 +866,7 @@ $(document).ready(function(){
 function initial_hierachy1(){
 	//alert(class_hierachy);
 	//alert("class hierarchy has"+class_hierachy.length);
-	class_hierachy_temp=new Array();
+	
 	var flag=0;
 	for (var i=0;i<jsonHier.length;i++){
 		flag=0;
@@ -871,7 +879,7 @@ function initial_hierachy1(){
 			}
 		}
 		if(flag==0){
-			var flag1=0;
+			var flag1=0
 			for (var k=0;k<class_hierachy_temp.length;k++){
 				if(class_hierachy_temp[k][0]==jsonHier[i]["parent"].substring(temp1+1)){
 					flag1=1;
@@ -939,7 +947,6 @@ function initial_hierachy1(){
  					 "icons" : true,
 			 	     "url": "themes/default/style.css"
 					},
-				  "core" : { "initially_open" : [ "map0" ] },
 
 				 "plugins" : ["themes","html_data","ui"] })
 					// 1) if using the UI plugin bind to select_node
@@ -966,27 +973,9 @@ function initial_hierachy1(){
 }
 
 function getSelectedValue1() {  
-	var nodes = $.jstree._reference($("#tree_map")).get_selected();
+    var nodes = $.jstree._reference($("#tree_map")).get_selected();
     var temp=new Array();
-    $.each(nodes, function(i, n) {  
-    	
-    	for (var i=0;i< nodes.length;i++){
-    		var temp_id=this.id;
-   	     	var temp_id1=parseInt(temp_id.substring(3));
-   	     	var temp_id2=nodes[i].id;
-	        var temp_id3=parseInt(temp_id2.substring(3));
-    		if(class_hierachy_map[temp_id1][1]==class_hierachy_map[temp_id3][0]){
-    			$.jstree._reference($("#tree_map")).deselect_node(nodes[i]);
-    			//alert(nodes[i].id);
-    			break;
-    		}
-    		
-    	};
-    
-    }); 
-    
-    nodes = $.jstree._reference($("#tree_map")).get_selected();
-    $.each(nodes, function(i, n) {  
+    $.each(nodes, function(i, n) { 
     	 var temp_id=this.id;
 	     var temp_id1=parseInt(temp_id.substring(3));
          temp.push(class_hierachy_map[temp_id1][2]);
@@ -1045,7 +1034,7 @@ function ajax_node1() {
 						var temp=jsonHier[i]["parent"].indexOf("#");
 						if (jsonHier[i]["parent"].substring(temp+1) == class_hierachy_map[parent][0]) {
 							id="map"+parent;
-							var temp_div = document.getElementById(id);
+							var temp_div = document.getElementById(parent);
 							var ul = document.createElement("ul");
 							var li = document.createElement("li");
 							var a = document.createElement("a");
@@ -1062,13 +1051,10 @@ function ajax_node1() {
 						}
 					}
 				}
-				var tree = jQuery.jstree._reference("#" + id);
-		        tree.refresh();
-		        document.getElementById(id).firstChild.click();
-				
 			}
 		}
-		
+		var tree = jQuery.jstree._reference("#" + id);
+        tree.refresh();
 	});
 }
 
