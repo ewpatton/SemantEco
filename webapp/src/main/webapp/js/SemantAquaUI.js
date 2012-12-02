@@ -858,7 +858,7 @@ $(document).ready(function(){
 function initial_hierachy1(){
 	//alert(class_hierachy);
 	//alert("class hierarchy has"+class_hierachy.length);
-	
+	class_hierachy_temp=new Array();
 	var flag=0;
 	for (var i=0;i<jsonHier.length;i++){
 		flag=0;
@@ -871,7 +871,7 @@ function initial_hierachy1(){
 			}
 		}
 		if(flag==0){
-			var flag1=0
+			var flag1=0;
 			for (var k=0;k<class_hierachy_temp.length;k++){
 				if(class_hierachy_temp[k][0]==jsonHier[i]["parent"].substring(temp1+1)){
 					flag1=1;
@@ -939,6 +939,7 @@ function initial_hierachy1(){
  					 "icons" : true,
 			 	     "url": "themes/default/style.css"
 					},
+				  "core" : { "initially_open" : [ "map0" ] },
 
 				 "plugins" : ["themes","html_data","ui"] })
 					// 1) if using the UI plugin bind to select_node
@@ -965,9 +966,27 @@ function initial_hierachy1(){
 }
 
 function getSelectedValue1() {  
-    var nodes = $.jstree._reference($("#tree_map")).get_selected();
+	var nodes = $.jstree._reference($("#tree_map")).get_selected();
     var temp=new Array();
-    $.each(nodes, function(i, n) { 
+    $.each(nodes, function(i, n) {  
+    	
+    	for (var i=0;i< nodes.length;i++){
+    		var temp_id=this.id;
+   	     	var temp_id1=parseInt(temp_id.substring(3));
+   	     	var temp_id2=nodes[i].id;
+	        var temp_id3=parseInt(temp_id2.substring(3));
+    		if(class_hierachy_map[temp_id1][1]==class_hierachy_map[temp_id3][0]){
+    			$.jstree._reference($("#tree_map")).deselect_node(nodes[i]);
+    			//alert(nodes[i].id);
+    			break;
+    		}
+    		
+    	};
+    
+    }); 
+    
+    nodes = $.jstree._reference($("#tree_map")).get_selected();
+    $.each(nodes, function(i, n) {  
     	 var temp_id=this.id;
 	     var temp_id1=parseInt(temp_id.substring(3));
          temp.push(class_hierachy_map[temp_id1][2]);
@@ -1026,7 +1045,7 @@ function ajax_node1() {
 						var temp=jsonHier[i]["parent"].indexOf("#");
 						if (jsonHier[i]["parent"].substring(temp+1) == class_hierachy_map[parent][0]) {
 							id="map"+parent;
-							var temp_div = document.getElementById(parent);
+							var temp_div = document.getElementById(id);
 							var ul = document.createElement("ul");
 							var li = document.createElement("li");
 							var a = document.createElement("a");
@@ -1043,10 +1062,13 @@ function ajax_node1() {
 						}
 					}
 				}
+				var tree = jQuery.jstree._reference("#" + id);
+		        tree.refresh();
+		        document.getElementById(id).firstChild.click();
+				
 			}
 		}
-		var tree = jQuery.jstree._reference("#" + id);
-        tree.refresh();
+		
 	});
 }
 
