@@ -108,6 +108,7 @@ div#content {
 div#display{
   float: left;
   width: 80%;
+  position: relative;
 }
 
 div#map_canvas{
