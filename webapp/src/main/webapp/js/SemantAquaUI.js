@@ -188,7 +188,7 @@ var SemantAquaUI = {
 					console.log(chartdata);
 
 					var jqplot = $.jqplot("lightboxchart", chartdata, {
-				        title:marker.data.label.value
+				        title:marker.data.label ? marker.data.label.value:""
 				        ,seriesDefaults: {
 				        	lineWidth:2
 				        	,markerOptions: {
@@ -210,10 +210,10 @@ var SemantAquaUI = {
 						    },
 						    y2axis:{
 						    	tickOptions:{
-						            formatString:'%d'
+						            formatString:'%.1f'
+						            ,showGridline:false
 						        },
-						        autoscale:true, 
-						        tickOptions:{showGridline:false}
+						        autoscale:true
 						    }
 				        }
 				        ,legend: { 
@@ -399,19 +399,6 @@ var SemantAquaUI = {
 					return leftcolumn;
 	            };
 
-	            rightcolumngenerater=function(){
-	           //  	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
-	           //  	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
-	           //  	SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
-	    	    		// jsonHier=JSON.parse(data);
-	    	    		// jsonHier=jsonHier["data"];
-	           //  		initial_hierachy1();	 	          	    		  
-	    	      //          });
-	            	
-	            	
-	            	return rightcolumn;
-	       
-	            };
 
 	            chartgenerator=function(speciesData){
 	            	var chartdata=[];
@@ -419,22 +406,31 @@ var SemantAquaUI = {
 
 					var speciesnames=[];
 					var speciessobj={};
+					var max=0;
+					var min=0;
 					for(var i=0;i<speciesData.length;i++){
 						if(!speciessobj[speciesData[i]["scientific_name"]["value"]]){
 							speciessobj[speciesData[i]["scientific_name"]["value"]]=[];
 							speciesnames.push(speciesData[i]["scientific_name"]["value"]);
 						}
-						speciessobj[speciesData[i]["scientific_name"]["value"]].push([speciesData[i].date.value,Math.round( speciesData[i].count.value )]);
+						var value=Math.round( speciesData[i].count.value );
+						if (value>max){
+							max=value;
+						}
+						if (value<min){
+							min=value;
+						}
+						speciessobj[speciesData[i]["scientific_name"]["value"]].push([speciesData[i].date.value,value]);
 					}
 					console.log(speciessobj);
 					console.log(speciesnames);
 
 					var series=[];
-					
 					for(var i=0;i<speciesnames.length;i++){
 						chartdata.push(speciessobj[speciesnames[i]]);
 						series.push({
-								label:speciesnames[i],yaxis:'yaxis'
+								label:speciesnames[i]
+								,yaxis:'yaxis'
 							})
 					}
 
@@ -457,9 +453,13 @@ var SemantAquaUI = {
 						        } 
 						    },
 						    yaxis:{
-						        tickOptions:{
+						    	max:max+1
+						    	,min:min-1
+						        ,tickOptions:{
 						            formatString:'%d'
-						        },
+						            // ,showGridline:false
+						        }
+						        ,autoscale:true
 						    }
 				        }
 				        ,legend: { 
@@ -481,10 +481,9 @@ var SemantAquaUI = {
 					      showHorizontalLine:true,
 					      showTooltip:true,
 					      followMouse:true,
-					      // showVerticalLine:true,
-					      // tooltipLocation:'sw'
 					    }
 				    });
+					jqplot.resetZoom();
 					jqplot.replot( { resetAxes: true } );
 					$(window).resize(function(){
 		                jqplot.replot( { resetAxes: true } );
