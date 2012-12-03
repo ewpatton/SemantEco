@@ -571,6 +571,7 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		final Variable p = query.getVariable(VAR_NS+PROP_VAR);
 		final Variable limit = query.getVariable(VAR_NS+"limit");
 		final Variable supers3 = query.getVariable(VAR_NS+"supers3");
+		final Variable list = query.getVariable(VAR_NS+"list");
 		
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(element);
@@ -581,6 +582,7 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		vars.add(measurement);
 		vars.add(op);
 		vars.add(limit);
+		query.setVariables(vars);
 		
 		// Resources
 		final QueryResource site = query.getResource(siteUri);
@@ -598,6 +600,8 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		final QueryResource owlWithRestrictions = query.getResource(OWL_NS+"withRestrictions");
 		//OptionalComponent optional = query.createOptional();
 		final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
+		final QueryResource propPathReverseList = query.createPropertyPath("^rdf:first/(^rdf:rest)*");
+		final QueryResource propPathReverseIntersection = query.createPropertyPath("^owl:intersectionOf");
 		
 		query.addPattern(site, polHasMeasurement, measurement);
 		query.addPattern(measurement, polHasCharacteristic, chemical);
@@ -610,9 +614,10 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		query.addGraphComponent(optional);
 		optional.addPattern(supers, owlOnProperty, polHasCharacteristic);
 		optional.addPattern(supers, owlHasValue, chemical);
-		optional.addPattern(cls, propPath, supers);
-		optional.addPattern(cls, propPath, supers2);
-		optional.addPattern(cls, propPath, supers3);
+		optional.addPattern(supers, propPathReverseList, list);
+		optional.addPattern(list, propPathReverseIntersection, cls);
+		optional.addPattern(list, propPath, supers2);
+		optional.addPattern(list, propPath, supers3);
 		optional.addPattern(supers2, owlOnProperty, polHasValue);
 		optional.addPattern(supers2, owlSomeValuesFrom, dt);
 		optional.addPattern(supers3, owlOnProperty, unitHasUnit);
