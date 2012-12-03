@@ -269,26 +269,32 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		log.debug("Query: "+query.toString());
 		Model resultModel = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		long start = System.currentTimeMillis();
 		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
 		try {
 			switch(query.getType()) {
 			case SELECT:
 				ResultSet results = qe.execSelect();
 				ResultSetFormatter.outputAsJSON(baos, results);
+				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case DESCRIBE:
 				resultModel = qe.execDescribe();
 				resultModel.write(baos);
+				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case CONSTRUCT:
 				resultModel = qe.execConstruct();
 				resultModel.write(baos);
+				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case ASK:
 				if(qe.execAsk()) {
+					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 					return "{\"result\":true}";
 				}
 				else {
+					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 					return "{\"result\":false}";
 				}
 			}
