@@ -15,7 +15,7 @@ var SemantAquaUI = {
 		SemantAquaUI.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 		SemantAquaUI.geocoder = new google.maps.Geocoder();
 
- 
+ 		//a set of elements that will be used on infowindow
 		SemantAquaUI.infowindowcontainer = document.createElement('div');
         $(SemantAquaUI.infowindowcontainer).attr("id","infowindowcontainer");
         SemantAquaUI.infowindowcontent = document.createElement('div');
@@ -30,7 +30,7 @@ var SemantAquaUI = {
 
 		//the function below is listening on show-marker-info event,
 		//more than just an event, the trigger also passed a parameter(marker) when it trigger the event
-		//this is a really good jquery function
+		//also, at this pop=infowindow event, all code for generate things on the lightbox are ready too
         $(window).on("pop-infowindow",function(event,marker){
 
         	console.log("pop-infowindow");
@@ -46,11 +46,13 @@ var SemantAquaUI = {
             rightcolumngenerater=null;
             chartgenerator=null;
 
+            //the processing diverge at here, 
+           	//for bird data, because the data format is differnt from water/air data, it has a different set of processing
             if(!marker.data.isBird){
             	if(true){
 	            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
 	            }
-
+	            //left column on the lightbox
 	            leftcoloumgenerater=function(){
 	            	console.log("not bird");
 	            	$(".lb_loading").show();
@@ -61,11 +63,13 @@ var SemantAquaUI = {
 	            	var selectforcharacteristic = $('<select id="selectforcharacteristic" class="selects" />').appendTo(selectscontainer);
 	    			$("<option />", {value: "", text: ""}).appendTo(selectforcharacteristic);
 	            	
+	            	//get all available characterstic for a certain site
 	    			CharacteristicsModule.getCharacteristicsForSite({}, function(data) { 
 	    				$(".lb_loading").hide();
 	    				data=JSON.parse(data);
 	    				data=data.results.bindings;
 
+	    				//this part of code take out all dupicates (should be done at backend)
 	    				for(var i=0;i<data.length;i++){
 	    					var uri=data[i]["element"]["value"];
 	    					var label=uri.substr(uri.indexOf("#")+1).replace(/_/g," ");
@@ -84,7 +88,7 @@ var SemantAquaUI = {
 	    			});
 
 	            	
-
+	    			//this section is another ajax call to get all tests for a charecteristic (however, the test is not being used on server side)
 	            	var selectfortest = $('<select id="selectfortest" class="selects" />').hide().appendTo(selectscontainer);
 
 	            	var characteristicssubmit=$('<input type="submit" class="characterssubmit" />').attr("disabled", "disabled").appendTo(selectscontainer);
@@ -115,6 +119,7 @@ var SemantAquaUI = {
 					return leftcolumn;
 	            };
 
+	            //this column is for the tree
 	            rightcolumngenerater=function(){
 	            	var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
 	            	var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
@@ -129,6 +134,7 @@ var SemantAquaUI = {
 	       
 	            };
 
+	            //this is the chart generater, it gets raw input, and turn them into data format can be taken by jqplot
 	            chartgenerator=function(mesurementData,nearbySpeciesData){
 	            	var chartdata=[];
 	            	
@@ -137,6 +143,9 @@ var SemantAquaUI = {
 	            	var limitThreshold=[];
 	            	var limitThresholdValue=""
 	            	var unit=mesurementData[0].unit.value;
+	            	//develop use only, year
+	            	var year="";
+	            	year=parseInt(mesurementData[0].time.value.substring(0,4));
 					for(var i=0;i<mesurementData.length;i++) {
 						chartseries1.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].value.value*100 )/100]);
 						if(mesurementData[i].limit){
@@ -149,6 +158,7 @@ var SemantAquaUI = {
 						chartdata.push(limitThreshold);
 					}
 
+					//aggregating species
 					var speciesnames=[];
 					var speciessobj={};
 					for(var i=0;i<nearbySpeciesData.length;i++){
@@ -161,11 +171,14 @@ var SemantAquaUI = {
 					console.log(speciessobj);
 					console.log(speciesnames);
 
+					//the series for the characteristic
 					var series=[];
 					series.push({
 						label:$("#selectforcharacteristic option:selected").html()
 						,yaxis:'yaxis'
 					});
+
+					//the series for the limit for characteristic if exists
 					if(limitThreshold.length!=0){
 						series.push({
 							label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
@@ -178,15 +191,29 @@ var SemantAquaUI = {
 						});
 					}
 					
-					for(var i=0;i<speciesnames.length;i++){
-						chartdata.push(speciessobj[speciesnames[i]]);
+					//based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
+					if(UITeamUtilities.fakedata){
+						chartdata.push([[(year+0)+"-04-01",3],[(year+0)+"-05-01",5],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",4],[(year+0)+"-10-01",2],[(year+0)+"-11-01",3]]);
+						chartdata.push([[(year+0)+"-04-01",5],[(year+0)+"-05-01",4],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",6],[(year+0)+"-10-01",5],[(year+0)+"-11-01",3]]);
 						series.push({
-								label:speciesnames[i],yaxis:'y2axis'
-							})
+							label:"Bubo_virginianus",yaxis:'y2axis'
+						});
+						series.push({
+							label:"Megascops asio",yaxis:'y2axis'
+						});
+					}
+					else{
+						for(var i=0;i<speciesnames.length;i++){
+							chartdata.push(speciessobj[speciesnames[i]]);
+							series.push({
+									label:speciesnames[i],yaxis:'y2axis'
+								})
+						}
 					}
 
 					console.log(chartdata);
 
+					//initializing the chart, feeding relative data gnerated above
 					var jqplot = $.jqplot("lightboxchart", chartdata, {
 				        title:marker.data.label ? marker.data.label.value:""
 				        ,seriesDefaults: {
@@ -230,9 +257,10 @@ var SemantAquaUI = {
 				        }
 				        
 				        ,cursor: {
-					      show: false,
+					      show: true,
+					      zoom:true,
 					      intersectionThreshold :5,
-					      showHorizontalLine:true,
+					      showHorizontalLine:false,
 					      showTooltip:true,
 					      followMouse:true,
 					      // showVerticalLine:true,
@@ -406,20 +434,12 @@ var SemantAquaUI = {
 
 					var speciesnames=[];
 					var speciessobj={};
-					var max=0;
-					var min=0;
 					for(var i=0;i<speciesData.length;i++){
 						if(!speciessobj[speciesData[i]["scientific_name"]["value"]]){
 							speciessobj[speciesData[i]["scientific_name"]["value"]]=[];
 							speciesnames.push(speciesData[i]["scientific_name"]["value"]);
 						}
 						var value=Math.round( speciesData[i].count.value );
-						if (value>max){
-							max=value;
-						}
-						if (value<min){
-							min=value;
-						}
 						speciessobj[speciesData[i]["scientific_name"]["value"]].push([speciesData[i].date.value,value]);
 					}
 					console.log(speciessobj);
@@ -453,10 +473,8 @@ var SemantAquaUI = {
 						        } 
 						    },
 						    yaxis:{
-						    	max:max+1
-						    	,min:min-1
-						        ,tickOptions:{
-						            formatString:'%d'
+						        tickOptions:{
+						            formatString:'%.1f'
 						            // ,showGridline:false
 						        }
 						        ,autoscale:true
@@ -465,7 +483,7 @@ var SemantAquaUI = {
 				        ,legend: { 
 				        	show:true, 
 				        	location: 'se',
-				        	placement: 'outside',
+				        	// placement: 'outside',
 				        	rendererOptions: {numberColumns: 2},
 				        	marginTop:30
 				        }
@@ -483,7 +501,7 @@ var SemantAquaUI = {
 					      followMouse:true,
 					    }
 				    });
-					jqplot.resetZoom();
+					// jqplot.resetZoom();
 					jqplot.replot( { resetAxes: true } );
 					$(window).resize(function(){
 		                jqplot.replot( { resetAxes: true } );
@@ -494,7 +512,7 @@ var SemantAquaUI = {
 
 					leftcoloumgenerater().appendTo(".lb_content");
 					$(".lightbox .lb_container").css({"width":"60%"});
-					$(".leftcolumn").css({"width":"80%"});
+					$(".leftcolumn").css({"width":"100%"});
 					SemantAquaUI.lightbox.show();
 
 					$("#lightboxchart").empty();

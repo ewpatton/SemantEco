@@ -44,6 +44,7 @@ $(window).bind("initialize", function() {
 				console.log("data retrieved in queryForSitePollution. Data(below):");
 				console.log("marker:(below):");
 				console.log(marker);
+				// console.log(data);
 				data=JSON.parse(data);
 				console.log(data);
 				var contents = "";
@@ -56,7 +57,7 @@ $(window).bind("initialize", function() {
 			      marker.tabledata=contents;
 			    }
 			    else{
-			    	contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th><th>Health Effects</th></tr>";
+			    	contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
 				    for(var i=0;i<bindings.length;i++) {
 				      	// try {
 							var result = bindings[i];
@@ -76,10 +77,9 @@ $(window).bind("initialize", function() {
 							//var curSpecies=result["species"].value;
 							var curSpecies=result["species"];
 							//alert(curSpecies)
-							contents += "<td>";
 							var first = true;
 				    }
-				    contents += "</td></tr></table></div>";
+				    contents += "</tr></table></div>";
 				    marker.tabledata=contents;
 			    }
 				$(window).trigger('pop-infowindow',marker);
