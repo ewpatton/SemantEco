@@ -369,6 +369,9 @@ var SemantAquaUI = {
 										data=data.data;
 										var species=[];
 										var confirmtext="No result for the selected species, would you want to see data for\n";
+										if(UITeamUtilities.fakedata){
+											confirmtext="You attempted to plot bird count data for the species \"Bare-legged Owl\", but none is available. There is  however Bird count data on other species of in family “Owl”, including \"Bare-shanked Screech Owl\" and \"Brown-Fish Owl\"";
+										}
 										for(var i=0;i<data.length;i++){
 											species.push(data[i]["sibling"]);
 											confirmtext+=data[i]["sibling"]+"\n";
@@ -483,7 +486,7 @@ var SemantAquaUI = {
 				        ,legend: { 
 				        	show:true, 
 				        	location: 'se',
-				        	// placement: 'outside',
+				        	placement: 'outside',
 				        	rendererOptions: {numberColumns: 2},
 				        	marginTop:30
 				        }
@@ -512,7 +515,7 @@ var SemantAquaUI = {
 
 					leftcoloumgenerater().appendTo(".lb_content");
 					$(".lightbox .lb_container").css({"width":"60%"});
-					$(".leftcolumn").css({"width":"100%"});
+					$(".leftcolumn").css({"width":"80%"});
 					SemantAquaUI.lightbox.show();
 
 					$("#lightboxchart").empty();
