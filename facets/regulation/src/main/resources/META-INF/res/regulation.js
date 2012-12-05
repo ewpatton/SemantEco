@@ -99,7 +99,7 @@ $(window).bind("initialize", function() {
 			  	// console.log(data.results);
 			    
 
-		    	contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Sciencetific Name</th><th>Date</th><th>Count</th></tr>";
+		    	contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Scientific Name</th><th>Date</th><th>Count</th></tr>";
 			    var bindings = data.results.bindings;
 			    for(var i=0;i<bindings.length;i++) {
 						var result = bindings[i];
