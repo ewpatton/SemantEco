@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -669,7 +671,6 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		final Variable testVar = query.getVariable(VAR_NS+"test");
 		final Variable permit = query.getVariable(VAR_NS+"permit");
-		final QueryResource test_type = query.getResource(ENHANCE_NS+"test_type");
 		final QueryResource hasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource characteristic = query.getResource(characteristicUri);
 		final QueryResource site = query.getResource(siteUri);
@@ -696,12 +697,29 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 			if(measuresUri == null || sitesUri == null) {
 				return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
 			}
+			
+			final Pattern converterPattern = Pattern.compile("(.*)/source/([^/]*)/dataset/([^/]*)/.*");
+			final Matcher matcher = converterPattern.matcher(measuresUri);
+			matcher.find();
+			String propUri = matcher.group(1);
+			propUri += "/source/";
+			propUri += matcher.group(2);
+			propUri += "/dataset/";
+			propUri += matcher.group(3);
+			propUri += "/vocab/enhancement/1/test_type";
+			
+			final QueryResource test_typeLocal = query.getResource(propUri);
+			final QueryResource test_type = query.getResource(POL_NS+"test_type");
+			
 			NamedGraphComponent sites = query.getNamedGraph(sitesUri);
 			sites.addPattern(site, hasPermit, permit);
 			NamedGraphComponent named = query.getNamedGraph(measuresUri);
 			named.addPattern(measurement, hasCharacteristic, characteristic);
 			named.addPattern(measurement, hasPermit, permit);
-			named.addPattern(measurement, test_type, testVar);
+			UnionComponent union = query.createUnion();
+			named.addGraphComponent(union);
+			union.getUnionComponent(0).addPattern(measurement, test_type, testVar);
+			union.getUnionComponent(1).addPattern(measurement, test_typeLocal, testVar);
 		}
 		else {
 			return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
