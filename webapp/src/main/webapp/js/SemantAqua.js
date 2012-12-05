@@ -116,6 +116,7 @@ var SemantAqua = {
 			alert("The input zip code is not valid! Please check and input again.");
 			return;
 		}
+		$.bbq.removeState("uri");
 		SemantAqua.action = "decodeZipCode";
 		if($.bbq.getState("zip") == zip) {
 			// handle if the "Go" button is clicked a second time without

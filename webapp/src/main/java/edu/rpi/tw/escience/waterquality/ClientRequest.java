@@ -72,7 +72,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 					if(value.length>1) {
 						this.params.put(i.getKey(), arrayToString(value));
 					}
-					else {
+					else if(!value[0].equals("null")) {
 						this.params.put(i.getKey(), value[0]);
 					}
 				}

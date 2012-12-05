@@ -27,6 +27,9 @@ var SemantAquaUI = {
 		SemantAquaUI.infowindow=new google.maps.InfoWindow({
             content:SemantAquaUI.infowindowcontainer
         });
+		SemantAquaUI.infowindow.addListener("closeclick", function() {
+			$.bbq.removeState("uri");
+		});
 
 		//the function below is listening on show-marker-info event,
 		//more than just an event, the trigger also passed a parameter(marker) when it trigger the event
