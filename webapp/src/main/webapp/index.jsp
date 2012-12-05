@@ -36,7 +36,7 @@
 			<form>
 		  	  <p>Zip Code:
 		        <input id="zip" type="text" size="10" name="zip" value="02809" />
-	            <input type="button" value="Go!" onclick="SemantAqua.showAddress()" style="margin-left:20px;" /><br/>
+	            <input type="button" value="Go!" onclick="SemantAqua.showAddress(); return false;" style="margin-left:20px;" /><br/>
 		        Try:
 			    <a href="javascript:SemantAqua.showAddress('02809');">Bristol, RI: 02809</a>, 
 			    <a href="javascript:SemantAqua.showAddress('90813');">Los Angeles, CA: 90813</a>, 

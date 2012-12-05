@@ -2,6 +2,13 @@ var SemantAqua = {
 	"limit": 5,
 	"action": null,
 	"initialize": function() {
+		$("#zip")[0].onkeypress = function(e) {
+			if(e.charCode == 13) {
+				SemantAqua.showAddress();
+				return false;
+			}
+			return true;
+		};
 		SemantAqua.configureConsole();
 		SemantAquaUI.configureMap();
 		$(window).trigger("initialize");
