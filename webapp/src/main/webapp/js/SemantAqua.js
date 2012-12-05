@@ -30,23 +30,23 @@ var SemantAqua = {
 			window.console = {};
 		}
 		if(typeof window.console.__proto__.debug == "undefined") {
-			window.console.__proto__.debug = function() { }
+			window.console.__proto__.debug = function() { };
 		}
 		if(typeof window.console.__proto__.info == "undefined") {
-			window.console.__proto__.info = function() { }
+			window.console.__proto__.info = function() { };
 		}
 		if(typeof window.console.__proto__.warn == "undefined") {
-			window.console.__proto__.warn = function() { }
+			window.console.__proto__.warn = function() { };
 		}
 		if(typeof window.console.__proto__.error == "undefined") {
-			window.console.__proto__.error = function() { }
+			window.console.__proto__.error = function() { };
 		}
 	},
 	"configureWebSockets": function() {
 		SemantAqua.socket = null;
 		var host = null;
 		if(window.location.protocol == "http:") {
-			host = "ws://"+window.location.host+"/semantaqua/log"
+			host = "ws://"+window.location.host+"/semantaqua/log";
 		}
 		else {
 			host = "wss://"+window.location.host+"/semantaqua/log";
@@ -113,7 +113,7 @@ var SemantAqua = {
 			return;
 		}
 		if(zip.length != 5) {
-			alert("The input zip code is not valid! Please check and input again.")
+			alert("The input zip code is not valid! Please check and input again.");
 			return;
 		}
 		SemantAqua.action = "decodeZipCode";
@@ -352,14 +352,14 @@ var UITeamUtilities={
 			SemantAquaUI.doGeocode("35207");
 
 			for(var i=0;i<UITeamUtilities.markerdata.length;i++){
-				DataTypeModule.createMarker(null,UITeamUtilities.markerdata[i])
+				DataTypeModule.createMarker(null,UITeamUtilities.markerdata[i]);
 			}
 			
 		});
 	},
 	markerdata:null,
 	infowindowdata:null
-}
+};
 
 $(function(){
 	UITeamUtilities.init();
