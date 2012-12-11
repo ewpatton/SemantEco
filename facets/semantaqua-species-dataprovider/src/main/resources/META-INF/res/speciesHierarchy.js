@@ -1,9 +1,12 @@
- var jsonHier;
+ /*jsonHier used to accept JSON*/
+var jsonHier;
+/*class_hierachy used to store nodes information*/
  var class_hierachy=new Array();
  var temp_array;
  var class_hierachy_temp=new Array();
  var class_hierachy_map=new Array();
- 
+
+/*initialization*/
 $(window).bind("initialize", function() {
 	var birdIcon = $("input[value='birds']+img").attr("src");
 	
@@ -28,6 +31,8 @@ $(window).bind("initialize", function() {
 		}
 		return birdIcon;
 	});
+	/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
+	
 					SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
         	    		  jsonHier=JSON.parse(data);
         	    		  jsonHier=jsonHier["data"];
@@ -46,15 +51,13 @@ $(window).bind("initialize", function() {
 
  
 function initial_hierachy(){
-	//alert(jsonHier);
-	
+	/*put root node in class_hierachy_temp and class_hierachy*/
 	var flag=0;
 	for (var i=0;i<jsonHier.length;i++){
 		flag=0;
 		for (var j=0;j<jsonHier.length;j++){
 			temp1=jsonHier[i]["parent"].indexOf("#");
 			if(jsonHier[i]["parent"].substring(temp1+1)==jsonHier[j]["label"]){
-				//alert(jsonHier[i]);
 				flag=1;
 				break;
 			}
@@ -71,11 +74,11 @@ function initial_hierachy(){
 			if(flag1==0){
 				class_hierachy_temp.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
 				class_hierachy.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
-				//jsonHier.remove(i);
 			}
 		}
 	}
 	
+	/*iterate nodes in class_hierachy_temp to build tree*/
 	for (var j=0;j<class_hierachy_temp.length;j++){
 		 for (var i=0;i<jsonHier.length;i++){
 			 	var temp=jsonHier[i]["parent"].indexOf("#");		 	
@@ -88,7 +91,8 @@ function initial_hierachy(){
 		
 	}
 	
-	//alert(class_hierachy)
+	
+	/*get the nodes information from class_hierachy_temp and then build JStree*/
 	var temp_div=document.getElementById('tree');
 	temp_div.innerHTML="";
 	
@@ -104,16 +108,16 @@ function initial_hierachy(){
 		ul.appendChild(li); 
 		temp_div.appendChild(ul); 
 		document.getElementById('description').appendChild(temp_div);
-		    //alert("success");
 		
 		var j;
+		/*append second layer nodes*/
 	    for ( j=class_hierachy_temp.length;j<class_hierachy.length;j++){ 
 			append_node(j,i);
 		}
 	    
 	}
 	
-	
+	/*JStree function, initialize JStree. make all nodes open at first*/
 	$(function () {
 		$("#tree")
 			.jstree({
@@ -127,39 +131,39 @@ function initial_hierachy(){
 				"core" : { "initially_open" : [ "0" ] },
 				
 				 "plugins" : ["themes","html_data","ui"] })
-					// 1) if using the UI plugin bind to select_node
-	
+					
+	                 /*the function used for selecting one node*/
 					.bind("select_node.jstree", function (event, data) { 
-					// `data.rslt.obj` is the jquery extended node that was clicked
+					
 						
 						
 					    var temp=data.rslt.obj.attr("id");
-						//alert(class_hierachy[temp][0]);
-						//alert(class_hierachy[temp][1]);
+					    /*use $.bbq.pushState to put in queryeBirdTaxonomySubClasses's information*/
 					    $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy[temp][2]});
+					    /*ajax_node will work on JSON returned from backend*/
 						ajax_node();
 						getSelectedValue();
 				})
 				    
 				
 				
-					// 2) if not using the UI plugin - the Anchor tags work as expected
+					//    if not using the UI plugin - the Anchor tags work as expected
 					//    so if the anchor has a HREF attirbute - the page will be changed
-			//    you can actually prevent the default, etc (normal jquery usage)
+		
 					.delegate("a", "click", function (event, data) { event.preventDefault(); })
 	});
 
 }
 
 function getSelectedValue() {  
+	 /*get every nodes which you selected*/
     var nodes = $.jstree._reference($("#tree")).get_selected();
     var temp=new Array();
     $.each(nodes, function(i, n) {  
-    	
+    	 /*if one node and its parent node both be selected, parent node will be deselected*/
     	for (var i=0;i< nodes.length;i++){
     		if(class_hierachy[this.id][1]==class_hierachy[nodes[i].id][0]){
     			$.jstree._reference($("#tree")).deselect_node(nodes[i]);
-    			//alert(nodes[i].id);
     			break;
     		}
     		
@@ -167,6 +171,7 @@ function getSelectedValue() {
     
     }); 
     
+    /*put all select node's ID in $.bbq*/
     nodes = $.jstree._reference($("#tree")).get_selected();
     $.each(nodes, function(i, n) {  
     	temp.push(class_hierachy[this.id][2]);
@@ -174,7 +179,7 @@ function getSelectedValue() {
     $.bbq.pushState({"species":temp});
 }  
 
-
+/*build second layer nodes*/
 function append_node(current, parent){
     if(class_hierachy[current][1]==class_hierachy[parent][0]){
 		var temp_div=document.getElementById(parent);
@@ -195,7 +200,7 @@ function append_node(current, parent){
 }	
 
 
-
+/*depend on JSON returned from backend when user click on one node to build children nodes*/
 function ajax_node() {
 	SpeciesDataProviderModule.queryeBirdTaxonomySubClasses({}, function(data) {
 		jsonHier = JSON.parse(data);
@@ -237,6 +242,7 @@ function ajax_node() {
 						}
 					}
 				}
+				 /*unfold children nodes*/
 				var tree = jQuery.jstree._reference("#" + id);
 		        tree.refresh();
 		        document.getElementById(id).firstChild.click();
@@ -257,7 +263,7 @@ function ajax_node() {
  */
 
 document.onkeydown = keyDown;
-
+/*the funciton handle "delete" key*/
 function keyDown(){
      if(event.keyCode==8){
      	var temp =document.getElementById('search_info').value;
@@ -293,7 +299,7 @@ function keyDown(){
      
  }
 
-
+/*handle other key except "delete" key*/
 function press(event){
  var e=event.srcElement;
      if(event.keyCode!=13){
@@ -306,6 +312,7 @@ function press(event){
      }
  }
 
+/*find the match string*/
 function match(str){
      //alert(document.getElementById('textarea2').value);
      var temp =document.getElementById('search_info').value;
@@ -332,12 +339,15 @@ function match(str){
      }
  div1.innerHTML+=htmlStr;
  }
+
+/*when you find a match string. choose it.*/
 function choose(str){
 	var temp=str.childNodes[0].nodeValue;
 	document.getElementById('search_info').value=temp;
 	document.getElementById('show').innerHTML="";
 }
 
+/*find where this node is*/
 function search_node(){
 	 var temp =document.getElementById('search_info').value;
 	 var flag=0;
