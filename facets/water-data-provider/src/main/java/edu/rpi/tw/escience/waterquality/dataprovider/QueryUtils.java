@@ -65,7 +65,7 @@ public class QueryUtils {
 	
 	private static final Map<String, String> stateUriMap = new HashMap<String, String>();
 	
-	public QueryUtils(final Request request, final ModuleConfiguration config) {
+	protected QueryUtils(final Request request, final ModuleConfiguration config) {
 		this.request = request;
 		this.log = request.getLogger();
 		this.config = config;
