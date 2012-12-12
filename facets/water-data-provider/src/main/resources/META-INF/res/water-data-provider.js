@@ -1,4 +1,5 @@
 $(window).bind("initialize", function() {
+	// collect the various water icons
 	var icons = [];
 	icons[0] = [];
 	icons[0][0] = $("input[value='clean-water']+img").attr("src");
@@ -7,6 +8,12 @@ $(window).bind("initialize", function() {
 	icons[1][0] = $("input[value='clean-facility']+img").attr("src");
 	icons[1][1] = $("input[value='polluted-facility']+img").attr("src");
 	
+	/**
+	 * Register a visibility function to assert
+	 * visibility of water icons based on the
+	 * information contained in the SPARQL binding.
+	 * @params b A SPARQL JSON binding
+	 */
 	DataTypeModule.registerVisibilityFunction(function(b) {
 		if(b["isWater"] == undefined) {
 			return false;
@@ -34,6 +41,12 @@ $(window).bind("initialize", function() {
 		return $("input[value='"+str+"']")[0].checked;
 	});
 	
+	/**
+	 * Register an icon locator function to return
+	 * water icon URLs for the appropriate SPARQL
+	 * bindings.
+	 * @params b A SPARQL JSON binding
+	 */
 	DataTypeModule.registerIconLocator(function(b) {
 		if(b["isWater"] == undefined) {
 			return null;
