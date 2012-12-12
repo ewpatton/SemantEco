@@ -9,11 +9,33 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Module;
 import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
+import edu.rpi.tw.escience.waterquality.ProvidesDomain;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
 
+/**
+ * The Domain module is responsible for generating the Domain facet. Users can
+ * indirectly enable and disable modules by changing which domains are active.
+ * 
+ * To add domains, a module should implement the {@link ProvidesDomain} interface
+ * and return a list of domains created using the {@link ModuleConfiguration#getDomain(URI, boolean)}
+ * method from its {@link ProvidesDomain#getDomains(Request)} method, e.g.:
+ * 
+ * <code>
+ * public List&lt;Domain&gt; getDomains(final Request request) {
+ *     List&lt;Domain&gt; domains = new ArrayList&lt;Domain&gt;();
+ *     Domain myDomain = config.getDomain(URI.create("http://mydomain#"), true);
+ *     // add data sources, regulations, and data types here
+ *     domains.add(myDomain);
+ *     return domains;
+ * }
+ * </code>
+ * 
+ * @author ewpatton
+ *
+ */
 public class DomainModule implements Module {
 
 	private ModuleConfiguration config = null;
