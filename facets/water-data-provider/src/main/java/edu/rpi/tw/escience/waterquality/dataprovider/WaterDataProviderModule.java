@@ -35,6 +35,15 @@ import edu.rpi.tw.escience.waterquality.query.Variable;
 import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
+/**
+ * Water Data Provider provides the water domain and is primarily adapted from the
+ * older implementations of SemantAqua. It uses a backing triple store to generate
+ * a list of data sources and builds queries based on those data sources to
+ * import data.
+ * 
+ * @author ewpatton
+ *
+ */
 public class WaterDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
@@ -196,6 +205,11 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		return responseStr;
 	}
 	
+	/**
+	 * Gets site counts for the enabled data sources.
+	 * @param request Request object encapsulating RESTful call
+	 * @return JSON object containing counts of sites and facilities
+	 */
 	@QueryMethod
 	public String getSiteCounts(Request request) {
 		final Logger log = request.getLogger();
@@ -208,6 +222,10 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		return responseStr;
 	}
 	
+	/**
+	 * Adds known water regulations to the provided domain
+	 * @param domain A domain, specifically the water domain
+	 */
 	protected void addRegulations(final Domain domain) {
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/EPA-regulation.owl"), "EPA Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ca-regulation.owl"), "CA Regulation");
@@ -216,6 +234,10 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl"), "RI Regulation");
 	}
 	
+	/**
+	 * Adds the water data types to the water domain
+	 * @param domain The water domain
+	 */
 	protected void addDataTypes(final Domain domain) {
 		Resource res = config.getResource("clean-water.png");
 		domain.addDataType("clean-water", "Clean Water", res);
@@ -227,6 +249,11 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		domain.addDataType("polluted-facility", "Polluted Facility", res);
 	}
 	
+	/**
+	 * Adds data sources to the water domain
+	 * @param domain The water domain
+	 * @param request Required so that we can execute remote SPARQL queries.
+	 */
 	protected void addDataSources(final Domain domain, final Request request) {
 		String response = queryForDataSources(request);
 		try {

@@ -29,6 +29,13 @@ import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.Query.Type;
 
+/**
+ * Query utilities used to find graphs and process SPARQL results.
+ * See {@link DataModelBuilder} and {@link InstanceCounter} for
+ * cases where QueryUtils is used.
+ * @author ewpatton
+ *
+ */
 public class QueryUtils {
 
 	public static final String INSTANCE_HUB_STATES = "http://logd.tw.rpi.edu/source/twc-rpi-edu/dataset/instance-hub-us-states-and-territories/version/2011-Apr-09";
