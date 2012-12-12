@@ -13,6 +13,16 @@ import edu.rpi.tw.escience.waterquality.Resource;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
 
+/**
+ * The Data Type Module provides the necessary client-side logic to handle
+ * presentation of data markers on the map. It obtains information about
+ * data types via the {@link ModuleConfiguration#listDomains()} method.
+ * 
+ * The majority of the logic for this class is defined in META-INF/res/data-type.js.
+ * 
+ * @author ewpatton
+ *
+ */
 public class DataTypeModule implements Module {
 
 	private ModuleConfiguration config = null;
