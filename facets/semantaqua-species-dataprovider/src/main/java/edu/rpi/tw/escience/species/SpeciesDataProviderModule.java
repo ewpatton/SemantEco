@@ -1285,6 +1285,8 @@ WHERE
 		//URIs
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource hasCommonName = query.getResource("http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID");
+		
 		final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
 
 		//build query
@@ -1299,6 +1301,9 @@ WHERE
 				graph.addPattern(id, subClassOf, birdTaxonomy);
 
 				graph.addPattern(id, hasLabel, label);
+				//for testing common names
+				//graph.addPattern(id, hasCommonName, label);
+
 				//get only the subclasses of the subclasses of OWL thing
 				String responseStr = FAILURE;
 				
@@ -1363,7 +1368,8 @@ WHERE
 		//URIs
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
-		
+		final QueryResource hasCommonName = query.getResource("http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID");
+
 		//final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
 		final QueryResource classRequiresSubclasses = query.getResource(classRequiresSubclassesString);
 
@@ -1378,7 +1384,8 @@ WHERE
 				graph.addPattern(id, subClassOf, parent);
 				graph.addPattern(id, subClassOf, classRequiresSubclasses);
 
-				graph.addPattern(id, hasLabel, label);
+				//graph.addPattern(id, hasLabel, label);
+				graph.addPattern(id,hasCommonName, label);
 				//get only the subclasses of the subclasses of OWL thing
 				String responseStr = FAILURE;
 				
