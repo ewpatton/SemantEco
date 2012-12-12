@@ -71,6 +71,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
 	private static final String ISBIRD_VAR = "isBird";
+	private static final String ISFISH_VAR = "isFish";
 
 
 	private ModuleConfiguration config = null;
@@ -80,6 +81,19 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	 */
 	@Override
 	public void visit(final Model model, final Request request) {
+		
+		JSONArray j = (JSONArray) request.getParam("source");
+		//loop on the array j
+		//check if any of the strings int he array are "
+		
+		/*
+		 
+		  $.bbq.getState("source")
+["http://ebird#", "http://sparql.tw.rpi.edu/source/epa-gov", "http://sparql.tw.rpi.edu/source/usgs-gov"]
+		 
+		 */
+		
+		
 		// TODO populate data model
 		// would have to load the bird site data for the particular county/state
 		//get the state and county from params
@@ -153,11 +167,17 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		List<GraphComponentCollection> graphs = query.findGraphComponentsWithPattern(site, rdfType, polMeasurementSite);
 		if(graphs != null && graphs.size() > 0) {
 		//	query.setNamespace("air", AIR_NS);
-			final Variable isAir = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a <http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite> } as ?"+ISBIRD_VAR);
 			Set<Variable> vars = new LinkedHashSet<Variable>(query.getVariables());
-			vars.add(isAir);
+
+			final Variable isBird = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a <http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite> } as ?"+ISBIRD_VAR);		
+			final Variable isFish = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a <http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#FishSite> } as ?"+ ISFISH_VAR);
+			vars.add(isBird);
+			vars.add(isFish);
+
 			query.setVariables(vars);
 		}
+		
+		
 		
 	}
 	
@@ -1523,10 +1543,19 @@ WHERE
 		List<Domain> domains = new ArrayList<Domain>();
 		Domain bird = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#"), true);
 		bird.setLabel("Bird");
-		addDataSources(bird, request);
+		addDataSourcesBird(bird, request);
 		addRegulations(bird);
-		addDataTypes(bird);
+		addDataTypesBirds(bird);
 		domains.add(bird);
+		
+		Domain fish = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#"), true);
+		fish.setLabel("Fish");
+		addDataSourcesFish(fish, request);
+		addRegulations(fish);
+		addDataTypesFish(fish);
+		domains.add(fish);
+		
+		
 		return domains;
 	}
 	
@@ -1534,13 +1563,25 @@ WHERE
 		
 	}
 	
-	protected void addDataTypes(final Domain domain) {
+	protected void addDataTypesBirds(final Domain domain) {
 		Resource res = config.getResource("ebird.png");
 		domain.addDataType("birds", "Bird Species", res);
+		//bird is the identifier of the checkbox, and Bird Species is the label for the icon type
 	}
 	
-	protected void addDataSources(final Domain domain, final Request request) {
+	protected void addDataTypesFish(final Domain domain) {
+		Resource res = config.getResource("fish.png");
+		domain.addDataType("fish", "Fish Species", res);
+		//the first string is used in speciesHierarchy.js where icon variable is set.
+	}
+	
+	protected void addDataSourcesBird(final Domain domain, final Request request) {
 		domain.addSource(URI.create("http://ebird#"), "eBird");
+		//this is what is put into the bbq state for sources
+	}
+	
+	protected void addDataSourcesFish(final Domain domain, final Request request) {
+		domain.addSource(URI.create("http://sbcFish#"), "SBC Fish");
 	}
 
 }

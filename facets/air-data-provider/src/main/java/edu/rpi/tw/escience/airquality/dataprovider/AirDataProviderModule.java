@@ -43,10 +43,6 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
-
-
-
 	private static final String ISAIR_VAR = "isAir";
 	private ModuleConfiguration config = null;
 	private static Logger log = Logger.getLogger(AirDataProviderModule.class);

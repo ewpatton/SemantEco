@@ -8,7 +8,12 @@ var jsonHier;
 
 /*initialization*/
 $(window).bind("initialize", function() {
+	//input value=birds matches the checkbox for birds, as encoded in SpeciesDataProviderModule.java
 	var birdIcon = $("input[value='birds']+img").attr("src");
+	var fishIcon = $("input[value='fish']+img").attr("src");
+
+	
+	//this is for birds
 	
 	DataTypeModule.registerVisibilityFunction(function(b) {
 		if(b["isBird"] == undefined) {
@@ -31,6 +36,47 @@ $(window).bind("initialize", function() {
 		}
 		return birdIcon;
 	});
+	
+	
+	//this is for fish
+	//when the server returns the list of sites in the sparql results, it interates over all the binds
+	//and the datatype module calls every visibility function and every icon locator (this is in DataTypeModule.js and/or SemantAquaUI.js)
+	//registerVisibilityFunction is an array of functions, which are you passing this "anonymous" function into
+	//so the sparql results bindings are passing as "b" into the below function
+	DataTypeModule.registerVisibilityFunction(function(b) {
+		//b is a dictionary where each key is a variable in the sparql
+		//each valuable is itself a dictionary. each dicgtionary has up to four keys inside of it.
+		// type (uri, literal, or blank node), value (actual uri or actual literal, or actual blank node), datatype (only present if literal and typed literal)
+		//if there is no binding to the ?isFish variable then the default is to return false.
+		//this will be undefined if you uncheck the both fish and spcies under the domain.
+		if(b["isFish"] == undefined) {
+			return false;
+		}
+		//we know this is a fish binding (b/c it could be false if this particular site being iterated on happens not to be a fish site)
+		var fish = b["isFish"]["value"] == "true"; 
+		if(!fish) {
+			return false;
+		}
+		return $("input[value='fish']")[0].checked; //we use query to grab the checkbox and the value of its "checked" property
+	});
+	
+	//returns as string which is a string to an image if its a relevant image for the visiblity.
+	DataTypeModule.registerIconLocator(function(b) {
+		if(b["isFish"] == undefined) {
+			return null;
+		}
+		var fish = b["isFish"]["value"] == "true";
+		if(!fish) {
+			return null;
+		}
+		return fishIcon;
+	});
+	
+	
+	
+	
+	
+	
 	/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
 	//puts the array of root nodes, which are in the "data" array, into jsonHier
 	//call initial_hiearchy

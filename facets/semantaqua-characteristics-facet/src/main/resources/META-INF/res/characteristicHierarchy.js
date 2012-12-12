@@ -101,7 +101,7 @@ function initial_hierachy_ch(){
    					 "theme" : "default",
    					 "dots" : true,
   					 "icons" : true,
-			 	     "url": "themes/default/style.css"
+			 	  //   "url": "themes/default/style.css"
 					},
 				 "core" : { "initially_open" : [ "0_ch" ] },
 				 

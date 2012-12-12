@@ -6,15 +6,25 @@ $(document).ready(function() {
 	DataTypeModule.visibilityFunctions = [];
 	DataTypeModule.iconLocators = [];
 	DataTypeModule.registerVisibilityFunction = function(func) {
+		//this registerVisiblityFunction is pushed onto array visibityFunctions
 		DataTypeModule.visibilityFunctions.push(func);
 	};
 	DataTypeModule.registerIconLocator = function(func) {
 		DataTypeModule.iconLocators.push(func);
 	};
 	
+	//when we're checking whether a marker should be visible,
+	//we have a binding for a specific site
+	//do any of the visibility functions believe whether this site
+	//should be visible?
 	DataTypeModule.shouldBeVisible = function(binding) {
 		for(var i=0;i<DataTypeModule.visibilityFunctions.length;i++) {
 			var func = DataTypeModule.visibilityFunctions[i];
+			//call is used to call the actual function that was registered
+			//you're calling the function of the function object
+			//the first arg is bound to the this keyword
+			//and the remaining are mapped to the arguments
+			//
 			if(func.call(window, binding) == true) {
 				return true;
 			}
