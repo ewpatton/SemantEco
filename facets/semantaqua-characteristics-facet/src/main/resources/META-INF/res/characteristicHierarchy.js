@@ -178,6 +178,7 @@ function append_node_ch(current, parent){
 		a.href="#";
 		var text=document.createTextNode(class_hierachy_ch[current][0]);
 		var temp_id=current.toString()+"_ch";
+		//cannot use id variable because id is used by species, and the li needs to be distinct, so we have 0 for species and we have 0_ch for charactatericcs.
 		li.id=temp_id;
 		a.appendChild(text); 
 		li.appendChild(a); 

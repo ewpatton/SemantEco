@@ -103,8 +103,7 @@ function initial_hierachy(){
 	for (var i=0;i<jsonHier.length;i++){
 		flag=0;
 		for (var j=0;j<jsonHier.length;j++){
-			//looking in the "parent" value and get the index position of the "#"
-			
+			//looking in the "parent" value and get the index position of the "#"		
 			//use the temp1, which is the index, to access the string of the parent uri (http://ebird#birdTaxonomy becomes birdTaxonomy) and compare with the label of the current json in jsonHier
 			//in the case of birdTaxonomy, which is not one of the Ids, this will never be true.
 			if(jsonHier[i]["parent"]==jsonHier[j]["id"]){
@@ -123,7 +122,7 @@ function initial_hierachy(){
 				}
 		
 			}
-			//first time interation always true
+			//first time iteration always true
 			//so flag1 will be 1 and the below will not be entered when birdTaxonomy is in the class_hierarchy_temp array
 			//so the push below just collects all the parents for the 2nd level and all level (depending on the array).
 			if(flag1==0){
@@ -141,6 +140,7 @@ function initial_hierachy(){
 
 	
 	/*iterate nodes in class_hierachy_temp to build tree*/
+	//this loop puts all 2nd tier classes into class_hierarchy under the root class(es). but it does not build the tree yet.
 	for (var j=0;j<class_hierachy_temp.length;j++){ //just birdTaxonomy
 		 for (var i=0;i<jsonHier.length;i++){ //all of the second level nodes
 			 			 	
@@ -158,7 +158,7 @@ function initial_hierachy(){
 		
 	}
 	
-	//the next thing is to build the tree using class_hierachy_temp for finding the root, and also using class_hierarchy array 
+	//the next thing is to build the tree that goes into the DIV,  using class_hierachy_temp for finding the root ONLY, and also using class_hierarchy array 
 	/*get the nodes information from class_hierachy and then build JStree*/
 	//here we are getting the div for the tree
 	var temp_div=document.getElementById('tree');
@@ -173,6 +173,7 @@ function initial_hierachy(){
 		a.href="#";
 		//this is a javascript method
 		var text=document.createTextNode(class_hierachy_temp[i][0]);
+		/** this is the most important identifer because it links the tree information contained in the class_hierarchy array and the jstree structure*/
 		li.id=i;
 		//this builds the structure to use the ul to put into the div.
 		a.appendChild(text); 
@@ -184,17 +185,21 @@ function initial_hierachy(){
 		document.getElementById('description').appendChild(temp_div);
 		
 		var j;
-		/*append second level nodes to the root level node. append_node is a function below*/
+		
+		
+		/*append second level nodes to the root level node in the DIV. append_node is a function below*/
 	    for ( j=class_hierachy_temp.length;j<class_hierachy.length;j++){ 
 	    	//i is the id of the root level node, which is always 0.
 	    	//and the j is 1 (because only one in the parent array) to length of the class hierarchy
+	    	//j here is the index of the node in the class_hierarchy
 			append_node(j,i);
 		}
 	    
 	}
 	
-	/*JStree function, initialize JStree. make all nodes open at first*/
+	/** JStree function, initialize JStree. make all nodes open at first*/
 	$(function () {
+		//here we applying the jstree method (.jstree) into the #tree div which has a tree.
 		$("#tree")
 			.jstree({
 				"themes" : {
@@ -208,8 +213,9 @@ function initial_hierachy(){
 				
 				 "plugins" : ["themes","html_data","ui"] })
 					
-	                 /*the function used for selecting one node*/
-				 //this retrieve the children
+	                /**the function used for selecting one node*/
+				 //this retrieve the children node of the selected node, based on user selection of the node in the tree. (see: queryBirdTaxonomySubclasses below)
+				 //this bind method applies the select_node.jstree action to this function
 					.bind("select_node.jstree", function (event, data) { 
 					
 						
@@ -219,7 +225,8 @@ function initial_hierachy(){
 					    //the [2] index is the id of the species
 					    $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy[temp][2]});
 					    /*ajax_node will work on JSON returned from backend*/
-						ajax_node();
+					    //here the method ajax_node will execute the server method for retrieving subclass nodes.
+						ajax_node();					
 						getSelectedValue();
 				})
 				    
@@ -233,20 +240,40 @@ function initial_hierachy(){
 
 }
 
+/** This function handles the deselection of the parent node when CTRL is selected, and it also pushes the bbq state all the selected species nodes.
+ * This method is executed anytime a  */
 function getSelectedValue() {  
-	 /*get every nodes which you selected*/
+	/*get every nodes which you selected*/
     var nodes = $.jstree._reference($("#tree")).get_selected();
     var temp=new Array();
+    /** this method is basically a "cleanup" to deselect the a parent node after a click on a child node.*/
     $.each(nodes, function(i, n) {  
     	 /*if one node and its parent node both be selected, parent node will be deselected*/
     	for (var i=0;i< nodes.length;i++){
+    		//the first in the comparison is the parent in index 1, and the second is the current node that you have selected in the get_selected list
+    		//so if it matches then you remove the parent node
+    		//class_hiear[this.id][1] = references the parent of the current selected node
+    		//class_hiear[nodes[i].id][2] use nodes[i].id, which is the position in the class_hierarchy array of the selected node being iterated over,
+    		// and then using [2] index to access the identifer.
+    		//in summary we are comparing the currently current node's parent identifier with every selected nodes id using the class_hiearchy array, accessing its position and then identifer
+    		//the position of each node in the class_hierarchy array is also stored in the node. 
+    		/*
+    		 * class_hierachy
+				Array[3]
+			0: "Struthioniformes"
+			1: "http://ebird#birdTaxonomy"
+			2: "http://ebird#Struthioniformes"
+			length: 3
+				__proto__: Array[0]
+    		 *
+    		 */
+    		
     		if(class_hierachy[this.id][1]==class_hierachy[nodes[i].id][2]){
+    			//this deselects the parent node
     			$.jstree._reference($("#tree")).deselect_node(nodes[i]);
     			break;
-    		}
-    		
-    	};
-    
+    		}  		
+    	};   
     }); 
     
     /*put all select node's ID in $.bbq*/
@@ -257,8 +284,8 @@ function getSelectedValue() {
     $.bbq.pushState({"species":temp});
 }  
 
-/*build second layer nodes*/
-//first iteration current is 1 and parent is 0
+/** build second layer nodes
+for the first iteration, the  current variable is 1 and parent is 0 */
 function append_node(current, parent){
 	
 	//find the child nodes of one parent node and put them under that id under the parent element (by getElementById)
@@ -279,14 +306,13 @@ function append_node(current, parent){
 		temp_div.appendChild(ul); 
 	 	    //alert("success");
 		
-	}
-	
+	}	
 }	
 
 
-//this method is called only if a node is selected/clicked AND it builds children nodes.
-//if multiple nodes are selected it will be executed once for each node
-//the execution finishing depends on whether JSON is returned from queryeBNirdTaxonomySubclasses
+/**this method is called only if a node is selected/clicked AND it builds children nodes.
+if multiple nodes are selected it will be executed once for each node
+the execution finishing depends on whether JSON is returned from queryeBNirdTaxonomySubclasses */
 function ajax_node() {
 	SpeciesDataProviderModule.queryeBirdTaxonomySubClasses({}, function(data) {
 		jsonHier = JSON.parse(data);
@@ -342,41 +368,44 @@ function ajax_node() {
 	});
 }
 
-/*
- * function iterative_build(str){ temp_array=new Array(); for (var i=0;i<jsonHier.length;i++){
- * temp=jsonHier[i]["parent"].indexOf("#");
- * if(jsonHier[i]["parent"].substring(temp+1)==str){ class_hierachy.push(new
- * Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
- * temp_array.push(jsonHier[i]["label"]); //jsonHier.remove(i); } } for (var
- * i=0;i<temp_array.length;i++){ iterative_build(temp_array[i]); }
- *  }
- */
 
 document.onkeydown = keyDown;
-/*the funciton handle "delete" key*/
+/**the funciton handle "delete" key
+ * this function listened to event every time you use the delete key / backspace in the search box.
+ * 
+ * */
 function keyDown(){
      if(event.keyCode==8){
+    	 //temp is the string you entered
      	var temp =document.getElementById('search_info').value;
      
     	var cprStr=temp;
-     	if(cprStr.length!=1&&cprStr.length!=0){             
-     		cprStr=cprStr.substring(0,cprStr.length-1);
-     
+    	//if the length of the search string is not 1 or 0
+     	if(cprStr.length!=1&&cprStr.length!=0){   
+     		//pressing delete adds a 8 character to the end of string anytime you press delete, thus length -1.
+     		cprStr=cprStr.substring(0,cprStr.length-1);   
+     		//temp array for holding matching nodes
     		show=[];
     		len=0;
+    		//this loop looks for the string that is search in every label
     		for (i in class_hierachy){
+    			//check whether search string is inside of the label string
      			if(cprStr==class_hierachy[i][0].substring(0,cprStr.length)){
     	    		len=show.push(class_hierachy[i][0]);
         		}
      		} 
     	 }
  	 else{
- 	show=[]
+ 	show=[] //clearing the show array
          }
     	 //alert("Have "+len+" compatible records");
+     	
+     	//we create a new div for showing the matched nodes
+     	//by having a show element, anything you put in the div will appear
 	  var div1=document.getElementById('show');
    	  div1.innerHTML="";
-   	  htmlStr=""
+   	  htmlStr="";
+   	  //this 
    	  for (i in show){
       	  htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">"
        	  htmlStr+=show[i];
@@ -389,7 +418,7 @@ function keyDown(){
      
  }
 
-/*handle other key except "delete" key*/
+/**handle other key except "delete" key*/
 function press(event){
  var e=event.srcElement;
      if(event.keyCode!=13){
@@ -402,7 +431,7 @@ function press(event){
      }
  }
 
-/*find the match string*/
+/**find the match string*/
 function match(str){
      //alert(document.getElementById('textarea2').value);
      var temp =document.getElementById('search_info').value;
@@ -430,11 +459,14 @@ function match(str){
  div1.innerHTML+=htmlStr;
  }
 
-/*when you find a match string. choose it.*/
+/**when you select a matched string, it clears the div of the list of matches, and selects in the tree the selected, node that matched the string.*/
 function choose(str){
 	var temp=str.childNodes[0].nodeValue;
+	//puts the selected term from the search into the search box
 	document.getElementById('search_info').value=temp;
+	//clears the show div
 	document.getElementById('show').innerHTML="";
+	//this does not change selection, you still need to hit search, so the method for that is handled in the .jsp file where search_node is called.
 }
 
 /*find where this node is*/
@@ -445,6 +477,7 @@ function search_node(){
 	 	if(temp==class_hierachy[i][0]){
 			flag=1;
 			if(document.all){
+				//this selects the matched node with the label
 				document.getElementById(i).firstChild.click();
 			}
 			else{

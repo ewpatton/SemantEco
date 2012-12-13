@@ -34,14 +34,16 @@ var SemantAquaUI = {
 			$.bbq.removeState("uri");
 		});
 
-		//the function below is listening on show-marker-info event, the event is being generated in regulation.js file
+		//the function below is listening on show-marker-info event (after a user clicks on the site), the event is being generated in regulation.js file
 		//more than just an event, the trigger also passed a parameter(marker) when it trigger the event
 		//also, at this pop-infowindow event, all code for generate elements, such as leftcolumngenerater, rightcolumngenerater, chargenerator, on the lightbox are ready too
+		//marker is the object from google maps
+		//Evan put some non-google data into the marker: isWater and isAir.
         $(window).on("pop-infowindow",function(event,marker){
 
         	console.log("pop-infowindow");
         	
-        	//open the infowindow
+        	//open the infowindow, which is created once at the top.
             SemantAquaUI.infowindow.open(SemantAquaUI.map,marker);
             //all container in infowindow is cleared and new data is being put into them everytime a marker is clicked
             $(SemantAquaUI.infowindowcontent).html(marker.tabledata);
@@ -69,7 +71,9 @@ var SemantAquaUI = {
 	            	var selectscontainer=$(document.createElement('div')).addClass("selectscontainer").appendTo(leftcolumn);
 	            	$(document.createElement('div')).attr("id","lightboxchart").appendTo(leftcolumn);
 
+	            	//this is the select element inside the container, and so is appended
 	            	var selectforcharacteristic = $('<select id="selectforcharacteristic" class="selects" />').appendTo(selectscontainer);
+	            	//the default empty characteristic, they have to select a characteristic first manually.
 	    			$("<option />", {value: "", text: ""}).appendTo(selectforcharacteristic);
 	            	
 	            	//get all available characterstic for a certain site by a ajax call
@@ -81,6 +85,7 @@ var SemantAquaUI = {
 	    				//this part of code take out all dupicates (should be done at backend in long term)
 	    				for(var i=0;i<data.length;i++){
 	    					var uri=data[i]["element"]["value"];
+	    					//there was no ontology for characteristic yet, so only the id was passed.
 	    					var label=uri.substr(uri.indexOf("#")+1).replace(/_/g," ");
 	    					var ifexist=false;
 		            		if($(selectforcharacteristic).children().each(function(){
@@ -88,6 +93,7 @@ var SemantAquaUI = {
 		            				ifexist=true;
 		            			}
 		            		}));
+		            		//this deals with duplicate characteristics
 		            		if(!ifexist){
 		            			$("<option />", {value: uri, text: label}).addClass("characteristics").appendTo(selectforcharacteristic);
 		            		}
@@ -96,19 +102,22 @@ var SemantAquaUI = {
 
 	    			});
 
-	            	
+	            	//this is the selection for the test. this is the same container as you added characteristics selection
 	            	var selectfortest = $('<select id="selectfortest" class="selects" />').hide().appendTo(selectscontainer);
 
 	            	//disable the sumbit button if user didn't select a test if tests exist
+	            	//appending to select container a disabled submit button.
 	            	var characteristicssubmit=$('<input type="submit" class="characterssubmit" />').attr("disabled", "disabled").appendTo(selectscontainer);
 	            	
 
 	    			//this section is another ajax call to get all tests for a charecteristic after a user select charecteristic(however, the test is not being used on server side)
+	            	//so this action is executed as soon as a user finishing choicing one selection of a characteristic from the dropdown menu
 	            	$(selectforcharacteristic).change(function() 
 				    { 
 				 
 				        var value = $(selectforcharacteristic).val(); 
 				        CharacteristicsModule.getTestsForCharacteristic({
+				        	//Evan's getTestsForCharacteristic method is expecting viaulizeCharacteric object name. (check with evan)
 				        	"visualizedCharacteristic":$(selectforcharacteristic).val()
 				        }, function(d) {
 				        	//every d=JSON.parse(d); is to parse the json string to json
@@ -129,6 +138,7 @@ var SemantAquaUI = {
 				     	});
 				    }); 
 	            	//return the leftcolumn to caller, who will put the element onto dom
+	            	//left column is the left holding all the selectors
 					return leftcolumn;
 	            };
 
@@ -917,6 +927,8 @@ function initial_hierachy1(){
 
 }
 
+
+/** This method */
 function getSelectedValue1() {  
     var nodes = $.jstree._reference($("#tree_map")).get_selected();
     var temp=new Array();

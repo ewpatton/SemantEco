@@ -46,7 +46,10 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	private static final String GEOSPECIES_NS = "http://rdf.geospecies.org/ont/geospecies.owl#";
 	public static final String  TXN_NS = "http://lod.taxonconcept.org/ontology/txn.owl#";
 	public static final String  EBIRD_NS = "http://ebird#";
+
 	public static final String  BIRD_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#";
+	public static final String  FISH_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#";
+
 	public static final String  EBIRD_DATA_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
 	private static final String WILDLIFE_NS = "http://www.semanticweb.org/ontologies/2012/2/wildlife.owl#";
 	private static final String HEALTHEFFECT_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl";
@@ -81,15 +84,36 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	 */
 	@Override
 	public void visit(final Model model, final Request request) {
+		boolean bird = false;
+		boolean fish = false;
 		
-		JSONArray j = (JSONArray) request.getParam("source");
+		JSONArray sourceArray = (JSONArray) request.getParam("source");
+		for(int i = 0; i < sourceArray.length(); i++){
+			try {
+				String objectInArray = sourceArray.getString(i);
+				
+				if (objectInArray.equals("http://ebird#")){
+					bird = true;
+				}
+				
+				if (objectInArray.equals("http://sbcFish#")){
+					fish = true;
+				}
+				
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 		//loop on the array j
 		//check if any of the strings int he array are "
 		
 		/*
-		 
 		  $.bbq.getState("source")
-["http://ebird#", "http://sparql.tw.rpi.edu/source/epa-gov", "http://sparql.tw.rpi.edu/source/usgs-gov"]
+		["http://ebird#", "http://sparql.tw.rpi.edu/source/epa-gov", "http://sparql.tw.rpi.edu/source/usgs-gov"]
 		 
 		 */
 		
@@ -97,6 +121,63 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		// TODO populate data model
 		// would have to load the bird site data for the particular county/state
 		//get the state and county from params
+		
+		if(fish){
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");
+		//String site = (String) request.getParam("uri");
+		assert(countyCode != null);
+		assert(stateAbbr != null);	
+		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		final Variable s = query.getVariable(QUERY_NS+"s");
+		final GraphComponentCollection construct = query.getConstructComponent();
+		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
+		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource fishSite = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#FishSite");
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable label = query.getVariable(QUERY_NS+"label");
+		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
+		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
+		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		//not correct http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality/locality
+		// what is in the rdf: 
+		//@prefix e1: <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/> .
+		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality"); //update locality property namespace********
+		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
+		//species site and measurement (count)
+		//just the uri, lat and long.
+		final QueryResource countyCoded = query.getResource("http://was.tw.rpi.edu/source/fish-data/dataset/sbc-data/vocab/enhancement/1/" + "countycoded");
+		final QueryResource stateAbbrev = query.getResource("http://was.tw.rpi.edu/source/fish-data/dataset/sbc-data/vocab/enhancement/1/" + "statecoded");	
+		final QueryResource site = query.getResource("http://was.tw.rpi.edu/source/fish-data/dataset/sbc-data/vocab/enhancement/1/" + "site");	
+
+
+		construct.addPattern(s, rdfType, fishSite );
+		construct.addPattern(s, rdfsLabel, label);
+		construct.addPattern(s, wgsLat, lat);
+		construct.addPattern(s, wgsLong, lng);	
+		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/fish-data");
+		final GraphComponentCollection graph2 = query.getNamedGraph("http://was.tw.rpi.edu/fish-sites");
+
+		//sites are per measurement
+		graph.addPattern(s, rdfType, fishSite );
+		graph.addPattern(s, rdfsLabel, label);
+		//graph.addPattern(measurement, wgsLat, lat);
+		//graph.addPattern(measurement, wgsLong, lng);
+		graph.addPattern(measurement, countyCoded, countyCode,null);
+		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
+		graph.addPattern(measurement, site, s);	
+		graph2.addPattern(s, wgsLat, lat);
+		graph2.addPattern(s, wgsLong, lng);
+
+		//this executes the query on the remote endpoint and provides the results to the model passed in
+		//config.getQueryExecutor(request).accept("application/json").execute(query, model);
+		config.getQueryExecutor(request).accept("application/rdf+xml").execute(query, model);
+		
+		}
+		
+		
+		if(bird){
 		String countyCode = (String) request.getParam("county");
 		String stateAbbr = (String) request.getParam("state");
 		//String site = (String) request.getParam("uri");
@@ -117,10 +198,12 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		//not correct http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality/locality
 		// what is in the rdf: 
 		//@prefix e1: <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/> .
+		
 		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality"); //update locality property namespace********
 		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
 		//species site and measurement (count)
 		//just the uri, lat and long.
+		//the namespace for countyCode and StateCoded in the fish data
 		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
 		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");	
 		construct.addPattern(s, rdfType, birdSite );
@@ -140,11 +223,16 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		//this executes the query on the remote endpoint and provides the results to the model passed in
 		//config.getQueryExecutor(request).accept("application/json").execute(query, model);
 		config.getQueryExecutor(request).accept("application/rdf+xml").execute(query, model);
+		
+		}
+		
 	}
 
 	@Override
 	public void visit(final OntModel model, final Request request) {
-		model.read(BIRD_NS);
+		model.read(BIRD_NS);		
+		model.read(FISH_NS);
+
 		//create a bird.owl that importas pollution.owl and asserts a subclass of Measurement site
 		//that is a BirdSite used as class enchancement in the rdf eBird data.
 		//in the enhancement, need to promote4 location to a uri, and make it a subclass, BirdSite.
@@ -1294,7 +1382,15 @@ WHERE
 	
 	
 	
-
+/**
+ * This method returns the immediate subclasses of the top-level class, in the current case http://ebird#birdTaxonomy.
+ * @param request
+ * @return json array with json object where key/value success/true and data key with array of objects
+ * with id, label, and parent triples as key/value pairs.
+ * 
+ * @throws IOException
+ * @throws JSONException
+ */
 	@QueryMethod
 	public String queryeBirdTaxonomyRoots(Request request) throws IOException, JSONException{	
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
