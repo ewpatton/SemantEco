@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.waterquality.test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import junit.framework.Assert;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -17,15 +20,35 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.query.Query;
 
+/**
+ * TestQueryExecutor provides a mechanism for testing how modules
+ * interact with the QueryExecutor and how they handle various
+ * response strings.
+ * @author ewpatton
+ *
+ */
 public class TestQueryExecutor extends MockQueryExecutor {
 
+	final Logger log = Logger.getLogger(TestQueryExecutor.class);
+	
 	private Collection<String> contentTypes = null;
 	private Model targetModel = null;
 	private String endpoint = null;
 	private String query = null;
 	private Map<String, String> defaults = new TreeMap<String, String>();
 	
+	/**
+	 * Interface for an execution entry
+	 * @author ewpatton
+	 *
+	 */
 	interface ExecEntry {
+		/**
+		 * Executes the entry against the current state
+		 * of the TestQueryExecutor and the expected/default
+		 * values for different properties.
+		 * @return true if the test was successful, false otherwise.
+		 */
 		boolean execute();
 	}
 	
@@ -107,6 +130,19 @@ public class TestQueryExecutor extends MockQueryExecutor {
 		return "";
 	}
 	
+	/**
+	 * Tells the QueryExecutor to expect a particular value
+	 * from the target module for a specific parameter
+	 * @param param A parameter specified as part of a query execution:
+	 * <ul>
+	 * <li>Content-Type: Checks that the specified content type is in the set provided by the module</li>
+	 * <li>model: Checks that the module provided a model (true) vs a string (false)</li>
+	 * <li>endpoint: Checks URI of the endpoint being queried</li>
+	 * <li>query: Checks the serialization of a Query object against the contents of a file</li>
+	 * </ul>
+	 * @param value The expected value for the parameter
+	 * @return The TestQueryExecutor for chaining calls
+	 */
 	public TestQueryExecutor expect(String param, String value) {
 		Expect expect = new Expect();
 		expect.param = param;
@@ -115,15 +151,21 @@ public class TestQueryExecutor extends MockQueryExecutor {
 		return this;
 	}
 	
+	/**
+	 * Returns the contents of the specified file as the response
+	 * to a query execution by the target module.
+	 * @param file File containing a valid SPARQL response for the tested query
+	 * @return The TestQueryExecutor for chaining calls
+	 */
 	public TestQueryExecutor andReturn(String file) {
 		entries.add(new Return(file));
 		return this;
 	}
 	
-	public String readFile(InputStream is) {
-		final int BUFSIZE = 1024;
+	protected final String readFile(InputStream is) {
+		final int bufsize = 1024;
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final byte[] buffer = new byte[BUFSIZE];
+		final byte[] buffer = new byte[bufsize];
 		int read = 0;
 		try {
 			while((read = is.read(buffer)) > 0) {
@@ -131,14 +173,16 @@ public class TestQueryExecutor extends MockQueryExecutor {
 			}
 			return baos.toString("UTF-8");
 		}
-		catch(Exception e) {
+		catch(IOException e) {
 			throw new IllegalStateException("Could not read input data", e);
 		}
 		finally {
 			try {
 				is.close();
 			}
-			catch(IOException e) { }
+			catch(IOException e) {
+				log.warn("Unable to close stream due to exception", e);
+			}
 		}
 	}
 	
@@ -147,47 +191,65 @@ public class TestQueryExecutor extends MockQueryExecutor {
 		private String param = null;
 		private String value = null;
 		
+		protected final void checkContentType() {
+			if(contentTypes == null || !contentTypes.contains(value)) {
+				Assert.fail("Expected Content-Type "+value);
+			}
+		}
+		
+		protected final void checkModel() {
+			if((targetModel == null && value.equals("true")) ||
+					(value == null && targetModel != null)) {
+				Assert.fail("Expected model");
+			}
+		}
+		
+		protected final void checkEndpoint() {
+			if(endpoint == null || !endpoint.equals(value)) {
+				Assert.fail("Expected endpoint "+endpoint);
+			}
+		}
+		
+		protected final void checkQuery() throws FileNotFoundException {
+			String matchQuery = readFile(new FileInputStream("src/test/resources/"+value));
+			String temp = query;
+			
+			// correct for platform-dependent line endings
+			if(temp != null) {
+			    temp = temp.replaceAll("\r\n", "\n");
+			    temp = temp.replaceAll("\r", "\n");
+			}
+			matchQuery = matchQuery.replaceAll("\r\n", "\n");
+			matchQuery = matchQuery.replaceAll("\r", "\n");
+			
+			if(temp == null || !temp.equals(matchQuery)) {
+				Assert.fail();
+			}
+		}
+		
 		@Override
 		public boolean execute() {
 			try {
 				if(param.equals("Content-Type")) {
-					if(contentTypes == null || !contentTypes.contains(value)) {
-						Assert.fail("Expected Content-Type "+value);
-					}
+					checkContentType();
 				}
 				else if(param.equals("model")) {
-					if((targetModel == null && value.equals("true")) ||
-							(value == null && targetModel != null)) {
-						Assert.fail("Expected model");
-					}
+					checkModel();
 				}
 				else if(param.equals("endpoint")) {
-					if(endpoint == null || !endpoint.equals(value)) {
-						Assert.fail("Expected endpoint "+endpoint);
-					}
+					checkEndpoint();
 				}
 				else if(param.equals("query")) {
-					String matchQuery = readFile(new FileInputStream("src/test/resources/"+value));
-					String temp = query;
-					
-					// correct for platform-dependent line endings
-					if(temp != null) {
-					    temp = temp.replaceAll("\r\n", "\n");
-					    temp = temp.replaceAll("\r", "\n");
-					}
-					matchQuery = matchQuery.replaceAll("\r\n", "\n");
-					matchQuery = matchQuery.replaceAll("\r", "\n");
-					
-					if(temp == null || !temp.equals(matchQuery)) {
-						System.err.println(query);
-						Assert.fail();
-					}
+					checkQuery();
 				}
 				else {
 					Assert.fail("unknown condition in Expect#execute");
 				}
 			}
-			catch(Exception e) {
+			catch(IOException e) {
+				Assert.fail(e.toString());
+			}
+			catch(RuntimeException e) {
 				Assert.fail(e.toString());
 			}
 			return true;
@@ -198,6 +260,11 @@ public class TestQueryExecutor extends MockQueryExecutor {
 	class Return implements ExecEntry {
 		private String path = null;
 		
+		/**
+		 * Constructs a return object that will load the contents
+		 * of the specified path.
+		 * @param path
+		 */
 		public Return(String path) {
 			this.path = path;
 		}
@@ -207,6 +274,11 @@ public class TestQueryExecutor extends MockQueryExecutor {
 			return true;
 		}
 		
+		/**
+		 * Opens the path encapsulated by this Return object
+		 * and returns an input stream
+		 * @return An InputStream for {@link #path}
+		 */
 		public InputStream open() {
 			try {
 				return new FileInputStream("src/test/resources/"+path);
@@ -216,6 +288,11 @@ public class TestQueryExecutor extends MockQueryExecutor {
 			}
 		}
 		
+		/**
+		 * Opens the path encapsulated by this Return object
+		 * and reads its contents as a java.lang.String
+		 * @return Contents of the file at {@link #path}
+		 */
 		public String getContents() {
 			try {
 				return readFile(open());
@@ -227,6 +304,11 @@ public class TestQueryExecutor extends MockQueryExecutor {
 		
 	}
 
+	/**
+	 * Sets a default value for the specified key.
+	 * @param key see {@link TestQueryExecutor#expect(String, String)} 
+	 * @param value An appropriate value for the particular key.
+	 */
 	public void setDefault(String key, String value) {
 		defaults.put(key, value);
 	}
