@@ -50,7 +50,7 @@ var SemantAquaUI = {
             chartgenerator=null;
 
             //the processing diverge at here, 
-           	//for bird data, because the data format is differnt from water/air data, it has a different set of processing
+           	//for bird data, because the data format is differnt from water/air data, it has a different set of processing code, which is in the else code section
             if(!marker.data.isBird){
             	if(true){
 	            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
@@ -137,7 +137,7 @@ var SemantAquaUI = {
 	       
 	            };
 
-	            //this is the chart generater, it gets raw input, and turn them into data format can be taken by jqplot
+	            //this is the chart generater, it gets raw input, which is "binding" in the returned data, and turn them into data format can be taken by jqplot
 	            chartgenerator=function(mesurementData,nearbySpeciesData){
 	            	var chartdata=[];
 	            	
@@ -146,7 +146,7 @@ var SemantAquaUI = {
 	            	var limitThreshold=[];
 	            	var limitThresholdValue=""
 	            	var unit=mesurementData[0].unit.value;
-	            	//develop use only, year
+	            	//develop use only
 	            	var year="";
 	            	year=parseInt(mesurementData[0].time.value.substring(0,4));
 					for(var i=0;i<mesurementData.length;i++) {
@@ -155,13 +155,16 @@ var SemantAquaUI = {
 							limitThreshold.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].limit.value*100 )/100]);
 						}
 					}
+					//push the processed data to the chartdata, which will be used when initialize the chart
 					chartdata.push(chartseries1);
+					//if exists limit, then push to chartdata to plot limit as an aditional series
 					if(limitThreshold.length!=0){
 						limitThresholdValue=mesurementData[0].limit.value;
 						chartdata.push(limitThreshold);
 					}
 
 					//aggregating species
+					//the returned data for speices is not agreegated, agregate them by species
 					var speciesnames=[];
 					var speciessobj={};
 					for(var i=0;i<nearbySpeciesData.length;i++){
@@ -175,13 +178,14 @@ var SemantAquaUI = {
 					console.log(speciesnames);
 
 					//the series for the characteristic
+					//after preparing the actually data, start to initial the sieres
 					var series=[];
 					series.push({
 						label:$("#selectforcharacteristic option:selected").html()
 						,yaxis:'yaxis'
 					});
 
-					//the series for the limit for characteristic if exists
+					//the series for the limit for characteristic if limit exists
 					if(limitThreshold.length!=0){
 						series.push({
 							label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
@@ -194,7 +198,6 @@ var SemantAquaUI = {
 						});
 					}
 					
-					//based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
 					if(UITeamUtilities.fakedata){
 						chartdata.push([[(year+0)+"-04-01",3],[(year+0)+"-05-01",5],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",4],[(year+0)+"-10-01",2],[(year+0)+"-11-01",3]]);
 						chartdata.push([[(year+0)+"-04-01",5],[(year+0)+"-05-01",4],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",6],[(year+0)+"-10-01",5],[(year+0)+"-11-01",3]]);
@@ -205,6 +208,7 @@ var SemantAquaUI = {
 							label:"Megascops asio",yaxis:'y2axis'
 						});
 					}
+					//based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
 					else{
 						for(var i=0;i<speciesnames.length;i++){
 							chartdata.push(speciessobj[speciesnames[i]]);
@@ -216,7 +220,8 @@ var SemantAquaUI = {
 
 					console.log(chartdata);
 
-					//initializing the chart, feeding relative data gnerated above
+					//the code above genrated the actual data and controlling information about series, 
+					//now initializing the chart, feeding relative data gnerated above
 					var jqplot = $.jqplot("lightboxchart", chartdata, {
 				        title:marker.data.label ? marker.data.label.value:""
 				        ,seriesDefaults: {
@@ -271,17 +276,22 @@ var SemantAquaUI = {
 					    }
 				    });
 					jqplot.replot( { resetAxes: true } );
+					//replot the chart when the window size changed
 					$(window).resize(function(){
 		                jqplot.replot( { resetAxes: true } );
 		            });
 	            }
 
+	            //this is when the first link, "chart data got clicked"
 	            $($("#infowindowcontrol a").get(0)).click(function(){
+
+	            	//generate only left part of content
 					leftcoloumgenerater().appendTo(".lb_content");
 					$(".lightbox .lb_container").css({"width":"60%"});
 					$(".leftcolumn").css({"width":"100%"});
 					SemantAquaUI.lightbox.show();
 
+					//the listener of when characteristic dropdown menu is clicked
 					$(".characterssubmit").click(function(e){
 
 						if($("#selectfortest").val()){
@@ -291,6 +301,7 @@ var SemantAquaUI = {
 						$("#lightboxchart").empty();
 						$(".lb_loading").show();
 
+						//query for site measurement and push returning data to chartgenerator
 						function queryForSiteMeasurementsCallback(data){
 							$(".lb_loading").hide();
 							console.log("queryForSiteMeasurementsCallback. Data(below):");
@@ -306,15 +317,19 @@ var SemantAquaUI = {
 
 	            });
 
+				//this is when the second link "chart data with species data is clicked"
 				$($("#infowindowcontrol a").get(1)).click(function(){
 					
+					//genreate both columns, the right one is controling the dropdowns, the left one is for the tree
 	            	leftcoloumgenerater().appendTo(".lb_content");
 	            	rightcolumngenerater().appendTo(".lb_content");
 	            	$(".lightbox .lb_container").css({"width":"70%"});
 					SemantAquaUI.lightbox.show();
 
+
 					$(".characterssubmit").click(function(e){
 
+						//the listener of when characteristic dropdown menu is clicked
 						$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
 						// console.log($.bbq.getState("characteristic"));
 
@@ -328,7 +343,9 @@ var SemantAquaUI = {
 						$(".lb_loading").show();
 
 						
-
+						//when user want to chart data, there are two steps to get all needed data
+						//first, gets site measurement data, then get species data
+						//using javascript's characteristic, the inner function can get outer function's local data without any explicit passing process
 						function queryForSiteMeasurementsCallback(data){
 							console.log("queryForSiteMeasurementsCallback");
 							console.log("data:"+data);
@@ -365,7 +382,7 @@ var SemantAquaUI = {
 						            }
 									//
 									
-									
+									//if the the returning species data is empty, then there is another call if check if sibling species data exists
 									function queryIfSiblingsExistCallback(data){
 
 										data=JSON.parse(data);
@@ -387,6 +404,7 @@ var SemantAquaUI = {
 											$.bbq.pushState({"species":["http://ebird#Megascops_asio", "http://ebird#Bubo_virginianus"]});
 											console.log("this is getState after push species to state");
 											console.log($.bbq.getState("species"));
+
 											SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
 
 											//this part is only for development
@@ -402,7 +420,7 @@ var SemantAquaUI = {
 											chartgenerator(mesurementData,[]);
 										}
 									};
-									
+						//after defining the callback functions, there  are the real calls.
 									SpeciesDataProviderModule.queryIfSiblingsExist({}, queryIfSiblingsExistCallback);
 								}
 
@@ -421,10 +439,13 @@ var SemantAquaUI = {
 	            });
             }
             else
+            //this part is for the species data, which is different from water/air data, then needs special process
+        	//the structure is the same as water/air data above, however, it is simpler.
             {
+
             	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all data for this site</a>");
 	            
-
+            	//there is only one column, no right column
 	            leftcoloumgenerater=function(){
 	            	$(".lb_loading").show();
 	            	var leftcolumn=$(document.createElement('div')).addClass("leftcolumn");
@@ -507,7 +528,6 @@ var SemantAquaUI = {
 					      followMouse:true,
 					    }
 				    });
-					// jqplot.resetZoom();
 					jqplot.replot( { resetAxes: true } );
 					$(window).resize(function(){
 		                jqplot.replot( { resetAxes: true } );
@@ -538,118 +558,6 @@ var SemantAquaUI = {
 
 	            });
 
-				/*
-				$($("#infowindowcontrol a").get(1)).click(function(){
-					
-	            	leftcoloumgenerater().appendTo(".lb_content");
-	            	rightcolumngenerater().appendTo(".lb_content");
-	            	$(".lightbox .lb_container").css({"width":"70%"});
-					SemantAquaUI.lightbox.show();
-
-					$(".characterssubmit").click(function(e){
-
-						$.bbq.pushState({"characteristic":$("#selectforcharacteristic").val()});
-						// console.log($.bbq.getState("characteristic"));
-
-						
-						if(!$.bbq.getState("species")){
-							alert("Please select species on the right");
-							return false;
-						}
-
-						$("#lightboxchart").empty();
-						$(".lb_loading").show();
-
-						
-
-						function queryForSiteMeasurementsCallback(data){
-							console.log("queryForSiteMeasurementsCallback");
-							console.log("data:"+data);
-							data=JSON.parse(data);
-							mesurementData=data.results.bindings;
-				            
-				            
-						
-							function queryForNearbySpeciesCountsCallback(data2){
-
-								$(".lb_loading").hide();
-
-								console.log("queryForNearbySpeciesCountsCallback");
-								console.log("data:"+data2);
-
-
-								if(data2 && (JSON.parse(data2)).results.bindings.length!=0){
-									data2=JSON.parse(data2);
-									var nearbySpeciesData=data2.results.bindings;
-									chartgenerator(mesurementData,nearbySpeciesData);
-								}
-								else{
-									console.log("Empty data from queryForNearbySpeciesCounts");
-									
-									//this part is only for development
-									//to getting siblings we need to push this particular species
-						            if(UITeamUtilities.nearSpecies){
-						            	var tempcounty=$.bbq.getState("county");
-						            	var tempstate=$.bbq.getState("state");
-						            	var tempspecies=$.bbq.getState("species");
-										$.bbq.pushState({"county":"019"});
-										$.bbq.pushState({"state": "MD"});
-										$.bbq.pushState({"species":["http://ebird#Megascops_cooperi"]});
-						            }
-									//
-									
-									
-									function queryIfSiblingsExistCallback(data){
-
-										data=JSON.parse(data);
-										data=data.data;
-										var species=[];
-										var confirmtext="No result for the selected species, would you want to see data for\n";
-										for(var i=0;i<data.length;i++){
-											species.push(data[i]["sibling"]);
-											confirmtext+=data[i]["sibling"]+"\n";
-										}
-										console.log("returned sibling species : "+species);
-										var con=confirm(confirmtext);
-										if(con){
-											console.log("yes I would");
-											// $.bbq.pushState({"species":species});
-											$.bbq.pushState({"species":["http://ebird#Megascops_asio", "http://ebird#Bubo_virginianus"]});
-											console.log("this is getState after push species to state");
-											console.log($.bbq.getState("species"));
-											SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
-
-											//this part is only for development
-											if(UITeamUtilities.nearSpecies){
-												$.bbq.pushState({"county":tempcounty});
-												$.bbq.pushState({"state": tempstate});
-												$.bbq.pushState({"species":tempspecies});
-											}
-											//
-											return false;
-										}
-										else{
-											chartgenerator(mesurementData,[]);
-										}
-									};
-									
-									SpeciesDataProviderModule.queryIfSiblingsExist({}, queryIfSiblingsExistCallback);
-								}
-
-							}
-
-							SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
-
-
-						}
-
-						CharacteristicsModule.queryForSiteMeasurements({},queryForSiteMeasurementsCallback);
-
-					});
-
-		        
-	            });
-				*/
             }
         })
 	},
@@ -838,12 +746,14 @@ var SemantAquaUI = {
 	}
 };
 
-
+//the lightbox system (fake window)
 $(document).ready(function(){
     $.globalEval("var lightbox={};");
+    //define lightbox as part of semantAquaUI
     SemantAquaUI.lightbox={};
     lightbox=SemantAquaUI.lightbox;
     lightbox.clean=function(){
+    	//when lightbox closes clean the resize bind of the chart
     	$(window).unbind("resize");
     };
 
@@ -1192,7 +1102,7 @@ function search_node1(){
 
 
 
-function m(){
+function chartTests(){
 	lightbox.show();
 	var chartdata=[];
 	chartdata.push(UITeamUtilities.markerdata[0]["visualize3"]);
