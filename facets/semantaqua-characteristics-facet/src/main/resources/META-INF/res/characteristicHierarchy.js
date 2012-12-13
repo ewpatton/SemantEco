@@ -30,8 +30,8 @@ function initial_hierachy_ch(){
 	for (var i=0;i<jsonHier_ch.length;i++){
 		flag=0;
 		for (var j=0;j<jsonHier_ch.length;j++){
-			temp1=jsonHier_ch[i]["parent"].indexOf("#");
-			if(jsonHier_ch[i]["parent"].substring(temp1+1)==jsonHier_ch[j]["label"]){
+			
+			if(jsonHier_ch[i]["parent"]==jsonHier_ch[j]["id"]){
 				//alert(jsonHier_ch[i]);
 				flag=1;
 				break;
@@ -40,15 +40,16 @@ function initial_hierachy_ch(){
 		if(flag==0){
 			var flag1=0
 			for (var k=0;k<class_hierachy_ch_temp.length;k++){
-				if(class_hierachy_ch_temp[k][0]==jsonHier_ch[i]["parent"].substring(temp1+1)){
+				if(class_hierachy_ch_temp[k][2]==jsonHier_ch[i]["parent"]){
 					flag1=1;
 					break;
 				}
 		
 			}
 			if(flag1==0){
-				class_hierachy_ch_temp.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,null));
-				class_hierachy_ch.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,null));
+				var temp1=jsonHier_ch[i]["parent"].indexOf("#");
+				class_hierachy_ch_temp.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,jsonHier_ch[i]["parent"]));
+				class_hierachy_ch.push(new Array(jsonHier_ch[i]["parent"].substring(temp1+1),null,jsonHier_ch[i]["parent"]));
 				//jsonHier_ch.remove(i);
 			}
 		}
@@ -57,9 +58,9 @@ function initial_hierachy_ch(){
 	
 	for (var j=0;j<class_hierachy_ch_temp.length;j++){
 		 for (var i=0;i<jsonHier_ch.length;i++){
-			 	var temp=jsonHier_ch[i]["parent"].indexOf("#");		 	
-				if(jsonHier_ch[i]["parent"].substring(temp+1)==class_hierachy_ch_temp[j][0]){
-					class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier_ch[i]["id"]));
+			 		 	
+				if(jsonHier_ch[i]["parent"]==class_hierachy_ch_temp[j][2]){
+					class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"],jsonHier_ch[i]["id"]));
 					
 					//jsonHier.remove(i);
 				}
@@ -143,7 +144,7 @@ function getSelectedValue_ch() {
    	     	var temp_id2=nodes[i].id;
    	        index=temp_id2.indexOf("_");
 	        var temp_id3=parseInt(temp_id2.substring(0,index));
-    		if(class_hierachy_ch[temp_id1][1]==class_hierachy_ch[temp_id3][0]){
+    		if(class_hierachy_ch[temp_id1][1]==class_hierachy_ch[temp_id3][2]){
     			$.jstree._reference($("#tree_ch")).deselect_node(nodes[i]);
     			//alert(nodes[i].id);
     			break;
@@ -169,7 +170,7 @@ function append_node_ch(current, parent){
 	var temp_judge=parent;
 	var index=temp_judge.indexOf("_");
 	temp_judge=parseInt(temp_judge.substring(0,index));
-    if(class_hierachy_ch[current][1]==class_hierachy_ch[temp_judge][0]){
+    if(class_hierachy_ch[current][1]==class_hierachy_ch[temp_judge][2]){
 		var temp_div=document.getElementById(parent);
 		var ul=document.createElement("ul");
 		var li=document.createElement("li");
@@ -209,8 +210,8 @@ function ajax_node_ch() {
 				//alert("success");
 				for ( var i = 0; i < jsonHier_ch.length; i++) {
 					for ( var parent = 0; parent < class_hierachy_ch.length; parent++) {
-						var temp=jsonHier_ch[i]["parent"].indexOf("#");
-						if (jsonHier_ch[i]["parent"].substring(temp+1) == class_hierachy_ch[parent][0]) {
+						
+						if (jsonHier_ch[i]["parent"] == class_hierachy_ch[parent][2]) {
 							id=parent;
 							parent=parent+"_ch";
 							var temp_div = document.getElementById(parent);
@@ -225,7 +226,7 @@ function ajax_node_ch() {
 							ul.appendChild(li);
 							temp_div.appendChild(ul);
 							// alert("success");
-							class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"].substring(temp+1),jsonHier_ch[i]["id"]));
+							class_hierachy_ch.push(new Array(jsonHier_ch[i]["label"],jsonHier_ch[i]["parent"],jsonHier_ch[i]["id"]));
 							break;
 						}
 					}

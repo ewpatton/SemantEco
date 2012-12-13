@@ -104,10 +104,10 @@ function initial_hierachy(){
 		flag=0;
 		for (var j=0;j<jsonHier.length;j++){
 			//looking in the "parent" value and get the index position of the "#"
-			temp1=jsonHier[i]["parent"].indexOf("#");
+			
 			//use the temp1, which is the index, to access the string of the parent uri (http://ebird#birdTaxonomy becomes birdTaxonomy) and compare with the label of the current json in jsonHier
 			//in the case of birdTaxonomy, which is not one of the Ids, this will never be true.
-			if(jsonHier[i]["parent"].substring(temp1+1)==jsonHier[j]["label"]){
+			if(jsonHier[i]["parent"]==jsonHier[j]["id"]){
 				flag=1;
 				break;
 			}
@@ -117,7 +117,7 @@ function initial_hierachy(){
 			//at the first iteration class_hierarchty_temp will be empty
 			//this loop compares every element in 2-d array class_hierarchy_temp with the parent of each species json
 			for (var k=0;k<class_hierachy_temp.length;k++){
-				if(class_hierachy_temp[k][0]==jsonHier[i]["parent"].substring(temp1+1)){
+				if(class_hierachy_temp[k][2]==jsonHier[i]["parent"]){
 					flag1=1;
 					break;
 				}
@@ -129,10 +129,11 @@ function initial_hierachy(){
 			if(flag1==0){
 				//will put birdTaxonomy (the short name) into class_hierarchy_temp
 				//class_hierarchy_temp only includes 1st and 2nd level nodes
-				class_hierachy_temp.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
+				var temp=jsonHier[i]["parent"].indexOf("#");
+				class_hierachy_temp.push(new Array(jsonHier[i]["parent"].substring(temp+1),null,jsonHier[i]["parent"]));
 				//class_hierarchy includes all nodes
 				//"parent" here is accessing within the json array and "parent" is accesing into the json array.
-				class_hierachy.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
+				class_hierachy.push(new Array(jsonHier[i]["parent"].substring(temp+1),null,jsonHier[i]["parent"]));
 			}
 		}
 	}
@@ -142,14 +143,14 @@ function initial_hierachy(){
 	/*iterate nodes in class_hierachy_temp to build tree*/
 	for (var j=0;j<class_hierachy_temp.length;j++){ //just birdTaxonomy
 		 for (var i=0;i<jsonHier.length;i++){ //all of the second level nodes
-			 	var temp=jsonHier[i]["parent"].indexOf("#");		 	
+			 			 	
 			 	//the below will always be true because each has the parent birdTaxonomy
-				if(jsonHier[i]["parent"].substring(temp+1)==class_hierachy_temp[j][0]){
+				if(jsonHier[i]["parent"]==class_hierachy_temp[j][2]){
 					
 					//this creates an array of for example "Struthioniformes", "birdTaxonomy", "http://ebird#Struthioniformes"
 					//so the class_hierarchy_temp only has the root-most node
 					//the class_hierarchy has the id, label, and parent of all the second level classes
-					class_hierachy.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+					class_hierachy.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"],jsonHier[i]["id"]));
 					
 					//jsonHier.remove(i);
 				}
@@ -239,7 +240,7 @@ function getSelectedValue() {
     $.each(nodes, function(i, n) {  
     	 /*if one node and its parent node both be selected, parent node will be deselected*/
     	for (var i=0;i< nodes.length;i++){
-    		if(class_hierachy[this.id][1]==class_hierachy[nodes[i].id][0]){
+    		if(class_hierachy[this.id][1]==class_hierachy[nodes[i].id][2]){
     			$.jstree._reference($("#tree")).deselect_node(nodes[i]);
     			break;
     		}
@@ -263,7 +264,7 @@ function append_node(current, parent){
 	//find the child nodes of one parent node and put them under that id under the parent element (by getElementById)
 	// so class_hierachy[parent][0] is always class_hierachy[0][0] and thus always "birdTaxonomy".
 	//we use class_hierachy[current][1] because [1] is the parent label so [1] is really ["parent"]
-    if(class_hierachy[current][1]==class_hierachy[parent][0]){
+    if(class_hierachy[current][1]==class_hierachy[parent][2]){
 		var temp_div=document.getElementById(parent);
 		var ul=document.createElement("ul");
 		var li=document.createElement("li");
@@ -309,10 +310,10 @@ function ajax_node() {
 				//alert("success");
 				for ( var i = 0; i < jsonHier.length; i++) {
 					for ( var parent = 0; parent < class_hierachy.length; parent++) {
-						var temp=jsonHier[i]["parent"].indexOf("#");
+						
 						//find the parent node for each returned subclass
 						//comparing the parent field of the node string with the label of the class nodes label in the class hierarchy.
-						if (jsonHier[i]["parent"].substring(temp+1) == class_hierachy[parent][0]) { 
+						if (jsonHier[i]["parent"] == class_hierachy[parent][2]) { 
 							id=parent;
 							var temp_div = document.getElementById(parent);
 							var ul = document.createElement("ul");
@@ -326,7 +327,7 @@ function ajax_node() {
 							ul.appendChild(li);
 							temp_div.appendChild(ul);
 							// alert("success");
-							class_hierachy.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+							class_hierachy.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"],jsonHier[i]["id"]));
 							break;
 						}
 					}
