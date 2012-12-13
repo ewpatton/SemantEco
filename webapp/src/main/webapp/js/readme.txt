@@ -20,7 +20,7 @@ SemantAquaUI
 ----------------queryForSpeciesForASiteCallback
 
 --------*if another domain*
-				 (if the data is same as water/air data, nothing need to be changed, just add the judgement marker.data.isSomething to the if condition)
+				 (if the data is same as water/air data or bird data, nothing need to be changed, just add the judgement marker.data.isSomething to corresponding if condition)
 
 				 (if the data is different, then another case is needed)
 ------------columngenerater
