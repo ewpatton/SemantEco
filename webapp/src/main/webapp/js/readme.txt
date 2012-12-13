@@ -5,14 +5,14 @@ SemantAquaUI
 ------------rightcolumngenerater
 ------------chartgenerater
 ------------first link click listener
-								(use leftcolumngenerater,chartgenerater)
+             (use leftcolumngenerater,chartgenerater)
 ----------------queryForSiteMeasurementsCallback
 ------------second link click listener
                 (use leftcolumngenerater,rightcolumngenerater,chartgenerater)
 ----------------queryForSiteMeasurementsCallback
 ------------------queryForNearbySpeciesCountsCallback
 --------------------queryIfSiblingsExistCallback
-										(recursive queryForNearbySpeciesCountsCallback)
+                     (recursive queryForNearbySpeciesCountsCallback)
 --------if bird data
 ------------leftcoloumgenerater
 ------------chartgenerator
@@ -20,9 +20,8 @@ SemantAquaUI
 ----------------queryForSpeciesForASiteCallback
 
 --------*if another domain*
-				 (if the data is same as water/air data or bird data, nothing need to be changed, just add the judgement marker.data.isSomething to corresponding if condition)
-
-				 (if the data is different, then another case is needed)
+         (if the data is same as water/air data or bird data, nothing need to be changed, just add the judgement marker.data.isSomething to corresponding if condition)
+         (if the data is different, then another case is needed)
 ------------columngenerater
 ------------chartgenerater
 ------------***
@@ -35,4 +34,4 @@ SemantAquaUI
 
 
 ----chartTests
-	  (a function can be triggered in console for testing charts by use fake data)
+    (a function can be triggered in console for testing charts by use fake data)

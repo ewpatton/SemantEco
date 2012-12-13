@@ -12,10 +12,11 @@ var SemantAquaUI = {
 				zoomControl: true,
 				panControl: true
 			};
+		//create the actuall google map using the configuratin above and reference it in the semantAquaUI object
 		SemantAquaUI.map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 		SemantAquaUI.geocoder = new google.maps.Geocoder();
 
- 		//a set of elements that will be used on infowindow
+ 		//a set of elements that will be used on infowindow, there are three of them, the infowindowcontent and infowindowcontrol is inside the infowindowcontainer. the infowindowcontainer is the content on the infowindow
 		SemantAquaUI.infowindowcontainer = document.createElement('div');
         $(SemantAquaUI.infowindowcontainer).attr("id","infowindowcontainer");
         SemantAquaUI.infowindowcontent = document.createElement('div');
@@ -24,6 +25,8 @@ var SemantAquaUI = {
         SemantAquaUI.infowindowcontrol = document.createElement('div');
         $(SemantAquaUI.infowindowcontrol).attr("id","infowindowcontrol");
         $(SemantAquaUI.infowindowcontrol).appendTo(SemantAquaUI.infowindowcontainer);
+
+        //create the infowindow, there will be only one infowindow object. it will be used again and again.
 		SemantAquaUI.infowindow=new google.maps.InfoWindow({
             content:SemantAquaUI.infowindowcontainer
         });
@@ -31,20 +34,21 @@ var SemantAquaUI = {
 			$.bbq.removeState("uri");
 		});
 
-		//the function below is listening on show-marker-info event,
+		//the function below is listening on show-marker-info event, the event is being generated in regulation.js file
 		//more than just an event, the trigger also passed a parameter(marker) when it trigger the event
-		//also, at this pop=infowindow event, all code for generate things on the lightbox are ready too
+		//also, at this pop-infowindow event, all code for generate elements, such as leftcolumngenerater, rightcolumngenerater, chargenerator, on the lightbox are ready too
         $(window).on("pop-infowindow",function(event,marker){
 
         	console.log("pop-infowindow");
-        	//copy user-data from marker to infowindow itself
-        	//the user-data on marker of also get from somewhere else
+        	
+        	//open the infowindow
             SemantAquaUI.infowindow.open(SemantAquaUI.map,marker);
             //all container in infowindow is cleared and new data is being put into them everytime a marker is clicked
             $(SemantAquaUI.infowindowcontent).html(marker.tabledata);
             $(SemantAquaUI.infowindowcontrol).html("");
             // if($(".characteristics").length != 0){
             
+            //three function pointer will be used later
             leftcoloumgenerater=null;
             rightcolumngenerater=null;
             chartgenerator=null;
@@ -56,9 +60,11 @@ var SemantAquaUI = {
 	            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
 	            }
 	            //left column on the lightbox
+	            //leftcolumn is the column that contains the dropdown selection and the chart
 	            leftcoloumgenerater=function(){
-	            	console.log("not bird");
+	            	//show lightbox loading spinner
 	            	$(".lb_loading").show();
+	            	//create needed elements
 	            	var leftcolumn=$(document.createElement('div')).addClass("leftcolumn");
 	            	var selectscontainer=$(document.createElement('div')).addClass("selectscontainer").appendTo(leftcolumn);
 	            	$(document.createElement('div')).attr("id","lightboxchart").appendTo(leftcolumn);
@@ -66,13 +72,13 @@ var SemantAquaUI = {
 	            	var selectforcharacteristic = $('<select id="selectforcharacteristic" class="selects" />').appendTo(selectscontainer);
 	    			$("<option />", {value: "", text: ""}).appendTo(selectforcharacteristic);
 	            	
-	            	//get all available characterstic for a certain site
+	            	//get all available characterstic for a certain site by a ajax call
 	    			CharacteristicsModule.getCharacteristicsForSite({}, function(data) { 
 	    				$(".lb_loading").hide();
 	    				data=JSON.parse(data);
 	    				data=data.results.bindings;
 
-	    				//this part of code take out all dupicates (should be done at backend)
+	    				//this part of code take out all dupicates (should be done at backend in long term)
 	    				for(var i=0;i<data.length;i++){
 	    					var uri=data[i]["element"]["value"];
 	    					var label=uri.substr(uri.indexOf("#")+1).replace(/_/g," ");
@@ -91,11 +97,13 @@ var SemantAquaUI = {
 	    			});
 
 	            	
-	    			//this section is another ajax call to get all tests for a charecteristic (however, the test is not being used on server side)
 	            	var selectfortest = $('<select id="selectfortest" class="selects" />').hide().appendTo(selectscontainer);
 
+	            	//disable the sumbit button if user didn't select a test if tests exist
 	            	var characteristicssubmit=$('<input type="submit" class="characterssubmit" />').attr("disabled", "disabled").appendTo(selectscontainer);
 	            	
+
+	    			//this section is another ajax call to get all tests for a charecteristic after a user select charecteristic(however, the test is not being used on server side)
 	            	$(selectforcharacteristic).change(function() 
 				    { 
 				 
@@ -103,8 +111,10 @@ var SemantAquaUI = {
 				        CharacteristicsModule.getTestsForCharacteristic({
 				        	"visualizedCharacteristic":$(selectforcharacteristic).val()
 				        }, function(d) {
+				        	//every d=JSON.parse(d); is to parse the json string to json
 				        	d=JSON.parse(d);
 				        	console.log(d);
+				        	//if there are tests for the selected 
 				        	if (d.length!=0){
 			        			$(selectfortest).empty().show();
 				        		for(var i=0;i<d.length;i++){
@@ -118,7 +128,7 @@ var SemantAquaUI = {
 				        	}
 				     	});
 				    }); 
-
+	            	//return the leftcolumn to caller, who will put the element onto dom
 					return leftcolumn;
 	            };
 
@@ -137,7 +147,7 @@ var SemantAquaUI = {
 	       
 	            };
 
-	            //this is the chart generater, it gets raw input, which is "binding" in the returned data, and turn them into data format can be taken by jqplot
+	            //this is the chart generater, it gets raw input, which is "binding"s in the returned data, and turn them into data format can be used by jqplot
 	            chartgenerator=function(mesurementData,nearbySpeciesData){
 	            	var chartdata=[];
 	            	
@@ -146,16 +156,18 @@ var SemantAquaUI = {
 	            	var limitThreshold=[];
 	            	var limitThresholdValue=""
 	            	var unit=mesurementData[0].unit.value;
-	            	//develop use only
+	            	//develop use only, for fake data
 	            	var year="";
 	            	year=parseInt(mesurementData[0].time.value.substring(0,4));
+8
+	            	//this loop is getting data to generate array of arraies that will be used by jqplot [["2012-01-01",3],["2012-01-01",8]]
 					for(var i=0;i<mesurementData.length;i++) {
 						chartseries1.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].value.value*100 )/100]);
 						if(mesurementData[i].limit){
 							limitThreshold.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].limit.value*100 )/100]);
 						}
 					}
-					//push the processed data to the chartdata, which will be used when initialize the chart
+					//push the processed data to the chartdata, which a data array will be used as input for jqplot
 					chartdata.push(chartseries1);
 					//if exists limit, then push to chartdata to plot limit as an aditional series
 					if(limitThreshold.length!=0){
@@ -178,7 +190,7 @@ var SemantAquaUI = {
 					console.log(speciesnames);
 
 					//the series for the characteristic
-					//after preparing the actually data, start to initial the sieres
+					//after preparing the actually data, start to initial the series
 					var series=[];
 					series.push({
 						label:$("#selectforcharacteristic option:selected").html()
@@ -222,6 +234,7 @@ var SemantAquaUI = {
 
 					//the code above genrated the actual data and controlling information about series, 
 					//now initializing the chart, feeding relative data gnerated above
+					//all detailed configuration can be found at jqplot website
 					var jqplot = $.jqplot("lightboxchart", chartdata, {
 				        title:marker.data.label ? marker.data.label.value:""
 				        ,seriesDefaults: {
@@ -240,11 +253,13 @@ var SemantAquaUI = {
 						    },
 						    yaxis:{
 						        tickOptions:{
+						        	//show two decimals
 						            formatString:'%.2f'
 						        },
 						    },
 						    y2axis:{
 						    	tickOptions:{
+						    		//show 1 decimal
 						            formatString:'%.1f'
 						            ,showGridline:false
 						        },
@@ -276,7 +291,7 @@ var SemantAquaUI = {
 					    }
 				    });
 					jqplot.replot( { resetAxes: true } );
-					//replot the chart when the window size changed
+					//resize the chart when the window size changed
 					$(window).resize(function(){
 		                jqplot.replot( { resetAxes: true } );
 		            });
@@ -291,7 +306,7 @@ var SemantAquaUI = {
 					$(".leftcolumn").css({"width":"100%"});
 					SemantAquaUI.lightbox.show();
 
-					//the listener of when characteristic dropdown menu is clicked
+					//the listener of when submit button is clicked
 					$(".characterssubmit").click(function(e){
 
 						if($("#selectfortest").val()){
