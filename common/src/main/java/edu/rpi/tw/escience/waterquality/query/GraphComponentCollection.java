@@ -13,7 +13,7 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 public interface GraphComponentCollection extends GraphComponent {
 
 	/**
-	 * Adds a triple patter to this graph component collection
+	 * Adds a triple pattern to this graph component collection
 	 * 
 	 * @param subject Subject of triple
 	 * @param predicate Predicate of triple
@@ -24,7 +24,7 @@ public interface GraphComponentCollection extends GraphComponent {
 			QueryResource object);
 	
 	/**
-	 * Adds a triple patter to this graph component collection
+	 * Adds a triple pattern to this graph component collection
 	 * 
 	 * @param subject Subject of triple
 	 * @param predicate Predicate of triple
@@ -53,9 +53,14 @@ public interface GraphComponentCollection extends GraphComponent {
 	/**
 	 * Returns a list of the current components contained in this
 	 * GraphComponentCollection instance
-	 * @return
+	 * @return A list of GraphComponent objects contained within this query.
 	 */
 	List<GraphComponent> getComponents();
 	
+	/**
+	 * Adds a BIND statement to the SPARQL query.
+	 * @param expr Expression to be evaluated and bound.
+	 * @param var Variable to bind the result of expr to.
+	 */
 	void addBind(String expr, Variable var);
 }
