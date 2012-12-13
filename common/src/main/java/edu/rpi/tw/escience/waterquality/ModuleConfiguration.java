@@ -72,6 +72,10 @@ public abstract class ModuleConfiguration extends Properties {
 	 */
 	public abstract Domain getDomain(URI uri, boolean create);
 
+	/**
+	 * Returns a list of all domains known by SemantEco.
+	 * @return
+	 */
 	public abstract List<Domain> listDomains();
 
 }
