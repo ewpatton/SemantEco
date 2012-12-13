@@ -51,7 +51,7 @@ var SemantAquaUI = {
 
             //the processing diverge at here, 
            	//for bird data, because the data format is differnt from water/air data, it has a different set of processing code, which is in the else code section
-            if(!marker.data.isBird){
+            if(marker.data.isWater || marker.data.isAir){
             	if(true){
 	            	$(SemantAquaUI.infowindowcontrol).html("<a>Chart for all measurements for this site</a><br /><a>Chart for all measurements for this site with nearby species count</a>");
 	            }
@@ -438,7 +438,7 @@ var SemantAquaUI = {
 		        
 	            });
             }
-            else
+            else if(marker.data.isBird)
             //this part is for the species data, which is different from water/air data, then needs special process
         	//the structure is the same as water/air data above, however, it is simpler.
             {
