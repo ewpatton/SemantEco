@@ -58,77 +58,81 @@ public interface Query extends GraphComponentCollection {
 	 * Gets a subcomponent for the query that represents
 	 * a named graph.
 	 * @param uri The named graph to query against
-	 * @return
+	 * @return NamedGraphComponent named by uri
 	 */
 	NamedGraphComponent getNamedGraph(String uri);
 	
 	/**
-	 * Creates a union graph component for this query
-	 * @return
+	 * Creates a union graph component for this query.
+	 * @return A fresh UnionComponent
 	 */
 	UnionComponent createUnion();
 	
 	/**
 	 * Creates an optional graph component for this query
-	 * @return
+	 * @return A fresh OptionalComponent
 	 */
 	OptionalComponent createOptional();
 	
 	/**
 	 * Gets an existing variable for use in this Query
-	 * @param uri
-	 * @return
+	 * @param uri URI naming a variable in the {@link #VAR_NS} namespace
+	 * @return A (potentially new) reference to a Variable object
 	 */
 	Variable getVariable(String uri);
 	
 	/**
-	 * Creates a variable for use in this Query
-	 * @param uri
-	 * @return
+	 * Creates a variable for use in this Query. Will throw an
+	 * IllegalArgumentException if a Variable with the same URI already
+	 * exists.
+	 * @param uri URI naming a variable in the {@link #VAR_NS} namespace
+	 * @return A new reference to a Variable object. 
 	 */
 	Variable createVariable(String uri);
 	
 	/**
 	 * Creates a variable expression for a SELECT
 	 * prolog, e\.g\. count(distinct ?var)
-	 * @param
-	 * @return
+	 * @param expr A valid SPARQL variable expression
+	 * @return A fresh Variable representing the SPARQL
+	 * variable expression binding
 	 */
 	Variable createVariableExpression(String expr);
 	
 	/**
 	 * Creates a blank node for use in this Query
-	 * @return
+	 * @return A fresh BlankNode object
 	 */
 	BlankNode createBlankNode();
 	
 	/**
 	 * Sets the type of SPARQL query to be executed
-	 * @param type
+	 * @param type The type of query, see {@link #Type}
 	 */
 	void setType(Type type);
 	
 	/**
 	 * Gets the type of SPARQL query to be executed
-	 * @return
+	 * @return The Type of this SPARQL query, see {@link #Type}
 	 */
 	Type getType();
 	
 	/**
 	 * Adds a FROM clause to the SPARQL query
-	 * @param uri
+	 * @param uri A dereferencable URI containing an RDF graph.
 	 */
 	void addFrom(String uri);
 	
 	/**
 	 * Gets the list of FROM clauses in the SPARQL query
-	 * @return
+	 * @return A set of URIs that will be used for FROM &lt;...&gt;
+	 * clauses in this SPARQL query
 	 */
 	Set<String> getFrom();
 	
 	/**
 	 * Adds a FROM NAMED clause to the SPARQL query
-	 * @param uri
+	 * @param uri A URI representing a named graph within the triple store
 	 */
 	void addFromNamed(String uri);
 	
@@ -240,9 +244,9 @@ public interface Query extends GraphComponentCollection {
 	 * Searches the query for triple patterns that match the specified pattern
 	 * and returns the list of graph components that contains them. Specifying
 	 * null for a parameter will match all triple patterns on that field.
-	 * @param subject
-	 * @param predicate
-	 * @param object
+	 * @param subject A QueryResource to match or null to match any subject
+	 * @param predicate A QueryResource to match or null to match any predicate
+	 * @param object A QueryResource to match or null to match any object
 	 * @return A list of GraphComponentCollection objects containing the specified pattern. 
 	 * The list will be of length zero if no collections were found.
 	 */
@@ -253,11 +257,12 @@ public interface Query extends GraphComponentCollection {
 	 * Searches the query for triple patterns that match the specified pattern
 	 * and returns the list of graph components that contains them. Specifying
 	 * null for a parameter will match all triple patterns on that field.
-	 * @param subject
-	 * @param predicate
-	 * @param value
-	 * @param type
-	 * @return
+	 * @param subject A QueryResource to match or null to match any subject
+	 * @param predicate A QueryResource to match or null to match any predicate
+	 * @param value A String to match or null to match any string
+	 * @param type A type to match or null to match any type
+	 * @return A list of GraphComponentCollection objects containing the specified pattern. 
+	 * The list will be of length zero if no collections were found.
 	 */
 	List<GraphComponentCollection> findGraphComponentsWithPattern(QueryResource subject,
 			QueryResource predicate, String value, XSDDatatype type);
@@ -266,15 +271,36 @@ public interface Query extends GraphComponentCollection {
 	 * Searches the query for triples patterns that match the specified pattern
 	 * and returns the list of graph comoponents that contains them. If the pattern
 	 * has a null field it will match any triple pattern on that field.
-	 * @param pattern
-	 * @return
+	 * @param pattern A GraphPattern object containing the test triple pattern
+	 * @return A list of GraphComponentCollection items that contain triples patterns
+	 * matching the input pattern.
 	 */
 	List<GraphComponentCollection> findGraphComponentsWithPattern(GraphPattern pattern);
 	
+	/**
+	 * Sets a namespace prefix in the SPARQL query.
+	 * @param prefix A valid prefix in SPARQL
+	 * @param namespace URI represented by the prefix
+	 */
 	void setNamespace(String prefix, String namespace);
+	
+	/**
+	 * Gets the URI for a specific prefix
+	 * @param prefix Prefix to look up
+	 * @return URI for the prefix, or null if no prefix is set
+	 */
 	String getNamespace(String prefix);
 
+	/**
+	 * Creates a generic graph component collection
+	 * @return A fresh GraphComponentCollection
+	 */
 	GraphComponentCollection createGraphComponentCollection();
 
+	/**
+	 * Creates a QueryResource representing a SPARQL 1\.1 property path.
+	 * @param string A valid SPARQL 1\.1 property path
+	 * @return QueryResource encoding the property path
+	 */
 	QueryResource createPropertyPath(String string);
 }
