@@ -93,9 +93,23 @@ public interface ModuleManager {
 	 */
 	long getLastModified();
 	
+	/**
+	 * Gets a Domain object named by the URI. One will be created if none exists.
+	 * @param uri A URI naming a Domain, by convention it SHOULD be an OWL file. 
+	 * @return Domain object named by the URI.
+	 */
 	Domain getDomain(URI uri);
 
+	/**
+	 * Registers a domain with the manager. Modules should not need to call
+	 * this but instead rely on {@link #getDomain(URI)}
+	 * @param domain
+	 */
 	void registerDomain(Domain domain);
 
+	/**
+	 * Lists all of the domains known by the manager.
+	 * @return
+	 */
 	List<Domain> listDomains();
 }
