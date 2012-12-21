@@ -35,6 +35,13 @@ import edu.rpi.tw.escience.waterquality.util.NameUtils;
 import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
+/**
+ * The Regulation module provides the main query mechanisms
+ * over the combined model to retrieve information about
+ * sites and any polluted measurements found at them.
+ * @author ewpatton
+ *
+ */
 public class RegulationModule implements Module {
 
 	private static final String SITE_VAR = "site";
@@ -164,7 +171,11 @@ public class RegulationModule implements Module {
 	}
 	
 	/**
-	 * 
+	 * Queries for sites identified across all modules based on the
+	 * parameters sent by the client.
+	 * @param request Application state sent from client
+	 * @return JSON encoded SPARQL results containing, at a minimum,
+	 * ?site, ?lat, ?lng, ?facility, ?polluted, and ?label.
 	 */
 	@QueryMethod
 	public String queryForSites(final Request request) {
@@ -207,6 +218,12 @@ public class RegulationModule implements Module {
 		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query);
 	}
 	
+	/**
+	 * Queries for the polluted measurements at a particular site.
+	 * @param request Application state sent from client
+	 * @return JSON encoded SPARQL results containing, at a minimum,
+	 * ?element, ?permit, ?type, ?value, ?unit, and ?measurement
+	 */
 	@QueryMethod
 	public String queryForSitePollution(Request request) {
 		final String siteUri = (String)request.getParam("uri");
