@@ -170,10 +170,16 @@ public class WaterDataProviderModuleTest extends TestCase {
 	
 	private static class TestUI extends MockUI {
 		Set<Resource> facets = new HashSet<Resource>();
+		Set<Resource> scripts = new HashSet<Resource>();
 		
 		@Override
 		public void addFacet(Resource res) {
 			facets.add(res);
+		}
+		
+		@Override
+		public void addScript(Resource res) {
+			scripts.add(res);
 		}
 	}
 	
