@@ -9,6 +9,12 @@ import java.util.Map;
 import edu.rpi.tw.escience.waterquality.Domain;
 import edu.rpi.tw.escience.waterquality.Resource;
 
+/**
+ * DomainImpl provides the default implementation of Domain
+ * used by ModuleConfigurationImpl.
+ * @author ewpatton
+ *
+ */
 public class DomainImpl implements Domain {
 
 	private String label = null;
@@ -22,6 +28,10 @@ public class DomainImpl implements Domain {
 	
 	private Map<String, DataType> types = new LinkedHashMap<String, DataType>();
 	
+	/**
+	 * Create a DomainImpl identified by the specified URI.
+	 * @param uri URI used to name the domain.
+	 */
 	public DomainImpl(final URI uri) {
 		this.uri = uri;
 	}

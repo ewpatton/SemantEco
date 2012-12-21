@@ -7,6 +7,14 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.Request;
 
+/**
+ * MockRequest provides a base implementation of
+ * the Request object for unit tests. All methods
+ * throw UnsupportedOperationException by default
+ * unless explicitly overridden by a subclass.
+ * @author ewpatton
+ *
+ */
 public class MockRequest implements Request {
 
 	@Override

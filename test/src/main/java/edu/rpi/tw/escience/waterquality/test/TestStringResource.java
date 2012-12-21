@@ -4,8 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import edu.rpi.tw.escience.waterquality.Module;
+import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
 import edu.rpi.tw.escience.waterquality.Resource;
 
+/**
+ * TestStringResource is used to provide
+ * a string-based resource constructed via
+ * the {@link ModuleConfiguration#generateStringResource(String)} method.
+ * @author ewpatton
+ *
+ */
 public class TestStringResource extends MockResource implements Resource {
 
 	@Override

@@ -35,7 +35,6 @@ import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
  * The SemantAquaServlet class provides the main entry point to SemantAqua and is
  * primarily concerned with handling dynamic requests and performing the initial
  * configuration of the portal and its dependencies.
- * 
  * @author ewpatton
  *
  */
@@ -256,6 +255,10 @@ public class SemantAquaServlet extends WebSocketServlet {
 		
 		private int id = 0;
 		
+		/**
+		 * Constructs a response channel identified by the specified id.
+		 * @param id A unique identifier for the channel.
+		 */
 		public ResponseChannel(int id) {
 			this.id = id;
 		}

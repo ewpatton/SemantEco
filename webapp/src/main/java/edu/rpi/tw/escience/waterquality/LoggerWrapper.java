@@ -4,9 +4,21 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 
+/**
+ * LoggerWrapper extends the Logger class
+ * and allows for an alternate channel
+ * for transmitting logging information.
+ * @author ewpatton
+ *
+ */
 public class LoggerWrapper extends Logger {
 	Logger log;
 	
+	/**
+	 * Constructs a new Logger given a
+	 * fully-qualified class name.
+	 * @param name
+	 */
 	public LoggerWrapper(String name) {
 		super(name);
 	}

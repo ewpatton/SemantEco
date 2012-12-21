@@ -22,8 +22,22 @@ import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.waterquality.query.Query;
 import edu.rpi.tw.escience.waterquality.query.QueryExecutorImpl;
 
+/**
+ * OwlapiQueryExecutorImpl provides an alternative QueryExecutor that
+ * uses the OWL API to query Pellet in order to obtain explanations
+ * using the PelletReasoner interface.
+ * @author ewpatton
+ *
+ */
 public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 
+	/**
+	 * Constructs a new OwlapiQueryExecutorImpl owned by the specified
+	 * Module and pointing by default at tripleStore
+	 * @param owner Module that this QueryExecutor belongs to
+	 * @param tripleStore Default triple store; can be overridden using
+	 * calls to execute(String, \.\.\.) methods."
+	 */
 	public OwlapiQueryExecutorImpl(Module owner, String tripleStore) {
 		super(owner, tripleStore);
 	}

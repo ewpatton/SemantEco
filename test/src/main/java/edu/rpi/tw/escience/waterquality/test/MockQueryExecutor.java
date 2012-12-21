@@ -5,6 +5,15 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.waterquality.QueryExecutor;
 import edu.rpi.tw.escience.waterquality.query.Query;
 
+/**
+ * MockQueryExecutor provides a base implementation
+ * of QueryExecutor that can be subclassed to provide
+ * necessary implementations for unit tests. All
+ * methods throw UnsupportedOperationException by
+ * default unless explicitly overridden by subclasses.
+ * @author ewpatton
+ *
+ */
 public class MockQueryExecutor implements QueryExecutor {
 
 	@Override

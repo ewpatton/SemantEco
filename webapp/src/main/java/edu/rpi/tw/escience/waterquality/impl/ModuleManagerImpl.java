@@ -392,6 +392,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		return lastModified;
 	}
 
+	/**
+	 * Stops the file manager from watching
+	 * the modules directory.
+	 */
 	public void stopListening() {
 		fm.stop();
 		classLoaders.clear();
@@ -399,6 +403,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		modules.clear();
 	}
 
+	/**
+	 * Gets the domain named by a given URI, if any.
+	 * @param uri URI for a domain
+	 */
 	public Domain getDomain(URI uri) {
 		if(knownDomains == null) {
 			return null;

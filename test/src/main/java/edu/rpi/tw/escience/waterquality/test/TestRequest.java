@@ -14,6 +14,13 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.waterquality.Request;
 
+/**
+ * TestRequest provides a mechanism for a unit test
+ * to mimic a call via the RESTful interface to
+ * SemantEco.
+ * @author ewpatton
+ *
+ */
 public class TestRequest implements Request {
 
 	private Map<String, String[]> params = new TreeMap<String, String[]>();
@@ -67,10 +74,20 @@ public class TestRequest implements Request {
 		return null;
 	}
 	
+	/**
+	 * Sets a parameter to be a single value
+	 * @param key Parameter to set
+	 * @param value Value for the specified parameter
+	 */
 	public void setParam(String key, String value) {
 		params.put(key, new String[] { value });
 	}
 	
+	/**
+	 * Sets a parameter to be an array of values
+	 * @param key Parameter to set
+	 * @param values An array of values to store for the specified parameter
+	 */
 	public void setParam(String key, String[] values) {
 		params.put(key, values);
 	}

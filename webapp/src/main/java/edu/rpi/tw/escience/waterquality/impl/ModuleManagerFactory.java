@@ -47,6 +47,9 @@ public class ModuleManagerFactory {
 		return instance;
 	}
 
+	/**
+	 * Destroys the factory instance for memory management purposes.
+	 */
 	public static void destroy() {
 		ModuleManagerImpl impl = (ModuleManagerImpl)instance.manager;
 		if(impl != null) {

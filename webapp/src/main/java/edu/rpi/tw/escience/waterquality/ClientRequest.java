@@ -23,6 +23,16 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import edu.rpi.tw.escience.waterquality.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
 
+/**
+ * ClientRequest provides the main encapsulation
+ * of a RESTful client request to SemantEco. It
+ * contains information on request parameters and
+ * a WebSocket stream that can be used via the Logger
+ * interface to send debugging information back to
+ * the client for development purposes.
+ * @author ewpatton
+ *
+ */
 public class ClientRequest extends LoggerWrapper implements Request {
 	
 	WsOutbound clientLog;
@@ -44,6 +54,12 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		return res;
 	}
 	
+	/**
+	 * Creates a new ClientRequest object with the given parameters and a WebSocket channel
+	 * @param name Class name used for the Logger
+	 * @param params Request parameters extracted from the query string
+	 * @param channel optional web socket channel where debugging information is sent
+	 */
 	public ClientRequest(String name, Map<String, String[]> params, WsOutbound channel) {
 		super(name);
 		this.params = new HashMap<String, String>();

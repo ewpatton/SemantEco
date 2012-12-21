@@ -14,6 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+/**
+ * CacheControlFilter disables the caching
+ * mechanisms in the servlet container for
+ * use in debugging resources during development.
+ * @author ewpatton
+ *
+ */
 @WebFilter(
 		filterName = "CacheControlFilter",
 		urlPatterns = {"/*"}

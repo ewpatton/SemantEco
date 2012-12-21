@@ -16,6 +16,14 @@ import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
+/**
+ * MockQuery provides a base interface for unit tests
+ * to mock up a query object. All methods throw
+ * UnsupportedOperationException unless explicitly
+ * overridden by a subclass.
+ * @author ewpatton
+ *
+ */
 public class MockQuery implements Query {
 
 	@Override

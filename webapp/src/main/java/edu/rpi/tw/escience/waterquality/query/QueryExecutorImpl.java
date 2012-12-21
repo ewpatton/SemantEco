@@ -305,6 +305,11 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		return null;
 	}
 	
+	/**
+	 * Sets the request that will be used for augmenting
+	 * queries during the evaluation of this QueryExecutorImpl.
+	 * @param request A valid client-side request being processed.
+	 */
 	public void setRequest(Request request) {
 		this.request = request;
 		this.log = request.getLogger();

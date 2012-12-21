@@ -82,16 +82,34 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
+/**
+ * OntModelWrapper provides an implementation of
+ * the OntModel interface that wraps another OntModel
+ * but allows for additional information to be collected
+ * for provenance purposes.
+ * @author ewpatton
+ *
+ */
 @SuppressWarnings("deprecation")
 public class OntModelWrapper implements OntModel {
 	
 	OntModel m;
 	WeakReference<Module> requestor;
 
+	/**
+	 * Void constructor
+	 */
 	public OntModelWrapper() {
 		
 	}
 	
+	/**
+	 * Constructs an OntModelWrapper that wraps the specified
+	 * model and is owned by the specified requestor.
+	 * @param model Model to operate on.
+	 * @param requestor Requesting module that any modifications
+	 * will be attributed to.
+	 */
 	public OntModelWrapper(OntModel model, Module requestor) {
 		this.m = model;
 		this.requestor = new WeakReference<Module>(requestor);
