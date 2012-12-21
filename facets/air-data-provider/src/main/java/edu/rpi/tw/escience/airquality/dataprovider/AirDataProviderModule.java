@@ -28,6 +28,13 @@ import edu.rpi.tw.escience.waterquality.query.Variable;
 import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
 
+/**
+ * AirDataProviderModule loads air quality data from the EPA
+ * into the combined model and provides icons for displaying
+ * air sites in the user interface.
+ * @author ewpatton
+ *
+ */
 public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SITE_VAR = "site";
