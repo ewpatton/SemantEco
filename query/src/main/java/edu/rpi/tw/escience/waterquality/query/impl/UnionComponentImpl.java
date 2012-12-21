@@ -14,6 +14,14 @@ import edu.rpi.tw.escience.waterquality.query.QueryResource;
 import edu.rpi.tw.escience.waterquality.query.UnionComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
+/**
+ * UnionComponentImpl provides a default implementation of the
+ * UnionComponent interface. It does not support any of the
+ * add*() methods and will throw an UnsupportedOperationException
+ * if any of them are called.
+ * @author ewpatton
+ *
+ */
 public class UnionComponentImpl implements UnionComponent {
 
 	List<GraphComponentCollection> graphs = new ArrayList<GraphComponentCollection>();
