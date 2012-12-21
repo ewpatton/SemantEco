@@ -3,11 +3,24 @@ package edu.rpi.tw.escience.waterquality.query.impl;
 import edu.rpi.tw.escience.waterquality.query.GraphComponent;
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
+/**
+ * BindingImpl provides a wrapper around a BIND() statement
+ * so that a variable can be bound inside of a graph pattern.
+ * @author ewpatton
+ *
+ */
 public class BindingImpl implements GraphComponent {
 
 	private final String expression;
 	private final Variable bindVar;
 	
+	/**
+	 * Constructs a BindingImpl that will bind
+	 * the result of expr to var
+	 * @param expr A valid SPARQL expression to evaluate
+	 *  in the context of the (partial) SPARQL solution
+	 * @param var Variable to bind the result of expr to
+	 */
 	public BindingImpl(final String expr, final Variable var) {
 		if(expr == null) {
 			throw new IllegalArgumentException("expr cannot be null");
