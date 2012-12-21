@@ -177,6 +177,12 @@ public class GraphPatternImpl implements GraphPattern {
 		return left.equals(right);
 	}
 	
+	/**
+	 * Determines whether a fully specified graph pattern
+	 * matches one where S, P, or O are optionally null.
+	 * @param other A (potentially underspecified) graph pattern
+	 * @return true if this graph pattern is a grounding of other, otherwise false.
+	 */
 	public boolean matches(GraphPatternImpl other) {
 		boolean matches = true;
 		matches = matches && (other.subject == null || subject.equals(other.subject));
