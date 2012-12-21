@@ -2,9 +2,9 @@ package test;
 
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.Variable;
-import edu.rpi.tw.escience.waterquality.query.impl.VariableImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.VariableImpl;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Variable;
 
 import junit.framework.TestCase;
 

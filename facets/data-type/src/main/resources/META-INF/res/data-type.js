@@ -88,7 +88,7 @@ $(document).ready(function() {
 		if(binding["label"] != undefined) {
 			label = binding["label"].value;
 		}
-		var marker = SemantAquaUI.createMarker(uri, lat, lng, icon, visible, label);
+		var marker = SemantEcoUI.createMarker(uri, lat, lng, icon, visible, label);
 		marker.data = binding;
 		$(window).trigger("render-marker", marker);
 	};
@@ -98,14 +98,14 @@ $(document).ready(function() {
 	 * application state.
 	 */
 	DataTypeModule.refreshMapIcons = function() {
-		var markers = SemantAquaUI.getMarkers();
+		var markers = SemantEcoUI.getMarkers();
 		for(var i=0;i<markers.length;i++) {
 			var m = markers[i];
 			if(DataTypeModule.shouldBeVisible(m.data)) {
-				SemantAquaUI.showMarker(m);
+				SemantEcoUI.showMarker(m);
 			}
 			else {
-				SemantAquaUI.hideMarker(m);
+				SemantEcoUI.hideMarker(m);
 			}
 		}
 	};
@@ -113,7 +113,7 @@ $(document).ready(function() {
 	// bind DataTypeModule to the create-marker and render-marker events
 	$(window).bind("create-marker", DataTypeModule.createMarker);
 	$(window).bind("render-marker", function(e, marker) {
-		SemantAquaUI.addMarker(marker);
+		SemantEcoUI.addMarker(marker);
 	});
 	// handle user changing type selection after map is rendered
 	$("#DataTypeFacet input[name='type']").change(DataTypeModule.refreshMapIcons);

@@ -2,7 +2,7 @@ package test;
 
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.query.URI;
+import edu.rpi.tw.escience.semanteco.query.URI;
 
 import junit.framework.TestCase;
 

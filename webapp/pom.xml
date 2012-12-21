@@ -5,13 +5,13 @@
 
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
-    <artifactId>semantaqua-parent</artifactId>
+    <artifactId>semanteco-parent</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua</artifactId>
+  <artifactId>semanteco-webapp</artifactId>
   <packaging>war</packaging>
-  <name>semantaqua</name>
+  <name>semanteco webapp</name>
 
   <properties>
     <tomcat.version>7.0.29</tomcat.version>
@@ -111,66 +111,66 @@
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-query</artifactId>
+      <artifactId>semanteco-query</artifactId>
       <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-data-source</artifactId>
-      <version>4.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-domain</artifactId>
+      <artifactId>semanteco-data-source</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-water-data-provider</artifactId>
+      <artifactId>semanteco-domain</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-water-data-provider</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-characteristics-facet</artifactId>
+      <artifactId>semanteco-characteristics-facet</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-air-data-provider</artifactId>
+      <artifactId>semanteco-air-data-provider</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-zipcode</artifactId>
+      <artifactId>semanteco-zipcode</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-data-type</artifactId>
+      <artifactId>semanteco-data-type</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-regulation</artifactId>
+      <artifactId>semanteco-regulation</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-industry</artifactId>
+      <artifactId>semanteco-industry</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-species-dataprovider</artifactId>
+      <artifactId>semanteco-species-dataprovider</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
@@ -247,6 +247,7 @@
 	  <update>true</update>
 	  <url>${tomcat.url}</url>
 	  <server>tomcat</server>
+	  <path>/semanteco</path>
 	</configuration>
       </plugin>
       <plugin>
@@ -264,7 +265,7 @@
 	      <artifactItems combine.children="append">
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-data-source</artifactId>
+		  <artifactId>semanteco-data-source</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -272,7 +273,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-zipcode</artifactId>
+		  <artifactId>semanteco-zipcode</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -280,7 +281,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-regulation</artifactId>
+		  <artifactId>semanteco-regulation</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -288,7 +289,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-time</artifactId>
+		  <artifactId>semanteco-time</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -296,7 +297,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-data-type</artifactId>
+		  <artifactId>semanteco-data-type</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -304,7 +305,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-domain</artifactId>
+		  <artifactId>semanteco-domain</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -312,7 +313,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-water-data-provider</artifactId>
+		  <artifactId>semanteco-water-data-provider</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -320,7 +321,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-air-data-provider</artifactId>
+		  <artifactId>semanteco-air-data-provider</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -328,7 +329,7 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semantaqua-industry</artifactId>
+		  <artifactId>semanteco-industry</artifactId>
 		  <version>4.0-SNAPSHOT</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
@@ -336,7 +337,7 @@
 		</artifactItem>
 		<artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semantaqua-characteristics-facet</artifactId>
+                  <artifactId>semanteco-characteristics-facet</artifactId>
                   <version>4.0-SNAPSHOT</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
@@ -344,9 +345,9 @@
                 </artifactItem>
 		<artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semantaqua-species-dataprovider</artifactId>
+                  <artifactId>semanteco-species-dataprovider</artifactId>
                   <version>4.0-SNAPSHOT</version>
-                   <destFileName>semantaqua-cspecies.jar</destFileName>
+                   <destFileName>semanteco-cspecies.jar</destFileName>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.name}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -367,7 +368,7 @@
 	      <goal>write-project-properties</goal>
 	    </goals>
 	    <configuration>
-	      <outputFile>${project.build.outputDirectory}/semantaqua.properties</outputFile>
+	      <outputFile>${project.build.outputDirectory}/semanteco.properties</outputFile>
 	    </configuration>
 	  </execution>
 	</executions>
@@ -426,7 +427,7 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-	<baseUrl>http://localhost:8080/semantaqua/</baseUrl>
+	<baseUrl>http://localhost:8080/semanteco/</baseUrl>
 	<debug>true</debug>
 	<triple-store>http://was.tw.rpi.edu/virtuoso/sparql</triple-store>
       </properties>
@@ -464,7 +465,7 @@
     <profile>
       <id>production</id>
       <properties>
-	<baseUrl>http://aquarius.tw.rpi.edu/projects/semantaqua/</baseUrl>
+	<baseUrl>http://aquarius.tw.rpi.edu/projects/semanteco/</baseUrl>
 	<triple-store>http://localhost:3003/</triple-store>
       </properties>
       <build>

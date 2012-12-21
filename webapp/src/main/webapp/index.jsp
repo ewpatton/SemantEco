@@ -1,4 +1,4 @@
-<%@ taglib uri="/WEB-INF/semantaqua.tld" prefix="module" %>
+<%@ taglib uri="/WEB-INF/semanteco.tld" prefix="module" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
   <head>
@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/reset.css" type="text/css"/>
     <link rel="stylesheet" href="css/main.css" type="text/css"/>
     <module:styles />
-    <title>Water Quality Portal</title>
+    <title>SemantEco Data Portal</title>
     <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="js/jquery.ba-bbq-1.2.1.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
@@ -15,8 +15,8 @@
     <script type="text/javascript" src="js/d3.csv.js"></script>
     <script type="text/javascript" src="js/d3.time.js"></script>
     <script type="text/javascript" src="js/json.js"></script>
-    <script type="text/javascript" src="js/SemantAqua.js"></script>
-    <script type="text/javascript" src="js/SemantAquaUI.js"></script>
+    <script type="text/javascript" src="js/SemantEco.js"></script>
+    <script type="text/javascript" src="js/SemantEcoUI.js"></script>
     <script type="text/javascript" src="js/config.js" ></script>
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAkAvsEZc18GOe01jOVpX48hnWRIgIajec&amp;sensor=false"></script>
     <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
     <module:scripts />
   </head>
-  <body onload="SemantAqua.initialize()">
+  <body onload="SemantEco.initialize()">
     <div class="container">
 	    <div id="header">
 	      <img src="images/header.png" alt="header"/>
@@ -36,14 +36,14 @@
 			<form>
 		  	  <p>Zip Code:
 		        <input id="zip" type="text" size="10" name="zip" value="02809" />
-	            <input type="button" value="Go!" onclick="SemantAqua.showAddress(); return false;" style="margin-left:20px;" /><br/>
+	            <input type="button" value="Go!" onclick="SemantEco.showAddress(); return false;" style="margin-left:20px;" /><br/>
 		        Try:
-			    <a href="javascript:SemantAqua.showAddress('02809');">Bristol, RI: 02809</a>, 
-			    <a href="javascript:SemantAqua.showAddress('90813');">Los Angeles, CA: 90813</a>, 
-			    <a href="javascript:SemantAqua.showAddress('94107');">San Francisco, CA: 94107</a>, 
-			    <a href="javascript:SemantAqua.showAddress('95113');">Santa Clara, CA: 95113</a>, 
-			    <a href="javascript:SemantAqua.showAddress('98103');">Seattle, WA: 98103</a>, 
-			    <a href="javascript:SemantAqua.showAddress('94305');">Stanford, CA: 94305</a>
+			    <a href="javascript:SemantEco.showAddress('02809');">Bristol, RI: 02809</a>, 
+			    <a href="javascript:SemantEco.showAddress('90813');">Los Angeles, CA: 90813</a>, 
+			    <a href="javascript:SemantEco.showAddress('94107');">San Francisco, CA: 94107</a>, 
+			    <a href="javascript:SemantEco.showAddress('95113');">Santa Clara, CA: 95113</a>, 
+			    <a href="javascript:SemantEco.showAddress('98103');">Seattle, WA: 98103</a>, 
+			    <a href="javascript:SemantEco.showAddress('94305');">Stanford, CA: 94305</a>
 		  	  </p>
 			</form>
 			<p id="reportSite">&nbsp;</p>

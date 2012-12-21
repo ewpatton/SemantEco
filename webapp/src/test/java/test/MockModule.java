@@ -3,11 +3,11 @@ package test;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.Query;
 
 public class MockModule implements Module {
 
@@ -30,7 +30,7 @@ public class MockModule implements Module {
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Request request) {
+	public void visit(SemantEcoUI ui, Request request) {
 		// TODO Auto-generated method stub
 
 	}

@@ -14,12 +14,12 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.QueryMethod;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.QueryMethod;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.Query;
 
 /**
  * The Debugger class provides a client-side interface to
@@ -50,7 +50,7 @@ public class Debugger implements Module {
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Request request) {
+	public void visit(SemantEcoUI ui, Request request) {
 		ui.addScript(config.getResource("debugger.js"));
 	}
 

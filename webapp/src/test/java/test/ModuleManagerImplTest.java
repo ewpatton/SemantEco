@@ -14,9 +14,9 @@ import org.apache.commons.vfs2.events.CreateEvent;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.impl.ModuleManagerImpl;
-import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
+import edu.rpi.tw.escience.semanteco.impl.ModuleManagerImpl;
+import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.Module;
 
 import junit.framework.TestCase;
 
@@ -30,14 +30,14 @@ public class ModuleManagerImplTest extends TestCase {
 		return modDir;
 	}
 	
-	protected static class TestConfig extends SemantAquaConfiguration {
+	protected static class TestConfig extends SemantEcoConfiguration {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
 		public TestConfig() {
-			SemantAquaConfiguration.setConfig(this);
+			SemantEcoConfiguration.setConfig(this);
 		}
 	}
 	

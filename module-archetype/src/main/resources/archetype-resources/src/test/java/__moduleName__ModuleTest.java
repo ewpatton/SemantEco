@@ -11,9 +11,9 @@ import org.junit.Test;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.test.TestModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.test.TestModuleConfiguration;
 import ${package}.${moduleName}Module;
 
 import junit.framework.TestCase;
@@ -49,7 +49,7 @@ public class ${moduleName}ModuleTest extends TestCase {
 		${moduleName}Module module = new ${moduleName}Module();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((SemantAquaUI)null, null);
+		module.visit((SemantEcoUI)null, null);
 	}
 	
 	@Test

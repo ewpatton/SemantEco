@@ -5,18 +5,18 @@
 
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
-    <artifactId>semantaqua-facets</artifactId>
+    <artifactId>semanteco-facets</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua-data-type</artifactId>
+  <artifactId>semanteco-data-type</artifactId>
   <packaging>jar</packaging>
-  <name>semantaqua data type facet</name>
+  <name>semanteco data type facet</name>
 
   <dependencies>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-common</artifactId>
+      <artifactId>semanteco-common</artifactId>
     </dependency>
   </dependencies>
 

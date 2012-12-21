@@ -1,0 +1,68 @@
+package edu.rpi.tw.escience.semanteco.util;
+
+import java.lang.reflect.Method;
+
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.QueryMethod;
+
+/**
+ * JavaScriptGenerator provides some basic utilities for creating
+ * JavaScript used by the client to interact with the server.
+ * @author ewpatton
+ *
+ */
+public final class JavaScriptGenerator {
+
+	private JavaScriptGenerator() {
+	
+	}
+	
+	/**
+	 * Generates JavaScript to provide an AJAX interface for talking
+	 * to the specified Module. Any method annotated with \@QueryMethod
+	 * will be provided an implementation on the client.
+	 * @param mod
+	 * @return
+	 */
+	public static String ajaxForModule(Module mod) {
+		final Class<?> cls = mod.getClass();
+		String result = "var "+cls.getSimpleName()+" = {";
+		int methodCount = 0;
+		
+		final Method[] methods = cls.getMethods();
+		boolean first = true;
+		for(int i=0;i<methods.length;i++) {
+			Method m = methods[i];
+			if(m.isAnnotationPresent(QueryMethod.class)) {
+				methodCount++;
+				if(first) {
+					first = false;
+				}
+				else {
+					result += ",";
+				}
+				result += processMethod(cls, m);
+			}
+		}
+		result += "};";
+		
+		if(methodCount == 0) {
+			return "";
+		}
+		else {
+			return result;
+		}
+	}
+	
+	private static String processMethod(final Class<?> cls, final Method m) {
+		String result = "\""+m.getName()+"\": ";
+		result += "function(args,success,error){" + 
+				"var a=$.extend({},SemantEcoUI.getState(),args);" +
+				"var b=$.ajax(SemantEco.restBaseUrl+\""+cls.getSimpleName()+"/"+m.getName()+"\",{\"data\":SemantEco.prepareArgs(a)});" +
+				"if(success)b.done(success);" +
+				"if(error)b.fail(error);" +
+				"}";
+		return result;
+	}
+
+}

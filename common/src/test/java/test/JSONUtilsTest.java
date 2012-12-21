@@ -5,7 +5,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.util.JSONUtils;
+import edu.rpi.tw.escience.semanteco.util.JSONUtils;
 
 import junit.framework.TestCase;
 

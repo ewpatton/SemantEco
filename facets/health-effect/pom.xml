@@ -5,18 +5,18 @@
 
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
-    <artifactId>semantaqua-facets</artifactId>
+    <artifactId>semanteco-facets</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua-health-effect</artifactId>
+  <artifactId>semanteco-health-effect</artifactId>
   <packaging>jar</packaging>
-  <name>semantaqua health effect facet</name>
+  <name>semanteco health effect facet</name>
 
   <dependencies>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-common</artifactId>
+      <artifactId>semanteco-common</artifactId>
     </dependency>
   </dependencies>
 

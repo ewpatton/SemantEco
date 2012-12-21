@@ -10,10 +10,10 @@
   </parent>
 
   <groupId>edu.rpi.tw.escience</groupId>
-  <artifactId>semantaqua-parent</artifactId>
+  <artifactId>semanteco-parent</artifactId>
   <version>4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>semantaqua parent</name>
+  <name>semanteco parent</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

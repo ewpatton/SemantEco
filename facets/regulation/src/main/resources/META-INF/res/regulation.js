@@ -7,7 +7,7 @@
  * with the regulation module.
  */
 /**
- * @class SemantAquaUI
+ * @class SemantEcoUI
  */
 /**
  * The regulation module needs to respond to two different events in the client
@@ -19,25 +19,25 @@
  */
 /**
  * Allows modules to respond to when the user requests data
- * @event SemantAquaUI#get-data
+ * @event SemantEcoUI#get-data
  * @type {object}
  */
 /**
  * Allows modules to respond to when a user clicks on a site marker
- * @event SemantAquaUI#show-marker-info
+ * @event SemantEcoUI#show-marker-info
  * @type {object}
  */
 /**
  * Allows modules to create a marker
- * @event SemantAquaUI#create-marker
+ * @event SemantEcoUI#create-marker
  * @type {object}
  * @param {object} binding A SPARQL JSON results binding
  */
 /**
  * Gets site data based on the current application state.
  * @function RegulationModule#getData
- * @fires SemantAquaUI#create-marker
- * @handles SemantAquaUI#get-data
+ * @fires SemantEcoUI#create-marker
+ * @handles SemantEcoUI#get-data
  * @public
  */
 RegulationModule.getData = function() {
@@ -47,9 +47,9 @@ RegulationModule.getData = function() {
 	RegulationModule.queryForSites({"uri":null}, function(data) {
 		// hide the spinner in case of an error
 		// (otherwise the application looks like it's locked up)
-		SemantAquaUI.hideSpinner();
+		SemantEcoUI.hideSpinner();
 		// clear the map
-		SemantAquaUI.clearMarkers();
+		SemantEcoUI.clearMarkers();
 		// parse the JSON response
 		var json = JSON.parse(data);
 		
@@ -63,8 +63,8 @@ RegulationModule.getData = function() {
 /**
  * Shows a marker
  * @function RegulationModule#showMarkerInfo
- * @fires SemantAquaUI#pop-infowindow
- * @handles SemantAquaUI#show-marker-info
+ * @fires SemantEcoUI#pop-infowindow
+ * @handles SemantEcoUI#show-marker-info
  * @function 
  */
 RegulationModule.showMarkerInfo = function(event, marker) {

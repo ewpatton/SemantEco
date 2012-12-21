@@ -22,12 +22,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
 
 /**
  * Query utilities used to find graphs and process SPARQL results.
@@ -47,7 +47,7 @@ public class QueryUtils {
 	public static final String DC_NS = "http://purl.org/dc/terms/";
 	public static final String VALUE = "value";
 	public static final String GRAPH_VAR = "graph";
-	public static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
+	public static final String SEMANTECO_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
 	public static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
 	public static final String SOURCE_VAR = "source";
 	public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -113,7 +113,7 @@ public class QueryUtils {
 	}
 	
 	/**
-	 * Retrieves a list of graphs from {@link #SEMANTAQUA_METADATA} related to
+	 * Retrieves a list of graphs from {@link #SEMANTECO_METADATA} related to
 	 * the specified state and source.
 	 * 
 	 * @param state State uri in instance hub
@@ -127,7 +127,7 @@ public class QueryUtils {
 		// get graphs from sparql.tw.rpi.edu related to (stateUri, source)
 		Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		query.setVariables(null);
-		NamedGraphComponent graph = query.getNamedGraph(SEMANTAQUA_METADATA);
+		NamedGraphComponent graph = query.getNamedGraph(SEMANTECO_METADATA);
 		QueryResource graphVar = query.getVariable(QUERY_NS+GRAPH_VAR);
 		QueryResource topicProp = query.getResource(SIOC_NS+"topic");
 		QueryResource sourceProp = query.getResource(DC_NS+SOURCE_VAR);

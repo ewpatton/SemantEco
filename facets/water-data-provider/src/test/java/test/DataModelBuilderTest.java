@@ -6,8 +6,8 @@ import org.junit.Test;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import edu.rpi.tw.escience.waterquality.test.TestModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.test.TestRequest;
+import edu.rpi.tw.escience.semanteco.test.TestModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.test.TestRequest;
 
 import junit.framework.TestCase;
 

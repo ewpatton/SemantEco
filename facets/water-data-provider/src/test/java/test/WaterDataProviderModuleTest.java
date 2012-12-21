@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,23 +19,21 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import edu.rpi.tw.escience.waterquality.QueryExecutor;
-import edu.rpi.tw.escience.waterquality.QueryFactory;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.Resource;
+import edu.rpi.tw.escience.semanteco.QueryExecutor;
+import edu.rpi.tw.escience.semanteco.QueryFactory;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.Resource;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.impl.QueryImpl;
+import edu.rpi.tw.escience.semanteco.test.MockModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.test.MockQueryExecutor;
+import edu.rpi.tw.escience.semanteco.test.MockQueryFactory;
+import edu.rpi.tw.escience.semanteco.test.MockRequest;
+import edu.rpi.tw.escience.semanteco.test.MockResource;
+import edu.rpi.tw.escience.semanteco.test.MockUI;
+import edu.rpi.tw.escience.semanteco.test.TestQuery;
 import edu.rpi.tw.escience.waterquality.dataprovider.WaterDataProviderModule;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
-import edu.rpi.tw.escience.waterquality.query.impl.QueryImpl;
-import edu.rpi.tw.escience.waterquality.test.MockModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.test.MockQueryExecutor;
-import edu.rpi.tw.escience.waterquality.test.MockQueryFactory;
-import edu.rpi.tw.escience.waterquality.test.MockRequest;
-import edu.rpi.tw.escience.waterquality.test.MockResource;
-import edu.rpi.tw.escience.waterquality.test.MockUI;
-import edu.rpi.tw.escience.waterquality.test.TestQuery;
-
-import junit.framework.TestCase;
 
 public class WaterDataProviderModuleTest extends TestCase {
 

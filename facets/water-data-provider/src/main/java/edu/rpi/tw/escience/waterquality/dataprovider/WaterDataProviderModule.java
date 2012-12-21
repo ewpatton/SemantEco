@@ -15,25 +15,25 @@ import org.json.JSONObject;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.Domain;
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.ProvidesDomain;
-import edu.rpi.tw.escience.waterquality.QueryMethod;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.Resource;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.BlankNode;
-import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
-import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Variable;
+import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.ProvidesDomain;
+import edu.rpi.tw.escience.semanteco.QueryMethod;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.Resource;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.BlankNode;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.Variable;
 
-import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
-import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.RDF_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 /**
  * Water Data Provider provides the water domain and is primarily adapted from the
@@ -46,7 +46,7 @@ import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
  */
 public class WaterDataProviderModule implements Module, ProvidesDomain {
 
-	private static final String SEMANTAQUA_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
+	private static final String SEMANTECO_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
 	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String DC_NS = "http://purl.org/dc/terms/";
@@ -91,7 +91,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Request request) {
+	public void visit(SemantEcoUI ui, Request request) {
 		Resource res = config.getResource("water-data-provider.js");
 		if(res != null) {
 			ui.addScript(res);
@@ -161,7 +161,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		vars.add(label);
 		query.setVariables(vars);
 		query.setDistinct(true);
-		NamedGraphComponent metadata = query.getNamedGraph(SEMANTAQUA_METADATA);
+		NamedGraphComponent metadata = query.getNamedGraph(SEMANTECO_METADATA);
 		metadata.addPattern(graph, dcSource, source);
 		OptionalComponent optional = query.createOptional();
 		metadata.addGraphComponent(optional);
