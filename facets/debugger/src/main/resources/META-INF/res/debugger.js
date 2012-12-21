@@ -1,4 +1,5 @@
 $(window).bind("initialize",function() {
+	// attach the debugger interface
 	var debug = $("div#display").append("<div id=\"debugger\"></div>").find("div#debugger");
 	
 	// css
@@ -22,12 +23,15 @@ $(window).bind("initialize",function() {
 	debug.append("<br />");
 	debug.append("<textarea id=\"results\" rows=\"25\" cols=\"80\"></textarea>");
 	
+	// respond to when the user clicks the debug button
 	$("#debug", debug).click(function() {
 		Debugger.sparql({"query":$("#query").val(), "reason":$("#reason")[0].checked}, function(results){
 			$("#results").val(results);
 		});
 	});
 	
+	// provide methods from the console to turn the debugger interface
+	// on and off.
 	Debugger["open"] = function() {
 		$("div#debugger").css("display","block");
 	};

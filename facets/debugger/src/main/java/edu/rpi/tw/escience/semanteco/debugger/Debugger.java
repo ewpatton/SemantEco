@@ -21,6 +21,15 @@ import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.SemantAquaUI;
 import edu.rpi.tw.escience.waterquality.query.Query;
 
+/**
+ * The Debugger class provides a client-side interface to
+ * execute arbitrary queries on the server-side model, optionally
+ * with OWL inferencing enabled, to enable developers to debug
+ * queries on the combined model after all other modules have
+ * executed.
+ * @author ewpatton
+ *
+ */
 public class Debugger implements Module {
 
 	private ModuleConfiguration config=null;
@@ -70,6 +79,13 @@ public class Debugger implements Module {
 		this.config = config;
 	}
 	
+	/**
+	 * Executes a SPARQL query on a model constructed from the
+	 * given application state in the request.
+	 * @param request A Request object encapsulating the client's state
+	 * @return Results of the SPARQL query in JSON formatted based on
+	 * the type of the user's input query.
+	 */
 	@QueryMethod
 	public String sparql(final Request request) {
 		final Logger log = request.getLogger();
