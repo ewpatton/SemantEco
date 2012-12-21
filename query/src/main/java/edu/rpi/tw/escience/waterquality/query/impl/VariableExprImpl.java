@@ -2,10 +2,24 @@ package edu.rpi.tw.escience.waterquality.query.impl;
 
 import edu.rpi.tw.escience.waterquality.query.Variable;
 
+/**
+ * VariableExprImpl encapsulates a variable binding expression
+ * for the use in the SPARQL SELECT variable clause, e\.g\.
+ * SELECT (SUM(?x) AS ?sum) WHERE { \.\.\. }
+ * @author ewpatton
+ *
+ */
 public class VariableExprImpl implements Variable {
 
 	private final String expr;
 	
+	/**
+	 * Constructs a VariableExprImpl to wrap the
+	 * given expression. This DOES NOT check the
+	 * syntax or semantics for correctness. These
+	 * should be ensured by the caller.
+	 * @param expr A valid SPARQL variable expression
+	 */
 	public VariableExprImpl(String expr) {
 		this.expr = expr;
 	}
