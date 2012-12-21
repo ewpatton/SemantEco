@@ -15,11 +15,23 @@ import edu.rpi.tw.escience.waterquality.QueryFactory;
 import edu.rpi.tw.escience.waterquality.Request;
 import edu.rpi.tw.escience.waterquality.Resource;
 
+/**
+ * Provides a TestModuleConfiguration that provides basic functionality
+ * of a ModuleConfiguration that can be override for unit testing.
+ * @author ewpatton
+ *
+ */
 public class TestModuleConfiguration extends ModuleConfiguration {
 
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * A query executor that can be overwritten by unit tests
+	 */
 	public TestQueryExecutor executor = new TestQueryExecutor();
+	/**
+	 * A query factory that can be overwritten by unit tests
+	 */
 	public TestQueryFactory factory = new TestQueryFactory();
 
 	@Override
