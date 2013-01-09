@@ -78,21 +78,29 @@ public class DataSourceModule implements Module {
 		labelMap = order(labelMap);
 		try {
 			// generate facet
-			String responseText = "<div id=\"DataSourceFacet\" class=\"facet\">";
+			final StringBuilder responseText = new StringBuilder("<div id=\"DataSourceFacet\" class=\"facet\">");
 			if(labelMap.size()==0) {
-				responseText += "<i>No data sources available</i>";
+				responseText.append("<i>No data sources available</i>");
 			}
 			else {
 				for(Entry<String, String> i : labelMap.entrySet()) {
 					final String label = i.getKey();
 					final String uri = i.getValue();
-					responseText += "<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\""+uri+"\" id=\""+NameUtils.cleanName(label)+"\" />";
-					responseText += "<label for=\""+NameUtils.cleanName(label)+"\">"+label+"</label>";
-					responseText += "<br />";
+					responseText.append("<input name=\"source\" type=\"checkbox\" checked=\"checked\" value=\"");
+					responseText.append(uri);
+					responseText.append("\" id=\"");
+					responseText.append(NameUtils.cleanName(label));
+					responseText.append("\" />");
+					responseText.append("<label for=\"");
+					responseText.append(NameUtils.cleanName(label));
+					responseText.append("\">");
+					responseText.append(label);
+					responseText.append("</label>");
+					responseText.append("<br />");
 				}
 			}
-			responseText += "</div>";
-			Resource res = config.generateStringResource(responseText);
+			responseText.append("</div>");
+			Resource res = config.generateStringResource(responseText.toString());
 			ui.addFacet(res);
 		}
 		catch(Exception e) {

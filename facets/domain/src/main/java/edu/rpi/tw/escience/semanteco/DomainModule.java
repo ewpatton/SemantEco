@@ -57,19 +57,21 @@ public class DomainModule implements Module {
 
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
-		String responseStr = "<div id=\"DomainFacet\" class=\"facet\">";
+		final StringBuilder responseStr = new StringBuilder("<div id=\"DomainFacet\" class=\"facet\">");
 		@SuppressWarnings("unchecked")
 		List<Domain> domains = (List<Domain>)request.getParam("available-domains");
 		if(domains != null) {
 			for(Domain i : domains) {
 				URI uri = i.getUri();
-				responseStr += "<input name=\"domain\" type=\"checkbox\" checked=\"checked\" value=\""+uri.toString()+"\" />";
-				responseStr += i.getLabel();
-				responseStr += "<br />";
+				responseStr.append("<input name=\"domain\" type=\"checkbox\" checked=\"checked\" value=\"");
+				responseStr.append(uri.toString());
+				responseStr.append("\" />");
+				responseStr.append(i.getLabel());
+				responseStr.append("<br />");
 			}
 		}
-		responseStr += "</div>";
-		Resource res = config.generateStringResource(responseStr);
+		responseStr.append("</div>");
+		Resource res = config.generateStringResource(responseStr.toString());
 		ui.addFacet(res);
 	}
 

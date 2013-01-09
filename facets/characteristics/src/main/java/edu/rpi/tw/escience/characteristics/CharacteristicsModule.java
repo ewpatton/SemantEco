@@ -435,10 +435,6 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 			    	}
 				}		
 		}
-		else{
-			//final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
-	//		graph2.addPattern(species, hasLabel, scientificName);		
-		}		
 	}
 	
 	

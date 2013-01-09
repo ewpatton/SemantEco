@@ -269,13 +269,14 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	
 	protected final String explodeJar(final String path) {
 		log.trace("Exploding jar");
+		JarFile jar = null;
 		try {
 			final String name = path.substring(path.lastIndexOf('/')+1, path.length()-".jar".length());
 			final File resDir = new File(this.path+"/../../resources/"+name+"/");
 			if(!resDir.exists()) {
 				resDir.mkdirs();
 			}
-			JarFile jar = new JarFile(path);
+			jar = new JarFile(path);
 			Enumeration<JarEntry> entries = jar.entries();
 			while(entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
@@ -291,6 +292,14 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 		catch (IOException e) {
 			log.warn("Unable to explode jar: "+path);
+		}
+		finally {
+			if(jar != null) {
+				try {
+					jar.close();
+				}
+				catch(IOException e) { }
+			}
 		}
 		return null;
 	}

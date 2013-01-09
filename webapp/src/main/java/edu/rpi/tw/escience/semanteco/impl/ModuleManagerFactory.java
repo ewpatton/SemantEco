@@ -51,13 +51,14 @@ public class ModuleManagerFactory {
 	 * Destroys the factory instance for memory management purposes.
 	 */
 	public static void destroy() {
+		if(instance == null) {
+			return;
+		}
 		ModuleManagerImpl impl = (ModuleManagerImpl)instance.manager;
 		if(impl != null) {
 			impl.stopListening();
 		}
-		if(instance != null) {
-			instance.manager = null;
-		}
+		instance.manager = null;
 		instance = null;
 	}
 

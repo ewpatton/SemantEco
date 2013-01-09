@@ -26,7 +26,7 @@ public final class JavaScriptGenerator {
 	 */
 	public static String ajaxForModule(Module mod) {
 		final Class<?> cls = mod.getClass();
-		String result = "var "+cls.getSimpleName()+" = {";
+		final StringBuilder result = new StringBuilder("var "+cls.getSimpleName()+" = {");
 		int methodCount = 0;
 		
 		final Method[] methods = cls.getMethods();
@@ -39,30 +39,37 @@ public final class JavaScriptGenerator {
 					first = false;
 				}
 				else {
-					result += ",";
+					result.append(",");
 				}
-				result += processMethod(cls, m);
+				result.append(processMethod(cls, m));
 			}
 		}
-		result += "};";
+		result.append("};");
 		
 		if(methodCount == 0) {
 			return "";
 		}
 		else {
-			return result;
+			return result.toString();
 		}
 	}
 	
 	private static String processMethod(final Class<?> cls, final Method m) {
-		String result = "\""+m.getName()+"\": ";
-		result += "function(args,success,error){" + 
-				"var a=$.extend({},SemantEcoUI.getState(),args);" +
-				"var b=$.ajax(SemantEco.restBaseUrl+\""+cls.getSimpleName()+"/"+m.getName()+"\",{\"data\":SemantEco.prepareArgs(a)});" +
-				"if(success)b.done(success);" +
-				"if(error)b.fail(error);" +
-				"}";
-		return result;
+		final StringBuilder result = new StringBuilder();
+		result.append("\"");
+		result.append(m.getName());
+		result.append("\": ");
+		result.append("function(args,success,error){"); 
+		result.append("var a=$.extend({},SemantEcoUI.getState(),args);");
+		result.append("var b=$.ajax(SemantEco.restBaseUrl+\"");
+		result.append(cls.getSimpleName());
+		result.append("/");
+		result.append(m.getName());
+		result.append("\",{\"data\":SemantEco.prepareArgs(a)});");
+		result.append("if(success)b.done(success);");
+		result.append("if(error)b.fail(error);");
+		result.append("}");
+		return result.toString();
 	}
 
 }

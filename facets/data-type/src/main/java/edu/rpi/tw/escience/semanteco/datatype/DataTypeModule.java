@@ -45,22 +45,26 @@ public class DataTypeModule implements Module {
 		if(res != null) {
 			ui.addScript(res);
 		}
-		String responseStr = "<div id=\"DataTypeFacet\" class=\"facet no-rest\">";
+		final StringBuilder responseStr = new StringBuilder("<div id=\"DataTypeFacet\" class=\"facet no-rest\">");
 		List<Domain> domains = config.listDomains();
 		for(Domain i : domains) {
 			List<String> types = i.getDataTypes();
 			for(String j : types) {
 				String label = i.getDataTypeName(j);
 				Resource icon = i.getDataTypeIcon(j);
-				responseStr += "<input name=\"type\" type=\"checkbox\" checked=\"checked\"" +
-						"value=\""+j+"\" />";
-				responseStr += "<img height=\"12\" src=\""+icon.getPath()+"\" /> ";
-				responseStr += label;
-				responseStr += "<br />";
+				responseStr.append("<input name=\"type\" type=\"checkbox\" checked=\"checked\"");
+				responseStr.append("value=\"");
+				responseStr.append(j);
+				responseStr.append("\" />");
+				responseStr.append("<img height=\"12\" src=\"");
+				responseStr.append(icon.getPath());
+				responseStr.append("\" /> ");
+				responseStr.append(label);
+				responseStr.append("<br />");
 			}
 		}
-		responseStr += "</div>";
-		res = config.generateStringResource(responseStr);
+		responseStr.append("</div>");
+		res = config.generateStringResource(responseStr.toString());
 		if(res != null) {
 			ui.addFacet(res);
 		}

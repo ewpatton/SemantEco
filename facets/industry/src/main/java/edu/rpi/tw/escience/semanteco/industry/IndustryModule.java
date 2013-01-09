@@ -59,7 +59,7 @@ public class IndustryModule implements Module {
 		String[] parts = code.split(",");
 		for(int i=0;i<parts.length;i++) {
 			String[] parts2 = parts[i].split("-");
-			for(int j=0;j<parts2.length;i++) {
+			for(int j=0;j<parts2.length;j++) {
 				if(parts2[i].length() != 2) {
 					continue;
 				}

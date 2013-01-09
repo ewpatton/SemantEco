@@ -533,19 +533,19 @@ public class DataModelBuilder extends QueryUtils {
 	 * @param sites List of sites to include in the filter
 	 */
 	protected final void addSiteFilter(final GraphComponentCollection query, final List<String> sites) {
-		String filter = "?"+SITE+" IN (<";
+		final StringBuilder filter = new StringBuilder("?"+SITE+" IN (<");
 		boolean first = true;
 		for(String i : sites) {
 			if(!first) {
-				filter += ">,<";
+				filter.append(">,<");
 			}
 			else {
 				first = false;
 			}
-			filter += i;
+			filter.append(i);
 		}
-		filter += ">)";
-		query.addFilter(filter);
+		filter.append(">)");
+		query.addFilter(filter.toString());
 	}
 
 }
