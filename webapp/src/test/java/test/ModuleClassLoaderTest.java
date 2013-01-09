@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.impl.ModuleClassLoader;
+import edu.rpi.tw.escience.semanteco.impl.ModuleClassLoader;
 
 import junit.framework.TestCase;
 

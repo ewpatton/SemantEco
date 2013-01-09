@@ -2,8 +2,8 @@ package test;
 
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.query.Query.SortType;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.Query.SortType;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
 import junit.framework.TestCase;
 
 public class QueryTest extends TestCase {

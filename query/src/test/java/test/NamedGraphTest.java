@@ -2,7 +2,7 @@ package test;
 
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.query.impl.NamedGraphComponentImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.NamedGraphComponentImpl;
 
 import junit.framework.TestCase;
 

@@ -1,22 +1,34 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsl">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsl">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
-    <artifactId>semantaqua-facets</artifactId>
+    <artifactId>semanteco-facets</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua-species</artifactId>
+  <artifactId>semanteco-species-dataprovider</artifactId>
+
   <packaging>jar</packaging>
-  <name>semantaqua species facet</name>
+  <name>semanteco SpeciesDataProvider facet</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <dependencies>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-common</artifactId>
+      <artifactId>semanteco-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-test</artifactId>
     </dependency>
   </dependencies>
 

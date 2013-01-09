@@ -2,7 +2,7 @@ package test;
 
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.query.impl.FilterComponentImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.FilterComponentImpl;
 import junit.framework.TestCase;
 
 public class FilterTest extends TestCase {

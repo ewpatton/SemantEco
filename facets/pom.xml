@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsl">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsl">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
-    <artifactId>semantaqua-parent</artifactId>
+    <artifactId>semanteco-parent</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua-facets</artifactId>
+  <artifactId>semanteco-facets</artifactId>
   <packaging>pom</packaging>
-  <name>semantaqua facets</name>
+  <name>semanteco facets</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -33,12 +32,12 @@
       </dependency>
       <dependency>
 	<groupId>edu.rpi.tw.escience</groupId>
-	<artifactId>semantaqua-common</artifactId>
+	<artifactId>semanteco-common</artifactId>
 	<version>4.0-SNAPSHOT</version>
       </dependency>
       <dependency>
 	<groupId>edu.rpi.tw.escience</groupId>
-	<artifactId>semantaqua-test</artifactId>
+	<artifactId>semanteco-test</artifactId>
 	<version>4.0-SNAPSHOT</version>
       </dependency>
     </dependencies>
@@ -58,7 +57,10 @@
 	<module>data-type</module>
 	<module>water-data-provider</module>
 	<module>air-data-provider</module>
+    	<module>species</module>
+    	<module>characteristics</module>
 	<module>industry</module>
+	<module>debugger</module>
       </modules>
     </profile>
     <profile>

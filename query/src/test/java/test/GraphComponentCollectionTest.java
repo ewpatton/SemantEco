@@ -4,13 +4,13 @@ import org.junit.Test;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
-import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.Variable;
-import edu.rpi.tw.escience.waterquality.query.impl.FilterComponentImpl;
-import edu.rpi.tw.escience.waterquality.query.impl.GraphComponentCollectionImpl;
-import edu.rpi.tw.escience.waterquality.query.impl.GraphPatternImpl;
-import edu.rpi.tw.escience.waterquality.query.impl.VariableImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.FilterComponentImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.GraphComponentCollectionImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.GraphPatternImpl;
+import edu.rpi.tw.escience.semanteco.query.impl.VariableImpl;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Variable;
 import junit.framework.TestCase;
 
 public class GraphComponentCollectionTest extends TestCase {

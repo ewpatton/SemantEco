@@ -6,12 +6,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.Domain;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.QueryExecutor;
-import edu.rpi.tw.escience.waterquality.QueryFactory;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.Resource;
+import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.QueryExecutor;
+import edu.rpi.tw.escience.semanteco.QueryFactory;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.Resource;
 import junit.framework.TestCase;
 
 public class ModuleConfigurationTest extends TestCase {

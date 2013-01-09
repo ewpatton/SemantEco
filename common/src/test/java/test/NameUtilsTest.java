@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.util.NameUtils;
+import edu.rpi.tw.escience.semanteco.util.NameUtils;
 
 public class NameUtilsTest extends TestCase {
 

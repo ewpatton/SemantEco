@@ -5,13 +5,13 @@
 
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
-    <artifactId>semantaqua-parent</artifactId>
+    <artifactId>semanteco-parent</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua-query</artifactId>
+  <artifactId>semanteco-query</artifactId>
   <packaging>jar</packaging>
-  <name>semantaqua query</name>
+  <name>semanteco query</name>
 
   <repositories>
     <repository>
@@ -28,7 +28,7 @@
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-common</artifactId>
+      <artifactId>semanteco-common</artifactId>
       <version>4.0-SNAPSHOT</version>
     </dependency>
   </dependencies>

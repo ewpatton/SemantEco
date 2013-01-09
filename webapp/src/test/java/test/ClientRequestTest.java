@@ -6,8 +6,8 @@ import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import edu.rpi.tw.escience.waterquality.ClientRequest;
-import edu.rpi.tw.escience.waterquality.util.SemantAquaConfiguration;
+import edu.rpi.tw.escience.semanteco.ClientRequest;
+import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
 
 import junit.framework.TestCase;
 
@@ -31,7 +31,7 @@ public class ClientRequestTest extends TestCase {
 		
 	}
 	
-	protected static class TestConfiguration extends SemantAquaConfiguration {
+	protected static class TestConfiguration extends SemantEcoConfiguration {
 		private static final long serialVersionUID = 1L;
 		public TestConfiguration() {
 			super();
