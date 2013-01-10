@@ -11,7 +11,7 @@
 
   <artifactId>semanteco-domain</artifactId>
   <packaging>jar</packaging>
-  <name>semantaqua domain facet</name>
+  <name>semanteco domain facet</name>
 
   <dependencies>
     <dependency>
