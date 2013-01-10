@@ -25,11 +25,11 @@
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-common</artifactId>
+      <artifactId>semanteco-common</artifactId>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semantaqua-test</artifactId>
+      <artifactId>semanteco-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
