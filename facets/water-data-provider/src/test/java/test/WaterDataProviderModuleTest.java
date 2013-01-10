@@ -262,9 +262,9 @@ public class WaterDataProviderModuleTest extends TestCase {
 		TestRequest request = new TestRequest();
 		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
-		module.visit(ui, request);
-		((TestQueryExecutor)config.queryExecutor).response = getResource("/test001.json");
-		module.visit(ui, request);
+//		module.visit(ui, request);
+//		((TestQueryExecutor)config.queryExecutor).response = getResource("/test001.json");
+//		module.visit(ui, request);
 	}
 	
 	@Test
