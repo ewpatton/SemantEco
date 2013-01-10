@@ -12,14 +12,14 @@ import org.json.JSONObject;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Variable;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.Variable;
 
-import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 public class InstanceCounter extends QueryUtils {
 

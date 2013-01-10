@@ -5,19 +5,19 @@ import java.util.List;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
-import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Variable;
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.Variable;
 
-import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
-import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.RDF_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 public class IndustryModule implements Module {
 
@@ -83,7 +83,7 @@ public class IndustryModule implements Module {
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Request request) {
+	public void visit(SemantEcoUI ui, Request request) {
 		ui.addFacet(config.getResource("industry.jsp"));
 	}
 

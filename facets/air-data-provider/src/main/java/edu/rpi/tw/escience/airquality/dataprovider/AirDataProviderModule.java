@@ -11,22 +11,22 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.Domain;
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.ProvidesDomain;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.Resource;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
-import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Variable;
+import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.ProvidesDomain;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.Resource;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.Variable;
 
-import static edu.rpi.tw.escience.waterquality.query.Query.RDF_NS;
-import static edu.rpi.tw.escience.waterquality.query.Query.VAR_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.RDF_NS;
+import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 public class AirDataProviderModule implements Module, ProvidesDomain {
 
@@ -167,7 +167,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	}
 
 	@Override
-	public void visit(SemantAquaUI ui, Request request) {
+	public void visit(SemantEcoUI ui, Request request) {
 		Resource res = config.getResource("air-data-provider.js");
 		if(res != null) {
 			ui.addScript(res);

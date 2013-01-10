@@ -21,17 +21,17 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.query.GraphComponentCollection;
-import edu.rpi.tw.escience.waterquality.query.NamedGraphComponent;
-import edu.rpi.tw.escience.waterquality.query.OptionalComponent;
-import edu.rpi.tw.escience.waterquality.query.Query;
-import edu.rpi.tw.escience.waterquality.query.QueryResource;
-import edu.rpi.tw.escience.waterquality.query.Query.SortType;
-import edu.rpi.tw.escience.waterquality.query.Query.Type;
-import edu.rpi.tw.escience.waterquality.query.Variable;
-import edu.rpi.tw.escience.waterquality.util.LimitUtils;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
+import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.Query.SortType;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.Variable;
+import edu.rpi.tw.escience.semanteco.util.LimitUtils;
 
 /**
  * DataModelBuilder is a utility class used by the DataSourceModule to build an appropriate
