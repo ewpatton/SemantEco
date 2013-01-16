@@ -19,6 +19,17 @@ import edu.rpi.tw.escience.semanteco.query.Variable;
 import static edu.rpi.tw.escience.semanteco.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
+/**
+ * The Industry module provides a mechanism for users to select subsets of
+ * facilities based on an industry using the North American Industry
+ * Classification System (NAICS). It modifies SPARQL CONSTRUCT queries
+ * in its {@link #visit(Query, Request)} method by adding a triple assertion
+ * in the form of ?site pol:hasNAICS ?naics FILTER(regex("^{x}", ?naics))
+ * where {x} is the industry component of the NAICS code.
+ * 
+ * @author ewpatton
+ *
+ */
 public class IndustryModule implements Module {
 
 	private static final String NAICS_VAR = "naics";
@@ -35,6 +46,12 @@ public class IndustryModule implements Module {
 		
 	}
 
+	/**
+	 * Converts the NAICS component sent by the client into a regular expression
+	 * statement that can be used as part of a SPARQL regular expression.
+	 * @param code A code expression in the form of 11,31-33 (- is a range and , separates ranges)
+	 * @return A regulation expression representing the values specified in the code
+	 */
 	protected static String code2RegExp(final String code) {
 		// 11,31-33 becomes "^(11|31|32|33)"
 		final StringBuilder sb = new StringBuilder();
@@ -42,7 +59,7 @@ public class IndustryModule implements Module {
 		String[] parts = code.split(",");
 		for(int i=0;i<parts.length;i++) {
 			String[] parts2 = parts[i].split("-");
-			for(int j=0;j<parts2.length;i++) {
+			for(int j=0;j<parts2.length;j++) {
 				if(parts2[i].length() != 2) {
 					continue;
 				}

@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +23,6 @@ import edu.rpi.tw.escience.semanteco.QueryExecutor;
 import edu.rpi.tw.escience.semanteco.QueryFactory;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.Resource;
-import edu.rpi.tw.escience.waterquality.dataprovider.WaterDataProviderModule;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 import edu.rpi.tw.escience.semanteco.query.impl.QueryImpl;
@@ -32,8 +33,7 @@ import edu.rpi.tw.escience.semanteco.test.MockRequest;
 import edu.rpi.tw.escience.semanteco.test.MockResource;
 import edu.rpi.tw.escience.semanteco.test.MockUI;
 import edu.rpi.tw.escience.semanteco.test.TestQuery;
-
-import junit.framework.TestCase;
+import edu.rpi.tw.escience.waterquality.dataprovider.WaterDataProviderModule;
 
 public class WaterDataProviderModuleTest extends TestCase {
 
@@ -170,10 +170,16 @@ public class WaterDataProviderModuleTest extends TestCase {
 	
 	private static class TestUI extends MockUI {
 		Set<Resource> facets = new HashSet<Resource>();
+		Set<Resource> scripts = new HashSet<Resource>();
 		
 		@Override
 		public void addFacet(Resource res) {
 			facets.add(res);
+		}
+		
+		@Override
+		public void addScript(Resource res) {
+			scripts.add(res);
 		}
 	}
 	
@@ -262,9 +268,9 @@ public class WaterDataProviderModuleTest extends TestCase {
 		TestRequest request = new TestRequest();
 		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
-//		module.visit(ui, request);
-//		((TestQueryExecutor)config.queryExecutor).response = getResource("/test001.json");
-//		module.visit(ui, request);
+		module.visit(ui, request);
+		((TestQueryExecutor)config.queryExecutor).response = getResource("/test001.json");
+		module.visit(ui, request);
 	}
 	
 	@Test

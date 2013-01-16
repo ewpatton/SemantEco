@@ -10,12 +10,12 @@ import java.util.List;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.waterquality.Module;
-import edu.rpi.tw.escience.waterquality.ModuleConfiguration;
-import edu.rpi.tw.escience.waterquality.Request;
-import edu.rpi.tw.escience.waterquality.Resource;
-import edu.rpi.tw.escience.waterquality.SemantAquaUI;
-import edu.rpi.tw.escience.waterquality.query.Query;
+import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.Resource;
+import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.Query;
 
 public class ${moduleName}Module implements Module {
 
@@ -37,7 +37,7 @@ public class ${moduleName}Module implements Module {
 	}
 	
 	@Override
-	public void visit(final SemantAquaUI ui, final Request request) {
+	public void visit(final SemantEcoUI ui, final Request request) {
 		// TODO add resources to display
 	}
 

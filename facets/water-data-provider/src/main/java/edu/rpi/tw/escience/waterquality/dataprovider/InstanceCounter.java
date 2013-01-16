@@ -21,6 +21,12 @@ import edu.rpi.tw.escience.semanteco.query.Variable;
 
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
+/**
+ * Counts instances of facilities and water sites available in the different
+ * data sources.
+ * @author ewpatton
+ *
+ */
 public class InstanceCounter extends QueryUtils {
 
 	private final Logger log;
@@ -30,6 +36,11 @@ public class InstanceCounter extends QueryUtils {
 	private final String countyCode;
 	private final Request request;
 	
+	/**
+	 * Creates an instance counter for the given request and module configuration.
+	 * @param request Client request describing RESTful call
+	 * @param config Module configuration for the water data module
+	 */
 	public InstanceCounter(final Request request, final ModuleConfiguration config) {
 		super(request, config);
 		this.request = request;
@@ -60,6 +71,11 @@ public class InstanceCounter extends QueryUtils {
 		}
 	}
 	
+	/**
+	 * Builds a results object that can be serialized back to the client.
+	 * @return A JSONObject containing the count information in the form
+	 * of: {"sites": #, "facilities": #}
+	 */
 	public final JSONObject build() {
 		JSONObject response = new JSONObject();
 		for(String source : sources) {
@@ -173,6 +189,13 @@ public class InstanceCounter extends QueryUtils {
 		measures.addPattern(measurement, polHasSite, s);
 	}
 	
+	/**
+	 * Extracts the integer value from the SPARQL results for the queries
+	 * in {@link #buildEPACounter(Query, List)} and 
+	 * {@link #buildUSGSCounter(Query, List)}
+	 * @param sparqlResults
+	 * @return
+	 */
 	protected final int process(final String sparqlResults) {
 		int count = 0;
 		try {

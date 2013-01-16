@@ -735,7 +735,7 @@ var SemantEcoUI = {
 			SemantEco.action = SemantEcoUI.handleClickedMarker;
 			$.bbq.pushState({"uri": uri});
 			//trigger the show-marker-info event and pass the coresponding marker to tell where the infowindow should show
-			$(window).trigger('show-marker-info',marker);  
+			//$(window).trigger('show-marker-info',marker);  
 		});
 	},
 

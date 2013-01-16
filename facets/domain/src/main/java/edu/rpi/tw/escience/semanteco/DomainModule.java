@@ -9,11 +9,33 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.ProvidesDomain;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
 
+/**
+ * The Domain module is responsible for generating the Domain facet. Users can
+ * indirectly enable and disable modules by changing which domains are active.
+ * 
+ * To add domains, a module should implement the {@link ProvidesDomain} interface
+ * and return a list of domains created using the {@link ModuleConfiguration#getDomain(URI, boolean)}
+ * method from its {@link ProvidesDomain#getDomains(Request)} method, e.g.:
+ * 
+ * <code>
+ * public List&lt;Domain&gt; getDomains(final Request request) {
+ *     List&lt;Domain&gt; domains = new ArrayList&lt;Domain&gt;();
+ *     Domain myDomain = config.getDomain(URI.create("http://mydomain#"), true);
+ *     // add data sources, regulations, and data types here
+ *     domains.add(myDomain);
+ *     return domains;
+ * }
+ * </code>
+ * 
+ * @author ewpatton
+ *
+ */
 public class DomainModule implements Module {
 
 	private ModuleConfiguration config = null;
@@ -35,19 +57,21 @@ public class DomainModule implements Module {
 
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
-		String responseStr = "<div id=\"DomainFacet\" class=\"facet\">";
+		final StringBuilder responseStr = new StringBuilder("<div id=\"DomainFacet\" class=\"facet\">");
 		@SuppressWarnings("unchecked")
 		List<Domain> domains = (List<Domain>)request.getParam("available-domains");
 		if(domains != null) {
 			for(Domain i : domains) {
 				URI uri = i.getUri();
-				responseStr += "<input name=\"domain\" type=\"checkbox\" checked=\"checked\" value=\""+uri.toString()+"\" />";
-				responseStr += i.getLabel();
-				responseStr += "<br />";
+				responseStr.append("<input name=\"domain\" type=\"checkbox\" checked=\"checked\" value=\"");
+				responseStr.append(uri.toString());
+				responseStr.append("\" />");
+				responseStr.append(i.getLabel());
+				responseStr.append("<br />");
 			}
 		}
-		responseStr += "</div>";
-		Resource res = config.generateStringResource(responseStr);
+		responseStr.append("</div>");
+		Resource res = config.generateStringResource(responseStr.toString());
 		ui.addFacet(res);
 	}
 

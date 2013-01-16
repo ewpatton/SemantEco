@@ -72,7 +72,7 @@ public class DataTypeModule implements Module {
 
 	@Override
 	public String getName() {
-		return "Icon Type";
+		return "Entity Type";
 	}
 
 	@Override

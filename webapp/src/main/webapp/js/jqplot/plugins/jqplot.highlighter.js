@@ -278,7 +278,9 @@
                 switch (opts.tooltipAxes) {
                     case 'both':
                     case 'xy':
-                        str = xstr;
+                        // str = xstr;
+                        str = series.label + ": ";
+                        str += xstr;
                         for (var i=0; i<ystrs.length; i++) {
                             str += opts.tooltipSeparator + ystrs[i];
                         }

@@ -69,14 +69,14 @@ RegulationModule.getData = function() {
  */
 RegulationModule.showMarkerInfo = function(event, marker) {
 	console.log("regulation.js#show-marker-info");
-	var marker=marker;
+	var marker=SemantEcoUI.getMarkerForUri($.bbq.getState("uri"));
 	
 	$("#spinner").show();
 	// call the auto-generated AJAX method to get the polluted measurements
 
 	//////////////////////////////////////////////////////////////////
 
-	if( ! marker.data.isBird){
+	if(marker.data.isBird.value != "true"){
 		RegulationModule.queryForSitePollution({}, function(data){
 			$("#spinner").hide();
 			console.log("data retrieved in queryForSitePollution. Data(below):");

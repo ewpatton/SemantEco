@@ -9,9 +9,9 @@
     <version>4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>semantaqua-water-data-provider</artifactId>
+  <artifactId>semanteco-water-data-provider</artifactId>
   <packaging>jar</packaging>
-  <name>semantaqua water data provider</name>
+  <name>semanteco water data provider</name>
 
   <properties>
     <logd-triple-store>http://logd.tw.rpi.edu/sparql?output=sparqljson</logd-triple-store>

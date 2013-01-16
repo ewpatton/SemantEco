@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.rpi.tw.escience</groupId>
-  <artifactId>semantaqua-facet-archetype</artifactId>
+  <artifactId>semanteco-facet-archetype</artifactId>
   <version>4.0-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
 
-  <name>semantaqua-facet-archetype</name>
+  <name>semanteco-facet-archetype</name>
 
   <build>
     <extensions>

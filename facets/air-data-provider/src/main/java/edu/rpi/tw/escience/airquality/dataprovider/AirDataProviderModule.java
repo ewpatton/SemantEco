@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.airquality.dataprovider;
 
+import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -25,14 +27,20 @@ import edu.rpi.tw.escience.semanteco.query.Query.Type;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 
-import static edu.rpi.tw.escience.semanteco.query.Query.RDF_NS;
-import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
-
+/**
+ * AirDataProviderModule loads air quality data from the EPA
+ * into the combined model and provides icons for displaying
+ * air sites in the user interface.
+ * @author ewpatton
+ *
+ */
 public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
+	//private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
+	private static final String AIR_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/air.owl#";
+
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
 	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 	private static final String PROV_NS = "http://www.w3.org/ns/prov#";
@@ -41,10 +49,6 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
-
-
-
 	private static final String ISAIR_VAR = "isAir";
 	private ModuleConfiguration config = null;
 	private static Logger log = Logger.getLogger(AirDataProviderModule.class);
@@ -85,6 +89,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		final QueryResource polHasState = query.getResource(POL_NS+"hasState");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
+		final QueryResource airAirMeasurement = query.getResource(AIR_NS+"AirMeasurement");
 		final Variable unit = query.getVariable(QUERY_NS+"unit");
 		final Variable value = query.getVariable(QUERY_NS+"value");
 		final Variable site = query.getVariable(QUERY_NS+"site");
@@ -125,6 +130,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 		//new construct patterns to test
 		final GraphComponentCollection construct = query.getConstructComponent();
+		construct.addPattern(measurement, type, airAirMeasurement);
 		construct.addPattern(measurement, polHasCounty, countyCode,null);
 		construct.addPattern(measurement, polHasState, stateCode,null);
 		construct.addPattern(measurement, polHasCharacteristic, element);
@@ -144,7 +150,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(OntModel model, Request request) {
 		request.getLogger().debug("AirDataProviderModule loading air.owl");
-		model.read(AIR_NS, "TTL");
+		model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 	}
 
 	@Override
@@ -226,12 +232,12 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		// change to icon names here should also occur in air-data-provider.js
 		Resource res = config.getResource("clean-air.png");
 		domain.addDataType("clean-air", "Clean Air", res);
-		res = config.getResource("clean-air-facility.png");
-		domain.addDataType("clean-air-facility", "Clean Air Facility", res);
+//		res = config.getResource("clean-air-facility.png");
+//		domain.addDataType("clean-air-facility", "Clean Air Facility", res);
 		res = config.getResource("polluted-air.png");
 		domain.addDataType("polluted-air", "Polluted Air", res);
-		res = config.getResource("polluted-air-facility.png");
-		domain.addDataType("polluted-air-facility", "Polluted Air Facility", res);
+//		res = config.getResource("polluted-air-facility.png");
+//		domain.addDataType("polluted-air-facility", "Polluted Air Facility", res);
 	}
 
 }
