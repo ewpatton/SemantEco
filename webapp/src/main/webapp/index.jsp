@@ -71,9 +71,7 @@
 	                    <div class="lb_loading"><img src="images/spinner.gif" alt="Processing..."/><br/>Processing your request...</div>
 	                    <div class="lb_closebutton"></div>
 	                    <div class="clear"></div>
-	                    <div class="lb_content" id="id_lb_content">
-	                        
-	                    </div>
+	                    <div class="lb_content" id="id_lb_content"></div>
 	                </div>
 	            </div>
 	        </div>
