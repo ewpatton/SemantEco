@@ -43,7 +43,10 @@
 			    <a href="javascript:SemantEco.showAddress('94107');">San Francisco, CA: 94107</a>, 
 			    <a href="javascript:SemantEco.showAddress('95113');">Santa Clara, CA: 95113</a>, 
 			    <a href="javascript:SemantEco.showAddress('98103');">Seattle, WA: 98103</a>, 
-			    <a href="javascript:SemantEco.showAddress('94305');">Stanford, CA: 94305</a>
+			    <a href="javascript:SemantEco.showAddress('94305');">Stanford, CA: 94305</a>,
+			    <a href="javascript:SemantEco.showAddress('93103');">Santa Barbara, CA: 93103</a>,
+			    <a href="javascript:SemantEco.showAddress('21613');">Cambridge, MD: 21613</a>,
+			    <a href="javascript:SemantEco.showAddress('80103');">Welby, CO: 80103</a>
 		  	  </p>
 			</form>
 			<p id="reportSite">&nbsp;</p>

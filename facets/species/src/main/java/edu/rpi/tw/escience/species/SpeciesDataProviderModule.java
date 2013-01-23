@@ -208,7 +208,9 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		construct.addPattern(s, rdfsLabel, label);
 		construct.addPattern(s, wgsLat, lat);
 		construct.addPattern(s, wgsLong, lng);	
-		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		//final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		final GraphComponentCollection graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
+
 		//sites are per measurement
 		graph.addPattern(s, rdfType, birdSite );
 		graph.addPattern(s, rdfsLabel, label);
@@ -226,6 +228,9 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		
 	}
 
+	/**
+	 * Loads the bird and fish ontologies.
+	 */
 	@Override
 	public void visit(final OntModel model, final Request request) {
 		model.read(BIRD_NS);		
@@ -240,6 +245,9 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 
 	}
 
+	/**
+	 * Loads speciesHierarchy.js, speciesHierarchy.jsp, and jstree.js
+	 */
 	@Override
 	public void visit(final Query query, final Request request) {
 		// TODO modify queries
@@ -328,6 +336,14 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	you get:
 	{"data":[],"success":true}
 	 */
+
+	/**
+	 * This method lets the calling UI client know if the class is a leaf or a non-leaf node in the class hierarchy.
+	 * checks the bbq state value of "queryIfTaxonomicCategoryForJsTree".
+	 * @param request
+	 * @return
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONException {
 		
@@ -376,13 +392,16 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	
 	
 	
-	/*
-	 This method will 
+	/**
+	 * This method will return if a class is a leaf or non-leaf. It is called by the method queryForNearbySpeciesCounts.
+	 * @param request
+	 * @param speciesInArray
+	 * @return
+	 * @throws JSONException
 	 */
 	public String queryIfTaxonomicCategory(Request request, String speciesInArray) throws JSONException {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
-		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final Variable speciesVariable = query.getVariable(VAR_NS + "species");	
 		final QueryResource addedSpecies = query.getResource(speciesInArray);
@@ -417,7 +436,12 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	
 	
 	
-
+	/**
+	 * @deprecated
+	 * @param request
+	 * @return
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String querySpeciesByTaxonomicCategories(Request request) throws JSONException {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
@@ -510,7 +534,12 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	
 	
 	
-
+	/**
+	 * Probably never used. Will double check before commenting out.
+	 * @param request
+	 * @return
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryForNearbySpeciesCountsByLocality(Request request) throws JSONException{
 		
@@ -595,7 +624,9 @@ WHERE
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
+//		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -702,7 +733,12 @@ WHERE
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 	}
 	
-	
+	/**
+	 * This method returns all bird data measurements for a specific site, using uris in bbq state county, state, and uri (for site).
+	 * @param request
+	 * @return
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryForSpeciesForASite(Request request) throws JSONException{
 		//this should be performed on the loaded OWL Model
@@ -714,7 +750,9 @@ WHERE
 		assert(countyCode != null);
 		assert(stateAbbr != null);
 		assert(site != null);
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
+
 		final Variable s = query.getVariable(QUERY_NS+"s");
 		final GraphComponentCollection construct = query.getConstructComponent();
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
@@ -762,7 +800,15 @@ WHERE
 		
 	}
 	
-	
+	/**
+	 * This method queries and returns bird count data for the current county and state using "county" and "state" from bbq state.
+	 * It checks that if the select species is not a leaf, and if not then adds a pattern for subclass of.
+	 * When we add a ebird-data graph for each state, will need to add a graph for finding each, similar
+	 * to epa data where there is a graph for the graph uri and relations to states
+	 * @param request
+	 * @return
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryForNearbySpeciesCounts(Request request) throws JSONException{
 			
@@ -820,7 +866,9 @@ WHERE
 
 		query.setVariables(vars);
 		//query pattern
-		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
+
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
 		graph.addPattern(measurement, stateAbbrev, stateAbbr,null);
@@ -853,7 +901,6 @@ WHERE
 		//here we are binding the search to specific species
 		if(request.getParam("species") != null && ((JSONArray) request.getParam("species")).length() > 1  ){// && request.getParam("species").length() > 0) {
 		    request.getLogger().error("species length: " + ((JSONArray) request.getParam("species")).length());
-
 		    request.getLogger().error("(got to else if where species > 1)");
 
 			//note that this is going to be a json array of strings
@@ -893,7 +940,7 @@ WHERE
 			    request.getLogger().error("subclassOf results: " + resultStr);
 			    JSONObject results = new JSONObject(resultStr);
 			    JSONArray data = (JSONArray) results.get("data");
-			    	//data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
+			    //data.length is  > 0 then there were positive results, so now we can ask for subclasses of selection
 			    request.getLogger().error("data.length : " + data.length());
 
 			    	if(data.length() > 0){			    		
@@ -1028,7 +1075,14 @@ WHERE
 
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 	}
-	
+	/**
+	 * Serves as a simple test bird taxonomy.
+	 * @deprecated
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryBirdTaxonomy(Request request) throws IOException, JSONException{	
 		
@@ -1243,10 +1297,18 @@ WHERE
 		 * 
 		 * 
 		 */
+
+	/**
+	 * This method determines if the jstree selected species (updated in bbq "species") has any sibling species with data.
+	 * If so, it returns the list of siblings for user confirmation for plotting. This method is only called when there is one selected species and there is no data returned for it.
+	 * @param request
+	 * @return JSON Array as a string
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryIfSiblingsExist(Request request) throws JSONException{
 		String singletonSpecies ="";
-			
+		
 		//count(?measurement)
 		//?measurement ofEntity ?type
 		//?type subClassOf ?class
@@ -1275,10 +1337,8 @@ WHERE
 		query.setDistinct(true);
 
 		//final Variable count = query.createVariableExpression("count(?measurement) as ?"+ measurement);
-
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final QueryResource species = query.getResource(singletonSpecies);
-
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
 		
 		Set<Variable> vars = new LinkedHashSet<Variable>();
@@ -1292,7 +1352,8 @@ WHERE
         // graph.addPattern(species, hasLabel, scientificName);	
         graph.addPattern(sibling, hasLabel, siblingScientificName);	
 		graph.addFilter("?sibling != <" + singletonSpecies + ">");
-		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		//final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
+		final NamedGraphComponent graph2 = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
 		
 		//if this works we can just then do "get sbiling data" now
 
@@ -1464,7 +1525,14 @@ WHERE
 		
 	
 	
-
+	/**
+	 * This method returns the subclass data for the uri added to bbq state "queryeBirdTaxonomySubClasses", and is necessary
+	 * for the dynamic jstree selection.
+	 * @param request
+	 * @return JSONArray as string of subclasses (uri), label, parent uri)
+	 * @throws IOException
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryeBirdTaxonomySubClasses(Request request) throws IOException, JSONException{	
 		
@@ -1472,8 +1540,7 @@ WHERE
 		if(classRequiresSubclassesString == null){
 			return null;
 		}
-		
-		
+
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
 		final Variable id = query.getVariable(VAR_NS+ "child");
@@ -1543,8 +1610,14 @@ WHERE
 				return responseStr;			
 	}
 	
-	
-
+	/**
+	 * This function is now deprecated once dynamic jstree browsing was enabled.
+	 * @deprecated
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
 	@QueryMethod
 	public String queryeBirdTaxonomy(Request request) throws IOException, JSONException{	
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
@@ -1656,19 +1729,30 @@ WHERE
 	protected void addRegulations(final Domain domain) {
 		
 	}
-	
+	/**
+	 * This method adds a bird icon as a UI resource, and adds data type "bird" and icon label "Bird Species" for UI.
+	 * @param domain
+	 */
 	protected void addDataTypesBirds(final Domain domain) {
 		Resource res = config.getResource("ebird.png");
 		domain.addDataType("birds", "Bird Species", res);
 		//bird is the identifier of the checkbox, and Bird Species is the label for the icon type
 	}
 	
+	/**
+	 * This method adds a fish icon as a UI resource, and adds datatype "fish" and icon label "Fish Species" for UI.
+	 * @param domain
+	 */
 	protected void addDataTypesFish(final Domain domain) {
 		Resource res = config.getResource("fish.png");
 		domain.addDataType("fish", "Fish Species", res);
 		//the first string is used in speciesHierarchy.js where icon variable is set.
 	}
-	
+	/**
+	 * This method adds the uri and label for the Bird data source, here "http://ebird#" and "eBird", resp.
+	 * @param domain
+	 * @param request
+	 */
 	protected void addDataSourcesBird(final Domain domain, final Request request) {
 		domain.addSource(URI.create("http://ebird#"), "eBird");
 		//this is what is put into the bbq state for sources
