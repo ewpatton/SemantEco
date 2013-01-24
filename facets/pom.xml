@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-parent</artifactId>
-    <version>4.0-SNAPSHOT</version>
+    <version>4.0-Final</version>
   </parent>
 
   <artifactId>semanteco-facets</artifactId>
@@ -33,12 +33,12 @@
       <dependency>
 	<groupId>edu.rpi.tw.escience</groupId>
 	<artifactId>semanteco-common</artifactId>
-	<version>4.0-SNAPSHOT</version>
+	<version>4.0-Final</version>
       </dependency>
       <dependency>
 	<groupId>edu.rpi.tw.escience</groupId>
 	<artifactId>semanteco-test</artifactId>
-	<version>4.0-SNAPSHOT</version>
+	<version>4.0-Final</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
