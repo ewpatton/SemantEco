@@ -4,7 +4,7 @@
 
   <groupId>edu.rpi.tw.escience</groupId>
   <artifactId>semanteco-facet-archetype</artifactId>
-  <version>4.0-Final</version>
+  <version>4.0.1-Final</version>
   <packaging>maven-archetype</packaging>
 
   <name>semanteco-facet-archetype</name>
