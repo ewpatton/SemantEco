@@ -3,7 +3,6 @@ package edu.rpi.tw.escience.semanteco.taglib;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -37,16 +36,13 @@ public class StyleTag extends TagSupport {
 	public int doStartTag() throws JspException {
 		log.debug("Generating <link> entries");
 		final JspWriter out = pageContext.getOut();
-		final ServletContext context = pageContext.getServletContext();
 		final SemantEcoUI ui = SemantEcoUIFactory.getInstance().getUI();
 		final List<Resource> styles = ui.getStylesheets();
 		try {
-			log.debug("Writing module autogen scripts");
-			log.debug("Scripts: "+styles.size());
+			log.debug("Writing module stylsheets");
+			log.debug("Stylesheets: "+styles.size());
 			for(Resource i : styles) {
 				out.write("<link rel=\"stylesheet\" href=\"");
-				out.write(context.getContextPath());
-				out.write("/");
 				out.write(i.getPath());
 				out.write("\" type=\"text/css\"></script>\r\n");
 			}
