@@ -27,6 +27,9 @@ public final class JavaScriptGenerator {
 	public static String ajaxForModule(Module mod) {
 		final Class<?> cls = mod.getClass();
 		final StringBuilder result = new StringBuilder("var "+cls.getSimpleName()+" = {");
+		if(SemantEcoConfiguration.get().isDebug()) {
+			result.append("\n");
+		}
 		int methodCount = 0;
 		
 		final Method[] methods = cls.getMethods();
@@ -40,9 +43,15 @@ public final class JavaScriptGenerator {
 				}
 				else {
 					result.append(",");
+					if(SemantEcoConfiguration.get().isDebug()) {
+						result.append("\n");
+					}
 				}
 				result.append(processMethod(cls, m));
 			}
+		}
+		if(SemantEcoConfiguration.get().isDebug()) {
+			result.append("\n");
 		}
 		result.append("};");
 		
@@ -55,19 +64,39 @@ public final class JavaScriptGenerator {
 	}
 	
 	private static String processMethod(final Class<?> cls, final Method m) {
+		final String ending = (SemantEcoConfiguration.get().isDebug() ? "\n  " : "");
+		final String ending2 = (SemantEcoConfiguration.get().isDebug() ? "  " : "");
 		final StringBuilder result = new StringBuilder();
 		result.append("\"");
 		result.append(m.getName());
 		result.append("\": ");
-		result.append("function(args,success,error){"); 
+		result.append("function(args,success,error){");
+		result.append(ending);
+		result.append(ending2);
 		result.append("var a=$.extend({},SemantEcoUI.getState(),args);");
+		result.append(ending);
+		result.append(ending2);
 		result.append("var b=$.ajax(SemantEco.restBaseUrl+\"");
 		result.append(cls.getSimpleName());
 		result.append("/");
 		result.append(m.getName());
 		result.append("\",{\"data\":SemantEco.prepareArgs(a)});");
-		result.append("if(success)b.done(success);");
-		result.append("if(error)b.fail(error);");
+		result.append(ending);
+		result.append(ending2);
+		result.append("if(success)");
+		result.append(ending);
+		result.append(ending2);
+		result.append(ending2);
+		result.append("b.done(success);");
+		result.append(ending);
+		result.append(ending2);
+		result.append("if(error)");
+		result.append(ending);
+		result.append(ending2);
+		result.append(ending2);
+		result.append("b.fail(error);");
+		result.append(ending);
+		result.append(ending2);
 		result.append("}");
 		return result.toString();
 	}
