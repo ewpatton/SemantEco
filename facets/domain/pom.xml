@@ -6,7 +6,7 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-facets</artifactId>
-    <version>4.0-Final</version>
+    <version>4.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>semanteco-domain</artifactId>
