@@ -255,6 +255,11 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 						if(properties != null) {
 							properties.close();
 						}
+					}
+					catch(IOException e) {
+						// don't care
+					}
+					try {
 						if(jar != null) {
 							jar.close();
 						}

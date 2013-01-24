@@ -14,7 +14,7 @@ import edu.rpi.tw.escience.semanteco.query.impl.QueryImpl;
  */
 public class QueryFactoryImpl implements QueryFactory {
 
-	private static QueryFactoryImpl instance = null;
+	private static volatile QueryFactoryImpl instance = null;
 	
 	protected QueryFactoryImpl() {
 		

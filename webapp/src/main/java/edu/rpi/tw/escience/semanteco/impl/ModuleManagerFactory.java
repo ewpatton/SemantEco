@@ -12,7 +12,7 @@ import edu.rpi.tw.escience.semanteco.ModuleManager;
  */
 public class ModuleManagerFactory {
 
-	private static ModuleManagerFactory instance = new ModuleManagerFactory();
+	private static volatile ModuleManagerFactory instance = new ModuleManagerFactory();
 	private ModuleManager manager = null;
 	
 	protected ModuleManagerFactory() {
@@ -35,7 +35,7 @@ public class ModuleManagerFactory {
 		manager = new ModuleManagerImpl(path);
 	}
 	
-	protected void setManagerFactory(ModuleManagerFactory factory) {
+	protected static void setManagerFactory(ModuleManagerFactory factory) {
 		instance = factory;
 	}
 

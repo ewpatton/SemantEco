@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.semanteco.zipcode;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -154,6 +155,7 @@ public final class ZipCodeLookup {
 		this.log = log;
 		this.zip = zip;
 		String query = QUERY_BASE+zip+QUERY_END;
+		BufferedReader br = null;
 		try {
 			log.debug("Connecting to Geonames service...");
 			long start = System.currentTimeMillis();
@@ -162,13 +164,12 @@ public final class ZipCodeLookup {
 			conn.setReadTimeout(TIMEOUT);
 			InputStream o = (InputStream)conn.getContent();
 			InputStreamReader isr = new InputStreamReader(o);
-			BufferedReader br = new BufferedReader(isr);
+			br = new BufferedReader(isr);
 			String result="";
 			String line;
 			while((line=br.readLine())!=null) {
 				result += line;
 			}
-			br.close();
 			log.debug("...finished in "+(System.currentTimeMillis()-start)+" ms");
 			JSONObject content = new JSONObject(result);
 			JSONArray codes = content.getJSONArray("postalcodes");
@@ -199,6 +200,16 @@ public final class ZipCodeLookup {
 		}
 		catch(Exception e) {
 			log.warn("Unable to perform zip code lookup", e);
+		}
+		finally {
+			try {
+				if(br != null) {
+					br.close();
+				}
+			}
+			catch(IOException e) {
+				// do nothing if we fail trying to close the socket
+			}
 		}
 	}
 	

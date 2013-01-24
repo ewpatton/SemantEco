@@ -60,9 +60,8 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	
 	@Override
 	public void visit(Model model, Request request) {
-		this.log = request.getLogger();
+		final Logger log = request.getLogger();
 		log.debug("Visiting AirDataProviderModule building data model");
-		this.config = config;
 		this.request = request;
 		this.stateAbbr = (String)request.getParam("state");
 		if(stateAbbr == null || stateAbbr.isEmpty()) {

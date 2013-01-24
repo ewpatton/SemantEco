@@ -20,7 +20,7 @@ import edu.rpi.tw.escience.semanteco.SemantEcoUI;
  */
 public class SemantEcoUIFactory {
 	
-	private static SemantEcoUIFactory instance = null;
+	private static volatile SemantEcoUIFactory instance = null;
 	private long lastModified = 0;
 	private SemantEcoUI ui = null;
 	private static Logger log = Logger.getLogger(SemantEcoUIFactory.class);
