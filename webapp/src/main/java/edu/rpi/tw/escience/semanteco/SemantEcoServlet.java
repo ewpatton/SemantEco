@@ -177,7 +177,9 @@ public class SemantEcoServlet extends WebSocketServlet {
 					return;
 				}
 				logger.debug("Invoking "+methodName+" of "+modName);
+				final long start = System.currentTimeMillis();
 				String result = (String) m.invoke(module, logger);
+				log.debug("Response time: "+(System.currentTimeMillis()-start)+" ms");
 				logger.debug("Returning response to client");
 				ps = new PrintStream(response.getOutputStream());
 				ps.print(result);
