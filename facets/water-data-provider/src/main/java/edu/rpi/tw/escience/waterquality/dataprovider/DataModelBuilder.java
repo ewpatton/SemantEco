@@ -265,7 +265,7 @@ public class DataModelBuilder extends QueryUtils {
 			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
 			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
 			graph.addPattern(measurement, polHasPermit, permit);
-			graph.addFilter("regex(?measurement,\"measurements-[^/]+/version\")");
+			//graph.addFilter("regex(?measurement,\"measurements-[^/]+/version\")");
 			graph.addPattern(measurement, polHasLimitOperator, op);
 			graph.addPattern(measurement, polHasLimitValue, lval);
 			graph.addPattern(measurement, polHasPermit, permit);
@@ -300,6 +300,7 @@ public class DataModelBuilder extends QueryUtils {
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		final Variable lat = query.getVariable(QUERY_NS+LAT);
 		final Variable lng = query.getVariable(QUERY_NS+LONG);
+		final Variable permit = query.getVariable(QUERY_NS+"permit");
 		
 		// known uris
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
@@ -308,6 +309,7 @@ public class DataModelBuilder extends QueryUtils {
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
 		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
+		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
 		
 		// build construct clause
 		final GraphComponentCollection construct = query.getConstructComponent();
@@ -323,6 +325,7 @@ public class DataModelBuilder extends QueryUtils {
 		facilities.addGraphComponent(subgraph);
 		subgraph.addPattern(s, rdfType, waterWaterFacility);
 		addSiteFilter(subgraph, facUris);
+		facilities.addPattern(s, polHasPermit, permit);
 		facilities.addPattern(s, wgsLat, lat);
 		facilities.addPattern(s, wgsLong, lng);
 		final OptionalComponent optional = query.createOptional();
