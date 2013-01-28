@@ -132,7 +132,7 @@
       <version>4.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-characteristics-facet</artifactId>
       <version>4.1-SNAPSHOT</version>
