@@ -1,7 +1,9 @@
 package edu.rpi.tw.escience.semanteco;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -68,6 +70,25 @@ public class SemantEcoServlet extends WebSocketServlet {
 		SemantEcoConfiguration.configure(getServletContext());
 		final String webinf = config.getServletContext().getRealPath("WEB-INF");
 		log.debug("WEB-INF: "+webinf);
+		InputStream is = null;
+		try {
+			is = new FileInputStream(webinf+"/classes/semanteco.properties");
+			props.load(is);
+			log.info("Successfully read properties from semanteco.properties");
+		}
+		catch(IOException e) {
+			log.warn("Unable to read semanteco.properties", e);
+		}
+		finally {
+			if(is != null) {
+				try {
+					is.close();
+				}
+				catch(IOException e) {
+					// assume success even with an exception
+				}
+			}
+		}
 		File modules = new File(webinf+"/modules");
 		if(!modules.exists()) {
 			log.info("Creating modules directory");
@@ -97,10 +118,13 @@ public class SemantEcoServlet extends WebSocketServlet {
 	}
 	
 	protected int extractSocketId(HttpServletRequest request) {
-		for(int i=0;i<request.getCookies().length;i++) {
-			Cookie cookie = request.getCookies()[i];
-			if(cookie.getName().equals("socketId")) {
-				return Integer.parseInt(cookie.getValue());
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			for(int i=0;i<cookies.length;i++) {
+				Cookie cookie = cookies[i];
+				if(cookie.getName().equals("socketId")) {
+					return Integer.parseInt(cookie.getValue());
+				}
 			}
 		}
 		return -1;
@@ -153,7 +177,9 @@ public class SemantEcoServlet extends WebSocketServlet {
 					return;
 				}
 				logger.debug("Invoking "+methodName+" of "+modName);
+				final long start = System.currentTimeMillis();
 				String result = (String) m.invoke(module, logger);
+				log.debug("Response time: "+(System.currentTimeMillis()-start)+" ms");
 				logger.debug("Returning response to client");
 				ps = new PrintStream(response.getOutputStream());
 				ps.print(result);
@@ -213,7 +239,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 	}
 	
 	private String computeBaseUrl(HttpServletRequest request) {
-		if(props.contains("baseUrl") && !props.get("baseUrl").equals("")) {
+		if(props.containsKey("baseUrl") && !props.get("baseUrl").equals("")) {
 			return props.getProperty("baseUrl");
 		}
 		else {

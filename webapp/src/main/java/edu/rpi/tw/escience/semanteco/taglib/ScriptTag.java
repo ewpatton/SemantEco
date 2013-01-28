@@ -3,7 +3,6 @@ package edu.rpi.tw.escience.semanteco.taglib;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -43,7 +42,6 @@ public class ScriptTag extends TagSupport {
 	public int doStartTag() throws JspException {
 		log.debug("Generating <script> entries");
 		final JspWriter out = pageContext.getOut();
-		final ServletContext context = pageContext.getServletContext();
 		final SemantEcoUI ui = SemantEcoUIFactory.getInstance().getUI();
 		final List<Resource> scripts = ui.getScripts();
 		try {
@@ -51,16 +49,13 @@ public class ScriptTag extends TagSupport {
 			List<Module> modules = ModuleManagerFactory.getInstance().getManager().listModules();
 			for(Module i : modules) {
 				out.write("<script src=\"");
-				out.write(context.getContextPath());
-				out.write("/js/modules/");
+				out.write("js/modules/");
 				out.write(i.getClass().getSimpleName());
 				out.write(".js\" type=\"text/javascript\"></script>\r\n");
 			}
 			log.debug("Scripts: "+scripts.size());
 			for(Resource i : scripts) {
 				out.write("<script src=\"");
-				out.write(context.getContextPath());
-				out.write("/");
 				out.write(i.getPath());
 				out.write("\" type=\"text/javascript\"></script>\r\n");
 			}
