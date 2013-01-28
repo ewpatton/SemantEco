@@ -118,10 +118,13 @@ public class SemantEcoServlet extends WebSocketServlet {
 	}
 	
 	protected int extractSocketId(HttpServletRequest request) {
-		for(int i=0;i<request.getCookies().length;i++) {
-			Cookie cookie = request.getCookies()[i];
-			if(cookie.getName().equals("socketId")) {
-				return Integer.parseInt(cookie.getValue());
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			for(int i=0;i<cookies.length;i++) {
+				Cookie cookie = cookies[i];
+				if(cookie.getName().equals("socketId")) {
+					return Integer.parseInt(cookie.getValue());
+				}
 			}
 		}
 		return -1;
