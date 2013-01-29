@@ -126,23 +126,23 @@ public class RegulationModule implements Module {
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
 		ui.addScript(config.getResource("regulation.js"));
-		String responseStr = "<div id=\"RegulationFacet\" class=\"facet\">";
+		StringBuilder responseStr = new StringBuilder("<div id=\"RegulationFacet\" class=\"facet\">");
 		List<Domain> domains = config.listDomains();
 		for(Domain i : domains) {
 			List<URI> regulations = i.getRegulations();
 			if(regulations.size()>0) {
-				responseStr += i.getLabel() + ": ";
-				responseStr += "<select name=\"regulation."+NameUtils.cleanName(i.getLabel())+"\">";
+				responseStr.append(i.getLabel() + ": ");
+				responseStr.append("<select name=\"regulation."+NameUtils.cleanName(i.getLabel())+"\">");
 				for(URI j : regulations) {
-					responseStr += "<option value=\""+j.toString()+"\">";
-					responseStr += i.getLabelForRegulation(j);
-					responseStr += "</option>";
+					responseStr.append("<option value=\""+j.toString()+"\">");
+					responseStr.append(i.getLabelForRegulation(j));
+					responseStr.append("</option>");
 				}
-				responseStr += "</select><br />";
+				responseStr.append("</select><br />");
 			}
 		}
-		responseStr += "</div>";
-		ui.addFacet(config.generateStringResource(responseStr));
+		responseStr.append("</div>");
+		ui.addFacet(config.generateStringResource(responseStr.toString()));
 	}
 
 	@Override

@@ -45,15 +45,15 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	boolean combined = false;
 	
 	protected final String arrayToString(String[] arr) {
-		String res = "[";
+		StringBuilder res = new StringBuilder("[");
 		for(int i=0;i<arr.length;i++) {
 			if(i>0) {
-				res += ",";
+				res.append(",");
 			}
-			res += "\""+arr[i]+"\"";
+			res.append("\""+arr[i]+"\"");
 		}
-		res += "]";
-		return res;
+		res.append("]");
+		return res.toString();
 	}
 	
 	/**
