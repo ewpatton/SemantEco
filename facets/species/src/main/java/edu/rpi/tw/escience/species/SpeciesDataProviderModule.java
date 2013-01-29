@@ -36,12 +36,8 @@ import edu.rpi.tw.escience.semanteco.query.Variable;
 public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-	private static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
-	//private static final String TIME_NS = "http://www.w3.org/2006/time#";
-	private static final String GEOSPECIES_NS = "http://rdf.geospecies.org/ont/geospecies.owl#";
 	public static final String  TXN_NS = "http://lod.taxonconcept.org/ontology/txn.owl#";
 	public static final String  EBIRD_NS = "http://ebird#";
 
@@ -49,12 +45,6 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	public static final String  FISH_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#";
 
 	public static final String  EBIRD_DATA_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
-	private static final String WILDLIFE_NS = "http://www.semanticweb.org/ontologies/2012/2/wildlife.owl#";
-	private static final String HEALTHEFFECT_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/healtheffect.owl";
-	private static final String PROV_NS = "http://www.w3.org/ns/prov#";
-	private static final String DC_NS = "http://purl.org/dc/terms/";
-	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
-	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String e1_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4/params/enhancement/1/";
 	public static final String e2_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
@@ -63,12 +53,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	//private ModuleConfiguration config = null;
 	private static final String BINDINGS = "bindings";
 	private Logger log = Logger.getLogger(SpeciesDataProviderModule.class);
-	private static final String SOURCE_VAR = "source";
-	private static final String LABEL_VAR = "label";
-	private static final String VALUE = "value";
 	private static final String SITE_VAR = "site";
-	private static final String parent = "parent";
-	private static final String child = "child";
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
 	private static final String ISBIRD_VAR = "isBird";
@@ -141,7 +126,6 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		//not correct http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality/locality
 		// what is in the rdf: 
 		//@prefix e1: <http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/> .
-		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality"); //update locality property namespace********
 		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
 		//species site and measurement (count)
 		//just the uri, lat and long.
@@ -292,7 +276,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	@QueryMethod
 	public String queryParams2(Request request) throws JSONException
 	{
-		Class cls = request.getParam("species").getClass();  
+		Class<?> cls = request.getParam("species").getClass();  
 	    return ("The type of the object is: " + cls.getName());  
 		//return request.getParam("species").toString();
 		//return null;	
@@ -569,7 +553,6 @@ WHERE
 		
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
-		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
 		String countyCode = (String) request.getParam("county");
 		String stateAbbr = (String) request.getParam("state");	
 		
@@ -590,19 +573,14 @@ WHERE
 		final Variable commonName = query.getVariable(VAR_NS+"commonName");
 		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
 		final Variable species = query.getVariable(VAR_NS + "species");
-		final Variable locality = query.getVariable(VAR_NS + "locality");
-
 
 		final Variable lat = query.getVariable(QUERY_NS+LAT);
 		final Variable lng = query.getVariable(QUERY_NS+LONG);
-		final Variable label = query.getVariable(QUERY_NS+LABEL_VAR);
 		
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
 		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
 		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
 		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
-		final QueryResource localityProperty = query.getResource(e2_NS + "locality");
-
 		
 		//query based on the species name, you are doing this across two graphs
 		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
@@ -625,7 +603,6 @@ WHERE
 		query.setVariables(vars);
 		//query pattern
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
-//		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
 
 		graph.addPattern(measurement, inDataSet, dataSet);
 		graph.addPattern(measurement, countyCoded, countyCode,null);
@@ -753,17 +730,7 @@ WHERE
 		//final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data2");
 		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-data-ca");
 
-		final Variable s = query.getVariable(QUERY_NS+"s");
-		final GraphComponentCollection construct = query.getConstructComponent();
-		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
-		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
-		final QueryResource birdSite = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite");
-		final Variable lat = query.getVariable(QUERY_NS+LAT);
-		final Variable lng = query.getVariable(QUERY_NS+LONG);
-		final Variable label = query.getVariable(QUERY_NS+"label");
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
-		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
 		final QueryResource locality = query.getResource("http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/locality"); //update locality property namespace********
 		//final QueryResource siteUri = query.getResource(Site); //update locality property namespace	
 		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
@@ -772,12 +739,10 @@ WHERE
 		final Variable date = query.getVariable(QUERY_NS+"date");
 		final Variable commonName = query.getVariable(VAR_NS+"commonName");
 		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
-		final Variable species = query.getVariable(VAR_NS + "species");
 		final QueryResource birdCount = query.getResource(e2_NS+"observation_count");
 		final QueryResource obsDate = query.getResource(e2_NS+"observation_date");
 		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
 		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
-		final QueryResource hasLabel = query.getResource(RDFS_NS+ "label");
 		final QueryResource siteUri = query.getResource(site);
 
 		
@@ -815,7 +780,6 @@ WHERE
 		//this works for eBird only
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
-		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
 		String countyCode = (String) request.getParam("county");
 		String stateAbbr = (String) request.getParam("state");	
 		
@@ -839,7 +803,6 @@ WHERE
 
 		final Variable lat = query.getVariable(QUERY_NS+LAT);
 		final Variable lng = query.getVariable(QUERY_NS+LONG);
-		final Variable label = query.getVariable(QUERY_NS+LABEL_VAR);
 		
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
 		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
@@ -1374,7 +1337,6 @@ WHERE
 			JSONArray data = new JSONArray();
 			response.put("success", true);
 			response.put("data", data);
-			String superclassId = null;
 			results = results.getJSONObject("results");
 			JSONArray bindings = results.getJSONArray(BINDINGS);
 			for(int i=0;i<bindings.length();i++) {
@@ -1460,7 +1422,6 @@ WHERE
 		//URIs
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
-		final QueryResource hasCommonName = query.getResource("http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID");
 		
 		final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
 
@@ -1548,7 +1509,6 @@ WHERE
 		final Variable parent = query.getVariable(VAR_NS+ "parent");		
 		//URIs
 		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
-		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
 		final QueryResource hasCommonName = query.getResource("http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID");
 
 		//final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
