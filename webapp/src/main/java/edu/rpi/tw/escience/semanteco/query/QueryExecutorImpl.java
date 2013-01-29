@@ -122,8 +122,10 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String execute(String endpoint, Query query) {
+		final String modName = owner == null ? "(null)" : 
+			owner.get() == null ? "(null)" : owner.get().getName();
 		log.trace("execute");
-		log.info("Module '"+owner.get().getName()+"' executing query");
+		log.info("Module '"+modName+"' executing query");
 		log.debug("Letting modules visit query before execution");
 		long start = System.currentTimeMillis();
 		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
@@ -166,8 +168,10 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public QueryExecutor execute(String endpoint, Query query, Model model) {
+		final String modName = owner == null ? "(null)" : 
+			owner.get() == null ? "(null)" : owner.get().getName();
 		log.trace("execute");
-		log.debug("Module '"+owner.get().getName()+"' executing remote query");
+		log.debug("Module '"+modName+"' executing remote query");
 		long start = System.currentTimeMillis();
 		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
 		log.debug("Augmenting query took "+(System.currentTimeMillis()-start)+" ms");
@@ -252,6 +256,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String executeLocalQuery(Query query) {
+		final String modName = owner == null ? "(null)" : 
+			owner.get() == null ? "(null)" : owner.get().getName();
 		log.trace("executeLocalQuery");
 		Model model = request.getCombinedModel();
 		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
@@ -264,7 +270,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 				// do nothing
 			}
 		}
-		log.debug("Module '"+owner.get().getName()+"' executing local query");
+		log.debug("Module '"+modName+"' executing local query");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 		mgr.augmentQuery(query, request, owner.get());
 		log.debug("Query: "+query.toString());

@@ -82,8 +82,10 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 
 	@Override
 	public Resource getResource(String path) {
+		final String modName = owner == null ? "(null)" : 
+			owner.get() == null ? "(null)" : owner.get().getName();
 		log.trace("getResource");
-		log.debug("Generating resource for '"+path+"' for module '"+owner.get().getName()+"'");
+		log.debug("Generating resource for '"+path+"' for module '"+modName+"'");
 		if(path.endsWith(".css")) {
 			return new StyleResource(owner.get(), resourceDir+path);
 		}
@@ -110,7 +112,10 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 	@Override
 	public Logger getLogger() {
 		if(owner.get() != null) {
-			return Logger.getLogger(owner.get().getClass());
+			Class<?> cls = owner.get().getClass();
+			if(cls != null) {
+				return Logger.getLogger(cls);
+			}
 		}
 		return null;
 	}
