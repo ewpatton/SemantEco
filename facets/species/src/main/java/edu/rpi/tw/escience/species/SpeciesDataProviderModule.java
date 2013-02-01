@@ -153,8 +153,8 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		graph2.addPattern(s, wgsLong, lng);
 
 		//this executes the query on the remote endpoint and provides the results to the model passed in
-		//config.getQueryExecutor(request).accept("application/json").execute(query, model);
-		config.getQueryExecutor(request).accept("application/rdf+xml").execute(query, model);
+		config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
+		//config.getQueryExecutor(request).accept("application/rdf+xml").execute(query, model);
 		
 		}
 		
