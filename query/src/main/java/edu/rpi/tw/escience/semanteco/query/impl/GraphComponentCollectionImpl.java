@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.semanteco.query.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,14 +84,20 @@ public class GraphComponentCollectionImpl implements GraphComponentCollection {
 	
 	@Override
 	public String toString() {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(out);
-		ps.println("{");
-		for(GraphComponent i : components) {
-			ps.println(i);
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			PrintStream ps = null;
+			ps = new PrintStream(out, true, "UTF-8");
+			ps.println("{");
+			for(GraphComponent i : components) {
+				ps.println(i);
+			}
+			ps.print("}");
+			return out.toString("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// utf-8 should always be supported, but we still need to return.
+			return "(error)";
 		}
-		ps.print("}");
-		return out.toString();
 	}
 
 	@Override
