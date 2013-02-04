@@ -24,7 +24,7 @@ import edu.rpi.tw.escience.semanteco.query.Variable;
  */
 public class UnionComponentImpl implements UnionComponent {
 
-	List<GraphComponentCollection> graphs = new ArrayList<GraphComponentCollection>();
+	private List<GraphComponentCollection> graphs = new ArrayList<GraphComponentCollection>();
 	
 	@Override
 	public void addPattern(QueryResource subject, QueryResource predicate,
