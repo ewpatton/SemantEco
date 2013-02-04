@@ -265,7 +265,6 @@ public class DataModelBuilder extends QueryUtils {
 			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
 			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
 			graph.addPattern(measurement, polHasPermit, permit);
-			//graph.addFilter("regex(?measurement,\"measurements-[^/]+/version\")");
 			graph.addPattern(measurement, polHasLimitOperator, op);
 			graph.addPattern(measurement, polHasLimitValue, lval);
 			graph.addPattern(measurement, polHasPermit, permit);
