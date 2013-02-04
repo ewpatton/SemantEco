@@ -137,7 +137,6 @@ public class SemantEcoServlet extends WebSocketServlet {
 			return;
 		}
 		int socketId = extractSocketId(request);
-		log.debug("socketId = "+socketId);
 		WsOutbound clientStream = null;
 		if(socketId != -1) {
 			ResponseChannel channel = channels.get(socketId);
@@ -145,14 +144,6 @@ public class SemantEcoServlet extends WebSocketServlet {
 				clientStream = channel.getWsOutbound();
 			}
 		}
-		log.debug("clientStream = "+clientStream);
-		log.debug(request.getScheme());
-		log.debug(request.getServerName());
-		log.debug(""+request.getServerPort());
-		log.debug(request.getContextPath());
-		log.debug(request.getServletPath());
-		log.debug(request.getPathInfo());
-		log.debug(request.getRequestURI());
 		PrintStream ps = null;
 		if(request.getServletPath().equals("/js/config.js")) {
 			printConfig(request, response);
@@ -161,40 +152,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 			printAjax(request, response);
 		}
 		else if(request.getServletPath().startsWith("/rest")) {
-			String processed = request.getPathInfo();
-			processed = processed.substring(1);
-			final String modName = processed.substring(0, processed.indexOf('/'));
-			final String methodName = processed.substring(processed.indexOf('/')+1);
-			log.debug("module name = "+modName);
-			log.debug("method name = "+methodName);
-			final Module module = ModuleManagerFactory.getInstance().getManager().getModuleByName(modName);
-			final ClientRequest logger = new ClientRequest(module.getClass().getName(), request.getParameterMap(), clientStream);
-			Method m;
-			try {
-				m = module.getClass().getMethod(methodName, Request.class);
-				if(m == null || m.getAnnotation(QueryMethod.class)==null) {
-					response.sendError(403, "Invalid module or method specified in REST call");
-					return;
-				}
-				logger.debug("Invoking "+methodName+" of "+modName);
-				final long start = System.currentTimeMillis();
-				String result = (String) m.invoke(module, logger);
-				log.debug("Response time: "+(System.currentTimeMillis()-start)+" ms");
-				logger.debug("Returning response to client");
-				ps = new PrintStream(response.getOutputStream());
-				ps.print(result);
-				ps.close();
-			} catch (SecurityException e) {
-				logger.error("Unable to execute specified method", e);
-			} catch (NoSuchMethodException e) {
-				logger.error("Invalid method", e);
-			} catch (IllegalArgumentException e) {
-				logger.error("Illegal argument", e);
-			} catch (IllegalAccessException e) {
-				logger.error("Illegal access", e);
-			} catch (InvocationTargetException e) {
-				logger.error("Invalid target for invocation", e);
-			}
+			invokeRestCall(request, response, clientStream);
 		}
 		else {
 			ps = new PrintStream(response.getOutputStream());
@@ -238,6 +196,44 @@ public class SemantEcoServlet extends WebSocketServlet {
 		ps.close();
 	}
 	
+	private void invokeRestCall(HttpServletRequest request, HttpServletResponse response, 
+			WsOutbound clientStream) throws IOException {
+		String processed = request.getPathInfo();
+		processed = processed.substring(1);
+		final String modName = processed.substring(0, processed.indexOf('/'));
+		final String methodName = processed.substring(processed.indexOf('/')+1);
+		log.debug("module name = "+modName);
+		log.debug("method name = "+methodName);
+		final Module module = ModuleManagerFactory.getInstance().getManager().getModuleByName(modName);
+		final ClientRequest logger = new ClientRequest(module.getClass().getName(), request.getParameterMap(), clientStream);
+		Method m;
+		try {
+			m = module.getClass().getMethod(methodName, Request.class);
+			if(m == null || m.getAnnotation(QueryMethod.class)==null) {
+				response.sendError(403, "Invalid module or method specified in REST call");
+				return;
+			}
+			logger.debug("Invoking "+methodName+" of "+modName);
+			final long start = System.currentTimeMillis();
+			String result = (String) m.invoke(module, logger);
+			log.debug("Response time: "+(System.currentTimeMillis()-start)+" ms");
+			logger.debug("Returning response to client");
+			PrintStream ps = new PrintStream(response.getOutputStream());
+			ps.print(result);
+			ps.close();
+		} catch (SecurityException e) {
+			logger.error("Unable to execute specified method", e);
+		} catch (NoSuchMethodException e) {
+			logger.error("Invalid method", e);
+		} catch (IllegalArgumentException e) {
+			logger.error("Illegal argument", e);
+		} catch (IllegalAccessException e) {
+			logger.error("Illegal access", e);
+		} catch (InvocationTargetException e) {
+			logger.error("Invalid target for invocation", e);
+		}
+	}
+
 	private String computeBaseUrl(HttpServletRequest request) {
 		if(props.containsKey("baseUrl") && !props.get("baseUrl").equals("")) {
 			return props.getProperty("baseUrl");
