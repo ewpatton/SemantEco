@@ -46,38 +46,20 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
-	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	private static final String ISAIR_VAR = "isAir";
 	private ModuleConfiguration config = null;
 	private static Logger log = Logger.getLogger(AirDataProviderModule.class);
-	private String countyCode = null;
 	private String stateAbbr = null;
-	private String stateCode = null;
-	private Request request = null;
 
 	
 	@Override
 	public void visit(Model model, Request request) {
 		final Logger log = request.getLogger();
 		log.debug("Visiting AirDataProviderModule building data model");
-		this.request = request;
 		this.stateAbbr = (String)request.getParam("state");
 		if(stateAbbr == null || stateAbbr.isEmpty()) {
 			throw new IllegalArgumentException("State parameter not supplied. Expected two digit state abbreviation, e.g. CA.");
-		}
-		try {
-			this.countyCode = (String)request.getParam("county");
-		}
-		catch(Exception e) {
-			throw new IllegalArgumentException("County parameter not supplied.", e);
-		}
-		
-		try {
-			this.stateCode = (String)request.getParam("stateCode");
-		}
-		catch(Exception e) {
-			throw new IllegalArgumentException("County parameter not supplied.", e);
 		}
 		
 		// TODO build air model here (cf {@link WaterDataProviderModule#visit(Model, Request)})
@@ -107,7 +89,6 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 		String countyCode = (String) request.getParam("county");
 		String stateCode = (String) request.getParam("stateCode");
-		String stateAbbr = (String) request.getParam("state");
 		//test values
 		countyCode = "001";
 		stateCode = "08";
