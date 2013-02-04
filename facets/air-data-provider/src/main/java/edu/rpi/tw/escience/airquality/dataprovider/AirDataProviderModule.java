@@ -38,7 +38,6 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	private static final String SITE_VAR = "site";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
-	//private static final String AIR_NS = "http://was.tw.rpi.edu/semanteco/air/air.owl#";
 	private static final String AIR_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/air.owl#";
 
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
@@ -141,8 +140,6 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		construct.addPattern(site, wgsLat, lat);
 		construct.addPattern(site, wgsLong, lng);
 
-
-		//return true;
 		config.getQueryExecutor(request).accept("text/turtle").execute(query, model);			
 	}
 
@@ -231,12 +228,8 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 		// change to icon names here should also occur in air-data-provider.js
 		Resource res = config.getResource("clean-air.png");
 		domain.addDataType("clean-air", "Clean Air", res);
-//		res = config.getResource("clean-air-facility.png");
-//		domain.addDataType("clean-air-facility", "Clean Air Facility", res);
 		res = config.getResource("polluted-air.png");
 		domain.addDataType("polluted-air", "Polluted Air", res);
-//		res = config.getResource("polluted-air-facility.png");
-//		domain.addDataType("polluted-air-facility", "Polluted Air Facility", res);
 	}
 
 }
