@@ -175,7 +175,7 @@ public class DataModelBuilder extends QueryUtils {
 			}
 			else if(graph.contains("echo") || graph.contains("foia")) {
 				double clat = Double.parseDouble((String)request.getParam(LAT));
-				double clng = Double.parseDouble((String)request.getParam(LONG));
+				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "facility");
 				int offset = LimitUtils.getOffset(request, "facility");
 				if(uri != null && !uri.isEmpty()) {
@@ -189,7 +189,7 @@ public class DataModelBuilder extends QueryUtils {
 			}
 			else if(graph.contains("nwis")) {
 				double clat = Double.parseDouble((String)request.getParam(LAT));
-				double clng = Double.parseDouble((String)request.getParam(LONG));
+				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "site");
 				int offset = LimitUtils.getOffset(request, "site");
 				if(uri != null && !uri.isEmpty()) {
