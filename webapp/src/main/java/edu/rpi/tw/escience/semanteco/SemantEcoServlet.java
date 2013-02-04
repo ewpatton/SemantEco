@@ -56,7 +56,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 	private static final int HTTP = 80;
 	private static final int HTTPS = 443;
 	
-	private Logger log = null;
+	private static Logger log = null;
 	
 	private static Map<Integer, ResponseChannel> channels = new TreeMap<Integer, ResponseChannel>();
 	
