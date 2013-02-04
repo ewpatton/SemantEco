@@ -51,6 +51,9 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 		if(module != null) {
 			owner = new WeakReference<Module>(module);
 		}
+		else {
+			throw new IllegalArgumentException("module should not be null.");
+		}
 		this.resourceDir = resourceDir;
 		this.executor = QueryExecutorImpl.getExecutorForModule(module);
 	}
