@@ -34,6 +34,12 @@ public class UnionComponentImpl implements UnionComponent {
 
 	@Override
 	public void addPattern(QueryResource subject, QueryResource predicate,
+			QueryResource object, boolean b) {
+		throw new UnsupportedOperationException("UnionComponent does not support addPattern()");
+	}
+
+	@Override
+	public void addPattern(QueryResource subject, QueryResource predicate,
 			String object, XSDDatatype type) {
 		throw new UnsupportedOperationException("UnionComponent does not support addPattern()");
 	}

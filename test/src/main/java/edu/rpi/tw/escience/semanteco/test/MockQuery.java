@@ -34,6 +34,12 @@ public class MockQuery implements Query {
 
 	@Override
 	public void addPattern(QueryResource subject, QueryResource predicate,
+			QueryResource object, boolean b) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void addPattern(QueryResource subject, QueryResource predicate,
 			String object, XSDDatatype type) {
 		throw new UnsupportedOperationException();
 	}

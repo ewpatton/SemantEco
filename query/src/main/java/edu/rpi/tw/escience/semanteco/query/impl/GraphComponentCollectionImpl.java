@@ -45,6 +45,15 @@ public class GraphComponentCollectionImpl implements GraphComponentCollection {
 	}
 
 	@Override
+	public void addPattern(QueryResource subject, QueryResource predicate,
+			QueryResource object, boolean transitive) {
+		assert(subject != null);
+		assert(predicate != null);
+		assert(object != null);
+		components.add(new GraphPatternImpl(subject, predicate, object, transitive));
+	}
+
+	@Override
 	public void addFilter(String cond) {
 		components.add(new FilterComponentImpl(cond));
 	}

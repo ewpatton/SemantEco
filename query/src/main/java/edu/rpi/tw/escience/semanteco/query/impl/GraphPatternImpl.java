@@ -18,6 +18,7 @@ public class GraphPatternImpl implements GraphPattern {
 	private QueryResource object = null;
 	private String value = null;
 	private XSDDatatype valueType = null;
+	private boolean transitive = false;
 	
 	/**
 	 * Constructs a graph pattern such as ?s ?p ?o where any can be
@@ -28,9 +29,7 @@ public class GraphPatternImpl implements GraphPattern {
 	 */
 	public GraphPatternImpl(QueryResource subject, QueryResource predicate,
 			QueryResource object) {
-		this.subject = subject;
-		this.predicate = predicate;
-		this.object = object;
+		this(subject, predicate, object, false);
 	}
 
 	/**
@@ -48,6 +47,22 @@ public class GraphPatternImpl implements GraphPattern {
 		this.predicate = predicate;
 		this.value = object;
 		this.valueType = type;
+	}
+
+	/**
+	 * Constructs a graph pattern such as ?s ?p ?o option(transitive) if
+	 * b is true, otherwise just ?s ?p ?o.
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 * @param b
+	 */
+	public GraphPatternImpl(QueryResource subject, QueryResource predicate,
+			QueryResource object, boolean b) {
+		this.subject = subject;
+		this.predicate = predicate;
+		this.object = object;
+		this.transitive = b;
 	}
 
 	@Override
@@ -119,6 +134,9 @@ public class GraphPatternImpl implements GraphPattern {
 		else {
 			result += object;
 		}
+		if(transitive) {
+			result += " option(transitive)";
+		}
 		result += " . ";
 		return result;
 	}
@@ -134,6 +152,8 @@ public class GraphPatternImpl implements GraphPattern {
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		result = prime * result
 				+ ((valueType == null) ? 0 : valueType.hashCode());
+		result = prime * result
+				+ (transitive ? 1231 : 1237);
 		return result;
 	}
 
@@ -162,6 +182,9 @@ public class GraphPatternImpl implements GraphPattern {
 			return false;
 		}
 		if(!compare(valueType, other.valueType)) {
+			return false;
+		}
+		if(!compare(transitive, other.transitive)) {
 			return false;
 		}
 		return true;
@@ -198,6 +221,16 @@ public class GraphPatternImpl implements GraphPattern {
 			matches = matches && (other.valueType == null || valueType.equals(other.valueType)); 
 		}
 		return matches;
+	}
+
+	@Override
+	public boolean isTransitive() {
+		return transitive;
+	}
+
+	@Override
+	public void setTransitive(boolean trans) {
+		transitive = trans;
 	}
 
 }
