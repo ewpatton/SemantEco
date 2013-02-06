@@ -61,13 +61,16 @@ public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 	
 	@Override
 	public String executeLocalQuery(Query query) {
-		final String modName = owner == null ? "(null)" : 
-			owner.get() == null ? "(null)" : owner.get().getName();
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("executeLocalQuery");
 		Model model = request.getCombinedModel();
 		log.debug("Module '"+modName+"' executing local query");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-		mgr.augmentQuery(query, request, owner.get());
+		mgr.augmentQuery(query, request, mod);
 		log.debug("Query: "+query.toString());
 		ByteArrayOutputStream bufferedModel = new ByteArrayOutputStream();
 		model.write(bufferedModel);

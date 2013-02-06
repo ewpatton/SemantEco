@@ -66,4 +66,21 @@ public interface GraphPattern extends GraphComponent {
 	 * @return
 	 */
 	XSDDatatype getValueType();
+
+	/**
+	 * Returns whether the graph pattern will
+	 * use option(transitive) to enable Virtuoso's built-in
+	 * transitivity inference.
+	 * @return true if option(transitive) will be enabled.
+	 */
+	boolean isTransitive();
+
+	/**
+	 * Sets the graph pattern to be transitive. This should only
+	 * be enabled for Virtuoso endpoints that support option(transitive).
+	 * For endpoints supporting SPARQL 1.1, use {@link Query#createPropertyPath(String)}
+	 * to create a SPARQL 1.1 property path with the + operator.
+	 * @param trans true if transitivity should be enabled, otherwise false.
+	 */
+	void setTransitive(boolean trans);
 }

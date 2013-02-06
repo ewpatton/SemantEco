@@ -37,12 +37,12 @@ import edu.rpi.tw.escience.semanteco.Request;
  */
 public class ClientRequest extends LoggerWrapper implements Request {
 	
-	WsOutbound clientLog;
-	Logger log;
-	Map<String, String> params;
-	OntModel model = null;
-	Model dataModel = null;
-	boolean combined = false;
+	private WsOutbound clientLog;
+	private Logger log;
+	private Map<String, String> params;
+	private OntModel model = null;
+	private Model dataModel = null;
+	private boolean combined = false;
 	
 	protected final String arrayToString(String[] arr) {
 		StringBuilder res = new StringBuilder("[");

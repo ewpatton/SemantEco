@@ -12,7 +12,7 @@ import org.apache.log4j.Priority;
  *
  */
 public class LoggerWrapper extends Logger {
-	Logger log;
+	private Logger log;
 	
 	/**
 	 * Constructs a new Logger given a

@@ -78,6 +78,9 @@ public class GraphPatternTest extends TestCase {
 		o = new VariableImpl(Query.VAR_NS+"o");
 		GraphPatternImpl x = new GraphPatternImpl(s, p, o);
 		assertEquals("?s ?p ?o . ", x.toString());
+		x.setTransitive(true);
+		assertEquals("?s ?p ?o option(transitive) . ", x.toString());
+		x.setTransitive(false);
 		x.setObject("123", null);
 		assertEquals("?s ?p \"123\" . ", x.toString());
 		x.setObject("123", XSDDatatype.XSDint);
@@ -125,5 +128,19 @@ public class GraphPatternTest extends TestCase {
 		GraphPatternImpl s0p0v1 = new GraphPatternImpl(null, null, "123", XSDDatatype.XSDint);
 		s1p1o1.hashCode();
 		s0p0v1.hashCode();
+	}
+
+	@Test
+	public void testTransitive() {
+		Variable s1,p1,o1;
+		s1 = new VariableImpl(Query.VAR_NS+"s1");
+		p1 = new VariableImpl(Query.VAR_NS+"p1");
+		o1 = new VariableImpl(Query.VAR_NS+"o1");
+		GraphPatternImpl x = new GraphPatternImpl(s1, p1, o1, true);
+		assertTrue(x.isTransitive());
+		x.setTransitive(false);
+		assertFalse(x.isTransitive());
+		x.setTransitive(true);
+		assertTrue(x.isTransitive());
 	}
 }

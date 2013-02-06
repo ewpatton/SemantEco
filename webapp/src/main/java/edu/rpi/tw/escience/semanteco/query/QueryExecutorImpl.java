@@ -122,13 +122,16 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String execute(String endpoint, Query query) {
-		final String modName = owner == null ? "(null)" : 
-			owner.get() == null ? "(null)" : owner.get().getName();
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("execute");
 		log.info("Module '"+modName+"' executing query");
 		log.debug("Letting modules visit query before execution");
 		long start = System.currentTimeMillis();
-		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
+		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, mod);
 		log.debug("Time to augment: "+(System.currentTimeMillis()-start)+" ms");
 		log.debug("Endpoint: "+endpoint);
 		log.debug("Query: "+query.toString().replaceAll("\n", "\n    "));
@@ -168,12 +171,15 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public QueryExecutor execute(String endpoint, Query query, Model model) {
-		final String modName = owner == null ? "(null)" : 
-			owner.get() == null ? "(null)" : owner.get().getName();
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("execute");
 		log.debug("Module '"+modName+"' executing remote query");
 		long start = System.currentTimeMillis();
-		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
+		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, mod);
 		log.debug("Augmenting query took "+(System.currentTimeMillis()-start)+" ms");
 		log.debug("Endpoint: "+endpoint);
 		log.debug("Query: "+query);
@@ -256,8 +262,11 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String executeLocalQuery(Query query) {
-		final String modName = owner == null ? "(null)" : 
-			owner.get() == null ? "(null)" : owner.get().getName();
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("executeLocalQuery");
 		Model model = request.getCombinedModel();
 		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
@@ -272,7 +281,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		}
 		log.debug("Module '"+modName+"' executing local query");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-		mgr.augmentQuery(query, request, owner.get());
+		mgr.augmentQuery(query, request, mod);
 		log.debug("Query: "+query.toString());
 		Model resultModel = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

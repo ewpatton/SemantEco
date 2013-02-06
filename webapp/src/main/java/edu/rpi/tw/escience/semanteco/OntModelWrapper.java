@@ -95,8 +95,8 @@ import edu.rpi.tw.escience.semanteco.Module;
 @SuppressWarnings("deprecation")
 public class OntModelWrapper implements OntModel {
 	
-	OntModel m;
-	WeakReference<Module> requestor;
+	private OntModel m;
+	private WeakReference<Module> requestor;
 
 	/**
 	 * Void constructor

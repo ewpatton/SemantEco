@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.waterquality.dataprovider;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
@@ -46,7 +48,12 @@ public class DataModelBuilder extends QueryUtils {
 	private static final String SITE = "s";
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
-	
+	private static final String MEASUREMENT = "measurement";
+	private static final String PERMIT = "permit";
+
+	private static final String TYPE = "type";
+	private static final String HAS_PERMIT = "hasPermit";
+
 	private final Logger log;
 	private final String stateUri;
 	private final List<String> sources = new ArrayList<String>();
@@ -69,8 +76,12 @@ public class DataModelBuilder extends QueryUtils {
 			throw new IllegalArgumentException("The source parameter must be supplied");
 		}
 		try {
+			Domain water = config.getDomain(URI.create(WATER_NS), false);
+			List<URI> domainSources = water.getSources();
 			for(int i=0;i<sources.length();i++) {
-				this.sources.add(sources.getString(i));
+				if(domainSources.contains(URI.create(sources.getString(i)))) {
+					this.sources.add(sources.getString(i));
+				}
 			}
 		} catch (JSONException e) {
 			throw new IllegalArgumentException("Unable to parse input 'source'", e);
@@ -165,11 +176,11 @@ public class DataModelBuilder extends QueryUtils {
 		String measurementGraph = null;
 		for(int i=0;i<graphs.size();i++) {
 			String graph = graphs.get(i);
-			if(graph.contains("measurement")) {
+			if(graph.contains(MEASUREMENT)) {
 				measurementGraph = graph;
 			}
 			else if(graph.contains("echo") || graph.contains("foia")) {
-				double clat = Double.parseDouble((String)request.getParam("lat"));
+				double clat = Double.parseDouble((String)request.getParam(LAT));
 				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "facility");
 				int offset = LimitUtils.getOffset(request, "facility");
@@ -183,7 +194,7 @@ public class DataModelBuilder extends QueryUtils {
 				extendQueryForEPAFacilities(query, graph, sites);
 			}
 			else if(graph.contains("nwis")) {
-				double clat = Double.parseDouble((String)request.getParam("lat"));
+				double clat = Double.parseDouble((String)request.getParam(LAT));
 				double clng = Double.parseDouble((String)request.getParam("lng"));
 				int limit = LimitUtils.getLimit(request, "site");
 				int offset = LimitUtils.getOffset(request, "site");
@@ -221,14 +232,14 @@ public class DataModelBuilder extends QueryUtils {
 		final NamedGraphComponent graph = query.getNamedGraph(graphUri);
 
 		// variables
-		final Variable s = query.getVariable(QUERY_NS+"s");
-		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
+		final Variable s = query.getVariable(QUERY_NS+SITE);
+		final Variable measurement = query.getVariable(QUERY_NS+MEASUREMENT);
 		final Variable element = query.getVariable(QUERY_NS+"element");
 		final Variable value = query.getVariable(QUERY_NS+"value");
 		final Variable unit = query.getVariable(QUERY_NS+"unit");
 		
 		// known uris
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource rdfType = query.getResource(RDF_NS+TYPE);
 		final QueryResource waterWaterMeasurement = query.getResource(WATER_NS+"WaterMeasurement");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
@@ -243,10 +254,10 @@ public class DataModelBuilder extends QueryUtils {
 		if(graphUri.contains("epa-gov")) {
 			final Variable op = query.getVariable(QUERY_NS+"op");
 			final Variable lval = query.getVariable(QUERY_NS+"lval");
-			final Variable permit = query.getVariable(QUERY_NS+"permit");
+			final Variable permit = query.getVariable(QUERY_NS+PERMIT);
 			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
 			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
-			final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+			final QueryResource polHasPermit = query.getResource(POL_NS+HAS_PERMIT);
 			construct.addPattern(measurement, polHasLimitOperator, op);
 			construct.addPattern(measurement, polHasLimitValue, lval);
 			construct.addPattern(measurement, polHasPermit, permit);
@@ -258,14 +269,13 @@ public class DataModelBuilder extends QueryUtils {
 			graph.addPattern(measurement, polHasSite, s);
 		}
 		else if(graphUri.contains("epa-gov")) {
-			final Variable permit = query.getVariable(QUERY_NS+"permit");
+			final Variable permit = query.getVariable(QUERY_NS+PERMIT);
 			final Variable op = query.getVariable(QUERY_NS+"op");
 			final Variable lval = query.getVariable(QUERY_NS+"lval");
-			final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+			final QueryResource polHasPermit = query.getResource(POL_NS+HAS_PERMIT);
 			final QueryResource polHasLimitOperator = query.getResource(POL_NS+"hasLimitOperator");
 			final QueryResource polHasLimitValue = query.getResource(POL_NS+"hasLimitValue");
 			graph.addPattern(measurement, polHasPermit, permit);
-			//graph.addFilter("regex(?measurement,\"measurements-[^/]+/version\")");
 			graph.addPattern(measurement, polHasLimitOperator, op);
 			graph.addPattern(measurement, polHasLimitValue, lval);
 			graph.addPattern(measurement, polHasPermit, permit);
@@ -295,21 +305,21 @@ public class DataModelBuilder extends QueryUtils {
 		log.trace("extendQueryForEPAFacilities");
 		
 		// variables
-		final Variable s = query.getVariable(QUERY_NS+"s");
+		final Variable s = query.getVariable(QUERY_NS+SITE);
 		final Variable label = query.getVariable(QUERY_NS+"label");
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		final Variable lat = query.getVariable(QUERY_NS+LAT);
 		final Variable lng = query.getVariable(QUERY_NS+LONG);
-		final Variable permit = query.getVariable(QUERY_NS+"permit");
+		final Variable permit = query.getVariable(QUERY_NS+PERMIT);
 		
 		// known uris
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource rdfType = query.getResource(RDF_NS+TYPE);
 		final QueryResource waterWaterFacility = query.getResource(WATER_NS+"WaterFacility");
 		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
 		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
-		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+		final QueryResource polHasPermit = query.getResource(POL_NS+HAS_PERMIT);
 		
 		// build construct clause
 		final GraphComponentCollection construct = query.getConstructComponent();
@@ -348,7 +358,7 @@ public class DataModelBuilder extends QueryUtils {
 		log.trace("extendQueryForUSGSSites");
 		
 		// variables
-		final Variable s = query.getVariable(QUERY_NS+"s");
+		final Variable s = query.getVariable(QUERY_NS+SITE);
 		final Variable label = query.getVariable(QUERY_NS+"label");
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		final Variable state = query.getVariable(QUERY_NS+"state");
@@ -356,7 +366,7 @@ public class DataModelBuilder extends QueryUtils {
 		final Variable lng = query.getVariable(QUERY_NS+LONG);
 		
 		// known uris
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource rdfType = query.getResource(RDF_NS+TYPE);
 		final QueryResource waterWaterSite = query.getResource(WATER_NS+"WaterSite");
 		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
 		final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
@@ -426,13 +436,13 @@ public class DataModelBuilder extends QueryUtils {
 		final NamedGraphComponent measures = query.getNamedGraph(measuresUri);
 		
 		// variables
-		final Variable s = query.getVariable(QUERY_NS+"s");
-		final Variable lat = query.getVariable(QUERY_NS+"lat");
-		final Variable lng = query.getVariable(QUERY_NS+"long");
+		final Variable s = query.getVariable(QUERY_NS+SITE);
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
 		
 		// known uris
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource rdfType = query.getResource(RDF_NS+TYPE);
 		final QueryResource waterWaterSite = query.getResource(WATER_NS+"WaterSite");
 		final QueryResource polHasCountyCode = query.getResource(POL_NS+"hasCountyCode");
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
@@ -445,8 +455,7 @@ public class DataModelBuilder extends QueryUtils {
 		sites.addPattern(s, wgsLat, lat);
 		sites.addPattern(s, wgsLong, lng);
 		measures.addPattern(measurement, polHasSite, s);
-		query.addOrderBy("((?"+LAT+" - "+clat+")*(?"+LAT+" - "+clat+")+" +
-				"(?"+LONG+" - "+clng+")*(?"+LONG+" - "+clng+"))", SortType.ASC);
+		query.addOrderBy(buildOrderByClause(clat, clng), SortType.ASC);
 		query.setOffset(offset);
 		query.setLimit(limit);
 		
@@ -485,19 +494,19 @@ public class DataModelBuilder extends QueryUtils {
 		final NamedGraphComponent measures = query.getNamedGraph(measuresUri);
 		
 		// variables
-		final Variable s = query.getVariable(QUERY_NS+"s");
-		final Variable lat = query.getVariable(QUERY_NS+"lat");
-		final Variable lng = query.getVariable(QUERY_NS+"long");
+		final Variable s = query.getVariable(QUERY_NS+SITE);
+		final Variable lat = query.getVariable(QUERY_NS+LAT);
+		final Variable lng = query.getVariable(QUERY_NS+LONG);
 		final Variable measurement = query.getVariable(QUERY_NS+"measurement");
-		final Variable permit = query.getVariable(QUERY_NS+"permit");
+		final Variable permit = query.getVariable(QUERY_NS+PERMIT);
 		
 		// known uris
-		final QueryResource rdfType = query.getResource(RDF_NS+"type");
+		final QueryResource rdfType = query.getResource(RDF_NS+TYPE);
 		final QueryResource waterWaterFacility = query.getResource(WATER_NS+"WaterFacility");
 		final QueryResource polHasCountyCode = query.getResource(POL_NS+"hasCountyCode");
 		final QueryResource wgsLat = query.getResource(WGS_NS+LAT);
 		final QueryResource wgsLong = query.getResource(WGS_NS+LONG);
-		final QueryResource polHasPermit = query.getResource(POL_NS+"hasPermit");
+		final QueryResource polHasPermit = query.getResource(POL_NS+HAS_PERMIT);
 		
 		// build query
 		sites.addPattern(s, rdfType, waterWaterFacility);
@@ -506,8 +515,7 @@ public class DataModelBuilder extends QueryUtils {
 		sites.addPattern(s, wgsLong, lng);
 		sites.addPattern(s, polHasPermit, permit);
 		measures.addPattern(measurement, polHasPermit, permit);
-		query.addOrderBy("((?"+LAT+" - "+clat+")*(?"+LAT+" - "+clat+")+" +
-				"(?"+LONG+" - "+clng+")*(?"+LONG+" - "+clng+"))", SortType.ASC);
+		query.addOrderBy(buildOrderByClause(clat, clng), SortType.ASC);
 		query.setOffset(offset);
 		query.setLimit(limit);
 		
@@ -549,6 +557,11 @@ public class DataModelBuilder extends QueryUtils {
 		}
 		filter.append(">)");
 		query.addFilter(filter.toString());
+	}
+	
+	protected final String buildOrderByClause(double clat, double clng) {
+		return "((?"+LAT+" - "+clat+")*(?"+LAT+" - "+clat+")+" +
+				"(?"+LONG+" - "+clng+")*(?"+LONG+" - "+clng+"))";
 	}
 
 }
