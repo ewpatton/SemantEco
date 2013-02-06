@@ -6,7 +6,7 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-parent</artifactId>
-    <version>4.0.1-Final</version>
+    <version>4.0.2-Final</version>
   </parent>
 
   <artifactId>semanteco-webapp</artifactId>
@@ -112,66 +112,66 @@
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-query</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-data-source</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-domain</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-water-data-provider</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
 <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-characteristics-facet</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-air-data-provider</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-zipcode</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-data-type</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-regulation</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-industry</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-species-dataprovider</artifactId>
-      <version>4.0.1-Final</version>
+      <version>4.0.2-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -266,7 +266,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-data-source</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -274,7 +274,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-zipcode</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -282,7 +282,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-regulation</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -290,7 +290,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-time</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -298,7 +298,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-data-type</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -306,7 +306,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-domain</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -314,7 +314,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-water-data-provider</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -322,7 +322,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-air-data-provider</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -330,7 +330,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-industry</artifactId>
-		  <version>4.0.1-Final</version>
+		  <version>4.0.2-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -338,7 +338,7 @@
 		<artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-characteristics-facet</artifactId>
-                  <version>4.0.1-Final</version>
+                  <version>4.0.2-Final</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -346,7 +346,7 @@
 		<artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-species-dataprovider</artifactId>
-                  <version>4.0.1-Final</version>
+                  <version>4.0.2-Final</version>
                    <destFileName>semanteco-cspecies.jar</destFileName>
                   <type>jar</type>
                   <overWrite>true</overWrite>
@@ -449,7 +449,7 @@
 		    <artifactItem>
 		      <groupId>edu.rpi.tw.escience</groupId>
 		      <artifactId>semanteco-debugger</artifactId>
-		      <version>4.0.1-Final</version>
+		      <version>4.0.2-Final</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
                       <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
