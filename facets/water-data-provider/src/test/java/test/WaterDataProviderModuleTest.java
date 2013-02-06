@@ -2,7 +2,10 @@ package test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -19,6 +22,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.QueryExecutor;
 import edu.rpi.tw.escience.semanteco.QueryFactory;
 import edu.rpi.tw.escience.semanteco.Request;
@@ -33,6 +37,7 @@ import edu.rpi.tw.escience.semanteco.test.MockRequest;
 import edu.rpi.tw.escience.semanteco.test.MockResource;
 import edu.rpi.tw.escience.semanteco.test.MockUI;
 import edu.rpi.tw.escience.semanteco.test.TestQuery;
+import edu.rpi.tw.escience.waterquality.dataprovider.QueryUtils;
 import edu.rpi.tw.escience.waterquality.dataprovider.WaterDataProviderModule;
 
 public class WaterDataProviderModuleTest extends TestCase {
@@ -107,6 +112,95 @@ public class WaterDataProviderModuleTest extends TestCase {
 		@Override
 		public Resource generateStringResource(String content) {
 			return new TestStringResource(content);
+		}
+		
+		@Override
+		public Domain getDomain(URI uri, boolean create) {
+			TestCase.assertEquals(uri.toASCIIString(), QueryUtils.WATER_NS);
+			Domain d = new Domain() {
+
+				@Override
+				public URI getUri() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public void addSource(URI sourceUri, String label) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void addDataType(String id, String name, Resource icon) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void addRegulation(URI regulationUri, String label) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public List<URI> getSources() {
+					List<URI> uris = new ArrayList<URI>();
+					uris.add(URI.create("http://sparql.tw.rpi.edu/source/epa-gov"));
+					uris.add(URI.create("http://sparql.tw.rpi.edu/source/usgs-gov"));
+					return uris;
+				}
+
+				@Override
+				public List<URI> getRegulations() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public List<String> getDataTypes() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public String getDataTypeName(String id) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public Resource getDataTypeIcon(String id) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public String getLabelForSource(URI uri) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public String getLabel() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public void setLabel(String label) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public String getLabelForRegulation(URI uri) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+			};
+			return d;
 		}
 	}
 	

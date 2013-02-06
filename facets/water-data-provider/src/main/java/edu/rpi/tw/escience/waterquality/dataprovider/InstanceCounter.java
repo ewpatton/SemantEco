@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.waterquality.dataprovider;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
@@ -51,8 +53,12 @@ public class InstanceCounter extends QueryUtils {
 			throw new IllegalArgumentException("The source parameter must be supplied.");
 		}
 		try {
+			Domain water = config.getDomain(URI.create(WATER_NS), false);
+			List<URI> domainSources = water.getSources();
 			for(int i=0;i<sources.length();i++) {
-				this.sources.add(sources.getString(i));
+				if(domainSources.contains(URI.create(sources.getString(i)))) {
+					this.sources.add(sources.getString(i));
+				}
 			}
 		}
 		catch(JSONException e) {
