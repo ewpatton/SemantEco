@@ -69,6 +69,12 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		boolean bird = false;
 		boolean fish = false;
 		
+		//until we encode the dependency of entity type on domain, let's just check for domain in the query.
+		//also in the future let the entity uris refer to owl class uris for the higest level category relevant to that entity from our ontologies.
+		
+		//"http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#", "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#"
+		
+		/*
 		JSONArray sourceArray = (JSONArray) request.getParam("source");
 		for(int i = 0; i < sourceArray.length(); i++){
 			try {
@@ -86,7 +92,24 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 				e.printStackTrace();
 			}			
 		}
-		
+		*/
+		JSONArray domainArray = (JSONArray) request.getParam("domain");
+		for(int i = 0; i < domainArray.length(); i++){
+			try {
+				String objectInArray = domainArray.getString(i);
+				
+				if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl")){
+					bird = true;
+				}
+				
+				if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl")){
+					fish = true;
+				}				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
 		
 		
 		// TODO populate data model
@@ -408,6 +431,9 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 			boolean bird = false;
 			boolean fish = false;
 			
+			
+			//same as at the top of the class
+		/*
 			JSONArray sourceArray = (JSONArray) request.getParam("source");
 			for(int i = 0; i < sourceArray.length(); i++){
 				try {
@@ -428,11 +454,30 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 				}
 				
 			}
+			*/
+			JSONArray domainArray = (JSONArray) request.getParam("domain");
+			for(int i = 0; i < domainArray.length(); i++){
+				try {
+					String objectInArray = domainArray.getString(i);
+					
+					if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl")){
+						bird = true;
+					}
+					
+					if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl")){
+						fish = true;
+					}				
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			
+			}
+			
+			
 					
 			if(bird){
 			final Variable isBird = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a <http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl#BirdSite> } as ?"+ISBIRD_VAR);
 			vars.add(isBird);
-
 			}
 			if(fish){
 			final Variable isFish = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a <http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#FishSite> } as ?"+ ISFISH_VAR);
@@ -956,6 +1001,7 @@ WHERE
 		graph.addPattern(measurement, obsDate, date);
 		graph.addPattern(measurement, hasCommonName, commonName);
 		graph.addPattern(measurement, hasScientificName, scientificName);	
+	    request.getLogger().error("in SpeciesDataProviderModule.queryForSpeciesForASite, query is : " + query.toString());
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 	}
 	
@@ -973,7 +1019,8 @@ WHERE
 	 */
 	@QueryMethod
 	public String queryForNearbySpeciesCounts(Request request) throws JSONException{
-			
+	    request.getLogger().info("reached queryForNearbySpeciesCounts\n");
+
 		//this works for eBird only
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
 		//Variables
@@ -1235,7 +1282,7 @@ WHERE
 
 		//http://sparql.tw.rpi.edu/source/epa-air/id/aqs-site/08-001-3001	
 		// ?m void:inDataSet <http://sparql.tw.rpi.edu/source/akn/dataset/GBBC_CSV/version/2012-Oct-19>
-	    request.getLogger().error("query is : " + query.toString());
+	    request.getLogger().error("in SpeciesDataProviderModule.queryForNearbySpeciesCounts, query is : " + query.toString());
 		return config.getQueryExecutor(request).accept("application/json").execute(query);		
 	}
 	/**
