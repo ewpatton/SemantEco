@@ -128,6 +128,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			}
 			catch(Exception e) {
 				request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+			
 			}
 		}
 	}
@@ -142,6 +143,8 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				}
 				catch(Exception e) {
 					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+					request.getLogger().warn("Stacktrace is: " + e.getStackTrace());
+
 				}
 			}
 		}
@@ -157,6 +160,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				}
 				catch(Exception e) {
 					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+					request.getLogger().warn("Stacktrace is: " + e.getStackTrace());
 				}
 			}
 		}
