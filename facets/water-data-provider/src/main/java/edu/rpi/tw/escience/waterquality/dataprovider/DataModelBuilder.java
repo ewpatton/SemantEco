@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.waterquality.dataprovider;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
@@ -74,8 +76,12 @@ public class DataModelBuilder extends QueryUtils {
 			throw new IllegalArgumentException("The source parameter must be supplied");
 		}
 		try {
+			Domain water = config.getDomain(URI.create(WATER_NS), false);
+			List<URI> domainSources = water.getSources();
 			for(int i=0;i<sources.length();i++) {
-				this.sources.add(sources.getString(i));
+				if(domainSources.contains(URI.create(sources.getString(i)))) {
+					this.sources.add(sources.getString(i));
+				}
 			}
 		} catch (JSONException e) {
 			throw new IllegalArgumentException("Unable to parse input 'source'", e);
