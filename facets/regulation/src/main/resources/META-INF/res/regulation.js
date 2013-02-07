@@ -76,8 +76,8 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 
 	//////////////////////////////////////////////////////////////////
 
-	if((marker.data.isWater != undefined && marker.data.isWater == "true")||
-		(marker.data.isAir != undefined && marker.data.isAir == "true")){
+	if((marker.data.isWater != undefined && marker.data.isWater.value == "true")||
+		(marker.data.isAir != undefined && marker.data.isAir.value == "true")){
 		RegulationModule.queryForSitePollution({}, function(data){
 			$("#spinner").hide();
 			console.log("data retrieved in queryForSitePollution. Data(below):");
