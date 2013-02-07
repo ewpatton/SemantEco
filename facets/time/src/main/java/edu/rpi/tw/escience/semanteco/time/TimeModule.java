@@ -142,7 +142,7 @@ public class TimeModule implements Module {
 			return true;
 		}
 		final Calendar time = processTimeParam(deltaT);
-		final String xsdTime = sdf.format(time);
+		final String xsdTime = sdf.format(time.getTime());
 		graph.addFilter("?"+TIME_VAR+" > xsd:dateTime(\""+xsdTime+"\")");
 		return true;
 	}
