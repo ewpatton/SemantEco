@@ -916,7 +916,7 @@ function initial_hierachy1(){
                         //alert(class_hierachy[temp_id][1]);
                         //$.bbq.pushState({"species":class_hierachy[temp_id][2]});
                         $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy_map[temp_id][2]});
-                        ajax_node1();
+                        //ajax_node1();
                         getSelectedValue1();
                 })
                     // 2) if not using the UI plugin - the Anchor tags work as expected

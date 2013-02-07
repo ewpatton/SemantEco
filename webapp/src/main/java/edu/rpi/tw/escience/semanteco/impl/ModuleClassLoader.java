@@ -42,6 +42,7 @@ public class ModuleClassLoader extends ClassLoader {
 	public ModuleClassLoader(String path) {
 		super(Thread.currentThread().getContextClassLoader());
 		log.trace("ModuleClassLoader");
+		/* a static reference to the module class*/
 		final Class<?> module = Module.class;
 		try {
 			final JarFile file = new JarFile(path);
@@ -53,11 +54,13 @@ public class ModuleClassLoader extends ClassLoader {
 					loadClassBytes(file, entry);
 				}
 			}
+			/* creates a list of all classes that are also modules in the particular jar, we instantiate one module class loader per jar */
 			for(String i : clazzBytes.keySet()) {
 				Class<?> cls = registerClass(i, clazzBytes.get(i));
 				if(cls == null) {
 					continue;
 				}
+				/* checks is the class cls is a extends or implements module */
 				if(module.isAssignableFrom(cls)) {
 					modules.add((Class<? extends Module>) cls);
 				}
@@ -80,6 +83,12 @@ public class ModuleClassLoader extends ClassLoader {
 		return classes.get(name);
 	}
 	
+	/**
+	 * This method writes a jar file into an array of byte.
+	 * @param file
+	 * @param entry
+	 * @throws IOException
+	 */
 	protected final void loadClassBytes(JarFile file, JarEntry entry) throws IOException {
 		final String clsName = entry.getName().replaceAll("/", ".").substring(0, entry.getName().length()-".class".length());
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
