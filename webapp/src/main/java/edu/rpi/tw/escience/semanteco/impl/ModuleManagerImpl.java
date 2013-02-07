@@ -45,7 +45,7 @@ import edu.rpi.tw.escience.semanteco.query.Query;
  * ModuleManagerImpl provides the default implementation of the ModuleManager interface
  * for the SemantEco portal. It is responsible for monitoring the modules directory
  * and installing and configuring new modules or removing deleted modules from the 
- * runtime of the portal as needed.
+ * runtime of the portal as needed. 
  * 
  * @author ewpatton
  *
@@ -80,7 +80,8 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	/**
 	 * Constructs a ModuleManagerImpl that will monitor the specified
 	 * path for new JAR files and remove any modules originating from
-	 * a removed JAR file in that path.
+	 * a removed JAR file in that path. Also, the constructor loads all the
+	 * available jar files into the virtual machine (fileCreated method).
 	 * @param path
 	 */
 	public ModuleManagerImpl(String path) {
@@ -219,6 +220,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			if(loader != null) {
 				log.debug("Generated classloader");
 				classLoaders.put(event.getFile().getName().getPath(), loader);
+				
 				final String resPath = explodeJar(event.getFile().getName().getPath());
 				processLoader(loader, event.getFile().getName().getPath(),
 						resPath);
@@ -227,6 +229,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 	}
 	
+	/**
+	 * INstantiates the module classes
+	 * @param loader
+	 * @param jarPath
+	 * @param resPath
+	 */
 	protected final void processLoader(final ModuleClassLoader loader, 
 			final String jarPath, final String resPath) {
 		Set<Class<? extends Module>> newModules = loader.getModules();
@@ -362,6 +370,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		buildDomain();
 	}
 	
+	/**
+	 * This method replaces out modules in the moduleMap.
+	 * @param module
+	 * @param path
+	 * @param properties
+	 */
 	protected final void installModule(Module module, String path, InputStream properties) {
 		log.debug("Installing module '"+module.getName()+"' version "+module.getMajorVersion()+"."+module.getMinorVersion()+
 				(module.getExtraVersion() != null ? "-"+module.getExtraVersion() : ""));

@@ -99,11 +99,11 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 			try {
 				String objectInArray = domainArray.getString(i);
 				
-				if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl")){
+				if (objectInArray.equals(BIRD_NS)){
 					bird = true;
 				}
 				
-				if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl")){
+				if (objectInArray.equals(FISH_NS)){
 					fish = true;
 				}				
 			} catch (JSONException e) {
@@ -306,7 +306,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 								//coll.addGraphComponent(graph3);					
 								//ebird taxonomy graph
 								
-						        coll.addPattern(species, subClassOf, addedSpecies);	
+						        coll.addPattern(species, subClassOf, addedSpecies, true);	
 						        coll.addPattern(species, hasLabel, scientificName);	
 						        //ebird data graph (already handled in the first part of the query)
 						        //graph3.addPattern(addedSpecies, hasLabel, scientificName);			    			
@@ -379,7 +379,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 							    request.getLogger().error("addedSpecies: " + addedSpecies.toString());
 							    request.getLogger().error("species: " + species.toString());
 							    request.getLogger().error("subclassof: " + subClassOf.toString());
-						        graph2.addPattern(species, subClassOf, addedSpecies);	
+						        graph2.addPattern(species, subClassOf, addedSpecies, true);	
 						        graph2.addPattern(species, hasLabel, scientificName);				       
 					    	}
 					    	else{
@@ -461,11 +461,11 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 				try {
 					String objectInArray = domainArray.getString(i);
 					
-					if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/bird.owl")){
+					if (objectInArray.equals(BIRD_NS)){
 						bird = true;
 					}
 					
-					if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl")){
+					if (objectInArray.equals(FISH_NS)){
 						fish = true;
 					}				
 				} catch (JSONException e) {
@@ -1672,6 +1672,7 @@ WHERE
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
 		
 		final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
+	    request.getLogger().info("reached queryeBirdTaxonomyRoots \n");
 
 		//build query
 		Set<Variable> vars = new LinkedHashSet<Variable>();
@@ -1691,7 +1692,8 @@ WHERE
 
 				//get only the subclasses of the subclasses of OWL thing
 				String responseStr = FAILURE;
-				
+			    request.getLogger().info("Query object in queryeBirdTaxonomyRoots is: " + query.toString());
+
 				String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
 				////return config.getQueryExecutor(request).accept("application/json").execute(query);
 				log.debug("Results: "+resultStr);
@@ -1911,6 +1913,7 @@ WHERE
 	@Override
 	public void setModuleConfiguration(final ModuleConfiguration config) {
 		this.config = config;
+		
 	}
 
 	@Override
