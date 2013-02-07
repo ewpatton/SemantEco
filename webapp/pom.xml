@@ -15,7 +15,7 @@
 
   <properties>
     <tomcat.version>7.0.29</tomcat.version>
-    <tomcat.port>8081</tomcat.port>
+    <tomcat.port>8080</tomcat.port>
     <tomcat.url>http://localhost:${tomcat.port}/manager/text</tomcat.url>
   </properties>
 
@@ -427,7 +427,6 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-	<baseUrl>http://localhost:8081/semanteco/</baseUrl>
 	<debug>true</debug>
 	<triple-store>http://was.tw.rpi.edu/virtuoso/sparql</triple-store>
       </properties>
