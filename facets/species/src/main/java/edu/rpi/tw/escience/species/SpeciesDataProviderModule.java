@@ -28,6 +28,7 @@ import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Query.SortType;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.UnionComponent;
@@ -1678,6 +1679,7 @@ WHERE
 		vars.add(label);
 		vars.add(parent);
 		query.setVariables(vars);
+		query.addOrderBy(label, SortType.ASC);
 		//query.addPattern(site, inDataSet, dataSet);
 				final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
 				graph.addPattern(id, subClassOf, parent);
@@ -1765,6 +1767,7 @@ WHERE
 		vars.add(label);
 		vars.add(parent);
 		query.setVariables(vars);
+		query.addOrderBy(label, SortType.ASC);
 		//query.addPattern(site, inDataSet, dataSet);
 				final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
 				graph.addPattern(id, subClassOf, parent);

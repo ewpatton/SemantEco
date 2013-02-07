@@ -467,6 +467,7 @@ function choose(str){
 	//clears the show div
 	document.getElementById('show').innerHTML="";
 	//this does not change selection, you still need to hit search, so the method for that is handled in the .jsp file where search_node is called.
+	search_node();
 }
 
 /*find where this node is*/
@@ -482,8 +483,10 @@ function search_node(){
 			}
 			else{
 				var evt = document.createEvent("MouseEvents");  
-	 				evt.initEvent("click", true, true);  
-			  	    document.getElementById(i).childNodes[1].dispatchEvent(evt);  
+				evt.initEvent("click", true, true);
+				var elem = document.getElementById(i);
+				elem.childNodes[1].dispatchEvent(evt);
+				$("#description").animate({scrollTop: $(elem).offset().top+'px'}, 'fast');
 			}
 			//alert(" found !");
 			break;
