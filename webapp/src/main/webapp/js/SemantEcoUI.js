@@ -972,42 +972,31 @@ function ajax_node1() {
         if (jsonHier2.length == 0) {
             //alert("null");
         } else {
-            for ( var parent = 0; parent < class_hierarchy_map2.length; parent++) {
-                if (jsonHier2[0]["id"] == class_hierarchy_map2[parent][2]) {
-                    flag = 1;
-                    break;
-                }
-            }
-            if (flag == 1) {
-                //alert("error");
-            } else {
-                //alert("success");
-                for ( var i = 0; i < jsonHier2.length; i++) {
-                    for ( var parent = 0; parent < class_hierarchy_map2.length; parent++) {
-                        var temp=jsonHier2[i]["parent"].indexOf("#");
-                        if (jsonHier2[i]["parent"].substring(temp+1) == class_hierarchy_map2[parent][0]) {
-                            id="map"+parent;
-                            var temp_div = document.getElementById(parent);
-                            var ul = document.createElement("ul");
-                            var li = document.createElement("li");
-                            var a = document.createElement("a");
-                            a.href = "#";
-                            var text = document.createTextNode(jsonHier2[i]["label"]);
-                            li.id = "map"+class_hierarchy_map2.length;
-                            a.appendChild(text);
-                            li.appendChild(a);
-                            ul.appendChild(li);
-                            temp_div.appendChild(ul);
-                            // alert("success");
-                            class_hierarchy_map2.push(new Array(jsonHier2[i]["label"],jsonHier2[i]["parent"].substring(temp+1),jsonHier2[i]["id"]));
-                            break;
-                        }
+            for ( var i = 0; i < jsonHier2.length; i++) {
+                for ( var parent = 0; parent < class_hierarchy_map2.length; parent++) {
+                    if (jsonHier2[i]["parent"] == class_hierarchy_map2[parent][2]) {
+                        id="map"+parent;
+                        var temp_div = document.getElementById("map"+parent);
+                        var ul = document.createElement("ul");
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        a.href = "#";
+                        var text = document.createTextNode(jsonHier2[i]["label"]);
+                        li.id = "map"+class_hierarchy_map2.length;
+                        a.appendChild(text);
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                        temp_div.appendChild(ul);
+                        // alert("success");
+                        class_hierarchy_map2.push(new Array(jsonHier2[i]["label"],jsonHier2[i]["parent"],jsonHier2[i]["id"]));
+                        break;
                     }
                 }
             }
         }
-        var tree = jQuery.jstree._reference("#" + id);
+        var tree = jQuery.jstree._reference("#"+id);
         tree.refresh();
+        document.getElementById(id).firstChild.click();
     });
 }
 
