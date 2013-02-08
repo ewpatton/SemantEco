@@ -147,8 +147,8 @@ var SemantEcoUI = {
                     var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
                     var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
                     SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
-                        jsonHier=JSON.parse(data);
-                        jsonHier=jsonHier["data"];
+                        jsonHier2=JSON.parse(data);
+                        jsonHier2=jsonHier2["data"];
                         initial_hierachy1();                                     
                            });
                     
@@ -813,50 +813,46 @@ $(document).ready(function(){
     lightbox.init();
 });
 
-
-
-
-
+// ewpatton: hacks to fix Chen's code quickly. must be rewritten to satisfy issue #8
+var class_hierarchy_temp2 = null;
+var class_hierarchy_map2 = null;
 
 function initial_hierachy1(){
-    //alert(class_hierachy);
-    //alert("class hierarchy has"+class_hierachy.length);
-    
+	class_hierarchy_temp2 = new Array();
+	class_hierarchy_map2 = new Array();
     var flag=0;
-    for (var i=0;i<jsonHier.length;i++){
+    for (var i=0;i<jsonHier2.length;i++){
         flag=0;
-        for (var j=0;j<jsonHier.length;j++){
-            temp1=jsonHier[i]["parent"].indexOf("#");
-            if(jsonHier[i]["parent"].substring(temp1+1)==jsonHier[j]["label"]){
-                //alert(jsonHier[i]);
+        for (var j=0;j<jsonHier2.length;j++){
+            temp1=jsonHier2[i]["parent"].indexOf("#");
+            if(jsonHier2[i]["parent"].substring(temp1+1)==jsonHier2[j]["label"]){
                 flag=1;
                 break;
             }
         }
         if(flag==0){
             var flag1=0;
-            for (var k=0;k<class_hierachy_temp.length;k++){
-                if(class_hierachy_temp[k][0]==jsonHier[i]["parent"].substring(temp1+1)){
+            for (var k=0;k<class_hierarchy_temp2.length;k++){
+                if(class_hierarchy_temp2[k][0]==jsonHier2[i]["parent"].substring(temp1+1)){
                     flag1=1;
                     break;
                 }
         
             }
             if(flag1==0){
-                class_hierachy_temp.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
-                class_hierachy_map.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
-                //jsonHier.remove(i);
+            	class_hierarchy_temp2.push(new Array(jsonHier2[i]["parent"].substring(temp1+1),null,null));
+            	class_hierarchy_map2.push(new Array(jsonHier2[i]["parent"].substring(temp1+1),null,null));
             }
         }
     }
     
-    for (var j=0;j<class_hierachy_temp.length;j++){
-         for (var i=0;i<jsonHier.length;i++){
-                 var temp=jsonHier[i]["parent"].indexOf("#");             
-                if(jsonHier[i]["parent"].substring(temp+1)==class_hierachy_temp[j][0]){
-                    class_hierachy_map.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+    for (var j=0;j<class_hierarchy_temp2.length;j++){
+         for (var i=0;i<jsonHier2.length;i++){
+                 var temp=jsonHier2[i]["parent"].indexOf("#");             
+                if(jsonHier2[i]["parent"].substring(temp+1)==class_hierarchy_temp2[j][0]){
+                    class_hierarchy_map2.push(new Array(jsonHier2[i]["label"],jsonHier2[i]["parent"].substring(temp+1),jsonHier2[i]["id"]));
                     
-                    //jsonHier.remove(i);
+                    //jsonHier2.remove(i);
                 }
          }
         
@@ -867,12 +863,12 @@ function initial_hierachy1(){
     var temp_div=document.getElementById('tree_map');
     temp_div.innerHTML="";
     
-    for (var i=0;i<class_hierachy_temp.length;i++){
+    for (var i=0;i<class_hierarchy_temp2.length;i++){
         var ul=document.createElement("ul");
         var li=document.createElement("li");
         var a=document.createElement("a");
         a.href="#";
-        var text=document.createTextNode(class_hierachy_temp[i][0]);
+        var text=document.createTextNode(class_hierarchy_temp2[i][0]);
         var temp_root="map"+i;
         li.id=temp_root;
         a.appendChild(text); 
@@ -883,7 +879,7 @@ function initial_hierachy1(){
             //alert("success");
         
         var j;
-        for ( j=class_hierachy_temp.length;j<class_hierachy_map.length;j++){ 
+        for ( j=class_hierarchy_temp2.length;j<class_hierarchy_map2.length;j++){ 
             
             append_node1(j,temp_root);
         }
@@ -915,8 +911,8 @@ function initial_hierachy1(){
                         //alert(class_hierachy[temp_id][0]);
                         //alert(class_hierachy[temp_id][1]);
                         //$.bbq.pushState({"species":class_hierachy[temp_id][2]});
-                        $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy_map[temp_id][2]});
-                        //ajax_node1();
+                        $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierarchy_map2[temp_id][2]});
+                        ajax_node1();
                         getSelectedValue1();
                 })
                     // 2) if not using the UI plugin - the Anchor tags work as expected
@@ -935,7 +931,7 @@ function getSelectedValue1() {
     $.each(nodes, function(i, n) { 
          var temp_id=this.id;
          var temp_id1=parseInt(temp_id.substring(3));
-         temp.push(class_hierachy_map[temp_id1][2]);
+         temp.push(class_hierarchy_map2[temp_id1][2]);
          
     }); 
     $.bbq.pushState({"species":temp});
@@ -944,13 +940,13 @@ function getSelectedValue1() {
 function append_node1(current, parent){
    var temp_judge=parent;
    temp_judge=parseInt(temp_judge.substring(3));
-   if(class_hierachy_map[current][1]==class_hierachy_map[temp_judge][0]){
+   if(class_hierarchy_map2[current][1]==class_hierarchy_map2[temp_judge][0]){
         var temp_div=document.getElementById(parent);
         var ul=document.createElement("ul");
         var li=document.createElement("li");
         var a=document.createElement("a");
         a.href="#";
-        var text=document.createTextNode(class_hierachy_map[current][0]);
+        var text=document.createTextNode(class_hierarchy_map2[current][0]);
         var temp_id="map"+current.toString();
         li.id=temp_id;
         a.appendChild(text); 
@@ -969,49 +965,38 @@ function append_node1(current, parent){
 
 function ajax_node1() {
     SpeciesDataProviderModule.queryeBirdTaxonomySubClasses({}, function(data) {
-        jsonHier = JSON.parse(data);
-        jsonHier = jsonHier["data"];
+        jsonHier2 = JSON.parse(data);
+        jsonHier2 = jsonHier2["data"];
         var flag=0;
         var id=0;
-        if (jsonHier.length == 0) {
+        if (jsonHier2.length == 0) {
             //alert("null");
         } else {
-            for ( var parent = 0; parent < class_hierachy_map.length; parent++) {
-                if (jsonHier[0]["id"] == class_hierachy_map[parent][2]) {
-                    flag = 1;
-                    break;
-                }
-            }
-            if (flag == 1) {
-                //alert("error");
-            } else {
-                //alert("success");
-                for ( var i = 0; i < jsonHier.length; i++) {
-                    for ( var parent = 0; parent < class_hierachy_map.length; parent++) {
-                        var temp=jsonHier[i]["parent"].indexOf("#");
-                        if (jsonHier[i]["parent"].substring(temp+1) == class_hierachy_map[parent][0]) {
-                            id="map"+parent;
-                            var temp_div = document.getElementById(parent);
-                            var ul = document.createElement("ul");
-                            var li = document.createElement("li");
-                            var a = document.createElement("a");
-                            a.href = "#";
-                            var text = document.createTextNode(jsonHier[i]["label"]);
-                            li.id = "map"+class_hierachy_map.length;
-                            a.appendChild(text);
-                            li.appendChild(a);
-                            ul.appendChild(li);
-                            temp_div.appendChild(ul);
-                            // alert("success");
-                            class_hierachy_map.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
-                            break;
-                        }
+            for ( var i = 0; i < jsonHier2.length; i++) {
+                for ( var parent = 0; parent < class_hierarchy_map2.length; parent++) {
+                    if (jsonHier2[i]["parent"] == class_hierarchy_map2[parent][2]) {
+                        id="map"+parent;
+                        var temp_div = document.getElementById("map"+parent);
+                        var ul = document.createElement("ul");
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        a.href = "#";
+                        var text = document.createTextNode(jsonHier2[i]["label"]);
+                        li.id = "map"+class_hierarchy_map2.length;
+                        a.appendChild(text);
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                        temp_div.appendChild(ul);
+                        // alert("success");
+                        class_hierarchy_map2.push(new Array(jsonHier2[i]["label"],jsonHier2[i]["parent"],jsonHier2[i]["id"]));
+                        break;
                     }
                 }
             }
         }
-        var tree = jQuery.jstree._reference("#" + id);
+        var tree = jQuery.jstree._reference("#"+id);
         tree.refresh();
+        document.getElementById(id).firstChild.click();
     });
 }
 
@@ -1030,9 +1015,9 @@ function keyDown1(){
     
            show=[];
            len=0;
-           for (i in class_hierachy_map){
-                if(cprStr==class_hierachy_map[i][0].substring(0,cprStr.length)){
-                   len=show.push(class_hierachy_map[i][0]);
+           for (i in class_hierarchy_map2){
+                if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)){
+                   len=show.push(class_hierarchy_map2[i][0]);
                }
             } 
         }
@@ -1077,9 +1062,9 @@ function match1(str){
 
     show=[];
     len=0;
-    for (i in class_hierachy_map){
-        if(cprStr==class_hierachy_map[i][0].substring(0,cprStr.length)){
-           len=show.push(class_hierachy_map[i][0]);
+    for (i in class_hierarchy_map2){
+        if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)){
+           len=show.push(class_hierarchy_map2[i][0]);
        }
     } 
     //alert("Have "+len+" compatible records");
@@ -1098,13 +1083,14 @@ function choose1(str){
     var temp=str.childNodes[0].nodeValue;
     document.getElementById('search_info_map').value=temp;
     document.getElementById('show_map').innerHTML="";
+    search_node1();
 }
 
 function search_node1(){
      var temp =document.getElementById('search_info_map').value;
      var flag=0;
-     for (var i=0;i<class_hierachy_map.length;i++){
-         if(temp==class_hierachy_map[i][0]){
+     for (var i=0;i<class_hierarchy_map2.length;i++){
+         if(temp==class_hierarchy_map2[i][0]){
             flag=1;
             var temp_id="map"+i;
             if(document.all){
