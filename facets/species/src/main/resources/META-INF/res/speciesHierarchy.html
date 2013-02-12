@@ -1,22 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>CSV2Table</title>
-
-	<link rel="stylesheet" href="css/csvtable.css" type="text/css" />
-
-	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="js/jquery.csvToTable.js"></script>
-	<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+	<title>jsTree v.1.0 - Demo</title>
+	<script type="text/javascript" src="_lib/jquery.js"></script>
+	<script type="text/javascript" src="_lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="_lib/jquery.hotkeys.js"></script>
 	<script type="text/javascript" src="js/jquery.jstree.js"></script>
+
 	<script type="text/javascript" src="_docs/syntax/!script.js"></script>
-	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
-	 
 	<script type="text/javascript" class="source below">
 		var class_hierachy=[["Aves",null],["sharpShinnedHawk","Accipiter"],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["commonRedpoll","Acanthis"]];
          var show=new Array();
-         var len=0;        
+         var len=0;
 		 
 		function initial_hierachy(){
 			var temp_div=document.getElementById('tree');
@@ -48,22 +43,8 @@
           					 "icons" : true,
 					 	     "url": "themes/default/style.css"
        					},
-       					
-       					"core" : { "initially_open" : [ "0" ] },
-       					
-       					"dnd" : {
-       		                "drop_target" : "#CSVTable2",
-       		                "drop_finish" : function (data) {
-       		                    if(data.o.attr("rel") === "ds") {
-       		                      //update chart with new data here?
-       		                      //using data.o.attr("id")
-       		                    }
-       		                }
-       		            },
-       		            "crrm" : { move : { check_move : function (m) { return false; } } },
 
-						 "plugins" : ["themes","html_data","dnd","ui","types","crrm"] })
-						
+						 "plugins" : ["themes","html_data","ui"] })
 							// 1) if using the UI plugin bind to select_node
 			
 							.bind("select_node.jstree", function (event, data) { 
@@ -210,87 +191,14 @@
 			 document.getElementById('show').innerHTML="";
 		}
 		
-
-		
 	</script>
+
 	
-	
-	<script>
-
-	$(function(){ $('#button1').click(function() {
-		$.get('test.csv', function(data) {
-			$('#CSVSource').html('<pre>' + data + '</pre>');
-		});
-		$('#CSVTable').CSVToTable('test.csv', { loadingImage: 'images/loading.gif', startLine: 0 });
-		$.get('test.csv', function(data) {
-			$('#TSVSource').html('<pre>' + data + '</pre>');
-		});
-		$('#TSVTable').CSVToTable('test.csv', { loadingText: 'Loading TSV Data...', loadingImage: 'images/loading.gif', startLine: 0, separator: "\t" });
-		$('#CSVTable2').CSVToTable('test.csv', { loadingImage: 'images/loading.gif', startLine: 0 }).bind("loadComplete",function() { 
-			$('#CSVTable2').find('TABLE').tablesorter();
-		});;
-	});
-	});
-	</script>
-	<script>
-/*	$(function() {
-		$.get('test.csv', function(data) {
-			$('#CSVSource').html('<pre>' + data + '</pre>');
-		});
-		$('#CSVTable').CSVToTable('test.csv', { loadingImage: 'images/loading.gif', startLine: 0 });
-		$.get('test.csv', function(data) {
-			$('#TSVSource').html('<pre>' + data + '</pre>');
-		});
-		$('#TSVTable').CSVToTable('test.csv', { loadingText: 'Loading TSV Data...', loadingImage: 'images/loading.gif', startLine: 0, separator: "\t" });
-		$('#CSVTable2').CSVToTable('test.csv', { loadingImage: 'images/loading.gif', startLine: 0 }).bind("loadComplete",function() { 
-			$('#CSVTable2').find('TABLE').tablesorter();
-		});;
-	}); 
-*/	</script>
-
-
 </head>
+
 <body onload="initial_hierachy()">
 
-<br><br>
-Please upload a CSV file: 
-<br><br>
-<input type="file" id="files" name="files[]" multiple /><button id="button1">Upload</button>
-<output id="list"></output>
 
-<script>
-  function handleFileSelect(evt) {
-    var files = evt.target.files; // FileList object
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
-    }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
-
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
-</script>
-
-
-<br><br>
-<div style="float:left;width:70%;">
-<div id="CSVSource" class="source" >
-</div>
-
-<br><br>
-CSV To Table:<br>
-
-
-<div id="CSVTable2">
-
-</div>
-</div>
-<div style="margin-left:70%; width:30%;">
 <div>
 
  <table cellpadding="0"; cellspacing="0">
@@ -300,14 +208,17 @@ CSV To Table:<br>
 		</td>
 	  </tr>
 	 <tr>
-          <td  ><div id="text"  ><textarea name ="search" id="search_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press(event)"></textarea></div>
-		  <td style=" width:20%;"><input type=button onClick=" search_node()" value="search"/></td>
+          <td  ><div id="text"  ><textarea name ="search" id="search_info" style="position:absolute; left:900px; overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press(event)"></textarea></div>
+		  <td style="position:relative; left:910px; width:20%"><input type=button onClick=" search_node()" value="search"/></td>
 		  </td>         
       
      </tr>
-	 <tr>
+         <tr>
+          <td  style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id=show></div></td>
+         </tr>
+	<tr>
           <td colspan="2">       
-           <div id="description" style="  border:1px solid #111111; overFlow: auto; " >
+           <div id="description" style="position:relative; left:900px; border:1px solid #111111; overFlow: auto;  " >
 			<div id="tree" class="demo" style="width:120%;height:500px;">
 
 			</div>
@@ -319,9 +230,5 @@ CSV To Table:<br>
     </table>
 
 </div>
-</div>
-<div style="clear:both"></div>
-
 
 </body>
-</html>
