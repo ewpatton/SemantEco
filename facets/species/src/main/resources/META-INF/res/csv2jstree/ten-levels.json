@@ -1,0 +1,60 @@
+{
+    "ArrayOfString": [
+        {
+            "string": [
+                "item1",
+                "item2",
+                {
+                    "morestrings": [
+                        "item1",
+                        "item2",
+                        {
+                            "morestrings": [
+                                "item1",
+                                "item2",
+                                {
+                                    "morestrings": [
+                                        "item1",
+                                        "item2",
+                                        {
+                                            "morestrings": [
+                                                "item1",
+                                                "item2",
+                                                {
+                                                    "morestrings": [
+                                                        "item1",
+                                                        "item2",
+                                                        {
+                                                            "morestrings": [
+                                                                "item1",
+                                                                "item2",
+                                                                {
+                                                                    "morestrings": [
+                                                                        "item1",
+                                                                        "item2",
+                                                                        {
+                                                                            "morestrings": [
+                                                                                "item1",
+                                                                                "item2",
+                                                                                "item3",
+                                                                                "item4" 
+                                                                            ] 
+                                                                        }
+                                                                    ] 
+                                                                }
+                                                            ] 
+                                                        }
+                                                    ] 
+                                                }
+                                            ] 
+                                        } 
+                                    ] 
+                                }
+                            ] 
+                        }
+                    ] 
+                }
+            ] 
+        }
+    ]
+}
