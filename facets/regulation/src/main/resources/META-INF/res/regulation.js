@@ -55,6 +55,11 @@ RegulationModule.getData = function() {
 		
 		// for each binding in the SPARQL results raise the "create-marker" event
 		for(var binding in json.results.bindings) {
+			var b = json.results.bindings[binding];
+			// follow if statement temporarily addresses issue #21.
+			if(b.lng != undefined && parseFloat(b.lng.value) > 0.0) {
+				b.lng.value = (-parseFloat(b.lng.value)).toString();
+			}
 			$(window).trigger("create-marker", json.results.bindings[binding]);
 		}
 	});
