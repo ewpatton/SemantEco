@@ -69,6 +69,17 @@ div#header img {
   height: 100%;
 }
 
+div#header div.header-text {
+	height: 80%;
+}
+
+div#header div.header-text span {
+	font-family: "Bookman Old Style", Times, serif;
+	font-size: 400%;
+	color: #f5ef90;
+	text-shadow: 0px 4px 8px #000;
+}
+
 table {
   border: 1px solid black;
   margin-bottom: 1em;
