@@ -196,8 +196,6 @@ var SemantEcoUI = {
                         }
                         speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
                     }
-                    console.log(speciessobj);
-                    console.log(speciesnames);
 
                     //the series for the characteristic
                     //after preparing the actually data, start to initial the series
@@ -220,16 +218,6 @@ var SemantEcoUI = {
                         });
                     }
                     
-                    if(UITeamUtilities.fakedata){
-                        chartdata.push([[(year+0)+"-04-01",3],[(year+0)+"-05-01",5],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",4],[(year+0)+"-10-01",2],[(year+0)+"-11-01",3]]);
-                        chartdata.push([[(year+0)+"-04-01",5],[(year+0)+"-05-01",4],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",6],[(year+0)+"-10-01",5],[(year+0)+"-11-01",3]]);
-                        series.push({
-                            label:"Bubo_virginianus",yaxis:'y2axis'
-                        });
-                        series.push({
-                            label:"Megascops asio",yaxis:'y2axis'
-                        });
-                    }
                     //based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
                     else{
                         for(var i=0;i<speciesnames.length;i++){
@@ -239,8 +227,6 @@ var SemantEcoUI = {
                                 });
                         }
                     }
-
-                    console.log(chartdata);
 
                     //the code above genrated the actual data and controlling information about series, 
                     //now initializing the chart, feeding relative data gnerated above
@@ -384,8 +370,6 @@ var SemantEcoUI = {
                                 $(".lb_loading").hide();
 
                                 console.log("queryForNearbySpeciesCountsCallback");
-                                console.log("data:"+data2);
-
 
                                 if(data2 && (JSON.parse(data2)).results.bindings.length!=0){
                                     data2=JSON.parse(data2);
@@ -394,18 +378,6 @@ var SemantEcoUI = {
                                 }
                                 else{
                                     console.log("Empty data from queryForNearbySpeciesCounts");
-                                    
-                                    //this part is only for development
-                                    //to getting siblings we need to push this particular species
-                                    if(UITeamUtilities.nearSpecies){
-                                        var tempcounty=$.bbq.getState("county");
-                                        var tempstate=$.bbq.getState("state");
-                                        var tempspecies=$.bbq.getState("species");
-                                        $.bbq.pushState({"county":"019"});
-                                        $.bbq.pushState({"state": "MD"});
-                                        $.bbq.pushState({"species":["http://ebird#Megascops_cooperi"]});
-                                    }
-                                    //
                                     
                                     //if the the returning species data is empty, then there is another call if check if sibling species data exists
                                     function queryIfSiblingsExistCallback(data){
