@@ -173,9 +173,13 @@ var SemantEcoUI = {
 
                     //this loop is getting data to generate array of arraies that will be used by jqplot [["2012-01-01",3],["2012-01-01",8]]
                     for(var i=0;i<mesurementData.length;i++) {
-                        chartseries1.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].value.value*100 )/100]);
+                        var time = mesurementData[i].time.value.substring(0,10);
+                        if(time.length == 8) {
+                            time = time.substr(0,4)+"-"+time.substr(4,2)+"-"+time.substr(6,2);
+                        }
+                        chartseries1.push([time,Math.round( mesurementData[i].value.value*100 )/100]);
                         if(mesurementData[i].limit){
-                            limitThreshold.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].limit.value*100 )/100]);
+                            limitThreshold.push([time,Math.round( mesurementData[i].limit.value*100 )/100]);
                         }
                     }
                     //push the processed data to the chartdata, which a data array will be used as input for jqplot
@@ -220,13 +224,11 @@ var SemantEcoUI = {
                     }
                     
                     //based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
-                    else{
-                        for(var i=0;i<speciesnames.length;i++){
-                            chartdata.push(speciessobj[speciesnames[i]]);
-                            series.push({
-                                    label:speciesnames[i],yaxis:'y2axis'
-                                });
-                        }
+                    for(var i=0;i<speciesnames.length;i++){
+                        chartdata.push(speciessobj[speciesnames[i]]);
+                        series.push({
+                                label:speciesnames[i],yaxis:'y2axis'
+                            });
                     }
 
                     //the code above genrated the actual data and controlling information about series, 
