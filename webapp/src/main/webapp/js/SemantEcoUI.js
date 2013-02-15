@@ -145,7 +145,8 @@ var SemantEcoUI = {
                 //this column is for the tree
                 rightcolumngenerater=function(){
                     var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
-                    var specietree=$(document.createElement('div')).addClass("specietree").html('<div class="hierarchy_wrapper"><input type="text" name="search" id="search_info_map" style="overflow:hidden;padding:0;resize:none;" placeholder="Type message here!" onKeyPress="press1(event)" /><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;"/><div id="show_map"></div><div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="jstree" style="width:100%;height:100px;"></div></div></div>').appendTo(rightcolumn);
+                    var specietree=$(document.createElement('div')).addClass("specietree").html('<div class="hierarchy_wrapper"><input type="text" name="search" id="search_info_map" style="overflow:hidden;padding:0;resize:none;" placeholder="Type message here!" autocomplete="off" /><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;"/><div id="show_map"></div><div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="jstree" style="width:100%;height:100px;"></div></div></div>').appendTo(rightcolumn);
+                    specietree.keyup(keyUp1);
                     SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
                         jsonHier2=JSON.parse(data);
                         jsonHier2=jsonHier2["data"];
@@ -972,85 +973,34 @@ function ajax_node1() {
     });
 }
 
-
-
-
-document.onkeydown = keyDown1;
-
-function keyDown1(){
-    if(event.keyCode==8){
-        var temp =document.getElementById('search_info_map').value;
-    
-       var cprStr=temp;
-        if(cprStr.length!=1&&cprStr.length!=0){             
-            cprStr=cprStr.substring(0,cprStr.length-1);
-    
-           show=[];
-           len=0;
-           for (i in class_hierarchy_map2){
-                if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)){
-                   len=show.push(class_hierarchy_map2[i][0]);
-               }
-            } 
-        }
-     else{
-    show=[];
-        }
-        //alert("Have "+len+" compatible records");
-      var div1=document.getElementById('show_map');
-        div1.innerHTML="";
-        htmlStr="";
-        for (i in show){
-           htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
-            htmlStr+=show[i];
-          htmlStr+="</a>";
-         htmlStr+="</br>";
-    }
-      div1.innerHTML+=htmlStr;
-         //alert(show);
-    }
-    
-}
-
-
-function press1(event){
-var e=event.srcElement;
-    if(event.keyCode!=13){
-        if(event.keyCode!=8){
-    var realkey = String.fromCharCode(event.keyCode);
-        match1(realkey);
-         return false;
-        }
-        
-    }
-}
-
-function match1(str){
-    //alert(document.getElementById('textarea2').value);
+function keyUp1(){
+    var div1=document.getElementById('show_map');
     var temp =document.getElementById('search_info_map').value;
-    
-    
-    var cprStr=temp+str;
-
-    show=[];
-    len=0;
-    for (i in class_hierarchy_map2){
-        if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)){
-           len=show.push(class_hierarchy_map2[i][0]);
+    var cprStr=temp;
+    var show = [];
+    if(event.keyCode==8) {
+        if(cprStr.length==0) {
+            $(div1).css("display", "none");
+            return;
+        }
+    }
+    for (i in class_hierarchy_map2) {
+        if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)) {
+           show.push(class_hierarchy_map2[i][0]);
        }
     } 
-    //alert("Have "+len+" compatible records");
-var div1=document.getElementById('show_map');
+    $(div1).css("display", show.length == 0 ? "none" : "block");
     div1.innerHTML="";
     htmlStr="";
     for (i in show){
-         htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose1(this)\">";
-       htmlStr+=show[i];
+        htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
+        htmlStr+=show[i];
         htmlStr+="</a>";
-       htmlStr+="</br>";
+        htmlStr+="</br>";
     }
-div1.innerHTML+=htmlStr;
+    div1.innerHTML+=htmlStr;
 }
+
 function choose1(str){
     var temp=str.childNodes[0].nodeValue;
     document.getElementById('search_info_map').value=temp;
@@ -1083,6 +1033,7 @@ function search_node1(){
      }
      document.getElementById('search_info_map').value="";
      document.getElementById('show_map').innerHTML="";
+     $("#show_map").css("display", "none");
 }
 
 
