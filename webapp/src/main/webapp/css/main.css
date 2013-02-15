@@ -611,3 +611,23 @@ div#infowindowcontrol a:hover{
 .clear{
     clear: both;
 }
+
+div#description_map {
+	width: 100%;
+}
+
+div.specietree>div {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+div.specietree>div div#show_map {
+	position:absolute;
+	top:1.1em;
+	overflow: scroll;
+	background-color: white;
+	padding-right: 1em;
+	width: 100%;
+	max-height: 110%;
+}
