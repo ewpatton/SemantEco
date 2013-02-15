@@ -124,6 +124,7 @@ var SemantEco = {
 			SemantEco.getLimitData();
 		}
 		$.bbq.pushState({"zip": zip});
+		$("#zip").val(zip);
 		return false;
 	},
 	"handleStateChange": function() {
