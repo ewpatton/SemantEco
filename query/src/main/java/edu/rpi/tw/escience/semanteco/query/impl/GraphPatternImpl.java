@@ -135,7 +135,7 @@ public class GraphPatternImpl implements GraphPattern {
 			result += object;
 		}
 		if(transitive) {
-			result += " option(transitive)";
+			result += " option(transitive, t_distinct, t_no_cycles)";
 		}
 		result += " . ";
 		return result;

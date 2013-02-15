@@ -79,7 +79,7 @@ public class GraphPatternTest extends TestCase {
 		GraphPatternImpl x = new GraphPatternImpl(s, p, o);
 		assertEquals("?s ?p ?o . ", x.toString());
 		x.setTransitive(true);
-		assertEquals("?s ?p ?o option(transitive) . ", x.toString());
+		assertEquals("?s ?p ?o option(transitive, t_distinct, t_no_cycles) . ", x.toString());
 		x.setTransitive(false);
 		x.setObject("123", null);
 		assertEquals("?s ?p \"123\" . ", x.toString());

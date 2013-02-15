@@ -29,7 +29,9 @@
   <body onload="SemantEco.initialize()">
     <div class="container">
 	    <div id="header">
-	      <img src="images/header.png" alt="header"/>
+	      <div class="header-text">
+	        <span>SemantEco Data Portal</span>
+	      </div>
 	    </div>
 	    <div id="content">
     	  <div class="main">
