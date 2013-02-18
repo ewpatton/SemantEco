@@ -399,21 +399,11 @@ var SemantEcoUI = {
                                         console.log("returned sibling species : "+species);
                                         var con=confirm(confirmtext);
                                         if(con){
-                                            console.log("yes I would");
-                                            // $.bbq.pushState({"species":species});
-                                            $.bbq.pushState({"species":["http://ebird#Megascops_asio", "http://ebird#Bubo_virginianus"]});
+                                            $.bbq.pushState({"species":species});
                                             console.log("this is getState after push species to state");
                                             console.log($.bbq.getState("species"));
 
                                             SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
-
-                                            //this part is only for development
-                                            if(UITeamUtilities.nearSpecies){
-                                                $.bbq.pushState({"county":tempcounty});
-                                                $.bbq.pushState({"state": tempstate});
-                                                $.bbq.pushState({"species":tempspecies});
-                                            }
-                                            //
                                             return false;
                                         }
                                         else{
