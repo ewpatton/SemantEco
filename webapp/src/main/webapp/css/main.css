@@ -55,7 +55,7 @@ div#header {
   width: 70%;
   margin-left: auto;
   margin-right: auto;
-  height: 100px;
+  height: 6em;
   padding-left: 16pt;
   padding-right: 16pt;
   padding-top: 16pt;
@@ -70,7 +70,8 @@ div#header img {
 }
 
 div#header div.header-text {
-	height: 80%;
+	height: 100%;
+	line-height: 6em;
 }
 
 div#header div.header-text span {
@@ -609,4 +610,26 @@ div#infowindowcontrol a:hover{
 
 .clear{
     clear: both;
+}
+
+div#description_map {
+	width: 100%;
+	height: 100%;
+}
+
+div.specietree>div {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+div.specietree>div div#show_map {
+	position:absolute;
+	top:1.9em;
+	overflow: scroll;
+	background-color: white;
+	padding-right: 1em;
+	width: 100%;
+	max-height: 110%;
+	display: none;
 }

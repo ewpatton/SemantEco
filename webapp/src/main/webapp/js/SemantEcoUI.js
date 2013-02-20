@@ -145,7 +145,8 @@ var SemantEcoUI = {
                 //this column is for the tree
                 rightcolumngenerater=function(){
                     var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
-                    var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
+                    var specietree=$(document.createElement('div')).addClass("specietree").html('<div class="hierarchy_wrapper"><input type="text" name="search" id="search_info_map" style="overflow:hidden;padding:0;resize:none;" placeholder="Type message here!" autocomplete="off" /><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;"/><div id="show_map"></div><div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="jstree" style="width:100%;height:100px;"></div></div></div>').appendTo(rightcolumn);
+                    specietree.keyup(keyUp1);
                     SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
                         jsonHier2=JSON.parse(data);
                         jsonHier2=jsonHier2["data"];
@@ -172,9 +173,13 @@ var SemantEcoUI = {
 
                     //this loop is getting data to generate array of arraies that will be used by jqplot [["2012-01-01",3],["2012-01-01",8]]
                     for(var i=0;i<mesurementData.length;i++) {
-                        chartseries1.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].value.value*100 )/100]);
+                        var time = mesurementData[i].time.value.substring(0,10);
+                        if(time.length == 8) {
+                            time = time.substr(0,4)+"-"+time.substr(4,2)+"-"+time.substr(6,2);
+                        }
+                        chartseries1.push([time,Math.round( mesurementData[i].value.value*100 )/100]);
                         if(mesurementData[i].limit){
-                            limitThreshold.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].limit.value*100 )/100]);
+                            limitThreshold.push([time,Math.round( mesurementData[i].limit.value*100 )/100]);
                         }
                     }
                     //push the processed data to the chartdata, which a data array will be used as input for jqplot
@@ -196,8 +201,6 @@ var SemantEcoUI = {
                         }
                         speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
                     }
-                    console.log(speciessobj);
-                    console.log(speciesnames);
 
                     //the series for the characteristic
                     //after preparing the actually data, start to initial the series
@@ -220,27 +223,13 @@ var SemantEcoUI = {
                         });
                     }
                     
-                    if(UITeamUtilities.fakedata){
-                        chartdata.push([[(year+0)+"-04-01",3],[(year+0)+"-05-01",5],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",4],[(year+0)+"-10-01",2],[(year+0)+"-11-01",3]]);
-                        chartdata.push([[(year+0)+"-04-01",5],[(year+0)+"-05-01",4],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",6],[(year+0)+"-10-01",5],[(year+0)+"-11-01",3]]);
-                        series.push({
-                            label:"Bubo_virginianus",yaxis:'y2axis'
-                        });
-                        series.push({
-                            label:"Megascops asio",yaxis:'y2axis'
-                        });
-                    }
                     //based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
-                    else{
-                        for(var i=0;i<speciesnames.length;i++){
-                            chartdata.push(speciessobj[speciesnames[i]]);
-                            series.push({
-                                    label:speciesnames[i],yaxis:'y2axis'
-                                });
-                        }
+                    for(var i=0;i<speciesnames.length;i++){
+                        chartdata.push(speciessobj[speciesnames[i]]);
+                        series.push({
+                                label:speciesnames[i],yaxis:'y2axis'
+                            });
                     }
-
-                    console.log(chartdata);
 
                     //the code above genrated the actual data and controlling information about series, 
                     //now initializing the chart, feeding relative data gnerated above
@@ -384,8 +373,6 @@ var SemantEcoUI = {
                                 $(".lb_loading").hide();
 
                                 console.log("queryForNearbySpeciesCountsCallback");
-                                console.log("data:"+data2);
-
 
                                 if(data2 && (JSON.parse(data2)).results.bindings.length!=0){
                                     data2=JSON.parse(data2);
@@ -394,18 +381,6 @@ var SemantEcoUI = {
                                 }
                                 else{
                                     console.log("Empty data from queryForNearbySpeciesCounts");
-                                    
-                                    //this part is only for development
-                                    //to getting siblings we need to push this particular species
-                                    if(UITeamUtilities.nearSpecies){
-                                        var tempcounty=$.bbq.getState("county");
-                                        var tempstate=$.bbq.getState("state");
-                                        var tempspecies=$.bbq.getState("species");
-                                        $.bbq.pushState({"county":"019"});
-                                        $.bbq.pushState({"state": "MD"});
-                                        $.bbq.pushState({"species":["http://ebird#Megascops_cooperi"]});
-                                    }
-                                    //
                                     
                                     //if the the returning species data is empty, then there is another call if check if sibling species data exists
                                     function queryIfSiblingsExistCallback(data){
@@ -424,21 +399,11 @@ var SemantEcoUI = {
                                         console.log("returned sibling species : "+species);
                                         var con=confirm(confirmtext);
                                         if(con){
-                                            console.log("yes I would");
-                                            // $.bbq.pushState({"species":species});
-                                            $.bbq.pushState({"species":["http://ebird#Megascops_asio", "http://ebird#Bubo_virginianus"]});
+                                            $.bbq.pushState({"species":species});
                                             console.log("this is getState after push species to state");
                                             console.log($.bbq.getState("species"));
 
                                             SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
-
-                                            //this part is only for development
-                                            if(UITeamUtilities.nearSpecies){
-                                                $.bbq.pushState({"county":tempcounty});
-                                                $.bbq.pushState({"state": tempstate});
-                                                $.bbq.pushState({"species":tempspecies});
-                                            }
-                                            //
                                             return false;
                                         }
                                         else{
@@ -1000,85 +965,34 @@ function ajax_node1() {
     });
 }
 
-
-
-
-document.onkeydown = keyDown1;
-
-function keyDown1(){
-    if(event.keyCode==8){
-        var temp =document.getElementById('search_info_map').value;
-    
-       var cprStr=temp;
-        if(cprStr.length!=1&&cprStr.length!=0){             
-            cprStr=cprStr.substring(0,cprStr.length-1);
-    
-           show=[];
-           len=0;
-           for (i in class_hierarchy_map2){
-                if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)){
-                   len=show.push(class_hierarchy_map2[i][0]);
-               }
-            } 
-        }
-     else{
-    show=[];
-        }
-        //alert("Have "+len+" compatible records");
-      var div1=document.getElementById('show_map');
-        div1.innerHTML="";
-        htmlStr="";
-        for (i in show){
-           htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
-            htmlStr+=show[i];
-          htmlStr+="</a>";
-         htmlStr+="</br>";
-    }
-      div1.innerHTML+=htmlStr;
-         //alert(show);
-    }
-    
-}
-
-
-function press1(event){
-var e=event.srcElement;
-    if(event.keyCode!=13){
-        if(event.keyCode!=8){
-    var realkey = String.fromCharCode(event.keyCode);
-        match1(realkey);
-         return false;
-        }
-        
-    }
-}
-
-function match1(str){
-    //alert(document.getElementById('textarea2').value);
+function keyUp1(){
+    var div1=document.getElementById('show_map');
     var temp =document.getElementById('search_info_map').value;
-    
-    
-    var cprStr=temp+str;
-
-    show=[];
-    len=0;
-    for (i in class_hierarchy_map2){
-        if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)){
-           len=show.push(class_hierarchy_map2[i][0]);
+    var cprStr=temp;
+    var show = [];
+    if(event.keyCode==8) {
+        if(cprStr.length==0) {
+            $(div1).css("display", "none");
+            return;
+        }
+    }
+    for (i in class_hierarchy_map2) {
+        if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)) {
+           show.push(class_hierarchy_map2[i][0]);
        }
     } 
-    //alert("Have "+len+" compatible records");
-var div1=document.getElementById('show_map');
+    $(div1).css("display", show.length == 0 ? "none" : "block");
     div1.innerHTML="";
     htmlStr="";
     for (i in show){
-         htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose1(this)\">";
-       htmlStr+=show[i];
+        htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
+        htmlStr+=show[i];
         htmlStr+="</a>";
-       htmlStr+="</br>";
+        htmlStr+="</br>";
     }
-div1.innerHTML+=htmlStr;
+    div1.innerHTML+=htmlStr;
 }
+
 function choose1(str){
     var temp=str.childNodes[0].nodeValue;
     document.getElementById('search_info_map').value=temp;
@@ -1111,6 +1025,7 @@ function search_node1(){
      }
      document.getElementById('search_info_map').value="";
      document.getElementById('show_map').innerHTML="";
+     $("#show_map").css("display", "none");
 }
 
 
