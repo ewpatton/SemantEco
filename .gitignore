@@ -3,3 +3,5 @@
 .classpath
 .project
 target
+
+webapp/src/main/webapp/js/SemantEcoUI.js
