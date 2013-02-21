@@ -95,7 +95,7 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 		      marker.tabledata=contents;
 		    }
 		    else{
-		    	contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
+		        contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Characteristic</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
 			    for(var i=0;i<bindings.length;i++) {
 			      	// try {
 						var result = bindings[i];
