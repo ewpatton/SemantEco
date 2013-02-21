@@ -195,11 +195,11 @@ var SemantEcoUI = {
                     var speciesnames=[];
                     var speciessobj={};
                     for(var i=0;i<nearbySpeciesData.length;i++){
-                        if(!speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]]){
-                            speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]]=[];
-                            speciesnames.push(nearbySpeciesData[i]["scientific_name"]["value"]);
+                        if(!speciessobj[nearbySpeciesData[i]["commonName"]["value"]]){
+                            speciessobj[nearbySpeciesData[i]["commonName"]["value"]]=[];
+                            speciesnames.push(nearbySpeciesData[i]["commonName"]["value"]);
                         }
-                        speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
+                        speciessobj[nearbySpeciesData[i]["commonName"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
                     }
 
                     //the series for the characteristic
