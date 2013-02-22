@@ -27,10 +27,9 @@
     <module:scripts />
   </head>
   <body onload="SemantEco.initialize()">
-    <div class="container">
 	    <div id="header">
 	      <div class="header-text">
-	        <span>SemantEco Data Portal</span>
+	        <img src="images/header.png" alt="SemantEco" />
 	      </div>
 	    </div>
 	    <div id="content">
@@ -81,6 +80,5 @@
 	            </div>
 	        </div>
 		</div>
-	</div>
 </body>
 </html>

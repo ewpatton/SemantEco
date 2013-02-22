@@ -85,23 +85,17 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 		(marker.data.isAir != undefined && marker.data.isAir.value == "true")){
 		RegulationModule.queryForSitePollution({}, function(data){
 			$("#spinner").hide();
-			console.log("data retrieved in queryForSitePollution. Data(below):");
-			console.log("marker:(below):");
-			console.log(marker);
-			// console.log(data);
 			data=JSON.parse(data);
-			console.log(data);
 			var contents = "";
 		    if(marker.data.label && marker.data.label.value != '')
 		      contents += "<div class='top'>Site: "+marker.data.label.value+"</div>";
-		  	// console.log(data.results);
 		    var bindings = data.results.bindings;
 		    if(bindings.length==0) {
 		      contents += "<div class='bottom'>This site has no known pollution based on the regulation you selected.</div>";
 		      marker.tabledata=contents;
 		    }
 		    else{
-		    	contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Pollutant</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
+		        contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Characteristic</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
 			    for(var i=0;i<bindings.length;i++) {
 			      	// try {
 						var result = bindings[i];
