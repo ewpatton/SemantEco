@@ -388,13 +388,13 @@ var SemantEcoUI = {
                                         data=JSON.parse(data);
                                         data=data.data;
                                         var species=[];
-                                        var confirmtext="No result for the selected species, would you want to see data for\n";
+                                        var confirmtext="There are no results for the selected species, would you like to see data for: \n";
                                         if(UITeamUtilities.fakedata){
                                             confirmtext="You attempted to plot bird count data for the species \"Bare-legged Owl\", but none is available. There is  however Bird count data on other species of in family “Owl”, including \"Bare-shanked Screech Owl\" and \"Brown-Fish Owl\"";
                                         }
                                         for(var i=0;i<data.length;i++){
-                                            species.push(data[i]["sibling"]);
-                                            confirmtext+=data[i]["sibling"]+"\n";
+                                            species.push(data[i]["commonName"]);
+                                            confirmtext+=data[i]["commonName"]+"\n";
                                         }
                                         console.log("returned sibling species : "+species);
                                         var con=confirm(confirmtext);
