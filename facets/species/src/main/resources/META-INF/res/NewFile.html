@@ -12,9 +12,10 @@
 	<script type="text/javascript" src="js/jquery.jstree.js"></script>
 	<script type="text/javascript" src="_docs/syntax/!script.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
 	 
 	<script type="text/javascript" class="source below">
-		var class_hierachy=[["Aves",null],["sharpShinnedHawk","Accipiter"],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["commonRedpoll","Acanthis"]];
+		var class_hierachy=[["Property",null],["testnode","Resource"],["Resource","Property"],["Literal","Property"],["Boolean","Property"],["testnode","Literal"]];
          var show=new Array();
          var len=0;        
 		 
@@ -32,7 +33,9 @@
 			ul.appendChild(li); 
 			temp_div.appendChild(ul); 
 			document.getElementById('description').appendChild(temp_div);
-	  	    //alert("success");
+	  	    
+			//alert("success");
+			
 			var i=0+1;
 			if (i<class_hierachy.length){
 		    	for (var i=1;i<class_hierachy.length;i++){ 
