@@ -6,7 +6,7 @@
 
 	<link rel="stylesheet" href="css/csvtable.css" type="text/css" />
 
-	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery.csvToTable.js"></script>
 	<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="js/jquery.jstree.js"></script>
@@ -14,23 +14,22 @@
 	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
     <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
     
-    <script type="text/javascript" src="js/jquery.ba-bbq-1.2.1.js"></script>
-    <script type="text/javascript" src="js/jquery.cookie.js"></script>
-    <script type="text/javascript" src="js/modernizr-2.0.js"></script>
-    <script type="text/javascript" src="js/d3.js"></script>
-    <script type="text/javascript" src="js/d3.csv.js"></script>
-    <script type="text/javascript" src="js/d3.time.js"></script>
-    <script type="text/javascript" src="js/json.js"></script>
-    <script type="text/javascript" src="js/SemantEco.js"></script>
-    <script type="text/javascript" src="js/SemantEcoUI.js"></script>
-    <script type="text/javascript" src="../../js/modules/DataTypeModule.js"></script>
+    <script type="text/javascript" src="../../js/jquery.ba-bbq-1.2.1.js"></script>
+    <script type="text/javascript" src="../../js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../../js/modernizr-2.0.js"></script>
+    <script type="text/javascript" src="../../js/d3.js"></script>
+    <script type="text/javascript" src="../../js/d3.csv.js"></script>
+    <script type="text/javascript" src="../../js/d3.time.js"></script>
+    <script type="text/javascript" src="../../js/json.js"></script>
+    <script type="text/javascript" src="../../js/SemantEco.js"></script>
+    <script type="text/javascript" src="../../js/SemantEcoUI.js"></script>
+    <script type="text/javascript" src="../../js/config.js"></script>
     <script type="text/javascript" src="../../js/modules/SpeciesDataProviderModule.js"></script>
-    <script type="text/javascript" src="../../resources/semanteco-data-type-4.1-20130220.184638-16/data-type.js"></script>
-    <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" />
-    <script type="text/javascript" src="js/jqplot/plugins/jqplot.highlighter.js"></script>
-    <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
-    <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+    <script type="text/javascript" src="../../js/jqplot/jquery.jqplot.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
+    <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.highlighter.js"></script>
+    <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.cursor.min.js"></script>
+    <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
 	 
 	<script type="text/javascript" class="source below">
 	 /*jsonHier used to accept JSON*/
@@ -44,75 +43,6 @@
 
 	/*initialization*/
 	$(function() {
-		//input value=birds matches the checkbox for birds, as encoded in SpeciesDataProviderModule.java
-		var birdIcon = $("input[value='birds']+img").attr("src");
-		var fishIcon = $("input[value='fish']+img").attr("src");
-
-		
-		//this is for birds
-		
-		DataTypeModule.registerVisibilityFunction(function(b) {
-			if(b["isBird"] == undefined) {
-				return false;
-			}
-			var bird = b["isBird"]["value"] == "true";
-			if(!bird) {
-				return false;
-			}
-			return $("input[value='birds']")[0].checked;
-		});
-		
-		DataTypeModule.registerIconLocator(function(b) {
-			if(b["isBird"] == undefined) {
-				return null;
-			}
-			var bird = b["isBird"]["value"] == "true";
-			if(!bird) {
-				return null;
-			}
-			return birdIcon;
-		});
-		
-		
-		//this is for fish
-		//when the server returns the list of sites in the sparql results, it interates over all the binds
-		//and the datatype module calls every visibility function and every icon locator (this is in DataTypeModule.js and/or SemantEcoUI.js)
-		//registerVisibilityFunction is an array of functions, which are you passing this "anonymous" function into
-		//so the sparql results bindings are passing as "b" into the below function
-		DataTypeModule.registerVisibilityFunction(function(b) {
-			//b is a dictionary where each key is a variable in the sparql
-			//each valuable is itself a dictionary. each dicgtionary has up to four keys inside of it.
-			// type (uri, literal, or blank node), value (actual uri or actual literal, or actual blank node), datatype (only present if literal and typed literal)
-			//if there is no binding to the ?isFish variable then the default is to return false.
-			//this will be undefined if you uncheck the both fish and spcies under the domain.
-			if(b["isFish"] == undefined) {
-				return false;
-			}
-			//we know this is a fish binding (b/c it could be false if this particular site being iterated on happens not to be a fish site)
-			var fish = b["isFish"]["value"] == "true"; 
-			if(!fish) {
-				return false;
-			}
-			return $("input[value='fish']")[0].checked; //we use query to grab the checkbox and the value of its "checked" property
-		});
-		
-		//returns as string which is a string to an image if its a relevant image for the visiblity.
-		DataTypeModule.registerIconLocator(function(b) {
-			if(b["isFish"] == undefined) {
-				return null;
-			}
-			var fish = b["isFish"]["value"] == "true";
-			if(!fish) {
-				return null;
-			}
-			return fishIcon;
-		});
-		
-		
-		
-		
-		
-		
 		/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
 		//puts the array of root nodes, which are in the "data" array, into jsonHier
 		//call initial_hiearchy
