@@ -23,11 +23,11 @@ TABLE.CSVTable TD, TABLE.CSVTable TH {
 }
 /* Default background color for rows */
 TABLE.CSVTable TR {
-	background: #F0F0F0;
+	background: #FF0000;
 }
 /* Background color for odd rows */
 TABLE.CSVTable TR.odd {
-	background: #F9F9F9;
+	background: #FF0000;
 }
 /* Hover color for all rows */
 TABLE.CSVTable TR:hover {
