@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 /**
  * HierarchyEntry encapsulates information about an entry
  * in the hierarchy so that it can be serialized between
@@ -78,5 +80,9 @@ public class HierarchyEntry {
 		else {
 			return URI.create(uri);
 		}
+	}
+
+	public JSONObject toJSONObject() {
+		return new JSONObject(this.contents);
 	}
 }
