@@ -82,6 +82,11 @@ public class HierarchyEntry {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return new JSONObject(this.contents).toString();
+	}
+
 	public JSONObject toJSONObject() {
 		return new JSONObject(this.contents);
 	}
