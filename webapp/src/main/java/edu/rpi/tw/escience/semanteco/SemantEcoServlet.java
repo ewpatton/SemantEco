@@ -266,13 +266,17 @@ public class SemantEcoServlet extends WebSocketServlet {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private String serializeHierarchyEntries(Collection<HierarchyEntry> entries) {
 		JSONArray arr = new JSONArray();
 		Iterator<HierarchyEntry> i = entries.iterator();
 		while(i.hasNext()) {
 			arr.put(i.next().toJSONObject());
 		}
-		return arr.toString();
+		JSONObject result = new JSONObject();
+		result.put("success", true);
+		result.put("results", arr);
+		return result.toString();
 	}
 
 	private String computeBaseUrl(HttpServletRequest request) {
