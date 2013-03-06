@@ -7,7 +7,7 @@ TABLE.CSVTable {
 
 /* Header */
 TABLE.CSVTable THEAD TR {
-	background: #E8EDFF;
+	background: #FF0000;
 }
 TABLE.CSVTable TH {
 	font-family: "Lucida Sans Unicode","Lucida Grande",Sans-Serif;
@@ -23,16 +23,19 @@ TABLE.CSVTable TD, TABLE.CSVTable TH {
 }
 /* Default background color for rows */
 TABLE.CSVTable TR {
-	background: #FF0000;
+	background: #F0F0F8;
 }
 /* Background color for odd rows */
 TABLE.CSVTable TR.odd {
-	background: #FF0000;
+	background: #F0F0F8;
 }
 /* Hover color for all rows */
+
+/*
 TABLE.CSVTable TR:hover {
 	background: #E8EDFF;
 }
+*/
 
 /* Source code */
 .source {

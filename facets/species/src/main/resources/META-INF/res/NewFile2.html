@@ -33,7 +33,7 @@
 	 
 	<script type="text/javascript" class="source below">
 	 /*jsonHier used to accept JSON*/
-	var jsonHier;
+	 var jsonHier;
 //	jsonHier = String(jsonHier); // Cast to string
 	/*class_hierachy used to store nodes information*/
 	 var class_hierachy=new Array();
@@ -162,6 +162,16 @@
 			}
 		    
 		}
+		//see the output of the objects being dragged and dropped 
+		function printObject(o) {
+			  var out = '';
+			  for (var p in o) {
+			    out += p + ': ' + o[p] + '\n';
+			  }
+			  alert(out);
+			}
+		
+		
 		
 		/** JStree function, initialize JStree. make all nodes open at first*/
 		$(function () {
@@ -172,12 +182,28 @@
 	   					 "theme" : "default",
 	   					 "dots" : true,
 	  					 "icons" : true,
-				 	    // "url": "themes/default/style.css"
+				 	     "url": "themes/default/style.css"
 						},
 						 
-					"core" : { "initially_open" : [ "0" ] },
+					//"core" : { "initially_open" : [ "0" ] },
 					
-					 "plugins" : ["themes","html_data","ui"] })
+					"dnd" : {
+   		                "drop_target" : "#CSVTable2 th",
+   		                "drop_finish" : function (data) {
+   		                	$(data.r).css("background-color","#00ff00");
+                         //add the node name to the header, and get the parent node "id"
+   		                 var p = data.o.attr("id");
+   		                 alert(p);
+
+   		                 var q = $(data.o).text();
+   		                 alert(q);
+   		                }
+   		            },
+   		            
+   		            "crrm" : { move : { check_move : function (m) { return false; } } },
+
+					
+					 "plugins" : ["themes","html_data","dnd","ui","types","crrm"] })
 						
 		                /**the function used for selecting one node*/
 					 //this retrieve the children node of the selected node, based on user selection of the node in the tree. (see: queryBirdTaxonomySubclasses below)
@@ -271,7 +297,7 @@
 			ul.appendChild(li); 
 			temp_div.appendChild(ul); 
 		 	    
-			alert("success");
+			//alert("success");
 			
 		}	
 	}	
@@ -465,209 +491,144 @@
 
 	</script>
 	
-		<script type="text/javascript" class="source two below">
-		var class_hierachy=[["Property",null],["testnode","Resource"],["Resource","Property"],["Literal","Property"],["Boolean","Property"],["testnode","Literal"]];
-         var show=new Array();
-         var len=0;        
-		 
-		function initial_hierachy_two(){
-			var temp_div=document.getElementById('tree2');
-			temp_div.innerHTML="";
-			var ul=document.createElement("ul");
-			var li=document.createElement("li");
-			var a=document.createElement("a");
-			a.href="#";
-			var text=document.createTextNode(class_hierachy[0][0]);
-			li.id=0;
-			a.appendChild(text); 
-			li.appendChild(a); 
-			ul.appendChild(li); 
-			temp_div.appendChild(ul); 
-			document.getElementById('description2').appendChild(temp_div);
-	  	    
-			//alert("success");
-			
-			var i=0+1;
-			if (i<class_hierachy.length){
-		    	for (var i=1;i<class_hierachy.length;i++){ 
-					append_node(i,0);
-				}
-		    }
-			$(function () {
-				$("#tree2")
-					.jstree({
-						"themes" : {
-           					 "theme" : "default",
-           					 "dots" : true,
-          					 "icons" : true,
-					 	     "url": "themes/default/style.css"
-       					},
-       					
-       					"core" : { "initially_open" : [ "0" ] },
-       					
-       					"dnd" : {
-       		                "drop_target" : "#CSVTable2",
-       		                "drop_finish" : function (data) {
-       		                    if(data.o.attr("rel") === "ds") {
-       		                      //update chart with new data here?
-       		                      //using data.o.attr("id")
-       		                      
-       		                    }
-       		                }
-       		            },
-       		            "crrm" : { move : { check_move : function (m) { return false; } } },
-
-						 "plugins" : ["themes","html_data","dnd","ui","types","crrm"] })
-						
-							// 1) if using the UI plugin bind to select_node
-			
-							.bind("select_node.jstree", function (event, data) { 
-							// `data.rslt.obj` is the jquery extended node that was clicked
-							    var temp=data.rslt.obj.attr("id");
-								alert(class_hierachy[temp][0]);
-								alert(class_hierachy[temp][1]);
-						})
-							// 2) if not using the UI plugin - the Anchor tags work as expected
-							//    so if the anchor has a HREF attirbute - the page will be changed
-					//    you can actually prevent the default, etc (normal jquery usage)
-							.delegate("a", "click", function (event, data) { event.preventDefault(); })
-			});
-	
-		}
-		function append_node(current, parent){
-		    if(class_hierachy[current][1]==class_hierachy[parent][0]){
-				var temp_div=document.getElementById(parent);
-				var ul=document.createElement("ul");
-				var li=document.createElement("li");
-				var a=document.createElement("a");
-				a.href="#";
-				var text=document.createTextNode(class_hierachy[current][0]);
-				li.id=current;
-				a.appendChild(text); 
-				li.appendChild(a); 
-				ul.appendChild(li); 
-				temp_div.appendChild(ul); 
-	  	 	    //alert("success");
-				//var i=current+1;
-				//if (i<class_hierachy.length){
-		    		for (var i=0;i<class_hierachy.length;i++){ 
-						append_node(i,current);
-				//}
-		    }
-			}
-		}	
-		
-		document.onkeydown = keyDown;
-		
-		function keyDown(){
-             if(event.keyCode==8){
-             	var temp =document.getElementById('search_info2').value;
-             
-            	var cprStr=temp;
-             	if(cprStr.length!=1&&cprStr.length!=0){             
-             		cprStr=cprStr.substring(0,cprStr.length-1);
-             
-            		show=[];
-            		len=0;
-            		for (i in class_hierachy){
-             			if(cprStr==class_hierachy[i][0].substring(0,cprStr.length)){
-            	    		len=show.push(class_hierachy[i][0]);
-                		}
-             		} 
-            	 }
-	     	 else{
-		 	show=[]
-                 }
-            	 //alert("Have "+len+" compatible records");
-	   	  var div1=document.getElementById('show');
-           	  div1.innerHTML="";
-           	  htmlStr=""
-           	  for (i in show){
-              	  htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">"
-               	  htmlStr+=show[i];
-				  htmlStr+="</a>"
-                  htmlStr+="</br>";
-             }
-	    	  div1.innerHTML+=htmlStr;
-            	  //alert(show);
-             }
-             
-         }
-		
-		
-		function press(event){
-	     var e=event.srcElement;
-             if(event.keyCode!=13){
-                 if(event.keyCode!=8){
-		     var realkey = String.fromCharCode(event.keyCode);
-	             match(realkey);
-	    	     return false;
-                 }
-                 
-             }
-         }
-		
-		function match(str){
-
-             //alert(document.getElementById('textarea2').value);
-             var temp =document.getElementById('search_info2').value;
-             
-             
-             var cprStr=temp+str;
-    
-             show=[];
-             len=0;
-             for (i in class_hierachy){
-             	if(cprStr==class_hierachy[i][0].substring(0,cprStr.length)){
-            	    len=show.push(class_hierachy[i][0]);
+	<script>
+	$(function() {
+    $("#DataTypeTree").jstree({
+    	
+    	"themes" : {
+				 "theme" : "apple",
+				 "dots"  : true,
+				 "icons" : true,
+	 	         "url": "themes/apple/style.css"
+			},
+    	
+        "json_data": {
+            "data": [
+                {
+                    "attr": { "id": "" },
+                    "data": "[ Data Types ]",
+                    "state": "open",
+                    "children": [
+                        {
+                            "data": "xsd:string"
+                        },
+                        {
+                            "data": "xsd:boolean"
+                        },
+                        {
+                            "data": "xsd:decimal"
+                        },
+                        {
+                            "data": "xsd:float"
+                        },
+                        {
+                            "data": "xsd:double"
+                        },
+                        {
+                            "data": "xsd:integer"
+                        },
+                        {
+                            "data": "xsd:anyURI"
+                        }
+                    ]
                 }
-             } 
-             //alert("Have "+len+" compatible records");
-	     var div1=document.getElementById('show');
-             div1.innerHTML="";
-             htmlStr=""
-             for (i in show){
-			 	htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">"
-                htmlStr+=show[i];
-				htmlStr+="</a>"
-                htmlStr+="</br>";
-             }
-	     div1.innerHTML+=htmlStr;
-         }
-		function choose(str){
-			var temp=str.childNodes[0].nodeValue;
-			document.getElementById('search_info2').value=temp;
-			document.getElementById('show').innerHTML="";
-		}
-		
-		function search_node(){
-			 var temp =document.getElementById('search_info2').value;
-			 var flag=0;
-			 for (var i=0;i<class_hierachy.length;i++){
-			 	if(temp==class_hierachy[i][0]){
-					flag=1;
-					if(document.all){
-						document.getElementById(i).firstChild.click();
-					}
-					else{
-						var evt = document.createEvent("MouseEvents");  
-     	 				evt.initEvent("click", true, true);  
-       			  	    document.getElementById(i).childNodes[1].dispatchEvent(evt);  
-					}
-					//alert(" found !");
-					break;
-				}
-			 }
-			 if(flag==0){
-			 	alert(" not found !")
-			 }
-			 document.getElementById('search_info2').value="";
-			 document.getElementById('show').innerHTML="";
-		}
-		
-
-		
+            ]
+        },
+        
+        "crrm" : {
+            "move" : {
+                "check_move" : function (data) {
+                    //alert(data.r.attr("id"));
+                    if(data.r.attr("id") == "") {
+                        
+                    }
+                }
+            }
+        },
+        
+        "plugins": ["themes", "json_data", "ui", "dnd", "crrm"]
+    });
+});
 	</script>
+	
+	<script>
+	$(function() {
+    $("#PropertyTree").jstree({
+    	
+    	"themes" : {
+				 "theme" : "classic",
+				 "dots"  : true,
+				 "icons" : true,
+	 	         "url": "themes/classic/style.css"
+			},
+    	
+        "json_data": {
+            "data": [
+                {
+                    "attr": { "id": "" },
+                    "data": "[ Properties ]",
+                    "state": "open",
+                    "children": [
+                        {
+                            "data": "rdfs:range"
+                        },
+                        {
+                            "data": "rdfs:domain"
+                        },
+                        {
+                            "data": "rdf:type"
+                        },
+                        {
+                            "data": "rdfs:subClassOf"
+                        },
+                        {
+                            "data": "rdfs:subPropertyOf"
+                        },
+                        {
+                            "data": "rdfs:label"
+                        },
+                        {
+                            "data": "rdfs:comment"
+                        },
+                        {
+                            "data": "rdf:value"
+                        },
+                        {
+                            "data": "rdf:object"
+                        },
+                        {
+                            "data": "rdf:predicate"
+                        },
+                        {
+                            "data": "rdf:subject"
+                        },
+                        {
+                            "data": "rdfs:seeAlso"
+                        },
+                        {
+                            "data": "rdfs:isDefinedBy"
+                        }
+                    ]
+                }
+            ]
+        },
+        
+        "crrm" : {
+            "move" : {
+                "check_move" : function (data) {
+                    //alert(data.r.attr("id"));
+                    if(data.r.attr("id") == "") {
+                        
+                    }
+                }
+            }
+        },
+        
+        "plugins": ["themes", "json_data", "ui", "dnd", "crrm"]
+    });
+});
+	</script>
+	
 	
 	
 	<script>
@@ -711,7 +672,7 @@ $(document).ready(function(){
 
 
 </head>
-<body onload="initial_hierachy_two()">
+<body onload="">
 
 <br><br>
 Please upload a CSV file: 
@@ -776,25 +737,21 @@ CSV To Table:<br>
 			</div>
 		  </td>
      </tr>
-	
-    </table>
-    
-<table cellpadding="0"; cellspacing="0">
-      <tr>
-	    <td colspan="2">
-		   
-		</td>
-	  </tr>
-	 <tr>
-          <td  ><div id="text2"  ><textarea name ="search" id="search_info2" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press(event)"></textarea></div>
-		  <td style=" width:20%;"><input type=button onClick=" search_node()" value="search"/></td>
-		  </td>         
-      
+          <tr>
+          <td colspan="2">       
+           <div id="description3" style="  border:1px solid #111111; overFlow: auto; " >
+			<div id="PropertyTree" class="demo3" style="width:120%;height:300px;">
+
+			</div>
+
+			</div>
+		  </td>
      </tr>
-	 <tr>
+     
+     <tr>
           <td colspan="2">       
            <div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="tree2" class="demo" style="width:120%;height:500px;">
+			<div id="DataTypeTree" class="demo2" style="width:120%;height:150px;">
 
 			</div>
 

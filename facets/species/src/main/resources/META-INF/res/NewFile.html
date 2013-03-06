@@ -13,6 +13,52 @@
 	<script type="text/javascript" src="_docs/syntax/!script.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
     <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+    
+    <script>
+    $(function() {
+
+        //Check File API support
+        if (window.File && window.FileList && window.FileReader) {
+            var filesInput = document.getElementById("files");
+
+            filesInput.addEventListener("change", function(event) {
+
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+
+                    //Only plain text
+                    if (!file.type.match('plain')) continue;
+
+                    var picReader = new FileReader();
+
+                    picReader.addEventListener("load", function(event) {
+
+                        var textFile = event.target;
+
+                        var div = document.createElement("div");
+                        
+                        $("#wtf").html(textFile.result);
+
+                        div.innerText = textFile.result;
+
+                        output.insertBefore(div, null);
+
+                    });
+
+                    //Read the text file
+                    picReader.readAsText(file);
+                }
+
+            });
+        }
+        else {
+            console.log("Your browser does not support File API");
+        }
+    });
+    </script>
 	 
 	<script type="text/javascript" class="source below">
 		var class_hierachy=[["Property",null],["testnode","Resource"],["Resource","Property"],["Literal","Property"],["Boolean","Property"],["testnode","Literal"]];
@@ -251,6 +297,32 @@
 	}); 
 */	</script>
 
+<style>
+body{
+    font-family: 'Segoe UI';
+    font-size: 12pt;
+}
+
+header h1{
+    font-size:12pt;
+    color: #fff;
+    background-color: #1BA1E2;
+    padding: 20px;
+
+}
+article
+{
+    width: 80%;
+    margin:auto;
+    margin-top:10px;
+}
+
+
+input[type='file']{
+    margin:10px;
+}
+</style>
+
 
 </head>
 <body onload="initial_hierachy()">
@@ -292,7 +364,14 @@ CSV To Table:<br>
 <div id="CSVTable2">
 
 </div>
+   <article>
+        <label for="files">Select a file: </label>
+        <input id="files" type="file" />
+        <output id="result" />
+        <div id="wtf"></div>
+    </article>
 </div>
+
 <div style="margin-left:70%; width:30%;">
 <div>
 
