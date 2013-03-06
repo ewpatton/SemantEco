@@ -13,5 +13,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface QueryMethod {
-
+	public enum HTTP {
+		GET,
+		POST
+	}
+	HTTP method() default HTTP.GET;
 }

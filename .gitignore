@@ -3,5 +3,10 @@
 .classpath
 .project
 target
+.DS_Store
 
-webapp/src/main/webapp/js/SemantEcoUI.js
+webapp/.DS_Store
+
+webapp/src/.DS_Store
+
+webapp/src/main/.DS_Store

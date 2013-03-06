@@ -1531,6 +1531,8 @@ WHERE
 		final Variable parent = query.getVariable(VAR_NS+ "parent");
 		final Variable measurement = query.getVariable(VAR_NS+ "measurement");
 		final Variable scientificName = query.getVariable(VAR_NS + "scientific_name");
+		final Variable commonName = query.getVariable(VAR_NS+"commonName");
+		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
 		final Variable siblingScientificName = query.getVariable(VAR_NS + "scientific_name");
 		final QueryResource countyCoded = query.getResource(e1_NS + "countyCoded");
 		final QueryResource stateAbbrev = query.getResource(e1_NS + "stateCoded");
@@ -1547,10 +1549,13 @@ WHERE
 		//vars.add(measurement);
 		//vars.add(parent);
 		vars.add(sibling);
+		vars.add(commonName);
+
 		query.setVariables(vars);
 
 		graph.addPattern(species, subClassOf, parent); 
 		graph.addPattern(sibling, subClassOf, parent); 
+		graph.addPattern(sibling, hasCommonName, commonName); 
         // graph.addPattern(species, hasLabel, scientificName);	
         graph.addPattern(sibling, hasLabel, siblingScientificName);	
 		graph.addFilter("?sibling != <" + singletonSpecies + ">");
@@ -1581,6 +1586,8 @@ WHERE
 			for(int i=0;i<bindings.length();i++) {
 				JSONObject binding = bindings.getJSONObject(i);
 				String siblingVar = binding.getJSONObject("sibling").getString("value");
+				String commonNameVar = binding.getJSONObject("commonName").getString("value");
+
 				//String subclassLabel = binding.getJSONObject("label").getString("value");
 
 				try {
@@ -1592,6 +1599,7 @@ WHERE
 				//}
 				JSONObject mapping = new JSONObject();
 				mapping.put("sibling", siblingVar);
+				mapping.put("commonName", commonNameVar);
 				//mapping.put("label", subclassLabel);
 				//mapping.put("parent", superclassId);
 				data.put(mapping);
