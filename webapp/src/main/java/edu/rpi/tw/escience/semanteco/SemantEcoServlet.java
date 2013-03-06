@@ -160,7 +160,29 @@ public class SemantEcoServlet extends WebSocketServlet {
 			ps.close();
 		}
 	}
-	
+
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		int socketId = extractSocketId(request);
+		WsOutbound clientStream = null;
+		if(socketId != -1) {
+			ResponseChannel channel = channels.get(socketId);
+			if(channel != null) {
+				clientStream = channel.getWsOutbound();
+			}
+		}
+		if(!request.getServletPath().startsWith("/rest")) {
+			response.setStatus(405);
+			response.setHeader("Accept", "HEAD GET");
+			PrintStream ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
+			ps.println("Only GET is allowed for this resource.");
+			ps.close();
+			return;
+		}
+		log.debug("Handling POST call");
+		invokeRestCall(request, response, clientStream);
+	}
+
 	@Override
 	public String getServletInfo() {
 		getServletContext().getResourceAsStream("/META-INF/maven/edu.rpi.tw.escience/semanteco-webapp/pom.properties");

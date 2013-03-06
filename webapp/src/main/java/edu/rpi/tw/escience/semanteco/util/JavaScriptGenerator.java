@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
+import edu.rpi.tw.escience.semanteco.QueryMethod.HTTP;
 
 /**
  * JavaScriptGenerator provides some basic utilities for creating
@@ -67,6 +68,7 @@ public final class JavaScriptGenerator {
 		final String ending = (SemantEcoConfiguration.get().isDebug() ? "\n  " : "");
 		final String ending2 = (SemantEcoConfiguration.get().isDebug() ? "  " : "");
 		final StringBuilder result = new StringBuilder();
+		final QueryMethod attrs = m.getAnnotation(QueryMethod.class);
 		result.append("\"");
 		result.append(m.getName());
 		result.append("\": ");
@@ -80,7 +82,13 @@ public final class JavaScriptGenerator {
 		result.append(cls.getSimpleName());
 		result.append("/");
 		result.append(m.getName());
-		result.append("\",{\"data\":SemantEco.prepareArgs(a)});");
+		result.append("\",{\"data\":SemantEco.prepareArgs(a)");
+		if(attrs != null) {
+			if(attrs.method() == HTTP.POST) {
+				result.append(",\"type\":\"POST\"");
+			}
+		}
+		result.append("});");
 		result.append(ending);
 		result.append(ending2);
 		result.append("if(success)");
