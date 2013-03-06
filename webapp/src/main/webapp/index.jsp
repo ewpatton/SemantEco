@@ -4,10 +4,13 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="css/reset.css" type="text/css"/>
+    <link rel="stylesheet" href="css/start/jquery-ui-1.10.1.custom.min.css" type="text/css"/>
     <link rel="stylesheet" href="css/main.css" type="text/css"/>
     <module:styles />
     <title>SemantEco Data Portal</title>
+    <script type="text/javascript" src="js/underscore-min.js"></script>
     <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.10.1.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.ba-bbq-1.2.1.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/modernizr-2.0.js"></script>
@@ -17,6 +20,7 @@
     <script type="text/javascript" src="js/json.js"></script>
     <script type="text/javascript" src="js/SemantEco.js"></script>
     <script type="text/javascript" src="js/SemantEcoUI.js"></script>
+    <script type="text/javascript" src="js/SemantEcoUI.HierarchicalFacet.js"></script>
     <script type="text/javascript" src="js/config.js" ></script>
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAkAvsEZc18GOe01jOVpX48hnWRIgIajec&amp;sensor=false"></script>
     <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
