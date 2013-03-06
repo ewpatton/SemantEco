@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.semanteco.test;
 
+import java.net.URL;
+
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -39,6 +41,11 @@ public class MockRequest implements Request {
 
 	@Override
 	public Model getCombinedModel() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public URL getOriginalURL() {
 		throw new UnsupportedOperationException();
 	}
 

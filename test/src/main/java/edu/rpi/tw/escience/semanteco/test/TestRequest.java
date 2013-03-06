@@ -1,5 +1,6 @@
 package edu.rpi.tw.escience.semanteco.test;
 
+import java.net.URL;
 import java.util.Map;
 
 import java.util.TreeMap;
@@ -90,6 +91,11 @@ public class TestRequest implements Request {
 	 */
 	public void setParam(String key, String[] values) {
 		params.put(key, values);
+	}
+
+	@Override
+	public URL getOriginalURL() {
+		return null;
 	}
 
 }

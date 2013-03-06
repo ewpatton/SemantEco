@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.semanteco;
 
+import java.net.URL;
+
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -45,4 +47,10 @@ public interface Request {
 	 * @return
 	 */
 	Model getCombinedModel();
+
+	/**
+	 * Gets the URL that generated this request
+	 * @return A URL object that encodes this request.
+	 */
+	URL getOriginalURL();
 }

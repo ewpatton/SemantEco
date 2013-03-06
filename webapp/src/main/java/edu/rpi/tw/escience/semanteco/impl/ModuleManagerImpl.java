@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -536,7 +537,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		public Model getCombinedModel() {
 			return null;
 		}
-		
+
+		@Override
+		public URL getOriginalURL() {
+			return null;
+		}
+
 	}
 
 }

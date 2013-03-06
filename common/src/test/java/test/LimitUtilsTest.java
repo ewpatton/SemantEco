@@ -1,5 +1,7 @@
 package test;
 
+import java.net.URL;
+
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +52,11 @@ public class LimitUtilsTest extends TestCase {
 
 		@Override
 		public Model getCombinedModel() {
+			return null;
+		}
+
+		@Override
+		public URL getOriginalURL() {
 			return null;
 		}
 		

@@ -1,5 +1,7 @@
 package edu.rpi.tw.escience.semanteco.ui;
 
+import java.net.URL;
+
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -88,6 +90,11 @@ public class SemantEcoUIFactory {
 		public Model getCombinedModel() {
 			return null;
 		}
-		
+
+		@Override
+		public URL getOriginalURL() {
+			return null;
+		}
+
 	}
 }

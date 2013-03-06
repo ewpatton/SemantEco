@@ -44,7 +44,7 @@ public class ClientRequestTest extends TestCase {
 	public void test() {
 		new TestConfiguration();
 		TestWsOutbound ws = new TestWsOutbound();
-		Logger req = new ClientRequest(getClass().getName(), null, ws);
+		Logger req = new ClientRequest(getClass().getName(), null, ws, null);
 		req.info("Test");
 	}
 	

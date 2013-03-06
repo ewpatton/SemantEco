@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Map;
@@ -217,9 +220,24 @@ public class SemantEcoServlet extends WebSocketServlet {
 		}
 		ps.close();
 	}
-	
+
+	private URL getURL(final HttpServletRequest request) {
+		final StringBuffer temp = request.getRequestURL();
+		final String params = request.getQueryString();
+		if(params != null) {
+			temp.append("?");
+			temp.append(params);
+		}
+		try {
+			return new URL(temp.toString());
+		} catch(MalformedURLException e) {
+			return null;
+		}
+	}
+
 	private void invokeRestCall(HttpServletRequest request, HttpServletResponse response, 
 			WsOutbound clientStream) throws IOException {
+		URL original = getURL(request);
 		String processed = request.getPathInfo();
 		processed = processed.substring(1);
 		final String modName = processed.substring(0, processed.indexOf('/'));
@@ -227,7 +245,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 		log.debug("module name = "+modName);
 		log.debug("method name = "+methodName);
 		final Module module = ModuleManagerFactory.getInstance().getManager().getModuleByName(modName);
-		final ClientRequest logger = new ClientRequest(module.getClass().getName(), request.getParameterMap(), clientStream);
+		final ClientRequest logger = new ClientRequest(module.getClass().getName(), request.getParameterMap(), clientStream, original);
 		Method m;
 		try {
 			m = module.getClass().getMethod(methodName, Request.class);

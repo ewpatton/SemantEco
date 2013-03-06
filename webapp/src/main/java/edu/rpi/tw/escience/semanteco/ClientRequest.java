@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.semanteco;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	private OntModel model = null;
 	private Model dataModel = null;
 	private boolean combined = false;
+	private URL original = null;
 	
 	protected final String arrayToString(String[] arr) {
 		StringBuilder res = new StringBuilder("[");
@@ -62,7 +64,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	 * @param params Request parameters extracted from the query string
 	 * @param channel optional web socket channel where debugging information is sent
 	 */
-	public ClientRequest(String name, Map<String, String[]> params, WsOutbound channel) {
+	public ClientRequest(String name, Map<String, String[]> params, WsOutbound channel, URL original) {
 		super(name);
 		this.params = new HashMap<String, String>();
 		if(params != null) {
@@ -98,6 +100,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		}
 		this.clientLog = channel;
 		this.log = Logger.getLogger(name);
+		this.original = original;
 		setLogger(log);
 	}
 
@@ -244,6 +247,11 @@ public class ClientRequest extends LoggerWrapper implements Request {
 			combined = true;
 		}
 		return model;
+	}
+
+	@Override
+	public URL getOriginalURL() {
+		return original;
 	}
 
 }
