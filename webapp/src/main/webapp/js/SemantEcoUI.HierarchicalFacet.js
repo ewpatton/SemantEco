@@ -6,7 +6,7 @@
  */
 SemantEcoUI.HierarchicalFacet = {};
 
-function(self) {
+(function(self) {
     /*
      * Entries for the hierarchical facet have, at a minimum:
      * id (uri), children, prefLabel, altLabel, element, and rawData.
@@ -14,7 +14,14 @@ function(self) {
      * altLabel on the entry, otherwise altLabel will be the same as
      * prefLabel.
      */
-    
+
+    var HierarchyVerb = {
+        ROOTS: "ROOTS",
+        CHILDREN: "CHILDREN",
+        SEARCH: "SEARCH",
+        COUNT_DESCENDANTS: "COUNT_DESCENDANTS"
+    };
+
     /**
      * Function reference used to cancel clicks on &lt;a&gt; elements
      * in the jsTree.
@@ -50,13 +57,14 @@ function(self) {
     var processRoots = function(jqdiv, data) {
         if(data.success == false) {
             window.alert(data.error);
+            return;
         }
         data = data.results;
         var roots = [];
         var lookup = {};
         for(var i=0;i<data.length;i++) {
             var obj = {};
-            obj["id"] = data[i].id.value;
+            obj["id"] = data[i].uri.value;
             obj["children"] = [];
             obj["prefLabel"] = data[i].prefLabel.value;
             obj["altLabel"] = data[i]["altLabel"] == undefined ? 
@@ -99,15 +107,41 @@ function(self) {
         
     };
 
+    var searchClosure = function(jqdiv, module, qmethod) {
+        return function(request, response) {
+            module[qmethod](HierarchyVerb.SEARCH, {"string": request.term},
+                    function(d) {
+                d = JSON.parse(d);
+                var objs = jqdiv.data("hierarchy.lookup");
+                d = _.map(d, function(obj) { return objs[obj.uri] === undefined ? obj.label === undefined ? "(unknown)" : obj.label : objs[obj.uri].label });
+                response(d);
+            }, function(d) { response([]); });
+        };
+    };
+
+    var selectFunction = function(event, ui) {
+        console.log(ui.item);
+    };
+
     /**
      * 
      */
     SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param) {
         div = $(div);
+        div.addClass("ui-front");
+        div.append("<input type=\"text\" />");
+        div.append("<input type=\"button\" />");
+        div.append("<div class=\"jstree-placeholder\"></div>");
+        var text = $("input[type='text']", div);
+        text.autocomplete({minLength: 3, source: searchClosure(div, module, qmethod)})
+            .on("autocompleteselect", selectFunction);
         div.data("hierarchy.module", module);
         div.data("hierarchy.query_method", qmethod);
         div.data("hierarchy.param", param);
-        SemantEcoUI.HierarchicalFacet.populateRoots(div);
+        module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
+            d = JSON.parse(d);
+            processRoots(div, d);
+        });
     };
     
     SemantEcoUI.HierarchicalFacet.entryForElement = function(div, e) {
@@ -117,4 +151,4 @@ function(self) {
         return div.data("hierarchy.lookup")[id];
     };
     
-}(SemantEcoUI.HierarchicalFacet);
+})(SemantEcoUI.HierarchicalFacet);
