@@ -61,12 +61,14 @@
     	<module>characteristics</module>
 	<module>industry</module>
 	<module>debugger</module>
-	<module>annotator</module>
-	<module>provenance</module>
       </modules>
     </profile>
     <profile>
       <id>parent-only</id>
     </profile>
   </profiles>
+  <modules>
+    <module>annotator</module>
+    <module>provenance</module>
+  </modules>
 </project>
