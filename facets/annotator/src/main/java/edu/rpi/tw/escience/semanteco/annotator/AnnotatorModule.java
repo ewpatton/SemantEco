@@ -3,6 +3,7 @@ import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.FileManager;
 
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
@@ -42,6 +44,18 @@ public class AnnotatorModule implements Module {
 		
 		//load certain ontologies
 		model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
+		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
+		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
+		
 		
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -49,12 +63,17 @@ public class AnnotatorModule implements Module {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 
 		final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
+		final QueryResource Measurement = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement");
+		final QueryResource Thing = query.getResource("http://www.w3.org/2002/07/owl#Thing");
 		final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
 		final Variable site = query.getVariable(VAR_NS+"site");
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(site);
 		query.setVariables(vars);
-		query.addPattern(site, subClassOf, PollutedThing);
+		//query.addPattern(site, subClassOf, PollutedThing);
+		//query.addPattern(site, subClassOf, Measurement);
+		query.addPattern(site, subClassOf, Thing);
+
 		//construct.addPattern(site, subClassOf, PollutedThing);
 
 		//return executeLocalQuery(query, model);
