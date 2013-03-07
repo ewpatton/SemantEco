@@ -75,4 +75,6 @@ public interface QueryExecutor {
 	 * @param query SPARQL query object to execute
 	 */
 	String executeLocalQuery(Query query);
+	String executeLocalQuery(Query query, Model model);
+
 }

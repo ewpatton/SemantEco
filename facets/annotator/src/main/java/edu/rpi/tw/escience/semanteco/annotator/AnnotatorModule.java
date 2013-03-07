@@ -3,6 +3,8 @@ import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -18,6 +20,7 @@ import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
@@ -35,20 +38,27 @@ public class AnnotatorModule implements Module {
 		//construct an owlontology and pose sparql queries against it.
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
 		
 		//load certain ontologies
 		model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 		
 		//apply sparql queries against it
-		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		//final GraphComponentCollection construct = query.getConstructComponent();
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+
 		final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
 		final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
 		final Variable site = query.getVariable(VAR_NS+"site");
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(site);
+		query.setVariables(vars);
 		query.addPattern(site, subClassOf, PollutedThing);
+		//construct.addPattern(site, subClassOf, PollutedThing);
 
-
-
-		return executeLocalQuery(query, model);
+		//return executeLocalQuery(query, model);
+		return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 
 		
 	}

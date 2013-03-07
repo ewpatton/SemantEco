@@ -259,6 +259,68 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			return this;
 		}
 	}
+	
+public String executeLocalQuery(Query query, Model model) {
+		
+		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
+			try {
+				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
+				model.write(fos);
+				fos.close();
+			}
+			catch(Exception e) {
+				// do nothing
+			}
+		}
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
+		log.trace("executeLocalQuery");
+		
+		log.debug("Module '"+modName+"' executing local query");
+		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
+		mgr.augmentQuery(query, request, mod);
+		log.debug("Query: "+query.toString());
+		Model resultModel = null;
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		long start = System.currentTimeMillis();
+		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		try {
+			switch(query.getType()) {
+			case SELECT:
+				ResultSet results = qe.execSelect();
+				ResultSetFormatter.outputAsJSON(baos, results);
+				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
+				return baos.toString("UTF-8");
+			case DESCRIBE:
+				resultModel = qe.execDescribe();
+				resultModel.write(baos);
+				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
+				return baos.toString("UTF-8");
+			case CONSTRUCT:
+				resultModel = qe.execConstruct();
+				resultModel.write(baos);
+				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
+				return baos.toString("UTF-8");
+			case ASK:
+				if(qe.execAsk()) {
+					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
+					return "{\"result\":true}";
+				}
+				else {
+				  log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
+					return "{\"result\":false}";
+				}
+			}
+		}
+		catch(Exception e) {
+		log.warn("Unable to execute query due to exception", e);
+		}
+		return null;
+	}
 
 	@Override
 	public String executeLocalQuery(Query query) {
