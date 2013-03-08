@@ -3,21 +3,40 @@ package edu.rpi.tw.escience.semanteco.provenance;
 import static edu.rpi.tw.escience.semanteco.query.Query.RDF_NS;
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+//import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
@@ -153,6 +172,60 @@ public class ProvenanceModule implements Module {
 		return config.getQueryExecutor(request).accept("text/turtle").executeLocalQuery(query);			
 
 		
+	}
+	
+	
+	@QueryMethod
+	public String owlApiTester(final Request request){
+		
+		//assume you have the jena model converted into an owl model, by calling OwlapiQueryExecutorImpl.executeLocalQuery
+		Model model = request.getCombinedModel();
+		ByteArrayOutputStream bufferedModel = new ByteArrayOutputStream();
+		model.write(bufferedModel);
+		ByteArrayInputStream byteStream = new ByteArrayInputStream(bufferedModel.toByteArray());
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		try {
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(byteStream);
+			//return executeOwlapiQuery(query, ontology, manager);
+			PelletReasoner reasoner = PelletReasonerFactory.getInstance().createReasoner(ontology);
+			OWLDataFactory dataFactory = manager.getOWLDataFactory();
+			OWLClass PollutedSite = dataFactory.getOWLClass(IRI.create("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedSite"));	
+			reasoner.precomputeInferences(InferenceType.CLASS_ASSERTIONS);
+			NodeSet<OWLNamedIndividual> indivSet = reasoner.getInstances(PollutedSite, false);
+			
+			//loop over each individual
+			for(final Node<OWLNamedIndividual> indiv : indivSet){
+				
+				ontology.getAxioms(AxiomType<T> OWLIndividualAxiom);
+			
+			}
+			
+			
+			ontology.getAxioms();
+			
+			//if this works, use the owlapi to iterate over the axioms of an individual and get the measurement data based on properties.
+			OWLNamedIndividual name;
+			//name.
+			
+			/*
+			 * Alternatively you may want to try using OPPL
+			 */
+			
+			return temp.toString();
+			
+		
+			
+
+		} catch (OWLOntologyCreationException e) {
+			//log.warn("OWL API unable to parse combined model exported by Jena.");
+		}
+		
+		
+		//what you are implementing here is the executeOwlapiQuery of that class.
+		
+	
+		
+		return null;
 	}
 	
 	@Override
