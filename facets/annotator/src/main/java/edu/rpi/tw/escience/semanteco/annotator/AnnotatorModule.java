@@ -33,6 +33,19 @@ public class AnnotatorModule implements Module {
 	private ModuleConfiguration config = null;
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 
+	@QueryMethod
+	public String queryForObjectProperties(Request request){
+		
+		//load oboe into a model and sparql query on top property. (http://www.w3.org/2002/07/owl#topObjectProperty)
+		return null;
+	}
+	@QueryMethod
+	public String queryForClasses(Request request){
+		//load oboe into a model and sparql query on top entity http://www.w3.org/2002/07/owl#Thing
+		//would it be better to have one model and reasoner for this module, instead of per query method? yes.
+		//do that through a constructor?
+		return null;
+	}
 	
 	@QueryMethod
 	public String queryForAnnotator(final Request request){

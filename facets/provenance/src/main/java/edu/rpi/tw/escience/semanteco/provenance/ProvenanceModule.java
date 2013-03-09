@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -60,7 +61,11 @@ public class ProvenanceModule implements Module {
 	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 	private static final String PROP_VAR = "p";
 	
-
+	public ProvenanceModule(){
+		//test if this executes once tomcat is restarted
+		System.out.println("Provenance Module has started");
+		
+	}
 
 	/**
 	 * Based on the measurement site parmeter, gets RDF data adding provenance using a CONSTRUCT query and returns to client corresponding RDF
@@ -193,10 +198,26 @@ public class ProvenanceModule implements Module {
 			reasoner.precomputeInferences(InferenceType.CLASS_ASSERTIONS);
 			NodeSet<OWLNamedIndividual> indivSet = reasoner.getInstances(PollutedSite, false);
 			
+			Set<OWLAxiom> axioms = ontology.getAxioms();
+			for (OWLAxiom axiom : axioms){
+				//axiom.
+				
+				
+			}
+			
 			//loop over each individual
 			for(final Node<OWLNamedIndividual> indiv : indivSet){
 				
-				ontology.getAxioms(AxiomType<T> OWLIndividualAxiom);
+				//ontology.getAxioms(AxiomType<T> OWLIndividualAxiom);
+				/*
+				 * ont.getAxioms(AxiomType.DATA_PROPERTY_ASSERTION);
+		ont.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION);
+		ont.getAxioms(AxiomType.)
+				 */
+				
+			//your test oppl query is:
+				// String query1 = "?A:CLASS SELECT ?A SubClassOf 'Heart disease (disorder)' BEGIN ADD ?A SubClassOf !Candidate END;";
+				//but does oppl support queries on instances?
 			
 			}
 			
