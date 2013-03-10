@@ -221,20 +221,12 @@ public class RegulationModule implements Module {
 		JSONArray domainArray = (JSONArray) request.getParam("domain");
 		for(int i = 0; i < domainArray.length(); i++){
 			try {
-				String objectInArray = domainArray.getString(i);
-				
-				if (objectInArray.equals("http://was.tw.rpi.edu/semanteco/air/air.owl#")){
-					air = true;
-				}
-				
-				if (objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#")){
-					water = true;
+				String objectInArray = domainArray.getString(i);			
+				if (objectInArray.equals("http://was.tw.rpi.edu/semanteco/air/air.owl#") ||objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#") ){
 					vars.add(facility);
 					vars.add(polluted);
-
 				}				
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
 		}
