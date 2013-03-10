@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -183,13 +184,26 @@ public class RegulationModule implements Module {
 		
 		query.setNamespace("pol", POL_NS);
 		
+		
+		
+		//0: "http://was.tw.rpi.edu/semanteco/air/air.owl#"
+		//1: "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#"
+		boolean air, water = false;
+		
+		
+		
 		// Variables
 		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
 		final Variable lat = query.getVariable(VAR_NS+"lat");
 		final Variable lng = query.getVariable(VAR_NS+"lng");
+		//these should only be part of the query if water or air is part of the data.
 		final Variable facility = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a pol:Facility } as ?"+FACILITY_VAR);
 		final Variable polluted = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a pol:PollutedSite } as ?"+POLLUTED_VAR);
 		final Variable label = query.createVariable(VAR_NS+LABEL_VAR);
+		
+		
+		
+		
 		
 		// known uris
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
@@ -203,8 +217,20 @@ public class RegulationModule implements Module {
 		vars.add(site);
 		vars.add(lat);
 		vars.add(lng);
-		vars.add(facility);
-		vars.add(polluted);
+		
+		JSONArray domainArray = (JSONArray) request.getParam("domain");
+		for(int i = 0; i < domainArray.length(); i++){
+			try {
+				String objectInArray = domainArray.getString(i);			
+				if (objectInArray.equals("http://was.tw.rpi.edu/semanteco/air/air.owl#") ||objectInArray.equals("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#") ){
+					vars.add(facility);
+					vars.add(polluted);
+				}				
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}			
+		}
+		
 		vars.add(label);
 		query.setVariables(vars);
 		
