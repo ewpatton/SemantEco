@@ -379,7 +379,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 							    request.getLogger().error("addedSpecies: " + addedSpecies.toString());
 							    request.getLogger().error("species: " + species.toString());
 							    request.getLogger().error("subclassof: " + subClassOf.toString());
-						        graph2.addPattern(species, subClassOf, addedSpecies, true);	
+						        graph2.addPattern(species, subClassOf, addedSpecies);	
 						        graph2.addPattern(species, hasLabel, scientificName);				       
 					    	}
 					    	else{
