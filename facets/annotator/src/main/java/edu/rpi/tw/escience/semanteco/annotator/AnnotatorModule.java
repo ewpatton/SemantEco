@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -52,11 +53,46 @@ public class AnnotatorModule implements Module {
 		return this.model;
 	}
 
+	//a set of key/value pairs (id/label pairs)
+	//			Hashtable<String, String> table = new Hashtable<String, String>();
+	
+	public String getShortName(String inName)
+	{
+		int pAt = inName.indexOf("#");
+		return (inName.substring(pAt+1));
+	}
+
+	public String jsonWrapper(Hashtable<String, String> table, String parent) throws JSONException{
+		JSONArray data = new JSONArray();
+		JSONObject response = new JSONObject();
+		response.put("success", true);
+		response.put("data", data);
+		String str;
+		 Set<String> set = table.keySet();
+		    Iterator<String> itr = set.iterator();
+		    while (itr.hasNext()) {
+		      str = itr.next();
+		      System.out.println(str + ": " + table.get(str));
+		      
+				JSONObject mapping = new JSONObject();
+				mapping.put("id", str);
+				//should use "short name" if there is no label.
+				
+				if(table.get(str) == ""){
+					table.put(str, getShortName(str));
+				}
+				
+				mapping.put("label", table.get(str));
+				mapping.put("parent", parent);
+				data.put(mapping);
+		    }
+		return response.toString();
+	}
 	
 	//would it be better to have one model and reasoner for this module, instead of per query method? yes.
 	//do that through a constructor?
 	@QueryMethod
-	public String queryForAnnotatorRootClasses(final Request request){
+	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
 		
 		
 		//construct an owlontology and pose sparql queries against it.
@@ -124,11 +160,22 @@ public class AnnotatorModule implements Module {
 		OntClass thing = model.getOntClass( OWL.Thing.getURI() );
 		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
 
+		Hashtable<String, String> table = new Hashtable<String, String>();
+		
 		for (Iterator<OntClass> i = thing.listSubClasses(true); i.hasNext(); ) { //true here is for direct
     	OntClass hierarchyRoot = i.next();
     	
-    	    classes.add( hierarchyRoot);
-		    labels.add( hierarchyRoot.getLabel(null));
+    	    //classes.add( hierarchyRoot);
+		    //labels.add( hierarchyRoot.getLabel(null));
+    	System.out.println("root: " + hierarchyRoot.toString());
+    	System.out.println("label: " + hierarchyRoot.getLabel(null));
+    	
+    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+		}
+    	else{
+		 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+    	}
         
 		}	
 
@@ -144,7 +191,10 @@ public class AnnotatorModule implements Module {
 		 */
 		master.add(classes);
 		master.add(labels);
-		return master.toString();
+		
+		return jsonWrapper(table, OWL.Thing.getURI().toString());
+		
+		//return master.toString();
 		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 
 	/*	if(resultStr == null) {
@@ -186,7 +236,7 @@ public class AnnotatorModule implements Module {
 	}
 	
 @QueryMethod
-public String queryForAnnotatorSubClasses(final Request request){
+public String queryForAnnotatorSubClasses(final Request request) throws JSONException{
 		
 	String classRequiresSubclassesString = (String) request.getParam("SubClass");	
 	if(classRequiresSubclassesString == null){
@@ -258,12 +308,20 @@ public String queryForAnnotatorSubClasses(final Request request){
 		
 		OntClass subclass = model.getOntClass( classRequiresSubclassesString );
 
+		Hashtable<String, String> table = new Hashtable<String, String>();
 
 		for (Iterator<OntClass> i = subclass.listSubClasses(true); i.hasNext(); ) { //true here is for direct
     	OntClass hierarchyRoot = i.next();
     	
-    	    classes.add( hierarchyRoot);
-		    labels.add( hierarchyRoot.getLabel(null));
+    	
+    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+		}
+    	else{
+		 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+    	}
+    	    //classes.add( hierarchyRoot);
+		    //labels.add( hierarchyRoot.getLabel(null));
         
 		}	
 
@@ -279,7 +337,10 @@ public String queryForAnnotatorSubClasses(final Request request){
 		 */
 		master.add(classes);
 		master.add(labels);
-		return master.toString();
+		
+		return jsonWrapper(table, classRequiresSubclassesString);
+
+		//return master.toString();
 		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 
 	/*	if(resultStr == null) {
@@ -322,7 +383,7 @@ public String queryForAnnotatorSubClasses(final Request request){
 	
 	
 	@QueryMethod
-	public String queryForAnnotatorRootObjectProperties(Request request){
+	public String queryForAnnotatorRootObjectProperties(Request request) throws JSONException{
 		//construct an owlontology and pose sparql queries against it.
 				OntModel model = null;
 				model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
@@ -372,11 +433,19 @@ public String queryForAnnotatorSubClasses(final Request request){
 				//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
 				OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
 
+				Hashtable<String, String> table = new Hashtable<String, String>();
+
 				for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
 		    	OntProperty hierarchyRoot = i.next();
 		    	
-		    	    props.add( hierarchyRoot);
-				    labels.add( hierarchyRoot.getLabel(null));
+		    	   // props.add( hierarchyRoot);
+				    //labels.add( hierarchyRoot.getLabel(null));
+		    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+		    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+				}
+		    	else{
+				 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+		    	}
 		        
 				}	
 
@@ -392,7 +461,8 @@ public String queryForAnnotatorSubClasses(final Request request){
 				 */
 				master.add(props);
 				master.add(labels);
-				return master.toString();
+				return jsonWrapper(table, topObjProp.toString());
+				//return master.toString();
 				
 				
 				
@@ -401,7 +471,7 @@ public String queryForAnnotatorSubClasses(final Request request){
 	
 	
 	@QueryMethod
-	public String queryForAnnotatorSubObjectProperties(Request request){
+	public String queryForAnnotatorSubObjectProperties(Request request) throws JSONException{
 		
 		String classRequiresSubpropertyString = (String) request.getParam("SubProperty");	
 		if(classRequiresSubpropertyString == null){
@@ -456,12 +526,19 @@ public String queryForAnnotatorSubClasses(final Request request){
 				OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
 				OntProperty subProp = model.getOntProperty( classRequiresSubpropertyString );
 
+				Hashtable<String, String> table = new Hashtable<String, String>();
 
 				for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
 		    	OntProperty hierarchyRoot = i.next();
 		    	
-		    	    props.add( hierarchyRoot);
-				    labels.add( hierarchyRoot.getLabel(null));
+		    	   // props.add( hierarchyRoot);
+				  //  labels.add( hierarchyRoot.getLabel(null));
+		    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+		    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+				}
+		    	else{
+				 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+		    	}
 		        
 				}	
 
@@ -477,7 +554,9 @@ public String queryForAnnotatorSubClasses(final Request request){
 				 */
 				master.add(props);
 				master.add(labels);
-				return master.toString();
+				return jsonWrapper(table, classRequiresSubpropertyString);
+
+				//return master.toString();
 				
 				
 				
