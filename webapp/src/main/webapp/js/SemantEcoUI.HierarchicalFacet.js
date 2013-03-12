@@ -171,7 +171,14 @@ SemantEcoUI.HierarchicalFacet = {};
                 try {
                     d = JSON.parse(d);
                     var objs = $("div.jstree", jqdiv).data("hierarchy.lookup");
-                    d = _.map(d.results, function(obj) { return objs[obj.uri] === undefined ? obj.label === undefined ? "(unknown)" : obj.label : objs[obj.uri].label });
+                    d = _.map(d.results, function(obj) {
+                        var entry = {};
+                        entry["label"] = objs[obj.uri] === undefined ?
+                            obj.label === undefined ? "(unknown)" : obj.label
+                              : objs[   obj.uri].label;
+                        entry["value"] = obj.uri;
+                        return entry;
+                    });
                     response(d);
                 } catch(e) {
                     response([]);
@@ -189,7 +196,7 @@ SemantEcoUI.HierarchicalFacet = {};
      */
     SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param) {
         div = $(div);
-        div.addClass("ui-front");
+        //div.addClass("ui-front");
         div.append("<input type=\"text\" class=\"search\" />");
         div.append("<input type=\"button\" value=\"Search\" />");
         div.append("<div class=\"jstree-placeholder\"></div>");
