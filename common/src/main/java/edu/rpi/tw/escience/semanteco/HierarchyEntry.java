@@ -90,4 +90,8 @@ public class HierarchyEntry {
 	public JSONObject toJSONObject() {
 		return new JSONObject(this.contents);
 	}
+
+	public void setUri(final String uri) {
+		this.contents.put("uri", uri);
+	}
 }
