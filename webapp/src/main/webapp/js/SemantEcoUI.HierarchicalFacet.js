@@ -188,7 +188,18 @@ SemantEcoUI.HierarchicalFacet = {};
     };
 
     var selectFunction = function(event, ui) {
-        console.log(ui.item);
+        event.preventDefault();
+        // ui.item contains the dictionary of the selected item
+        var jqdiv = $("div.jstree", event.target.parentElement);
+        var item = ui.item.value;
+        var objs = jqdiv.data("hierarchy.lookup");
+        if(objs[item] === undefined) {
+            // data not yet loaded from server
+
+        } else {
+            jqdiv.jstree("open_node", objs[item].element)
+                .jstree("select_node", objs[item].element);
+        }
     };
 
     /**
