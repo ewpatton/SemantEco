@@ -1,6 +1,8 @@
 package edu.rpi.tw.escience.semanteco.util;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
 import edu.rpi.tw.escience.semanteco.Module;
@@ -34,6 +36,7 @@ public final class JavaScriptGenerator {
 		int methodCount = 0;
 		
 		final Method[] methods = cls.getMethods();
+		final Collection<Method> hms = new ArrayList<Method>();
 		boolean first = true;
 		for(int i=0;i<methods.length;i++) {
 			Method m = methods[i];
@@ -53,6 +56,7 @@ public final class JavaScriptGenerator {
 					result.append(processQueryMethod(cls, m));
 				}
 				else if(m.isAnnotationPresent(HierarchicalMethod.class)) {
+					hms.add(m);
 					result.append(processHierarchicalMethod(cls, m));
 				}
 			}
@@ -61,6 +65,20 @@ public final class JavaScriptGenerator {
 			result.append("\n");
 		}
 		result.append("};");
+		result.append("$(window).bind(\"initialize\",function(){");
+		for(Method m : hms) {
+			result.append("SemantEcoUI.HierarchicalFacet.create(\"#");
+			result.append(NameUtils.cleanName(cls.getSimpleName()));
+			result.append(" div.facet div.hierarchy\", ");
+			result.append(cls.getSimpleName());
+			result.append(", \"");
+			result.append(m.getName());
+			result.append("\", \"");
+			final HierarchicalMethod hm = m.getAnnotation(HierarchicalMethod.class);
+			result.append(hm.parameter());
+			result.append("\");");
+		}
+		result.append("});");
 		
 		if(methodCount == 0) {
 			return "";
