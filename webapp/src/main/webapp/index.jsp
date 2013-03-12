@@ -4,7 +4,8 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="css/reset.css" type="text/css"/>
-    <link rel="stylesheet" href="css/start/jquery-ui-1.10.1.custom.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/start/jquery-ui.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/start/jquery.ui.theme.css" type="text/css"/>
     <link rel="stylesheet" href="css/main.css" type="text/css"/>
     <module:styles />
     <title>SemantEco Data Portal</title>
