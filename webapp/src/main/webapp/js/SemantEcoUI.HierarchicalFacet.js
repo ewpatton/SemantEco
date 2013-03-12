@@ -28,25 +28,36 @@ SemantEcoUI.HierarchicalFacet = {};
      */
     var cancelClick = function(e, d) { e.preventDefault(); };
 
-    var createClickHandler = function(jqdiv) {
-        return function(e, d) {
-            var li = d.rslt.obj;
-            var param = jqdiv.data("hierarchy.param");
-            var uri = li.data("hierarchy.id");
-            var module = jqdiv.data("hierarchy.module");
-            var query_method = jqdiv.data("hierarchy.query_method");
-        };
+    var clickHandler = function(e, d) {
+        var jqdiv = $(this);
+        var li = d.rslt.obj;
+        var param = jqdiv.data("hierarchy.param");
+        var uri = li.data("hierarchy.id");
+        var module = jqdiv.data("hierarchy.module");
+        var query_method = jqdiv.data("hierarchy.query_method");
+        if(!jqdiv.data("hierarchy.lookup")[uri].loaded) {
+            SemantEcoUI.HierarchicalFacet.getChildren(jqdiv, li);
+        } else {
+            jqdiv.jstree("open_node", li);
+        }
     };
 
     /**
      * Generates HTML elements for a given entry.
      * @returns A jQuery-wrapped &lt;li&gt; element
      */
-    var generateElement = function(entry) {
-        var li = $("<li />");
-        li.append("<a href='#' />").data("hierarchy.id", entry.id);
-        entry["element"] = li;
+    var generateElement = function(jqdiv, parent, entry) {
+        var li = jqdiv.jstree("create_node", parent, "last", {data: entry.prefLabel});
+        li.removeClass("jstree-leaf").addClass("jstree-closed");
+        li.data("hierarchy.id", entry.id);
+        return li;
+    };
+
+    var generateRootElement = function(entry) {
+        var li = $("<li class=\"jstree-closed\" />");
+        li.append("<a href=\"#\" />");
         $("a", li).text(entry.prefLabel);
+        li.data("hierarchy.id", entry.id);
         return li;
     };
 
@@ -64,11 +75,11 @@ SemantEcoUI.HierarchicalFacet = {};
         var lookup = {};
         for(var i=0;i<data.length;i++) {
             var obj = {};
-            obj["id"] = data[i].uri.value;
+            obj["id"] = data[i].uri;
             obj["children"] = [];
-            obj["prefLabel"] = data[i].prefLabel.value;
+            obj["prefLabel"] = data[i].label;
             obj["altLabel"] = data[i]["altLabel"] == undefined ? 
-                    data[i].prefLabel.value : data[i].altLabel.value;
+                    data[i].label : data[i].altLabel;
             obj["rawData"] = data[i];
             obj["loaded"] = false;
             lookup[obj.id] = obj;
@@ -84,23 +95,69 @@ SemantEcoUI.HierarchicalFacet = {};
         var ul = $("<ul />");
         jqdiv.append(ul);
         for(var i=0;i<roots.length;i++) {
-            ul.append(generateElement(roots[i]));
+            ul.append(generateRootElement(roots[i]));
         }
         jqdiv.jstree({
-            "core": { "initially_open": ["0"] },
+            "core": { "open_parents": true },
             "plugins": ["themes", "html_data", "ui"],
             "themes": {
                 "theme": "default",
                 "dots": true,
                 "icons": true
             }
-        }).bind("select_node.jstree", function(e, d) {
-            var callback = div.data("hierarchy.select_handler")
-        }).delegate("a", "click", cancelClick);
+        }).bind("select_node.jstree",
+                clickHandler
+                ).delegate("a", "click", cancelClick);
+    };
+
+    var processChildren = function(jqdiv, node, data) {
+        if(!data.success) {
+            window.alert(data.error);
+            return;
+        }
+        var uri = node.data("hierarchy.id");
+        var parent_data = jqdiv.data("hierarchy.lookup")[uri];
+        data = data.results;
+        var lookup = jqdiv.data("hierarchy.lookup");
+        for(var i=0;i<data.length;i++) {
+            var obj = {};
+            obj["id"] = data[i].uri;
+            obj["children"] = [];
+            obj["prefLabel"] = data[i].label;
+            obj["altLabel"] = data[i]["altLabel"] == undefined ? 
+                    data[i].label : data[i].altLabel;
+            obj["rawData"] = data[i];
+            obj["loaded"] = false;
+            lookup[obj.id] = obj;
+            parent_data.children.push(obj);
+        }
+        parent_data.loaded = true;
+        populateChildren(jqdiv, node);
+    };
+
+    var populateChildren = function(jqdiv, node) {
+        var uri = node.data("hierarchy.id");
+        var parent_data = jqdiv.data("hierarchy.lookup")[uri];
+        if(parent_data.children.length==0) {
+            node.addClass("jstree-leaf").removeClass("jstree-closed");
+            return;
+        }
+        for(var i=0;i<parent_data.children.length;i++) {
+            generateElement(jqdiv, node, parent_data.children[i]);
+        }
+        jqdiv.jstree("open_node", node);
     };
 
     SemantEcoUI.HierarchicalFacet.getChildren = function(jqdiv, node) {
-        
+        var module = jqdiv.data("hierarchy.module");
+        var qmethod = jqdiv.data("hierarchy.query_method");
+        var args = {};
+        args[jqdiv.data("hierarchy.param")] = node.data("hierarchy.id");
+        module[qmethod](HierarchyVerb.CHILDREN,
+                args, function(d) {
+            d = JSON.parse(d);
+            processChildren(jqdiv, node, d);
+        });
     };
 
     SemantEcoUI.HierarchicalFacet.countDescendants = function(jqdiv, node) {
@@ -111,10 +168,14 @@ SemantEcoUI.HierarchicalFacet = {};
         return function(request, response) {
             module[qmethod](HierarchyVerb.SEARCH, {"string": request.term},
                     function(d) {
-                d = JSON.parse(d);
-                var objs = jqdiv.data("hierarchy.lookup");
-                d = _.map(d, function(obj) { return objs[obj.uri] === undefined ? obj.label === undefined ? "(unknown)" : obj.label : objs[obj.uri].label });
-                response(d);
+                try {
+                    d = JSON.parse(d);
+                    var objs = $("div.jstree", jqdiv).data("hierarchy.lookup");
+                    d = _.map(d.results, function(obj) { return objs[obj.uri] === undefined ? obj.label === undefined ? "(unknown)" : obj.label : objs[obj.uri].label });
+                    response(d);
+                } catch(e) {
+                    response([]);
+                }
             }, function(d) { response([]); });
         };
     };
@@ -129,12 +190,13 @@ SemantEcoUI.HierarchicalFacet = {};
     SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param) {
         div = $(div);
         div.addClass("ui-front");
-        div.append("<input type=\"text\" />");
-        div.append("<input type=\"button\" />");
+        div.append("<input type=\"text\" class=\"search\" />");
+        div.append("<input type=\"button\" value=\"Search\" />");
         div.append("<div class=\"jstree-placeholder\"></div>");
         var text = $("input[type='text']", div);
         text.autocomplete({minLength: 3, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);
+        div = $("div.jstree-placeholder", div);
         div.data("hierarchy.module", module);
         div.data("hierarchy.query_method", qmethod);
         div.data("hierarchy.param", param);
