@@ -210,7 +210,7 @@ SemantEcoUI.HierarchicalFacet = {};
         //div.addClass("ui-front");
         div.append("<input type=\"text\" class=\"search\" />");
         div.append("<input type=\"button\" value=\"Search\" />");
-        div.append("<div class=\"jstree-placeholder\"></div>");
+        div.append("<div class=\"wrapper\"><div class=\"jstree-placeholder\"></div></div>");
         var text = $("input[type='text']", div);
         text.autocomplete({minLength: 3, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);

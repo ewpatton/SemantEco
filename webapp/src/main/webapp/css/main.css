@@ -608,6 +608,13 @@ div#infowindowcontrol a:hover{
 }
 
 div.facet .ui-autocomplete-input {
-	width: 90;
+	width: 90px;
 	margin-right: 1em;
+}
+
+div.hierarchy div.wrapper {
+	height: 100px;
+	width: 100%;
+	overflow: auto;
+	background-color: #ffe;
 }
