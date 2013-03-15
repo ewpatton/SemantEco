@@ -2,6 +2,8 @@ package edu.rpi.tw.escience.semanteco.annotator;
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.HashSet;
@@ -116,6 +118,32 @@ public class AnnotatorModule implements Module {
 	 * }
 	 * 
 	 */
+	
+	@QueryMethod
+	public String queryForEnhancing(final Request request) throws FileNotFoundException{
+		
+		//holder for reading file off a parameter.
+		//File f = (File) request.getParam("file");
+		//FileInputStream in = new FileInputStream(f);
+		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
+		
+		//1) run the initial conversion from here and get the enhancement file
+		
+		
+		//2) get the json object from bbq statement for input to the enhancement work
+
+		//3)do the conversion calling
+		//queryForPropertyToEnhance
+		//queryForHeaderToEnhance
+		
+		//4) should we send the rdf file back to the client?
+		
+		
+		return null;
+		
+	}
+	
+	
 	
 	/**
 	 * need to create new enhancement
