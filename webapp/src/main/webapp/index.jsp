@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/start/jquery-ui.min.css" type="text/css"/>
     <link rel="stylesheet" href="css/start/jquery.ui.theme.css" type="text/css"/>
     <link rel="stylesheet" href="css/main.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" />
+    <link rel="stylesheet" type="text/css" href="js/jstree/themes/default/style.css" />
     <module:styles />
     <title>SemantEco Data Portal</title>
     <script type="text/javascript" src="js/underscore-min.js"></script>
@@ -25,10 +27,10 @@
     <script type="text/javascript" src="js/config.js" ></script>
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAkAvsEZc18GOe01jOVpX48hnWRIgIajec&amp;sensor=false"></script>
     <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" />
     <script type="text/javascript" src="js/jqplot/plugins/jqplot.highlighter.js"></script>
     <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
     <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+    <script type="text/javascript" src="js/jstree/jquery.jstree.js"></script>
     <module:scripts />
   </head>
   <body onload="SemantEco.initialize()">
