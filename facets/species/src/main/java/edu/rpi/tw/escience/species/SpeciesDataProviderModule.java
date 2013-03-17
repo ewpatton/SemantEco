@@ -5,6 +5,7 @@ import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,9 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
+import edu.rpi.tw.escience.semanteco.HierarchyEntry;
+import edu.rpi.tw.escience.semanteco.HierarchyVerb;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.ProvidesDomain;
@@ -27,6 +31,7 @@ import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.Query.SortType;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
@@ -50,6 +55,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	private static final String e1_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/version/2012-Nov-4/params/enhancement/1/";
 	public static final String e2_NS = "http://was.tw.rpi.edu/source/bird-data/dataset/ebird-data/vocab/enhancement/1/";
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
 	private static final String FAILURE = "{\"success\":false}";
 	//private ModuleConfiguration config = null;
 	private static final String BINDINGS = "bindings";
@@ -503,10 +509,10 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 
 		ui.addScript(res);
 		ui.addFacet(res2);
-		res = config.getResource("jstree/jquery.jstree.js");
-		ui.addScript(res);
-		res = config.getResource("jstree/themes/default/style.css");
-		ui.addStylesheet(res);
+//		res = config.getResource("jstree/jquery.jstree.js");
+//		ui.addScript(res);
+//		res = config.getResource("jstree/themes/default/style.css");
+//		ui.addStylesheet(res);
 	}
 	
 	/**
@@ -1971,6 +1977,223 @@ WHERE
 	
 	protected void addDataSourcesFish(final Domain domain, final Request request) {
 		domain.addSource(URI.create("http://sbcFish#"), "SBC Fish");
+	}
+
+	@HierarchicalMethod(parameter = "species")
+	public Collection<HierarchyEntry> queryeBirdTaxonomyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		if(action == HierarchyVerb.ROOTS) {
+//			HierarchyEntry entry = new HierarchyEntry();
+//			entry.setUri(URI.create("http://example.com/bird1"));
+//			entry.setLabel("bird1");
+//			entry.setAltLabel("birdicus uno");
+//			items.add(entry);
+//			entry = new HierarchyEntry();
+//			entry.setUri(URI.create("http://example.com/bird2"));
+//			entry.setLabel("bird2");
+//			entry.setAltLabel("birdicus dos");
+//			items.add(entry);
+			return queryeBirdTaxonomyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
+//				HierarchyEntry entry = new HierarchyEntry();
+//				entry.setUri(URI.create("http://example.com/bird3"));
+//				entry.setLabel("bird3");
+//				entry.setAltLabel("birdicus tres");
+//				items.add(entry);
+//				entry = new HierarchyEntry();
+//				entry.setUri(URI.create("http://example.com/bird4"));
+//				entry.setLabel("bird4");
+//				entry.setAltLabel("birdicus quatro");
+//				items.add(entry);
+//			}
+			return queryeBirdTaxonomyHMChildren(request, (String) request.getParam("species"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searcheBird( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return eBirdPathToNode( request, (String) request.getParam("node") );
+		}
+		return items;
+	}
+
+	protected Collection<HierarchyEntry> queryeBirdTaxonomyHMRoots(final Request request) {
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		//Variables
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");
+		//URIs
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+
+		final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
+		request.getLogger().info("reached queryeBirdTaxonomyRoots \n");
+
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(label);
+		vars.add(parent);
+		query.setVariables(vars);
+		query.addOrderBy(label, SortType.ASC);
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		graph.addPattern(id, subClassOf, parent);
+		graph.addPattern(id, subClassOf, birdTaxonomy);
+
+		graph.addPattern(id, hasLabel, label);
+
+		//get only the subclasses of the subclasses of OWL thing
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
+		if(resultStr == null) {
+			return entries;
+		}
+		try {
+			JSONObject results = new JSONObject(resultStr);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				String subclassId = binding.getJSONObject("child").getString("value");
+				String subclassLabel = binding.getJSONObject("label").getString("value");
+				HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(subclassId);
+				entry.setLabel(subclassLabel);
+				entries.add(entry);
+			}
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return entries;
+	}
+
+	protected Collection<HierarchyEntry> queryeBirdTaxonomyHMChildren(final Request request, final String species) {
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		//Variables
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");
+		//URIs
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource hasCommonName = query.getResource("http://lod.taxonconcept.org/ontology/txn.owl#CommonNameID");
+
+		//final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
+		final QueryResource classRequiresSubclasses = query.getResource(species);
+
+		//build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(label);
+		vars.add(parent);
+		query.setVariables(vars);
+		query.addOrderBy(label, SortType.ASC);
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		graph.addPattern(id, subClassOf, parent);
+		graph.addPattern(id, subClassOf, classRequiresSubclasses);
+
+		graph.addPattern(id,hasCommonName, label);
+		//get only the subclasses of the subclasses of OWL thing
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute(query);
+		if(resultStr == null) {
+			return entries;
+		}
+		try {
+			JSONObject results = new JSONObject(resultStr);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
+			for(int i=0;i<bindings.length();i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(binding.getJSONObject("child").getString("value"));
+				entry.setLabel(binding.getJSONObject("label").getString("value"));
+
+				try {
+					entry.setParent(URI.create(binding.getJSONObject("parent").getString("value")));
+				}
+				catch(Exception e) { }
+
+				entries.add(entry);
+			}
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return entries;
+	}
+
+	protected Collection<HierarchyEntry> searcheBird(final Request request, final String str) {
+		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		final Variable uri = query.createVariable(VAR_NS+"uri");
+		final Variable label = query.createVariable(VAR_NS+"label");
+		final QueryResource hasCommonName = query.getResource(TXN_NS+"CommonNameID");
+		final QueryResource hasScientificName = query.getResource(e2_NS+ "scientific_name");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		final UnionComponent union = query.createUnion();
+
+		graph.addGraphComponent(union);
+		union.getUnionComponent(0).addPattern(uri, hasScientificName, label);
+		union.getUnionComponent(0).addFilter("bif:contains(?label,\"'"+str+"*'\")");
+		union.getUnionComponent(1).addPattern(uri, hasCommonName, label);
+		union.getUnionComponent(1).addFilter("bif:contains(?label,\"'"+str+"*'\")");
+		query.addOrderBy(label, SortType.ASC);
+
+		try {
+			final JSONObject results = new JSONObject(config.getQueryExecutor(request).accept("application/json").execute(query));
+			final JSONArray bindings = results.getJSONObject("results").getJSONArray("bindings");
+			for(int i=0; i<bindings.length(); i++) {
+				final JSONObject binding = bindings.getJSONObject(i);
+				final HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(binding.getJSONObject("uri").getString("value"));
+				entry.setLabel(binding.getJSONObject("label").getString("value"));
+				entries.add(entry);
+			}
+		} catch (JSONException e) {
+			request.getLogger().warn("Unable to parse data from remote server.");
+		}
+		return entries;
+	}
+
+	protected Collection<HierarchyEntry> eBirdPathToNode(final Request request, final String node) {
+		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		final Variable uri = query.createVariable(VAR_NS+"uri");
+		final Variable label = query.createVariable(VAR_NS+"label");
+		final Variable altLabel = query.createVariable(VAR_NS+"altLabel");
+		final Variable parent = query.createVariable(VAR_NS+"parent");
+		final QueryResource nodeRes = query.getResource(node);
+		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS+"subClassOf");
+		final QueryResource skosPrefLabel = query.getResource(SKOS_NS+"prefLabel");
+		final QueryResource rdfsLabel = query.getResource(RDFS_NS+"label");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		final OptionalComponent optional = query.createOptional();
+
+		graph.addPattern(nodeRes, rdfsSubClassOf, parent, true);
+		graph.addPattern(uri, rdfsSubClassOf, parent);
+		graph.addPattern(uri, rdfsLabel, label);
+		graph.addGraphComponent(optional);
+		optional.addPattern(uri, skosPrefLabel, altLabel);
+
+		try {
+			final JSONObject results = new JSONObject(config.getQueryExecutor(request).accept("application/json").execute(query));
+			final JSONArray bindings = results.getJSONObject("results").getJSONArray("bindings");
+			for(int i=0; i<bindings.length(); i++) {
+				final JSONObject binding = bindings.getJSONObject(i);
+				final HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(binding.getJSONObject("uri").getString("value"));
+				entry.setLabel(binding.getJSONObject("label").getString("value"));
+				if(binding.has("altLabel")) {
+					entry.setAltLabel(binding.getJSONObject("altLabel").getString("value"));
+				}
+				entry.setParent(URI.create(binding.getJSONObject("parent").getString("value")));
+				entries.add(entry);
+			}
+		} catch(JSONException e) {
+			request.getLogger().warn("Unable to parse data from remote server.");
+		}
+		return entries;
 	}
 
 }
