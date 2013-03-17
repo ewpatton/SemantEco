@@ -19,7 +19,8 @@ SemantEcoUI.HierarchicalFacet = {};
         ROOTS: "ROOTS",
         CHILDREN: "CHILDREN",
         SEARCH: "SEARCH",
-        COUNT_DESCENDANTS: "COUNT_DESCENDANTS"
+        COUNT_DESCENDANTS: "COUNT_DESCENDANTS",
+        PATH_TO_NODE: "PATH_TO_NODE"
     };
 
     /**
@@ -32,7 +33,7 @@ SemantEcoUI.HierarchicalFacet = {};
         var jqdiv = $(this);
         var li = d.rslt.obj;
         var param = jqdiv.data("hierarchy.param");
-        var uri = li.data("hierarchy.id");
+        var uri = li.attr("hierarchy_id");
         var module = jqdiv.data("hierarchy.module");
         var query_method = jqdiv.data("hierarchy.query_method");
         if(!jqdiv.data("hierarchy.lookup")[uri].loaded) {
@@ -49,7 +50,7 @@ SemantEcoUI.HierarchicalFacet = {};
     var generateElement = function(jqdiv, parent, entry) {
         var li = jqdiv.jstree("create_node", parent, "last", {data: entry.prefLabel});
         li.removeClass("jstree-leaf").addClass("jstree-closed");
-        li.data("hierarchy.id", entry.id);
+        li.attr("hierarchy_id", entry.id);
         return li;
     };
 
@@ -57,7 +58,7 @@ SemantEcoUI.HierarchicalFacet = {};
         var li = $("<li class=\"jstree-closed\" />");
         li.append("<a href=\"#\" />");
         $("a", li).text(entry.prefLabel);
-        li.data("hierarchy.id", entry.id);
+        li.attr("hierarchy_id", entry.id);
         return li;
     };
 
@@ -115,7 +116,7 @@ SemantEcoUI.HierarchicalFacet = {};
             window.alert(data.error);
             return;
         }
-        var uri = node.data("hierarchy.id");
+        var uri = node.attr("hierarchy_id");
         var parent_data = jqdiv.data("hierarchy.lookup")[uri];
         data = data.results;
         var lookup = jqdiv.data("hierarchy.lookup");
@@ -136,7 +137,7 @@ SemantEcoUI.HierarchicalFacet = {};
     };
 
     var populateChildren = function(jqdiv, node) {
-        var uri = node.data("hierarchy.id");
+        var uri = node.attr("hierarchy_id");
         var parent_data = jqdiv.data("hierarchy.lookup")[uri];
         if(parent_data.children.length==0) {
             node.addClass("jstree-leaf").removeClass("jstree-closed");
@@ -152,7 +153,7 @@ SemantEcoUI.HierarchicalFacet = {};
         var module = jqdiv.data("hierarchy.module");
         var qmethod = jqdiv.data("hierarchy.query_method");
         var args = {};
-        args[jqdiv.data("hierarchy.param")] = node.data("hierarchy.id");
+        args[jqdiv.data("hierarchy.param")] = node.attr("hierarchy_id");
         module[qmethod](HierarchyVerb.CHILDREN,
                 args, function(d) {
             d = JSON.parse(d);
@@ -175,16 +176,86 @@ SemantEcoUI.HierarchicalFacet = {};
                         var entry = {};
                         entry["label"] = objs[obj.uri] === undefined ?
                             obj.label === undefined ? "(unknown)" : obj.label
-                              : objs[   obj.uri].label;
+                              : objs[obj.uri].label;
                         entry["value"] = obj.uri;
                         return entry;
                     });
+                    console.log(d);
                     response(d);
                 } catch(e) {
                     response([]);
                 }
             }, function(d) { response([]); });
         };
+    };
+
+    var createAncestorNodes = function(jqdiv, uri) {
+        var objs = jqdiv.data("hierarchy.lookup");
+        var parent = objs[uri].parent;
+        var li = $('li[hierarchy_id="'+parent+'"]', jqdiv);
+        if ( li.length > 0 ) {
+            console.log("Adding element for "+uri+" to "+parent);
+            generateElement(jqdiv, li, objs[uri]);
+        } else {
+            var pelem = createAncestorNodes(jqdiv, parent);
+            console.log("Adding element for "+uri+" to "+parent);
+            generateElement(jqdiv, pelem, objs[uri]);
+        }
+        return $('li[hierarchy_id="'+uri+'"]');
+    };
+
+    var retrievePathToNode = function(jqdiv, item) {
+        var module = jqdiv.data("hierarchy.module");
+        var qmethod = jqdiv.data("hierarchy.query_method");
+        module[qmethod](HierarchyVerb.PATH_TO_NODE, {"node": item},
+            function(d) {
+                d = JSON.parse(d);
+                if( !d.success ) {
+                    console.log( d.error );
+                    return;
+                }
+                console.log(d);
+                var objs = jqdiv.data("hierarchy.lookup");
+                var roots = jqdiv.data("hierarchy.roots");
+                var results = d.results;
+                var nodesToCreate = [];
+                for( i=0; i<results.length; i++ ) {
+                    var uri = results[i].uri;
+                    console.log("Processing entity "+uri);
+                    var obj = {"id": uri, "children": [], "loaded": false};
+                    if( uri in objs ) {
+                        obj = objs[uri];
+                        if( !objs[uri].loaded ) {
+                            obj = objs[uri];
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        nodesToCreate.push(uri);
+                    }
+                    obj["prefLabel"] = results[i].label;
+                    obj["parent"] = results[i].parent;
+                    if ( results[i]["altLabel"] !== undefined ) {
+                        obj["altLabel"] = results[i].altLabel;
+                    }
+                    obj.loaded = true;
+                    objs[uri] = obj;
+                    if ( results[i].parent in objs ) {
+                        objs[results[i].parent].children.push(obj);
+                        objs[results[i].parent].loaded = false;
+                    } else {
+                        objs[results[i].parent] = {"id": results[i].parent,
+                            "children": [], "loaded": false};
+                        nodesToCreate.unshift(uri);
+                    }
+                }
+                for( i=0; i<nodesToCreate.length; i++) {
+                    if( $('li[hierarchy_id="'+nodesToCreate[i]+'"]', jqdiv).length == 0 ) {
+                        objs[nodesToCreate[i]].element = createAncestorNodes(jqdiv, nodesToCreate[i]);
+                    }
+                }
+                jqdiv.jstree("open_node", objs[item].element);
+            });
     };
 
     var selectFunction = function(event, ui) {
@@ -195,7 +266,7 @@ SemantEcoUI.HierarchicalFacet = {};
         var objs = jqdiv.data("hierarchy.lookup");
         if(objs[item] === undefined) {
             // data not yet loaded from server
-
+            retrievePathToNode(jqdiv, item);
         } else {
             jqdiv.jstree("open_node", objs[item].element)
                 .jstree("select_node", objs[item].element);
@@ -212,7 +283,7 @@ SemantEcoUI.HierarchicalFacet = {};
         div.append("<input type=\"button\" value=\"Search\" />");
         div.append("<div class=\"wrapper\"><div class=\"jstree-placeholder\"></div></div>");
         var text = $("input[type='text']", div);
-        text.autocomplete({minLength: 3, source: searchClosure(div, module, qmethod)})
+        text.autocomplete({minLength: 4, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);
         div = $("div.jstree-placeholder", div);
         div.data("hierarchy.module", module);
@@ -227,7 +298,7 @@ SemantEcoUI.HierarchicalFacet = {};
     SemantEcoUI.HierarchicalFacet.entryForElement = function(div, e) {
         div = $(div);
         var li = e.rslt.obj;
-        var id = li.data("hierarchy.id");
+        var id = li.attr("hierarchy_id");
         return div.data("hierarchy.lookup")[id];
     };
     
