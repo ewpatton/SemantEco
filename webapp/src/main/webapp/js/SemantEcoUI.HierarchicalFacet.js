@@ -111,7 +111,8 @@ SemantEcoUI.HierarchicalFacet = {};
                 "theme": "default",
                 "dots": true,
                 "icons": true
-            }
+            },
+            "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
         }).bind("select_node.jstree",
                 clickHandler
                 ).delegate("a", "click", cancelClick);
