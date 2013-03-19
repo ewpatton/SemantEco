@@ -33,6 +33,12 @@ SemantEcoUI.HierarchicalFacet = {};
         var jqdiv = $(this);
         var li = d.rslt.obj;
         var param = jqdiv.data("hierarchy.param");
+        var items = _.map(jqdiv.jstree("get_selected", function(d) {
+                return $(d).attr("hierarchy_id");
+            }));
+        var args = {};
+        args[param] = items;
+        $.bbq.pushState(args);
         var uri = li.attr("hierarchy_id");
         var module = jqdiv.data("hierarchy.module");
         var query_method = jqdiv.data("hierarchy.query_method");

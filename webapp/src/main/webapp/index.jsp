@@ -16,6 +16,7 @@
     <script type="text/javascript" src="js/jquery-ui-1.10.1.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.ba-bbq-1.2.1.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/jquery.client.js"></script>
     <script type="text/javascript" src="js/modernizr-2.0.js"></script>
     <script type="text/javascript" src="js/d3.js"></script>
     <script type="text/javascript" src="js/d3.csv.js"></script>
