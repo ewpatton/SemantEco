@@ -617,4 +617,5 @@ div.hierarchy div.wrapper {
 	width: 175px;
 	overflow: auto;
 	background-color: #ffe;
+	position: relative;
 }
