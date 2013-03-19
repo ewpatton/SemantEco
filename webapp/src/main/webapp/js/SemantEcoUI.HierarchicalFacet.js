@@ -116,6 +116,40 @@ SemantEcoUI.HierarchicalFacet = {};
         }).bind("select_node.jstree",
                 clickHandler
                 ).delegate("a", "click", cancelClick);
+        var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
+        if ( state != undefined && state.length != undefined && state.length > 0 ) {
+            reopenSelections(jqdiv, state);
+        } else if (state == undefined || state.length == undefined) {
+            var args = {};
+            args[jqdiv.data("hierarchy.param")] = [];
+            $.bbq.pushState(args);
+        }
+    };
+
+    // we should switch to using a library that supports futures
+    // at some point, e.g. https://github.com/coolaj86/futures
+    var reopenSelections = function(jqdiv, state) {
+        var i=0;
+        var method = null;
+        method = function(jqdiv, elem) {
+            if( i > 0 ) {
+                console.log( "selecting node "+state[i-1] );
+                jqdiv.jstree( "select_node", elem );
+            }
+            if( i >= state.length ) {
+                method = null;
+                return;
+            } else {
+                var node = $( "li[hierarchy_id='"+state[i]+"'", jqdiv );
+                ++i;
+                if( node.length > 0 ) {
+                    method();
+                } else {
+                    retrievePathToNode( jqdiv, state[i-1], method );
+                }
+            }
+        };
+        method(jqdiv, null);
     };
 
     var processChildren = function(jqdiv, node, data) {
@@ -211,7 +245,14 @@ SemantEcoUI.HierarchicalFacet = {};
         return $('li[hierarchy_id="'+uri+'"]');
     };
 
-    var retrievePathToNode = function(jqdiv, item) {
+    var openSubTree = function(jqdiv, elem) {
+        jqdiv.jstree("open_node", elem);
+        jqdiv.jstree("select_node", elem);
+        $(jqdiv).parent().animate({scrollTop: elem.position().top});
+    };
+
+    var retrievePathToNode = function(jqdiv, item, finish) {
+        var finish = finish || openSubTree;
         var module = jqdiv.data("hierarchy.module");
         var qmethod = jqdiv.data("hierarchy.query_method");
         module[qmethod](HierarchyVerb.PATH_TO_NODE, {"node": item},
@@ -261,7 +302,7 @@ SemantEcoUI.HierarchicalFacet = {};
                         objs[nodesToCreate[i]].element = createAncestorNodes(jqdiv, nodesToCreate[i]);
                     }
                 }
-                jqdiv.jstree("open_node", objs[item].element);
+                finish(jqdiv, objs[item].element);
             });
     };
 
