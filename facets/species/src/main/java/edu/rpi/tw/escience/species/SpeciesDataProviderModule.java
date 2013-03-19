@@ -2175,6 +2175,7 @@ WHERE
 		graph.addPattern(uri, rdfsLabel, label);
 		graph.addGraphComponent(optional);
 		optional.addPattern(uri, skosPrefLabel, altLabel);
+		query.addOrderBy(label, SortType.ASC);
 
 		try {
 			final JSONObject results = new JSONObject(config.getQueryExecutor(request).accept("application/json").execute(query));
