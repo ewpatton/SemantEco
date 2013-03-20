@@ -843,14 +843,6 @@ $(document).ready(function(){
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
  document.getElementById('the_file').addEventListener('change', fileInfo, false);
 </script>	
-<div><br><button id="commit_enhancement" style="padding: 10px;">Commit Enhancement</button></div>
-<script type="text/javascript">
-        $(document).ready(function() {
-        $('#commit_enhancement').click(function() {
-        	AnnotatorModule.queryForEnhancing({"annotationMappings":annotationMappings},
-        			function(d) { console.log(d); });
-        };
-</script>
 </div>
 <div style="margin-left:70%; width:30%;">
 <div>
