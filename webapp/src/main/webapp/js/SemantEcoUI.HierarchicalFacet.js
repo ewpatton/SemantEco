@@ -221,7 +221,6 @@ SemantEcoUI.HierarchicalFacet = {};
                         entry["value"] = obj.uri;
                         return entry;
                     });
-                    console.log(d);
                     response(d);
                 } catch(e) {
                     response([]);
@@ -235,11 +234,9 @@ SemantEcoUI.HierarchicalFacet = {};
         var parent = objs[uri].parent;
         var li = $('li[hierarchy_id="'+parent+'"]', jqdiv);
         if ( li.length > 0 ) {
-            console.log("Adding element for "+uri+" to "+parent);
             generateElement(jqdiv, li, objs[uri]);
         } else {
             var pelem = createAncestorNodes(jqdiv, parent);
-            console.log("Adding element for "+uri+" to "+parent);
             generateElement(jqdiv, pelem, objs[uri]);
         }
         return $('li[hierarchy_id="'+uri+'"]');
@@ -262,14 +259,12 @@ SemantEcoUI.HierarchicalFacet = {};
                     console.log( d.error );
                     return;
                 }
-                console.log(d);
                 var objs = jqdiv.data("hierarchy.lookup");
                 var roots = jqdiv.data("hierarchy.roots");
                 var results = d.results;
                 var nodesToCreate = [];
                 for( i=0; i<results.length; i++ ) {
                     var uri = results[i].uri;
-                    console.log("Processing entity "+uri);
                     var obj = {"id": uri, "children": [], "loaded": false};
                     if( uri in objs ) {
                         obj = objs[uri];
