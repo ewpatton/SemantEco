@@ -286,7 +286,7 @@
    		                 tr+= "</tr>";
    		                 $('#list tr:first').after(tr);
    		                 
-   		                 var annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+   		             //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
    		                 
    		                 $.bbq.pushState({"annotationMappings": {"RangeClass" : [{r:p}],"Property" : [{"test": "http://test"}]}});
    		                 $.bbq.getState("annotationMappings");           
@@ -847,9 +847,9 @@ $(document).ready(function(){
 <script type="text/javascript">
         $(document).ready(function() {
         $('#commit_enhancement').click(function() {
-        	AnnotatorModule.queryForEnhancing({"annotationMappings":annotationMappings},
+        	AnnotatorModule.queryForEnhancing({},
         			function(d) { console.log(d); });
-        };)});
+        })});
 </script>
 </div>
 <div style="margin-left:70%; width:30%;">
