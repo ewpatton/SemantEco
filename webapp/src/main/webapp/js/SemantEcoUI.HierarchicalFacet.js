@@ -233,14 +233,14 @@ SemantEcoUI.HierarchicalFacet = {};
     var createAncestorNodes = function(jqdiv, uri) {
         var objs = jqdiv.data("hierarchy.lookup");
         var parent = objs[uri].parent;
-        var li = $('li[hierarchy_id="'+parent+'"]', jqdiv);
+        var li = jqdiv.find('li[hierarchy_id="'+parent+'"]');
         if ( li.length > 0 ) {
             generateElement(jqdiv, li, objs[uri]);
         } else {
             var pelem = createAncestorNodes(jqdiv, parent);
             generateElement(jqdiv, pelem, objs[uri]);
         }
-        return $('li[hierarchy_id="'+uri+'"]');
+        return jqdiv.find('li[hierarchy_id="'+uri+'"]');
     };
 
     var openSubTree = function(jqdiv, elem) {
