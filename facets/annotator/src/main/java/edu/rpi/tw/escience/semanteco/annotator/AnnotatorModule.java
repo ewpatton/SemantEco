@@ -602,7 +602,37 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 	}
 	
 	
-	@HierarchicalMethod(parameter = "annotatorClasses")
+	public String jsonWrapperForEntries(Hashtable<String, String> table, String parent) throws JSONException{
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		JSONArray data = new JSONArray();
+		JSONObject response = new JSONObject();
+		response.put("success", true);
+		response.put("data", data);
+		String str;
+		 Set<String> set = table.keySet();
+		    Iterator<String> itr = set.iterator();
+		    while (itr.hasNext()) {
+		      str = itr.next();
+		      System.out.println(str + ": " + table.get(str));
+		      
+				JSONObject mapping = new JSONObject();
+				mapping.put("id", str);
+				//should use "short name" if there is no label.
+				
+				if(table.get(str) == ""){
+					table.put(str, getShortName(str));
+				}			
+				mapping.put("label", table.get(str));
+				mapping.put("parent", parent);
+				data.put(mapping);
+		    }
+		return response.toString();
+	}
+	
+
+	//@HierarchicalMethod(parameter = "annotatorClasses")
 	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 		if(action == HierarchyVerb.ROOTS) {
