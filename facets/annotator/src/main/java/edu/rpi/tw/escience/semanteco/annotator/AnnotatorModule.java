@@ -160,6 +160,8 @@ public class AnnotatorModule implements Module {
 		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
 		Literal literalHeader = model.createLiteral("Deviated_Well");
 		Resource propertyhasSpatialLocation = model.createResource("hasSpatialLocation");
+		
+
 		Property propertyEquiv = model.createProperty(conversionPrefix + "equivalent_property");
 	    StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) literalHeader );
 	    Statement s = null;
