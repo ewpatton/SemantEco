@@ -284,7 +284,6 @@ SemantEcoUI.HierarchicalFacet = {};
                     if ( results[i]["altLabel"] !== undefined ) {
                         obj["altLabel"] = results[i].altLabel;
                     }
-                    obj.loaded = true;
                     objs[uri] = obj;
                     if ( results[i].parent in objs ) {
                         objs[results[i].parent].children.push(obj);
