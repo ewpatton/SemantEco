@@ -644,7 +644,7 @@ div.facet .ui-autocomplete-input {
 
 div.hierarchy div.wrapper {
 	height: 100px;
-	width: 175px;
+	width: 100%;
 	overflow: auto;
 	background-color: #ffe;
 	position: relative;
