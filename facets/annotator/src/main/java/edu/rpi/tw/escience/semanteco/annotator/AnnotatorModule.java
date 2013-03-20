@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +39,9 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.OWL;
 
+import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
+import edu.rpi.tw.escience.semanteco.HierarchyEntry;
+import edu.rpi.tw.escience.semanteco.HierarchyVerb;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
@@ -595,14 +601,71 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		return response.toString();
 	}
 	
+	
+	@HierarchicalMethod(parameter = "annotatorClasses")
+	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		if(action == HierarchyVerb.ROOTS) {
+//			HierarchyEntry entry = new HierarchyEntry();
+//			entry.setUri(URI.create("http://example.com/bird1"));
+//			entry.setLabel("bird1");
+//			entry.setAltLabel("birdicus uno");
+//			items.add(entry);
+//			entry = new HierarchyEntry();
+//			entry.setUri(URI.create("http://example.com/bird2"));
+//			entry.setLabel("bird2");
+//			entry.setAltLabel("birdicus dos");
+//			items.add(entry);
+			return  queryAnnotatorClassHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
+//				HierarchyEntry entry = new HierarchyEntry();
+//				entry.setUri(URI.create("http://example.com/bird3"));
+//				entry.setLabel("bird3");
+//				entry.setAltLabel("birdicus tres");
+//				items.add(entry);
+//				entry = new HierarchyEntry();
+//				entry.setUri(URI.create("http://example.com/bird4"));
+//				entry.setLabel("bird4");
+//				entry.setAltLabel("birdicus quatro");
+//				items.add(entry);
+//			}
+			return  queryAnnotatorClassHMChildren(request, (String) request.getParam("species"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorClass( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorClassToNode( request, (String) request.getParam("node") );
+		}
+		return items;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
+
+	return null;	
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorClassHMChildren(final Request request, final String species) {
+
+	return null;	
+	}
+	
+	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) {
+		return null;
+		
+	}
+	
+	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
+		return null;
+	}
+	
+	
 	//would it be better to have one model and reasoner for this module, instead of per query method? yes.
 	//do that through a constructor?
 	@QueryMethod
 	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
 		
-		edu.rpi.tw.escience.semanteco.Resource a = config.getResource("owl-files/oboe-sbclter.owl");
-		String path = a.toString();
-		
+		//edu.rpi.tw.escience.semanteco.Resource a = config.getResource("owl-files/oboe-sbclter.owl");
+		//String path = a.toString();
 		//config.getResource("owl-files/oboe-sbclter.owl").toString();	
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
@@ -612,16 +675,13 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;
-
-		
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
 		
 		//construct an owlontology and pose sparql queries against it.
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-
 		
-		//load certain ontologies
+	//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 		/*
 		FileManager.get().readModel(model, "oboe-sbclter.owl") ;
@@ -634,8 +694,7 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-		*/
-		
+		*/		
 		
 		setModel(model);
 		//model.
