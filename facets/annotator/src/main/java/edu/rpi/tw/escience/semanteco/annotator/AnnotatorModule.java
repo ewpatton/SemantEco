@@ -39,6 +39,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
+import edu.rpi.tw.escience.semanteco.QueryMethod.HTTP;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
@@ -110,18 +111,21 @@ public class AnnotatorModule implements Module {
 		return AnnotatorModule.model;
 	}
 
-	//@QueryMethod(method=HTTP.POST)
-	/*
-	 * public String readCsvFileForInitialConversion(final Request request){
-	 * 
-	 *read in the parameter for the file that is passed in.
-	 * }
-	 * 
-	 */
+	@QueryMethod(method=HTTP.POST)
+	 public String readCsvFileForInitialConversion(final Request request){
+		System.out.println(request.getParam("csvFile"));
+		
+		return null;
+	  
+	 //*read in the parameter for the file that is passed in.
+	 }
+
 	
 	@QueryMethod
 	public String queryForEnhancing(final Request request) throws FileNotFoundException{
 		
+		System.out.println(request.getParam("annotationMappings"));
+
 		//holder for reading file off a parameter.
 		//File f = (File) request.getParam("file");
 		//FileInputStream in = new FileInputStream(f);
