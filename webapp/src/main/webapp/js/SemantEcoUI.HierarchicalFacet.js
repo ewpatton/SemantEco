@@ -135,6 +135,7 @@ SemantEcoUI.HierarchicalFacet = {};
             if( i > 0 ) {
                 console.log( "selecting node "+state[i-1] );
                 jqdiv.jstree( "select_node", elem );
+                $(jqdiv).parent().animate({scrollTop: elem.position().top});
             }
             if( i >= state.length ) {
                 method = null;
@@ -250,12 +251,14 @@ SemantEcoUI.HierarchicalFacet = {};
 
     var retrievePathToNode = function(jqdiv, item, finish) {
         var finish = finish || openSubTree;
+        jqdiv.parent().find(".loading").css("display", "block");
         var module = jqdiv.data("hierarchy.module");
         var qmethod = jqdiv.data("hierarchy.query_method");
         module[qmethod](HierarchyVerb.PATH_TO_NODE, {"node": item},
             function(d) {
                 d = JSON.parse(d);
                 if( !d.success ) {
+                    jqdiv.parent().find(".loading").css("display", "none");
                     console.log( d.error );
                     return;
                 }
@@ -297,7 +300,10 @@ SemantEcoUI.HierarchicalFacet = {};
                         objs[nodesToCreate[i]].element = createAncestorNodes(jqdiv, nodesToCreate[i]);
                     }
                 }
-                finish(jqdiv, objs[item].element);
+                try {
+                    finish(jqdiv, objs[item].element);
+                } catch(e) { }
+                jqdiv.parent().find(".loading").css("display", "none");
             });
     };
 
