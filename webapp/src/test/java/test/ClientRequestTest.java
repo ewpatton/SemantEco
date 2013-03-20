@@ -34,7 +34,7 @@ public class ClientRequestTest extends TestCase {
 	protected static class TestConfiguration extends SemantEcoConfiguration {
 		private static final long serialVersionUID = 1L;
 		public TestConfiguration() {
-			super();
+			super(null);
 			this.setProperty("debug", "true");
 			install(this);
 		}

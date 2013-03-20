@@ -37,6 +37,7 @@ public class ModuleManagerImplTest extends TestCase {
 		private static final long serialVersionUID = 1L;
 
 		public TestConfig() {
+			super(null);
 			SemantEcoConfiguration.setConfig(this);
 		}
 	}

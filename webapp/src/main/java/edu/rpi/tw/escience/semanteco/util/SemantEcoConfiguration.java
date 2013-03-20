@@ -29,7 +29,11 @@ public class SemantEcoConfiguration extends Properties {
 	private static String basePath = null;
 
 	public SemantEcoConfiguration(ServletContext context) {
-		basePath = context.getRealPath("/");
+		if( context == null ) {
+			basePath = "";
+		} else {
+			basePath = context.getRealPath("/");
+		}
 	}
 
 	/**
