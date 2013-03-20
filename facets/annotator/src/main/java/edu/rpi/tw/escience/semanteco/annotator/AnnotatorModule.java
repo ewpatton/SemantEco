@@ -116,6 +116,21 @@ public class AnnotatorModule implements Module {
 	public OntModel getModel(){
 		return AnnotatorModule.model;
 	}
+	
+	public void initModel() {
+		if(model == null) {
+			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+		}
+	}
 
 	@QueryMethod(method=HTTP.POST)
 	 public String readCsvFileForInitialConversion(final Request request){
@@ -760,23 +775,12 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 	//do that through a constructor?
 	@QueryMethod
 	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
-		
-		//edu.rpi.tw.escience.semanteco.Resource a = config.getResource("owl-files/oboe-sbclter.owl");
-		//String path = a.toString();
-		//config.getResource("owl-files/oboe-sbclter.owl").toString();	
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-oboe-spatial.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+		// initialize the model if it doesn't already exist...
+		initModel();
 		
 		//construct an owlontology and pose sparql queries against it.
-		OntModel model = null;
-		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		//OntModel model = null;
+		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 		
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
@@ -793,7 +797,7 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
 		*/		
 		
-		setModel(model);
+		//setModel(model);
 		//model.
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
 		
@@ -923,27 +927,9 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 	if(classRequiresSubclassesString == null){
 		return null;
 	}
-	
-	OntModel model = null;
-	model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-	
-	//load certain ontologies
-	//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
-	FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-		//construct an owlontology and pose sparql queries against it.
-	///	OntModel model = getModel();
+	initModel();
 
-		
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		//final GraphComponentCollection construct = query.getConstructComponent();
