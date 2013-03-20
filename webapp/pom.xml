@@ -378,6 +378,7 @@
                   <version>4.1-SNAPSHOT</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
+		  <destFileName>annotator.jar</destFileName>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
 

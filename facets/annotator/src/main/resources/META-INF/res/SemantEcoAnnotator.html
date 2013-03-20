@@ -80,8 +80,8 @@
 	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery.csvToTable.js"></script>
 	<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
-	<script type="text/javascript" src="js/jquery.jstree.js"></script>
-	<script type="text/javascript" src="_docs/syntax/!script.js"></script>
+	<script type="text/javascript" src="../../js/jstree/jquery.jstree.js"></script>
+	<!-- <script type="text/javascript" src="_docs/syntax/!script.js"></script> -->
 	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
     <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
     
@@ -94,8 +94,9 @@
     <script type="text/javascript" src="../../js/json.js"></script>
     <script type="text/javascript" src="../../js/SemantEco.js"></script>
     <script type="text/javascript" src="../../js/SemantEcoUI.js"></script>
+    <script type="text/javascript" src="../../js/SemantEcoUI.HierarchicalFacet.js"></script>
     <script type="text/javascript" src="../../js/config.js"></script>
-    <script type="text/javascript" src="../../js/modules/SpeciesDataProviderModule.js"></script>
+    <script type="text/javascript" src="../../js/modules/AnnotatorModule.js"></script>
     <script type="text/javascript" src="../../js/jqplot/jquery.jqplot.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.highlighter.js"></script>
@@ -117,7 +118,7 @@
 		/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
 		//puts the array of root nodes, which are in the "data" array, into jsonHier
 		//call initial_hiearchy
-						SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
+						AnnotatorModule.queryForAnnotatorRootClasses({}, function (data){
 	        	    		  jsonHier=JSON.parse(data);
 	        	    		  jsonHier=jsonHier["data"];
 	        	    		  initial_hierachy();
@@ -253,7 +254,7 @@
 	   					 "theme" : "default",
 	   					 "dots" : true,
 	  					 "icons" : true,
-				 	     "url": "themes/default/style.css"
+				 	     "url": "../../js/jstree/themes/default/style.css"
 						},
 						 
 					//"core" : { "initially_open" : [ "0" ] },
@@ -323,7 +324,7 @@
 						    var temp=data.rslt.obj.attr("id");
 						    /*use $.bbq.pushState to put in queryeBirdTaxonomySubClasses's information*/
 						    //the [2] index is the id of the species
-						    $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy[temp][2]});
+						    $.bbq.pushState({"SubClass":class_hierachy[temp][2]});
 						    /*ajax_node will work on JSON returned from backend*/
 						    //here the method ajax_node will execute the server method for retrieving subclass nodes.
 							ajax_node();					
@@ -415,7 +416,7 @@
 	if multiple nodes are selected it will be executed once for each node
 	the execution finishing depends on whether JSON is returned from queryeBNirdTaxonomySubclasses */
 	function ajax_node() {
-		SpeciesDataProviderModule.queryeBirdTaxonomySubClasses({}, function(data) {
+		AnnotatorModule.queryForAnnotatorSubClasses({}, function(data) {
 			jsonHier = JSON.parse(data);
 			jsonHier = jsonHier["data"];
 			var flag=0;
@@ -607,7 +608,7 @@
 				 "theme" : "apple",
 				 "dots"  : true,
 				 "icons" : true,
-	 	         "url": "themes/apple/style.css"
+	 	         "url": "../../js/jstree/themes/apple/style.css"
 			},
     	
         "json_data": {
@@ -667,7 +668,7 @@
 				 "theme" : "classic",
 				 "dots"  : true,
 				 "icons" : true,
-	 	         "url": "themes/classic/style.css"
+	 	         "url": "../../js/jstree/themes/classic/style.css"
 			},
     	
         "json_data": {
@@ -832,11 +833,11 @@ $(document).ready(function(){
               alert(window.file_contents);
               window.column_numbers = rows[0].split(',').length;
               window.hasTable = 1;
+              //send the csv file to the server
+              AnnotatorModule.readCsvFileForInitialConversion({"csvFile":window.file_contents},
+            		  function(d) { console.log(d); });
           };
   reader.readAsText(file);
-  alert(window.file_contents);
-  //send the csv file to the server
-  //AnnotatorModule.readCsvFileForInitialConversion({"csvFile":window.file_contents}, ...);
   
  }
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
