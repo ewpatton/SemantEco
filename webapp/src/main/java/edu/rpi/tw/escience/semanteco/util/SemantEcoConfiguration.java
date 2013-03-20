@@ -26,13 +26,18 @@ public class SemantEcoConfiguration extends Properties {
 	private static Logger log = Logger.getLogger(SemantEcoConfiguration.class);
 	
 	private static boolean debugging = false;
-	
+	private static String basePath = null;
+
+	public SemantEcoConfiguration(ServletContext context) {
+		basePath = context.getRealPath("/");
+	}
+
 	/**
 	 * Configures the object from the provided servlet context
 	 * @param context
 	 */
 	public static void configure(ServletContext context) {
-		config = new SemantEcoConfiguration();
+		config = new SemantEcoConfiguration(context);
 		try {
 			InputStream is = context.getResourceAsStream(PROPERTIES);
 			if(is == null) {
@@ -79,5 +84,9 @@ public class SemantEcoConfiguration extends Properties {
 		if(config.getProperty("debug", "false").equals("true")) {
 			debugging = true;
 		}
+	}
+
+	public String getBasePath() {
+		return basePath;
 	}
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import edu.rpi.tw.escience.semanteco.Module;
+import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
 
 /**
  * GenericResource is used for representing resources where
@@ -43,6 +44,11 @@ public class GenericResource extends OwnedResource {
 
 	@Override
 	public String toString() {
-		return this.path;
+		String basePath = SemantEcoConfiguration.get().getBasePath();
+		if(basePath.endsWith("/")) {
+			return basePath+this.path;
+		} else {
+			return basePath+"/"+this.path;
+		}
 	}
 }
