@@ -61,6 +61,8 @@
     	<module>characteristics</module>
 	<module>industry</module>
 	<module>debugger</module>
+	<module>annotator</module>
+	<module>provenance</module>
       </modules>
     </profile>
     <profile>
