@@ -600,6 +600,21 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 	@QueryMethod
 	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
 		
+		edu.rpi.tw.escience.semanteco.Resource a = config.getResource("owl-files/oboe-sbclter.owl");
+		String path = a.toString();
+		
+		//config.getResource("owl-files/oboe-sbclter.owl").toString();	
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-oboe-spatial.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;
+
+		
 		
 		//construct an owlontology and pose sparql queries against it.
 		OntModel model = null;
@@ -608,9 +623,10 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
+		/*
+		FileManager.get().readModel(model, "oboe-sbclter.owl") ;
+		FileManager.get().readModel(model, "oboe-temporal.owl") ;
+		FileManager.get().readModel(model, "oboe-spatial.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
@@ -618,6 +634,9 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
 		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
+		*/
+		
+		
 		setModel(model);
 		//model.
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
