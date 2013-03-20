@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -31,6 +33,8 @@ import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.json.JSONArray;
+import org.json.simple.JSONObject;
 
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.JavaScriptGenerator;
@@ -248,14 +252,43 @@ public class SemantEcoServlet extends WebSocketServlet {
 		final ClientRequest logger = new ClientRequest(module.getClass().getName(), request.getParameterMap(), clientStream, original);
 		Method m;
 		try {
-			m = module.getClass().getMethod(methodName, Request.class);
-			if(m == null || m.getAnnotation(QueryMethod.class)==null) {
+			try {
+				m = module.getClass().getMethod(methodName, Request.class);
+			} catch(NoSuchMethodException e) {
+				try {
+					m = module.getClass().getMethod(methodName, Request.class, HierarchyVerb.class);
+				} catch(NoSuchMethodException e2) {
+					throw e;
+				}
+			}
+			if(m == null || !(m.getAnnotation(QueryMethod.class) != null ||
+					m.getAnnotation(HierarchicalMethod.class) != null)) {
 				response.sendError(403, "Invalid module or method specified in REST call");
 				return;
 			}
 			logger.debug("Invoking "+methodName+" of "+modName);
 			final long start = System.currentTimeMillis();
-			String result = (String) m.invoke(module, logger);
+			String result = null;
+			if(m.isAnnotationPresent(QueryMethod.class)) {
+				result = (String) m.invoke(module, logger);
+			} else if(m.isAnnotationPresent(HierarchicalMethod.class)) {
+				Object mode = logger.getParam("mode");
+				if(mode == null || !(mode instanceof String)) {
+					response.sendError(400, "Mode parameter was not valid");
+					return;
+				}
+				HierarchyVerb verb = null;
+				try {
+					verb = HierarchyVerb.valueOf((String)mode);
+				} catch(IllegalArgumentException e) {
+					response.sendError(400, "Mode parameter was not valid");
+					return;
+				}
+				@SuppressWarnings("unchecked")
+				Collection<HierarchyEntry> entries =
+						(Collection<HierarchyEntry>) m.invoke(module, logger, verb);
+				result = serializeHierarchyEntries(entries);
+			}
 			log.debug("Response time: "+(System.currentTimeMillis()-start)+" ms");
 			logger.debug("Returning response to client");
 			PrintStream ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
@@ -272,6 +305,19 @@ public class SemantEcoServlet extends WebSocketServlet {
 		} catch (InvocationTargetException e) {
 			logger.error("Invalid target for invocation", e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private String serializeHierarchyEntries(Collection<HierarchyEntry> entries) {
+		JSONArray arr = new JSONArray();
+		Iterator<HierarchyEntry> i = entries.iterator();
+		while(i.hasNext()) {
+			arr.put(i.next().toJSONObject());
+		}
+		JSONObject result = new JSONObject();
+		result.put("success", true);
+		result.put("results", arr);
+		return result.toString();
 	}
 
 	private String computeBaseUrl(HttpServletRequest request) {

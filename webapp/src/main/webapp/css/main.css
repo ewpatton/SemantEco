@@ -629,3 +629,34 @@ div.specietree>div div#show_map {
 	max-height: 110%;
 	display: none;
 }
+
+.ui-autocomplete {
+	max-height: 600px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	z-index: 1000 !important;
+}
+
+div.facet .ui-autocomplete-input {
+	width: 90px;
+	margin-right: 1em;
+}
+
+div.hierarchy div.wrapper {
+	height: 100px;
+	width: 175px;
+	overflow: auto;
+	background-color: #ffe;
+	position: relative;
+}
+
+div.hierarchy div.loading {
+	opacity: 0.75;
+	background-color: white;
+	width: 100%;
+	height: 100%;
+	display: none;
+	z-index: 1000 !important;
+	position: absolute;
+	text-align: center;
+}

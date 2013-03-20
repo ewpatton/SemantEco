@@ -80,14 +80,12 @@ $(window).bind("initialize", function() {
 	/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
 	//puts the array of root nodes, which are in the "data" array, into jsonHier
 	//call initial_hiearchy
-					SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
-        	    		  jsonHier=JSON.parse(data);
-        	    		  jsonHier=jsonHier["data"];
-        	    		  initial_hierachy();
-        	    		  
-        	    		          	    		  
-        	       }
-        	       );
+//					SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
+//        	    		  jsonHier=JSON.parse(data);
+//        	    		  jsonHier=jsonHier["data"];
+//        	    		  initial_hierachy();
+//        	       }
+//        	       );
         	});
  
  //var class_hierachy=[["Aves",null],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["sharpShinnedHawk","Accipiter"],["commonRedpoll","Acanthis"]];

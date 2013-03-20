@@ -1,4 +1,6 @@
 <div id="SpeciesFacet" class="facet">
+  <div class="hierarchy"></div>
+  <!-- 
   <table cellpadding="0" cellspacing="0">
     <tr>
       <td colspan="2"></td>
@@ -19,4 +21,5 @@
       </td>
     </tr>
   </table>
+   -->
 </div>

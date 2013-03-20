@@ -580,7 +580,7 @@ var SemantEcoUI = {
         var params = {};
         $("div#facets .facet").each(function() {
             var that = $(this);
-            $("input", that).each(function() {
+            $("input[name]", that).each(function() {
                 var type = this.getAttribute("type").toLowerCase();
                 var name = this.getAttribute("name");
                 if(type == "checkbox") {
