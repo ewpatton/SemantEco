@@ -4,7 +4,7 @@
 .project
 target
 .DS_Store
-
+*~
 webapp/.DS_Store
 
 webapp/src/.DS_Store
