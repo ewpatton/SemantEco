@@ -640,8 +640,75 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 	}
 	
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-oboe-spatial.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+		
+		//construct an owlontology and pose sparql queries against it.
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		
+		setModel(model);
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");		
 
-	return null;	
+		final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
+		final QueryResource Measurement = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement");
+		final QueryResource Thing = query.getResource("http://www.w3.org/2002/07/owl#Thing");
+		//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity
+		final QueryResource Entity = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity");
+
+		final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+		final Variable site = query.getVariable(VAR_NS+"site");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(parent);
+		vars.add(label);
+		query.setVariables(vars);
+		//query.addPattern(site, subClassOf, PollutedThing);
+		//query.addPattern(site, subClassOf, Measurement);
+		query.addPattern(id, subClassOf, parent);
+		query.addPattern(id, subClassOf, Entity);
+		query.addPattern(id, hasLabel, label);
+		//construct.addPattern(site, subClassOf, PollutedThing);
+		//return executeLocalQuery(query, model);
+		String responseStr = FAILURE;
+		//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);	
+		Set master = new HashSet();		//model.
+		Set<OntClass> classes = new HashSet<OntClass>();		//model.
+		Set<String> labels = new HashSet<String>();		//model.
+
+		OntClass thing = model.getOntClass( OWL.Thing.getURI() );
+		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
+		Hashtable<String, String> table = new Hashtable<String, String>();	
+		for (Iterator<OntClass> i = thing.listSubClasses(true); i.hasNext(); ) { //true here is for direct
+    	OntClass hierarchyRoot = i.next();	
+    	    //classes.add( hierarchyRoot);
+		    //labels.add( hierarchyRoot.getLabel(null));
+    	System.out.println("root: " + hierarchyRoot.toString());
+    	System.out.println("label: " + hierarchyRoot.getLabel(null));
+    	
+    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+		}
+    	else{
+		 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+    	}      
+		}	
+		master.add(classes);
+		master.add(labels);	
+		return null;
+		//return jsonWrapper(table, OWL.Thing.getURI().toString());	
 	}
 	
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMChildren(final Request request, final String species) {
@@ -681,7 +748,7 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 		
-	//load certain ontologies
+		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 		/*
 		FileManager.get().readModel(model, "oboe-sbclter.owl") ;
