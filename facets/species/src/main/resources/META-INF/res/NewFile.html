@@ -285,9 +285,26 @@
    		                 tr+= "</tr>";
    		                 $('#list tr:first').after(tr);
    		                 
-   		                 $.bbq.pushState({"annotationMappings": {"RangeClass" : [{q:p}],"Property" : [{"test": "http://test"}]}});
-   		                 $.bbq.getState("annotationMappings");
+   		                 var annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+   		                 
+   		                 $.bbq.pushState({"annotationMappings": {"RangeClass" : [{r:p}],"Property" : [{"test": "http://test"}]}});
+   		                 $.bbq.getState("annotationMappings");           
+/*                         
+   		                 for (i in annotationMappings) {
+   		            	 for (j in annotationMappings[i][0]) {
+   		            	 alert(j+":"+annotationMappings[i][0][j]);
+   		            	 }
+   		            	 }
    		 
+   		              
+   		                 for (i in annotationMappings) {
+   		            	 if ($.isArray(annotationMappings[i])) {
+   		            	 alert(i + ": " + "Array["+annotationMappings[i].length+"]<br />");
+   		            	 } else {
+   		            	 alert(i + ": Object<br />");
+   		            	 }
+   		            	 }	            	  
+*/   		                
    		                }
    		            },
    		            
@@ -818,6 +835,9 @@ $(document).ready(function(){
           };
   reader.readAsText(file);
   alert(window.file_contents);
+  //send the csv file to the server
+  //AnnotatorModule.readCsvFileForInitialConversion({"csvFile":window.file_contents}, ...);
+  
  }
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
  document.getElementById('the_file').addEventListener('change', fileInfo, false);
