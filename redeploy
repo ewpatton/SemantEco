@@ -1,2 +1,0 @@
-#!/bin/bash
-cd facets/annotator && mvn clean install && cd ../../webapp && mvn tomcat7:deploy
