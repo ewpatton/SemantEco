@@ -288,7 +288,9 @@
    		                 
    		             //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
    		                 
-   		                 $.bbq.pushState({"annotationMappings": {"RangeClass" : [{r:p}],"Property" : [{"test": "http://test"}]}});
+   		                 var args = {};
+   		                 args[r] = p;
+   		                 $.bbq.pushState({"annotationMappings": {"RangeClass" : [args],"Property" : [{"test": "http://test"}]}});
    		                 $.bbq.getState("annotationMappings");           
 /*                         
    		                 for (i in annotationMappings) {
