@@ -1055,10 +1055,12 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 				OntModel model = null;
 				model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 				
+				initModel();
 
 				
 				//load certain ontologies
 				//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
+				/*
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
@@ -1069,6 +1071,7 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
+				*/
 				//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
 				
 				
@@ -1148,9 +1151,10 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 				OntModel model = null;
 				model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-				
+				initModel();
 				//load certain ontologies
 				//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
+				/*
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
@@ -1161,6 +1165,7 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
+				*/
 				//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
 				
 				
