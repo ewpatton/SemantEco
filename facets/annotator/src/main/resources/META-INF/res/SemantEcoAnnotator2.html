@@ -118,7 +118,7 @@
 		/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
 		//puts the array of root nodes, which are in the "data" array, into jsonHier
 		//call initial_hiearchy
-						AnnotatorModule.queryForAnnotatorRootClasses({}, function (data){
+						AnnotatorModule.queryForAnnotatorRootObjectProperties({}, function (data){
 	        	    		  jsonHier=JSON.parse(data);
 	        	    		  jsonHier=jsonHier["data"];
 	        	    		  initial_hierachy();
@@ -335,7 +335,7 @@
 						    var temp=data.rslt.obj.attr("id");
 						    /*use $.bbq.pushState to put in queryeBirdTaxonomySubClasses's information*/
 						    //the [2] index is the id of the species
-						    $.bbq.pushState({"SubClass":class_hierachy[temp][2]});
+						    $.bbq.pushState({"SubProperty":class_hierachy[temp][2]});
 						    /*ajax_node will work on JSON returned from backend*/
 						    //here the method ajax_node will execute the server method for retrieving subclass nodes.
 							ajax_node();					
@@ -427,7 +427,7 @@
 	if multiple nodes are selected it will be executed once for each node
 	the execution finishing depends on whether JSON is returned from queryeBNirdTaxonomySubclasses */
 	function ajax_node() {
-		AnnotatorModule.queryForAnnotatorSubClasses({}, function(data) {
+		AnnotatorModule.queryForAnnotatorSubObjectProperties({}, function(data) {
 			jsonHier = JSON.parse(data);
 			jsonHier = jsonHier["data"];
 			var flag=0;
