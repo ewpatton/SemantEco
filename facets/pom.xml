@@ -67,4 +67,7 @@
       <id>parent-only</id>
     </profile>
   </profiles>
+  <modules>
+    <module>semanteco-geo-facet</module>
+  </modules>
 </project>

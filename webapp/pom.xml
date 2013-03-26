@@ -206,6 +206,12 @@
       <artifactId>owlapi-apibinding</artifactId>
       <version>3.4</version>
     </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-geo-facet</artifactId>
+      <version>4.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -352,6 +358,14 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
+    <artifactItem>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-geo-facet</artifactId>
+      <version>4.1-SNAPSHOT</version>
+      <type>jar</type>
+      <overWrite>true</overWrite>
+      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+    </artifactItem>
 	      </artifactItems>
 	    </configuration>
 	  </execution>
