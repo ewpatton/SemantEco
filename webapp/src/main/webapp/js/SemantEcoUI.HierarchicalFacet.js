@@ -254,7 +254,7 @@ SemantEcoUI.HierarchicalFacet = {};
         jqdiv.parent().find(".loading").css("display", "block");
         var module = jqdiv.data("hierarchy.module");
         var qmethod = jqdiv.data("hierarchy.query_method");
-        module[qmethod](HierarchyVerb.PATH_TO_NODE, {"node": item},
+        module[qmethod](HierarchyVerb.PATH_TO_NODE, {"uri": item},
             function(d) {
                 d = JSON.parse(d);
                 if( !d.success ) {
