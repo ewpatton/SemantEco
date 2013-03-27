@@ -658,7 +658,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		if(action == HierarchyVerb.ROOTS) {
 			return  queryAnnotatorPropertyHMRoots(request);
 		} else if ( action == HierarchyVerb.CHILDREN ) {
-			return  queryAnnotatorPropertyHMChildren(request, (String) request.getParam("annotatorClasses"));
+			return  queryAnnotatorPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
 		} else if ( action == HierarchyVerb.SEARCH ) {
 			return searchAnnotatorProperty( request, (String) request.getParam("string") );
 		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
