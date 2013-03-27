@@ -72,7 +72,7 @@ SemantEcoUI.HierarchicalFacet = {};
      * Processes the response from a server-side call to a
      * hierarchical facet method to obtain the tree roots.
      */
-    var processRoots = function(jqdiv, data) {
+    var processRoots = function(jqdiv, data, jstreeArgs) {
         if(data.success == false) {
             window.alert(data.error);
             return;
@@ -94,26 +94,28 @@ SemantEcoUI.HierarchicalFacet = {};
         }
         jqdiv.data("hierarchy.lookup", lookup);
         jqdiv.data("hierarchy.roots", roots);
-        populateRoots(jqdiv);
+        populateRoots(jqdiv, jstreeArgs);
     };
 
-    var populateRoots = function(jqdiv) {
+    var populateRoots = function(jqdiv, jstreeArgs) {
         var roots = jqdiv.data("hierarchy.roots");
         var ul = $("<ul />");
         jqdiv.append(ul);
         for(var i=0;i<roots.length;i++) {
             ul.append(generateRootElement(roots[i]));
         }
-        jqdiv.jstree({
-            "core": { "open_parents": true },
-            "plugins": ["themes", "html_data", "ui"],
-            "themes": {
-                "theme": "default",
-                "dots": true,
-                "icons": true
-            },
-            "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
-        }).bind("select_node.jstree",
+        var args = {
+                "core": { "open_parents": true },
+                "plugins": ["themes", "html_data", "ui"],
+                "themes": {
+                    "theme": "default",
+                    "dots": true,
+                    "icons": true
+                },
+                "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
+            };
+        jQuery.extend(true, args, jstreeArgs);
+        jqdiv.jstree(jstreeArgs).bind("select_node.jstree",
                 clickHandler
                 ).delegate("a", "click", cancelClick);
         var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
@@ -340,7 +342,7 @@ SemantEcoUI.HierarchicalFacet = {};
         div.data("hierarchy.param", param);
         module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
             d = JSON.parse(d);
-            processRoots(div, d);
+            processRoots(div, d, jstreeArgs);
         });
     };
     
