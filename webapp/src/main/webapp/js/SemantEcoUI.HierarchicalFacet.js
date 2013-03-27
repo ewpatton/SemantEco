@@ -72,7 +72,7 @@ SemantEcoUI.HierarchicalFacet = {};
      * Processes the response from a server-side call to a
      * hierarchical facet method to obtain the tree roots.
      */
-    var processRoots = function(jqdiv, data) {
+    var processRoots = function(jqdiv, data, jstreeArgs) {
         if(data.success == false) {
             window.alert(data.error);
             return;
@@ -94,26 +94,28 @@ SemantEcoUI.HierarchicalFacet = {};
         }
         jqdiv.data("hierarchy.lookup", lookup);
         jqdiv.data("hierarchy.roots", roots);
-        populateRoots(jqdiv);
+        populateRoots(jqdiv, jstreeArgs);
     };
 
-    var populateRoots = function(jqdiv) {
+    var populateRoots = function(jqdiv, jstreeArgs) {
         var roots = jqdiv.data("hierarchy.roots");
         var ul = $("<ul />");
         jqdiv.append(ul);
         for(var i=0;i<roots.length;i++) {
             ul.append(generateRootElement(roots[i]));
         }
-        jqdiv.jstree({
-            "core": { "open_parents": true },
-            "plugins": ["themes", "html_data", "ui"],
-            "themes": {
-                "theme": "default",
-                "dots": true,
-                "icons": true
-            },
-            "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
-        }).bind("select_node.jstree",
+        var args = {
+                "core": { "open_parents": true },
+                "plugins": ["themes", "html_data", "ui"],
+                "themes": {
+                    "theme": "default",
+                    "dots": true,
+                    "icons": true
+                },
+                "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
+            };
+        jQuery.extend(true, args, jstreeArgs);
+        jqdiv.jstree(jstreeArgs).bind("select_node.jstree",
                 clickHandler
                 ).delegate("a", "click", cancelClick);
         var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
@@ -254,7 +256,7 @@ SemantEcoUI.HierarchicalFacet = {};
         jqdiv.parent().find(".loading").css("display", "block");
         var module = jqdiv.data("hierarchy.module");
         var qmethod = jqdiv.data("hierarchy.query_method");
-        module[qmethod](HierarchyVerb.PATH_TO_NODE, {"node": item},
+        module[qmethod](HierarchyVerb.PATH_TO_NODE, {"uri": item},
             function(d) {
                 d = JSON.parse(d);
                 if( !d.success ) {
@@ -324,12 +326,13 @@ SemantEcoUI.HierarchicalFacet = {};
     /**
      * 
      */
-    SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param) {
+    SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param, jstreeArgs) {
+        jstreeArgs = jstreeArgs || {};
         div = $(div);
         //div.addClass("ui-front");
         div.append("<input type=\"text\" class=\"search\" />");
         div.append("<input type=\"button\" value=\"Search\" />");
-        div.append("<div class=\"wrapper\"><div class=\"loading\"><img src=\"images/spinner.gif\" /><br />Loading...</div><div class=\"jstree-placeholder\"></div></div>");
+        div.append("<div class=\"wrapper\"><div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div><div class=\"jstree-placeholder\"></div></div>");
         var text = $("input[type='text']", div);
         text.autocomplete({minLength: 4, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);
@@ -339,7 +342,7 @@ SemantEcoUI.HierarchicalFacet = {};
         div.data("hierarchy.param", param);
         module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
             d = JSON.parse(d);
-            processRoots(div, d);
+            processRoots(div, d, jstreeArgs);
         });
     };
     

@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -82,7 +83,7 @@ then  enhancement with ov:csvHeader "siteID" is updated to:
 
 rangeName becomes as below. re-use csvHeader string for range_name.
 
-*we should automatically add namespaces.
+ *we should automatically add namespaces.
 
 conversion:enhance [
          conversion:class_name "Site";
@@ -117,7 +118,7 @@ public class AnnotatorModule implements Module {
 	public OntModel getModel(){
 		return AnnotatorModule.model;
 	}
-	
+
 	public void initModel() {
 		if(model == null) {
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
@@ -134,43 +135,43 @@ public class AnnotatorModule implements Module {
 	}
 
 	@QueryMethod(method=HTTP.POST)
-	 public String readCsvFileForInitialConversion(final Request request){
+	public String readCsvFileForInitialConversion(final Request request){
 		System.out.println(request.getParam("csvFile"));
-		
-		return null;
-	  
-	 //*read in the parameter for the file that is passed in.
-	 }
 
-	
+		return null;
+
+		//*read in the parameter for the file that is passed in.
+	}
+
+
 	@QueryMethod
 	public String queryForEnhancing(final Request request) throws FileNotFoundException{
-		
+
 		System.out.println(request.getParam("annotationMappings"));
 
 		//holder for reading file off a parameter.
 		//File f = (File) request.getParam("file");
 		//FileInputStream in = new FileInputStream(f);
 		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
-		
+
 		//1) run the initial conversion from here and get the enhancement file
-		
-		
+
+
 		//2) get the json object from bbq statement for input to the enhancement work
 
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
 		//queryForHeaderToEnhance
-		
+
 		//4) should we send the rdf file back to the client?
-		
-		
+
+
 		return null;
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * need to create new enhancement
 	 * @param request
@@ -186,25 +187,25 @@ public class AnnotatorModule implements Module {
 		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
 		Literal literalHeader = model.createLiteral("Deviated_Well");
 		Resource propertyhasSpatialLocation = model.createResource("hasSpatialLocation");
-		
+
 
 		Property propertyEquiv = model.createProperty(conversionPrefix + "equivalent_property");
-	    StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) literalHeader );
-	    Statement s = null;
-	    while (enhanceStatements1.hasNext()) {
+		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) literalHeader );
+		Statement s = null;
+		while (enhanceStatements1.hasNext()) {
 			s = enhanceStatements1.next();
-		    System.out.println("statement is : " + s);	
+			System.out.println("statement is : " + s);	
 		}
-	    Resource subjectOfHeader = s.getSubject();
-	    Statement equivStatement = ResourceFactory.createStatement(subjectOfHeader, propertyEquiv, propertyhasSpatialLocation);
+		Resource subjectOfHeader = s.getSubject();
+		Statement equivStatement = ResourceFactory.createStatement(subjectOfHeader, propertyEquiv, propertyhasSpatialLocation);
 		model.add(equivStatement);
-        model.write(enhancementFileStream2, "N-TRIPLE");
+		model.write(enhancementFileStream2, "N-TRIPLE");
 
 
-		
+
 		return null;	
 	}
-	
+
 	@QueryMethod
 	public String queryForHeaderToEnhance(final Request request) throws FileNotFoundException{
 		Model model = ModelFactory.createDefaultModel();
@@ -215,7 +216,7 @@ public class AnnotatorModule implements Module {
 		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
 		FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
-		
+
 		String ov = "http://open.vocab.org/terms/";
 		//this should be retrieved
 		//how? list statements . null,property,voiddataset
@@ -226,119 +227,119 @@ public class AnnotatorModule implements Module {
 		Property propertySubclassOf = model.createProperty(conversionPrefix + "subclass_of");
 		Property propertyCsvHeader = model.createProperty(ov + "csvHeader");
 
-		
+
 		Literal literalHeader = model.createLiteral("Deviated_Well");
 		Resource superClass = model.createResource("SpatialLocation");
 
-		
-	    StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) propertyCsvHeader , (Literal) literalHeader );
-	    Statement s = null;
-	    while (enhanceStatements1.hasNext()) {
+
+		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) propertyCsvHeader , (Literal) literalHeader );
+		Statement s = null;
+		while (enhanceStatements1.hasNext()) {
 			s = enhanceStatements1.next();
-		    System.out.println("statement is : " + s);	
+			System.out.println("statement is : " + s);	
 		}
-	    
-	    Resource subjectOfHeader = s.getSubject();
-	    
-	    //this is an object of what triple and what is the subject? that subject becomes subject of new triple with anonymous node enhancement.
-	    StmtIterator getStatement =  model.listStatements((Resource) null, (Property) propertyEnhance , (Resource) subjectOfHeader );
-	    Statement s2 = null;
-	    while (getStatement.hasNext()) {
+
+		Resource subjectOfHeader = s.getSubject();
+
+		//this is an object of what triple and what is the subject? that subject becomes subject of new triple with anonymous node enhancement.
+		StmtIterator getStatement =  model.listStatements((Resource) null, (Property) propertyEnhance , (Resource) subjectOfHeader );
+		Statement s2 = null;
+		while (getStatement.hasNext()) {
 			s2 = getStatement.next();
-		    System.out.println("other statement is : " + s2);	
+			System.out.println("other statement is : " + s2);	
 		}
-	    Resource conversionProcess = s2.getSubject();
-	    //triple with anonymous node.
+		Resource conversionProcess = s2.getSubject();
+		//triple with anonymous node.
 		//Node anonNode = Node.createAnon();
-	    Resource newAnon = model.createResource();
-	    Statement conversionProcessEnhanceAnon = ResourceFactory.createStatement(conversionProcess, propertyEnhance, newAnon);
+		Resource newAnon = model.createResource();
+		Statement conversionProcessEnhanceAnon = ResourceFactory.createStatement(conversionProcess, propertyEnhance, newAnon);
 		System.out.println("anon node output is : " + conversionProcessEnhanceAnon);
 		model.add(conversionProcessEnhanceAnon);
 		//now just add triples from anon
-		
+
 		/*
 		 * conversion:enhance [
          conversion:class_name "Site";
          conversion:subclass_of wgs:SpatialThing;
       ];
 		 */
-		
-	    Statement classNameStatement = ResourceFactory.createStatement(newAnon, propertyClassName, literalHeader);
-	    Statement subclassStatement = ResourceFactory.createStatement(newAnon, propertySubclassOf, superClass);
-	    model.add(classNameStatement);
-	    model.add(subclassStatement);
 
-	    
+		Statement classNameStatement = ResourceFactory.createStatement(newAnon, propertyClassName, literalHeader);
+		Statement subclassStatement = ResourceFactory.createStatement(newAnon, propertySubclassOf, superClass);
+		model.add(classNameStatement);
+		model.add(subclassStatement);
+
+
 
 		//find the statement that mentions "Deviated_Well" in the ov:csvHeader
-		
+
 		//query for statement with header in the range.
-	    
-	    Statement st = null;
-	    StmtIterator enhanceStatements =  model.listStatements((Resource) subjectOfHeader, (Property) propertyRange, (Literal) null);
+
+		Statement st = null;
+		StmtIterator enhanceStatements =  model.listStatements((Resource) subjectOfHeader, (Property) propertyRange, (Literal) null);
 		while (enhanceStatements.hasNext()) {
 			st = enhanceStatements.next();
-		    System.out.println("statement is : " + st);	
+			System.out.println("statement is : " + st);	
 		}  
-		
+
 		Statement replacement = ResourceFactory.createStatement(st.getSubject(), st.getPredicate(), model.createResource("http://www.w3.org/2000/01/rdf-schema#" +
 				"Resource"));
-		
+
 		Statement newst = ResourceFactory.createStatement(st.getSubject(), propertyRangeName, literalHeader);
 
-		
+
 		model.remove(st);
-    	//st.changeObject(model.createResource("Resource"));
-    	model.add(replacement);
-    	model.add(newst);
+		//st.changeObject(model.createResource("Resource"));
+		model.add(replacement);
+		model.add(newst);
 
 
-        model.write(enhancementFileStream2, "N-TRIPLE");
-	    return null;
+		model.write(enhancementFileStream2, "N-TRIPLE");
+		return null;
 
-		
+
 		//return null;
-		
+
 	}
 	//can you just change the statement in the non-iterated model?
-	
+
 	@QueryMethod
 	public String writeEnhancementForRangeTester(final Request request) throws FileNotFoundException{
-		
+
 		String type = "xsd:double";
 		//you need to know what the property is.
-		
+
 		//		model.createLiteral(arg0)
 		//can i test if a resource is a datatype?
 		//we cannot assign the datatype until the dataproperty is also assigned.
-		
+
 		String hasProperty = "oboe:hasMeasurement";
-		
+
 		String header = "Deviated_Well";
 		String rangeClass = "hasWell";
-		
-		
+
+
 		FileOutputStream newEnhancementFile = new FileOutputStream("/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl.new");
-		
+
 		//writeEnhancementForRangeTesterModel(request, header, rangeClass);		
 		Model newModel = writeEnhancementForRange(header, rangeClass);
-		
+
 		//write model
-	newModel.write(newEnhancementFile, "N-TRIPLE");
-		
+		newModel.write(newEnhancementFile, "N-TRIPLE");
+
 		//what patterns do we supply when the symbol refers to a code?
 		//A: just that its an instance of code, or also that its "about" country Y?
-		
-		
+
+
 		//"Derviated_Well":oboe:DeviatedWell.
 		//test: replace "conversion:range todo:Literal;" with "conversion:range rdf:Resource"
 		return request.toString();	
 	}
-	
+
 	/*
 public String writeEnhancementForRangeTesterModel(Request request, String header, String rangeClass) throws FileNotFoundException{
-		
-	
+
+
 	Model model = ModelFactory.createDefaultModel();
 	FileOutputStream newEnhancementFile = new FileOutputStream("/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl.new");
 	FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
@@ -347,139 +348,139 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	//a method: model, type of args, returns a model.
 	//should modify the model not create a new one. for testing create a new file to write the model to.
 	newModel = writeEnhancementForRange(model, newModel, header, rangeClass);
-	
+
 	//write model
 	newModel.write(newEnhancementFile, "N-TRIPLE");
 
-	
+
 		return null;	
 	}
-	*/
-	
-public Model writeEnhancementForRange(String header, String rangeClass){
-	Model model = ModelFactory.createDefaultModel();
-	Model newModel = ModelFactory.createDefaultModel();
+	 */
 
-	FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
+	public Model writeEnhancementForRange(String header, String rangeClass){
+		Model model = ModelFactory.createDefaultModel();
+		Model newModel = ModelFactory.createDefaultModel();
 
-	String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
-	//this should be retrieved
-	//how? list statements . null,property,voiddataset
-	String dataset = "<https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#/source/scraperwiki-com/dataset/uk-offshore-oil-wells/version/2011-Jan-24/conversion/enhancement/1>";
-	Resource subjectDataSet = model.createResource(dataset);
-	Property propertyConversionProcess = model.createProperty(conversionPrefix + "conversion_process");
-	Property propertyEnhance = model.createProperty(conversionPrefix + "enhance");
-	Property propertyRange = model.createProperty(conversionPrefix + "range");
-	Property propertyRangeName = model.createProperty(conversionPrefix + "range");
-	StmtIterator iter = model.listStatements();
-	// print out the predicate, subject and object of each statement
-	while (iter.hasNext()) {
-	    Statement stmt      = iter.nextStatement();  // get next statement
-	    Resource  subject   = stmt.getSubject();     // get the subject
-	    Property  predicate = stmt.getPredicate();   // get the predicate
-	    RDFNode   object    = stmt.getObject();      // get the object
-	    String predString = predicate.toString();
-	    //if statement with property 'propertyConversionProcess'
-	    if(predicate.toString().trim().equals(propertyConversionProcess.toString().trim())){
-	    	System.out.println("\nmatched: propertyConversionProcess!\n");
-	        if (object instanceof Resource) {
-	        //find triples with 'propertyEnhance'
-	        NodeIterator enhancements = model.listObjectsOfProperty((Resource) object, propertyEnhance);
-	        //iterate thru all enhancement blocks
-	        while(enhancements.hasNext()){
-	        	System.out.println("\nmatched: propertyEnhance!\n");
-				RDFNode node = enhancements.nextNode();
-			    System.out.println("node: " + ((Object) node).toString());			
-			    StmtIterator enhanceStatements =  model.listStatements((Resource) node, (Property) null, (Resource) null);
-			 	// NodeIterator enhancementParameters = model.listObjectsOfProperty((Resource) node, enhance);	    
-			    while(enhanceStatements.hasNext()){
-			    	//match and update range
-		        	System.out.println("\n\ngot inside enhance!\n");
-		        	Statement enhanceStatement = enhanceStatements.nextStatement();
-			        subject   = enhanceStatement.getSubject();     // get the subject
-				    predicate = enhanceStatement.getPredicate();   // get the predicate
-				    object    = enhanceStatement.getObject();      // get the object
-				    if (object instanceof Resource) {
-				       System.out.print(object.toString());
-				    } else {
-				        System.out.print(" \"" + object.toString() + "\"");
-				    }
-			    	//here we can check properties for rewriting
-				    //match for range.	    
-				    if(predicate.toString().trim().equals(propertyRange.toString().trim())){
-				    	Statement s = ResourceFactory.createStatement(subject,propertyRange, model.createResource("rdf:Resource"));
-				    	newModel.add(s);
-				    	return null;
-				    	//after the iterator is done make change
-				    	//enhanceStatement.changeObject(model.createResource("rdf:Resource"));
-						//change the object of the statement (S, P, X) to (S, P, o).
-				    }
-				  }			    
-			     }	    
-			    //Statement s = ResourceFactory.createStatement(subject,propertyRangeName , model.createResource("test"));
-				//model.add(s); // add the statement (triple) to the model
-			    //here new code
-	        }		        
-	     }
-	    }	    
-	  return newModel;
+		FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
+
+		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
+		//this should be retrieved
+		//how? list statements . null,property,voiddataset
+		String dataset = "<https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#/source/scraperwiki-com/dataset/uk-offshore-oil-wells/version/2011-Jan-24/conversion/enhancement/1>";
+		Resource subjectDataSet = model.createResource(dataset);
+		Property propertyConversionProcess = model.createProperty(conversionPrefix + "conversion_process");
+		Property propertyEnhance = model.createProperty(conversionPrefix + "enhance");
+		Property propertyRange = model.createProperty(conversionPrefix + "range");
+		Property propertyRangeName = model.createProperty(conversionPrefix + "range");
+		StmtIterator iter = model.listStatements();
+		// print out the predicate, subject and object of each statement
+		while (iter.hasNext()) {
+			Statement stmt      = iter.nextStatement();  // get next statement
+			Resource  subject   = stmt.getSubject();     // get the subject
+			Property  predicate = stmt.getPredicate();   // get the predicate
+			RDFNode   object    = stmt.getObject();      // get the object
+			String predString = predicate.toString();
+			//if statement with property 'propertyConversionProcess'
+			if(predicate.toString().trim().equals(propertyConversionProcess.toString().trim())){
+				System.out.println("\nmatched: propertyConversionProcess!\n");
+				if (object instanceof Resource) {
+					//find triples with 'propertyEnhance'
+					NodeIterator enhancements = model.listObjectsOfProperty((Resource) object, propertyEnhance);
+					//iterate thru all enhancement blocks
+					while(enhancements.hasNext()){
+						System.out.println("\nmatched: propertyEnhance!\n");
+						RDFNode node = enhancements.nextNode();
+						System.out.println("node: " + ((Object) node).toString());			
+						StmtIterator enhanceStatements =  model.listStatements((Resource) node, (Property) null, (Resource) null);
+						// NodeIterator enhancementParameters = model.listObjectsOfProperty((Resource) node, enhance);	    
+						while(enhanceStatements.hasNext()){
+							//match and update range
+							System.out.println("\n\ngot inside enhance!\n");
+							Statement enhanceStatement = enhanceStatements.nextStatement();
+							subject   = enhanceStatement.getSubject();     // get the subject
+							predicate = enhanceStatement.getPredicate();   // get the predicate
+							object    = enhanceStatement.getObject();      // get the object
+							if (object instanceof Resource) {
+								System.out.print(object.toString());
+							} else {
+								System.out.print(" \"" + object.toString() + "\"");
+							}
+							//here we can check properties for rewriting
+							//match for range.	    
+							if(predicate.toString().trim().equals(propertyRange.toString().trim())){
+								Statement s = ResourceFactory.createStatement(subject,propertyRange, model.createResource("rdf:Resource"));
+								newModel.add(s);
+								return null;
+								//after the iterator is done make change
+								//enhanceStatement.changeObject(model.createResource("rdf:Resource"));
+								//change the object of the statement (S, P, X) to (S, P, o).
+							}
+						}			    
+					}	    
+					//Statement s = ResourceFactory.createStatement(subject,propertyRangeName , model.createResource("test"));
+					//model.add(s); // add the statement (triple) to the model
+					//here new code
+				}		        
+			}
+		}	    
+		return newModel;
 	}
-	
-	
-	
+
+
+
 	@QueryMethod
 	public String writeEnhancement(final Request request){
 		return request.toString();
-	
+
 	}
-	
-	
+
+
 	@QueryMethod
 	public String applyEnhancement(final Request request) throws FileNotFoundException{
 		//
-		
-		
+
+
 		return null;
 	}
-	
-	
+
+
 	@QueryMethod
 	public String writeToEnhancement(final Request request) throws FileNotFoundException{
 		//read in the csv file.
 		//read enhancement into rdf model
 		//find the triples with appropriate properies and rewrite it
 		//how did you handle rewrite in your snomed stuff?
-		
+
 		//if you are modifying an enhancement you just need to assert triples on the bnode for that enhancement
 		//if you are creating a new enhancement after asserting triple, you need to assert a triple with the 
 		//conversion process.
 		//how do i construct and assert a new triple in jena?
-		
+
 		//// add the property
 		// johnSmith.addProperty(VCARD.FN, fullName);
-		
+
 		//add statements to a model
 		//model.add(Statement s)
 		//remove(Statement s)
 		//Removes a statement.
-		
+
 		//Statement s = ResourceFactory.createStatement(subject, predicate, object);
 		//model.add(s); // add the statement (triple) to the model
-		
+
 		//Statement.changeObject(String o)
 		//change the object of the statement (S, P, X) to (S, P, o).
-		
+
 		Model model = ModelFactory.createDefaultModel();
 		Model newModel = ModelFactory.createDefaultModel();
-		
+
 		//Node anonNode = Node.createAnon();
 		//anonNode.
-		
+
 
 		//Model model = null;
 		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-		
+
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 		FileOutputStream newEnhancementFile =new FileOutputStream("/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl.new");
@@ -496,72 +497,72 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		StmtIterator iter = model.listStatements();
 		// print out the predicate, subject and object of each statement
 		while (iter.hasNext()) {
-		    Statement stmt      = iter.nextStatement();  // get next statement
-		    Resource  subject   = stmt.getSubject();     // get the subject
-		    Property  predicate = stmt.getPredicate();   // get the predicate
-		    RDFNode   object    = stmt.getObject();      // get the object
-		    
+			Statement stmt      = iter.nextStatement();  // get next statement
+			Resource  subject   = stmt.getSubject();     // get the subject
+			Property  predicate = stmt.getPredicate();   // get the predicate
+			RDFNode   object    = stmt.getObject();      // get the object
 
-		    System.out.print(subject.toString());
-		    System.out.print(" " + predicate.toString() + " ");
-		    if (object instanceof Resource) {
-		       System.out.print(object.toString());
-		    } else {
-		        // object is a literal
-		        System.out.print(" \"" + object.toString() + "\"");
-		    }
-		    
-		    System.out.println(" .");
-		    String predString = predicate.toString();
-		    System.out.println("comparing " + predString + " with :  " + propertyConversionProcess.toString());
-		    //if statement with property 'propertyConversionProcess'
-		    if(predicate.toString().trim().equals(propertyConversionProcess.toString().trim())){
-		    	System.out.println("\nmatched: propertyConversionProcess!\n");
-		        System.out.println("object string is!!!: " + " \"" + object.toString() + "\"");
-		        
-		        if (object instanceof Resource) {
-		        //fine triples with 'propertyEnhance'
-		        NodeIterator enhancements = model.listObjectsOfProperty((Resource) object, propertyEnhance);
-		        while(enhancements.hasNext()){
-		        	System.out.println("\nmatched: propertyEnhance!\n");
-					RDFNode node = enhancements.nextNode();
-				    System.out.println("node: " + ((Object) node).toString());		
-				
-				    StmtIterator enhanceStatements =  model.listStatements((Resource) node, (Property) null, (Resource) null);
-				 	// NodeIterator enhancementParameters = model.listObjectsOfProperty((Resource) node, enhance);
-				    
-				    
-				    while(enhanceStatements.hasNext()){
-			        	System.out.println("\n\ngot inside enhance!!!\n");
-			        	Statement enhanceStatement = enhanceStatements.nextStatement();
-				        //System.out.println("object string is!!!: " + " \"" + object.toString() + "\"");
-				        
-				        subject   = enhanceStatement.getSubject();     // get the subject
-					    predicate = enhanceStatement.getPredicate();   // get the predicate
-					    object    = enhanceStatement.getObject();      // get the object
-					    System.out.print("enhancing statement is: ");
-					    System.out.print(subject.toString());
-					    System.out.print(" " + predicate.toString() + " ");
-					    if (object instanceof Resource) {
-					       System.out.print(object.toString());
-					    } else {
-					        // object is a literal
-					        System.out.print(" \"" + object.toString() + "\"");
-					    }
-				    	//here we can check properties for rewriting
-					    //match for range.
-				    }
-				    
-				    Statement s = ResourceFactory.createStatement(subject,propertyRangeName , model.createResource("test"));
-					newModel.add(s); // add the statement (triple) to the model
-				    //here new code
-		        }		        
-		        }
-		        //return null;
-		    }else{
-		    	//a triple without conversion process
-		    	//write stmt to a new model
-		    }	    
+
+			System.out.print(subject.toString());
+			System.out.print(" " + predicate.toString() + " ");
+			if (object instanceof Resource) {
+				System.out.print(object.toString());
+			} else {
+				// object is a literal
+				System.out.print(" \"" + object.toString() + "\"");
+			}
+
+			System.out.println(" .");
+			String predString = predicate.toString();
+			System.out.println("comparing " + predString + " with :  " + propertyConversionProcess.toString());
+			//if statement with property 'propertyConversionProcess'
+			if(predicate.toString().trim().equals(propertyConversionProcess.toString().trim())){
+				System.out.println("\nmatched: propertyConversionProcess!\n");
+				System.out.println("object string is!!!: " + " \"" + object.toString() + "\"");
+
+				if (object instanceof Resource) {
+					//fine triples with 'propertyEnhance'
+					NodeIterator enhancements = model.listObjectsOfProperty((Resource) object, propertyEnhance);
+					while(enhancements.hasNext()){
+						System.out.println("\nmatched: propertyEnhance!\n");
+						RDFNode node = enhancements.nextNode();
+						System.out.println("node: " + ((Object) node).toString());		
+
+						StmtIterator enhanceStatements =  model.listStatements((Resource) node, (Property) null, (Resource) null);
+						// NodeIterator enhancementParameters = model.listObjectsOfProperty((Resource) node, enhance);
+
+
+						while(enhanceStatements.hasNext()){
+							System.out.println("\n\ngot inside enhance!!!\n");
+							Statement enhanceStatement = enhanceStatements.nextStatement();
+							//System.out.println("object string is!!!: " + " \"" + object.toString() + "\"");
+
+							subject   = enhanceStatement.getSubject();     // get the subject
+							predicate = enhanceStatement.getPredicate();   // get the predicate
+							object    = enhanceStatement.getObject();      // get the object
+							System.out.print("enhancing statement is: ");
+							System.out.print(subject.toString());
+							System.out.print(" " + predicate.toString() + " ");
+							if (object instanceof Resource) {
+								System.out.print(object.toString());
+							} else {
+								// object is a literal
+								System.out.print(" \"" + object.toString() + "\"");
+							}
+							//here we can check properties for rewriting
+							//match for range.
+						}
+
+						Statement s = ResourceFactory.createStatement(subject,propertyRangeName , model.createResource("test"));
+						newModel.add(s); // add the statement (triple) to the model
+						//here new code
+					}		        
+				}
+				//return null;
+			}else{
+				//a triple without conversion process
+				//write stmt to a new model
+			}	    
 		}	
 		/*
 		System.out.println("************Only triples with predicate conversion property!!!");
@@ -575,15 +576,15 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		    RDFNode   object    = stmt.getObject();      // get the object
 		    System.out.println("sub: " + subject + " pred: " + predicate + " object: " + object);			
 		}
-        */	
-		
+		 */	
+
 		newModel.write(newEnhancementFile, "N-TRIPLE");
-		
+
 		return null;		
 	}
-	
-	
-	
+
+
+
 	public String getShortName(String inName)
 	{
 		int pAt = inName.indexOf("#");
@@ -596,30 +597,30 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		response.put("success", true);
 		response.put("data", data);
 		String str;
-		 Set<String> set = table.keySet();
-		    Iterator<String> itr = set.iterator();
-		    while (itr.hasNext()) {
-		      str = itr.next();
-		      System.out.println(str + ": " + table.get(str));
-		      
-				JSONObject mapping = new JSONObject();
-				mapping.put("id", str);
-				//should use "short name" if there is no label.
-				
-				if(table.get(str) == ""){
-					table.put(str, getShortName(str));
-				}
-				
-				mapping.put("label", table.get(str));
-				mapping.put("parent", parent);
-				data.put(mapping);
-		    }
+		Set<String> set = table.keySet();
+		Iterator<String> itr = set.iterator();
+		while (itr.hasNext()) {
+			str = itr.next();
+			System.out.println(str + ": " + table.get(str));
+
+			JSONObject mapping = new JSONObject();
+			mapping.put("id", str);
+			//should use "short name" if there is no label.
+
+			if(table.get(str) == ""){
+				table.put(str, getShortName(str));
+			}
+
+			mapping.put("label", table.get(str));
+			mapping.put("parent", parent);
+			data.put(mapping);
+		}
 		return response.toString();
 	}
-	
-	
+
+
 	public String jsonWrapperForEntries(Hashtable<String, String> table, String parent) throws JSONException{
-		
+
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
 		JSONArray data = new JSONArray();
@@ -627,56 +628,134 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		response.put("success", true);
 		response.put("data", data);
 		String str;
-		 Set<String> set = table.keySet();
-		    Iterator<String> itr = set.iterator();
-		    while (itr.hasNext()) {
-		      str = itr.next();
-		      System.out.println(str + ": " + table.get(str));
-		      
-				JSONObject mapping = new JSONObject();
-				mapping.put("id", str);
-				//should use "short name" if there is no label.
-				
-				if(table.get(str) == ""){
-					table.put(str, getShortName(str));
-				}			
-				mapping.put("label", table.get(str));
-				mapping.put("parent", parent);
-				data.put(mapping);
-		    }
+		Set<String> set = table.keySet();
+		Iterator<String> itr = set.iterator();
+		while (itr.hasNext()) {
+			str = itr.next();
+			System.out.println(str + ": " + table.get(str));
+
+			JSONObject mapping = new JSONObject();
+			mapping.put("id", str);
+			//should use "short name" if there is no label.
+
+			if(table.get(str) == ""){
+				table.put(str, getShortName(str));
+			}			
+			mapping.put("label", table.get(str));
+			mapping.put("parent", parent);
+			data.put(mapping);
+		}
 		return response.toString();
 	}
+
 	
+	@HierarchicalMethod(parameter = "annotatorProperties")
+	public Collection<HierarchyEntry> queryAnnotatorPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+	
+	protected Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
+		return null;
+	}
+
+	protected Collection<HierarchyEntry> annotatorPropertyToNode(final Request request, final String str) {
+		return null;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		return entries;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		return entries;		
+	}
 
 	@HierarchicalMethod(parameter = "annotatorClasses")
 	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		this.initModel();
+
 		if(action == HierarchyVerb.ROOTS) {
-//			HierarchyEntry entry = new HierarchyEntry();
-//			entry.setUri(URI.create("http://example.com/bird1"));
-//			entry.setLabel("bird1");
-//			entry.setAltLabel("birdicus uno");
-//			items.add(entry);
-//			entry = new HierarchyEntry();
-//			entry.setUri(URI.create("http://example.com/bird2"));
-//			entry.setLabel("bird2");
-//			entry.setAltLabel("birdicus dos");
-//			items.add(entry);
+			//			HierarchyEntry entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird1"));
+			//			entry.setLabel("bird1");
+			//			entry.setAltLabel("birdicus uno");
+			//			items.add(entry);
+			//			entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird2"));
+			//			entry.setLabel("bird2");
+			//			entry.setAltLabel("birdicus dos");
+			//			items.add(entry);
 			return  queryAnnotatorClassHMRoots(request);
 		} else if ( action == HierarchyVerb.CHILDREN ) {
-//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
-//				HierarchyEntry entry = new HierarchyEntry();
-//				entry.setUri(URI.create("http://example.com/bird3"));
-//				entry.setLabel("bird3");
-//				entry.setAltLabel("birdicus tres");
-//				items.add(entry);
-//				entry = new HierarchyEntry();
-//				entry.setUri(URI.create("http://example.com/bird4"));
-//				entry.setLabel("bird4");
-//				entry.setAltLabel("birdicus quatro");
-//				items.add(entry);
-//			}
-			return  queryAnnotatorClassHMChildren(request, (String) request.getParam("SubClass"));
+			//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
+			//				HierarchyEntry entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird3"));
+			//				entry.setLabel("bird3");
+			//				entry.setAltLabel("birdicus tres");
+			//				items.add(entry);
+			//				entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird4"));
+			//				entry.setLabel("bird4");
+			//				entry.setAltLabel("birdicus quatro");
+			//				items.add(entry);
+			//			}
+			return  queryAnnotatorClassHMChildren(request, (String) request.getParam("annotatorClasses"));
 		} else if ( action == HierarchyVerb.SEARCH ) {
 			return searchAnnotatorClass( request, (String) request.getParam("string") );
 		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
@@ -684,27 +763,16 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		}
 		return items;
 	}
-	
+
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
-		/*
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-oboe-spatial.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
-		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
-		*/
-		
-		this.initModel();
-		
+
+		//this.initModel();
+
 		//construct an owlontology and pose sparql queries against it.
-		OntModel model = null;
-		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-		
-		setModel(model);
+		//OntModel model = null;
+		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		//setModel(model);
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		final Variable id = query.getVariable(VAR_NS+ "child");
 		final Variable label = query.getVariable(VAR_NS+ "label");
@@ -744,79 +812,69 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
 		for (Iterator<OntClass> i = thing.listSubClasses(true); i.hasNext(); ) { //true here is for direct
 			HierarchyEntry entry = new HierarchyEntry();
-			
 
-    	OntClass hierarchyRoot = i.next();	
-    	System.out.println("root: " + hierarchyRoot.toString());
-    	System.out.println("label: " + hierarchyRoot.getLabel(null));
-    	
-    	entry.setUri(hierarchyRoot.getURI());
-    	
-    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
-    		entry.setLabel(getShortName(hierarchyRoot.toString()));
-		}
-    	else{
- 		entry.setLabel(hierarchyRoot.getLabel(null));
-    	}     
-    	
-    	//entry.setParent(URI.create(thing.getURI()));
-		entries.add(entry);
+			OntClass hierarchyRoot = i.next();	
+			System.out.println("root: " + hierarchyRoot.toString());
+			System.out.println("label: " + hierarchyRoot.getLabel(null));
+
+			entry.setUri(hierarchyRoot.getURI());
+
+			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(hierarchyRoot.toString()));
+			}
+			else{
+				entry.setLabel(hierarchyRoot.getLabel(null));
+			}     
+
+			//entry.setParent(URI.create(thing.getURI()));
+			entries.add(entry);
 		}	
+		System.out.println("return entries: " + entries.toString());
 		return entries;
 		//return jsonWrapper(table, OWL.Thing.getURI().toString());	
 	}
-	
-	protected Collection<HierarchyEntry> queryAnnotatorClassHMChildren(final Request request, final String species) {
-		
-		String classRequiresSubclassesString = (String) request.getParam("SubClass");	
-		
+
+	protected Collection<HierarchyEntry> queryAnnotatorClassHMChildren(final Request request, final String classRequiresSubclassesString) {
+
 		if(classRequiresSubclassesString == null){
 			return null;
 		}
-
-		initModel();		
-
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-		
 		OntClass superclass = model.getOntClass( classRequiresSubclassesString );
 
-		HierarchyEntry entry = new HierarchyEntry();
 		for (Iterator<OntClass> i = superclass.listSubClasses(true); i.hasNext(); ) { //true here is for direct
-    	OntClass subClass = i.next();
-    	entry.setUri(subClass.getURI());
+			HierarchyEntry entry = new HierarchyEntry();
 
-    	
-    	if(subClass.getLabel(null) == "" || subClass.getLabel(null) == null){
-    		//table.put(subClass.toString(), getShortName(subClass.toString()));
-    		entry.setLabel(getShortName(subClass.toString()));
-		}
-    	else{
-		 //table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
-    		entry.setLabel(subClass.getLabel(null));
-    	}
-    	
-    	entry.setParent(URI.create(superclass.getURI()));
-		entries.add(entry);
+			OntClass subClass = i.next();
+			entry.setUri(subClass.getURI());
 
+
+			if(subClass.getLabel(null) == "" || subClass.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subClass.toString()));
+			}
+			else{
+				//table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+				entry.setLabel(subClass.getLabel(null));
+			}
+			entry.setParent(URI.create(superclass.getURI()));
+			entries.add(entry);
 		}	
-		
-
-
 		return entries;
 	}
 
-	
-	
+
+
 	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) {
 		return null;
-		
+
 	}
-	
+
 	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
 		return null;
 	}
-	
-	
+
+
 	//would it be better to have one model and reasoner for this module, instead of per query method? yes.
 	//do that through a constructor?
 	@QueryMethod
@@ -861,7 +919,7 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		//return executeLocalQuery(query, model);
 		String responseStr = FAILURE;
 		//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
-		
+
 		Set master = new HashSet();		//model.
 		Set<OntClass> classes = new HashSet<OntClass>();		//model.
 		Set<String> labels = new HashSet<String>();		//model.
@@ -870,25 +928,25 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
 
 		Hashtable<String, String> table = new Hashtable<String, String>();
-		
+
 		for (Iterator<OntClass> i = thing.listSubClasses(true); i.hasNext(); ) { //true here is for direct
-    	OntClass hierarchyRoot = i.next();
-    	
-    	    //classes.add( hierarchyRoot);
-		    //labels.add( hierarchyRoot.getLabel(null));
-    	System.out.println("root: " + hierarchyRoot.toString());
-    	System.out.println("label: " + hierarchyRoot.getLabel(null));
-    	
-    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
-    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
-		}
-    	else{
-		 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
-    	}
-        
+			OntClass hierarchyRoot = i.next();
+
+			//classes.add( hierarchyRoot);
+			//labels.add( hierarchyRoot.getLabel(null));
+			System.out.println("root: " + hierarchyRoot.toString());
+			System.out.println("label: " + hierarchyRoot.getLabel(null));
+
+			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+				table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+			}
+			else{
+				table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+			}
+
 		}	
 
-		
+
 
 		/*
 		 * 
@@ -900,13 +958,13 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 		 */
 		//master.add(classes);
 		//master.add(labels);
-		
+
 		return jsonWrapper(table, OWL.Thing.getURI().toString());
-		
+
 		//return master.toString();
 		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 
-	/*	if(resultStr == null) {
+		/*	if(resultStr == null) {
 			return responseStr;
 		}
 		try {
@@ -941,18 +999,18 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 			//log.error("Unable to parse JSON results", e);
 		}
 		return responseStr;		
-		*/
-	}
-	
-@QueryMethod
-public String queryForAnnotatorSubClasses(final Request request) throws JSONException{
-		
-	String classRequiresSubclassesString = (String) request.getParam("SubClass");	
-	if(classRequiresSubclassesString == null){
-		return null;
+		 */
 	}
 
-	initModel();
+	@QueryMethod
+	public String queryForAnnotatorSubClasses(final Request request) throws JSONException{
+
+		String classRequiresSubclassesString = (String) request.getParam("SubClass");	
+		if(classRequiresSubclassesString == null){
+			return null;
+		}
+
+		initModel();
 
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -989,34 +1047,34 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 		//return executeLocalQuery(query, model);
 		String responseStr = FAILURE;
 		//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
-		
+
 		Set master = new HashSet();		//model.
 		Set<OntClass> classes = new HashSet<OntClass>();		//model.
 		Set<String> labels = new HashSet<String>();		//model.
 
 		//OntClass thing = model.getOntClass( OWL.Thing.getURI() );
 		//OntClass subclass = model.getOntClass( classRequiresSubclassesString );
-		
+
 		OntClass subclass = model.getOntClass( classRequiresSubclassesString );
 
 		Hashtable<String, String> table = new Hashtable<String, String>();
 
 		for (Iterator<OntClass> i = subclass.listSubClasses(true); i.hasNext(); ) { //true here is for direct
-    	OntClass hierarchyRoot = i.next();
-    	
-    	
-    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
-    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
-		}
-    	else{
-		 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
-    	}
-    	    //classes.add( hierarchyRoot);
-		    //labels.add( hierarchyRoot.getLabel(null));
-        
+			OntClass hierarchyRoot = i.next();
+
+
+			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+				table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+			}
+			else{
+				table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+			}
+			//classes.add( hierarchyRoot);
+			//labels.add( hierarchyRoot.getLabel(null));
+
 		}	
 
-		
+
 
 		/*
 		 * 
@@ -1028,13 +1086,13 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 		 */
 		master.add(classes);
 		master.add(labels);
-		
+
 		return jsonWrapper(table, classRequiresSubclassesString);
 
 		//return master.toString();
 		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 
-	/*	if(resultStr == null) {
+		/*	if(resultStr == null) {
 			return responseStr;
 		}
 		try {
@@ -1069,22 +1127,22 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 			//log.error("Unable to parse JSON results", e);
 		}
 		return responseStr;		
-		*/
+		 */
 	}
-	
-	
+
+
 	@QueryMethod
 	public String queryForAnnotatorRootObjectProperties(Request request) throws JSONException{
 		//construct an owlontology and pose sparql queries against it.
-				OntModel model = null;
-				model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-				
-				initModel();
+		//OntModel model = null;
+		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-				
-				//load certain ontologies
-				//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-				/*
+		initModel();
+
+
+		//load certain ontologies
+		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
+		/*
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
@@ -1095,174 +1153,164 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
 				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-				*/
-				//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
-				
-				
-				//apply sparql queries against it
-				//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
-				//final GraphComponentCollection construct = query.getConstructComponent();
-				final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		 */
+		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
 
-				
-				final QueryResource topObjectProperty = query.getResource("http://www.w3.org/2002/07/owl#topObjectProperty");
-				final QueryResource subPropertyOf = query.getResource(RDFS_NS+"subPropertyOf");
-				final Variable site = query.getVariable(VAR_NS+"site");
-				Set<Variable> vars = new LinkedHashSet<Variable>();
-				vars.add(site);
-				query.setVariables(vars);
-				//query.addPattern(site, subClassOf, PollutedThing);
-				//query.addPattern(site, subClassOf, Measurement);
-				query.addPattern(site, subPropertyOf, topObjectProperty);
 
-				//construct.addPattern(site, subClassOf, PollutedThing);
+		//apply sparql queries against it
+		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		//final GraphComponentCollection construct = query.getConstructComponent();
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 
-				//return executeLocalQuery(query, model);
-				
-				Set master = new HashSet();		//model.
-				Set<OntProperty> props = new HashSet<OntProperty>();		//model.
-				Set<String> labels = new HashSet<String>();		//model.
 
-				//OntClass thing = model.getOntClass( OWL.Thing.getURI() );
-				//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
-				OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		final QueryResource topObjectProperty = query.getResource("http://www.w3.org/2002/07/owl#topObjectProperty");
+		final QueryResource subPropertyOf = query.getResource(RDFS_NS+"subPropertyOf");
+		final Variable site = query.getVariable(VAR_NS+"site");
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(site);
+		query.setVariables(vars);
+		//query.addPattern(site, subClassOf, PollutedThing);
+		//query.addPattern(site, subClassOf, Measurement);
+		query.addPattern(site, subPropertyOf, topObjectProperty);
 
-				Hashtable<String, String> table = new Hashtable<String, String>();
+		//construct.addPattern(site, subClassOf, PollutedThing);
 
-				for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
-		    	OntProperty hierarchyRoot = i.next();
-		    	
-		    	   // props.add( hierarchyRoot);
-				    //labels.add( hierarchyRoot.getLabel(null));
-		    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
-		    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
-				}
-		    	else{
-				 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
-		    	}
-		        
-				}	
+		//return executeLocalQuery(query, model);
 
-				
+		//Set master = new HashSet();		//model.
+		//Set<OntProperty> props = new HashSet<OntProperty>();		//model.
+		//Set<String> labels = new HashSet<String>();		//model.
 
-				/*
-				 * 
+		//OntClass thing = model.getOntClass( OWL.Thing.getURI() );
+		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+
+		Hashtable<String, String> table = new Hashtable<String, String>();
+		topObjProp.getSubProperty();
+		System.out.println("properties are : " + topObjProp.listSubProperties(false).toString());
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			//System.out.println("properties are : " + i.toString());
+			OntProperty hierarchyRoot = i.next();
+
+			// props.add( hierarchyRoot);
+			//labels.add( hierarchyRoot.getLabel(null));
+			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+				table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+			}
+			else{
+				table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+			}
+
+		}	
+
+
+
+
+		/*
+		 * 
 				for (Iterator<OntClass> i = model.listHierarchyRootClasses(); i.hasNext(); ) {
 				    OntClass hierarchyRoot = i.next();
 				    classes.add( hierarchyRoot);
 				    labels.add( hierarchyRoot.getLabel(null));
 				}
-				 */
-				master.add(props);
-				master.add(labels);
-				return jsonWrapper(table, topObjProp.toString());
-				//return master.toString();
-				
-				
-				
-				//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
+		 */
+
+		return jsonWrapper(table, topObjProp.toString());
+		//return master.toString();
+
+
+
+		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 	}
-	
-	
+
+	/**
+	 * need a method to collect axioms for a given class. can use HM pattern where a constant is suppied
+	 * to indicate objectProperty, dataPropery, of annotationProperty axioms
+	 */
+
+	public String  getAxiomsForClass(OWLClass c){
+		return null;
+	}
+
+
 	@QueryMethod
 	public String queryForAnnotatorSubObjectProperties(Request request) throws JSONException{
-		
+
 		String classRequiresSubpropertyString = (String) request.getParam("SubProperty");	
 		if(classRequiresSubpropertyString == null){
 			return null;
 		}
 		//construct an owlontology and pose sparql queries against it.
-				OntModel model = null;
-				model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-				initModel();
-				//load certain ontologies
-				//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-				/*
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
-				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-				*/
-				//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
-				
-				
-				//apply sparql queries against it
-				//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
-				//final GraphComponentCollection construct = query.getConstructComponent();
-				final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		initModel();
+		//load certain ontologies
+		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
+		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));			
+		//apply sparql queries against it
+		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+		//final GraphComponentCollection construct = query.getConstructComponent();
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 
-				
-				final QueryResource topObjectProperty = query.getResource("http://www.w3.org/2002/07/owl#topObjectProperty");
-				final QueryResource subPropertyOf = query.getResource(RDFS_NS+"subPropertyOf");
-				final Variable site = query.getVariable(VAR_NS+"site");
-				Set<Variable> vars = new LinkedHashSet<Variable>();
-				vars.add(site);
-				query.setVariables(vars);
-				//query.addPattern(site, subClassOf, PollutedThing);
-				//query.addPattern(site, subClassOf, Measurement);
-				query.addPattern(site, subPropertyOf, topObjectProperty);
 
-				//construct.addPattern(site, subClassOf, PollutedThing);
+		final QueryResource topObjectProperty = query.getResource("http://www.w3.org/2002/07/owl#topObjectProperty");
+		final QueryResource subPropertyOf = query.getResource(RDFS_NS+"subPropertyOf");
+		final Variable site = query.getVariable(VAR_NS+"site");
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(site);
+		query.setVariables(vars);
+		//query.addPattern(site, subClassOf, PollutedThing);
+		//query.addPattern(site, subClassOf, Measurement);
+		query.addPattern(site, subPropertyOf, topObjectProperty);
 
-				//return executeLocalQuery(query, model);
-				
-				Set master = new HashSet();		//model.
-				Set<OntProperty> props = new HashSet<OntProperty>();		//model.
-				Set<String> labels = new HashSet<String>();		//model.
+		//construct.addPattern(site, subClassOf, PollutedThing);
 
-				//OntClass thing = model.getOntClass( OWL.Thing.getURI() );
-				//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
-				OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
-				OntProperty subProp = model.getOntProperty( classRequiresSubpropertyString );
+		//return executeLocalQuery(query, model);
 
-				Hashtable<String, String> table = new Hashtable<String, String>();
+		Set master = new HashSet();		//model.
+		Set<OntProperty> props = new HashSet<OntProperty>();		//model.
+		Set<String> labels = new HashSet<String>();		//model.
 
-				for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
-		    	OntProperty hierarchyRoot = i.next();
-		    	
-		    	   // props.add( hierarchyRoot);
-				  //  labels.add( hierarchyRoot.getLabel(null));
-		    	if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
-		    		table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
-				}
-		    	else{
-				 table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
-		    	}
-		        
-				}	
+		//OntClass thing = model.getOntClass( OWL.Thing.getURI() );
+		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		OntProperty subProp = model.getOntProperty( classRequiresSubpropertyString );
 
-				
+		Hashtable<String, String> table = new Hashtable<String, String>();
 
-				/*
-				 * 
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			OntProperty hierarchyRoot = i.next();
+
+			// props.add( hierarchyRoot);
+			//  labels.add( hierarchyRoot.getLabel(null));
+			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+				table.put(hierarchyRoot.toString(), getShortName(hierarchyRoot.toString()));
+			}
+			else{
+				table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+			}
+
+		}	
+		/*
+		 * 
 				for (Iterator<OntClass> i = model.listHierarchyRootClasses(); i.hasNext(); ) {
 				    OntClass hierarchyRoot = i.next();
 				    classes.add( hierarchyRoot);
 				    labels.add( hierarchyRoot.getLabel(null));
 				}
-				 */
-				master.add(props);
-				master.add(labels);
-				return jsonWrapper(table, classRequiresSubpropertyString);
-
-				//return master.toString();
-				
-				
-				
-				//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
+		 */
+		//master.add(props);
+		//master.add(labels);
+		return jsonWrapper(table, classRequiresSubpropertyString);
+		//return master.toString();
+		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 	}
-	
-	
-	
+
+
+
 	public String executeLocalQuery(Query query, Model model) {
-		
+
 		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
 			try {
 				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
@@ -1273,7 +1321,7 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 				// do nothing
 			}
 		}
-		
+
 		Model resultModel = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		long start = System.currentTimeMillis();
@@ -1301,18 +1349,18 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 					return "{\"result\":true}";
 				}
 				else {
-				//	log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
+					//	log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 					return "{\"result\":false}";
 				}
 			}
 		}
 		catch(Exception e) {
-		//	log.warn("Unable to execute query due to exception", e);
+			//	log.warn("Unable to execute query due to exception", e);
 		}
 		return null;
 	}
-	
-	
+
+
 	@Override
 	public void visit(final Model model, final Request request) {
 		// TODO populate data model
@@ -1327,7 +1375,7 @@ public String queryForAnnotatorSubClasses(final Request request) throws JSONExce
 	public void visit(final Query query, final Request request) {
 		// TODO modify queries
 	}
-	
+
 	@Override
 	public void visit(final SemantEcoUI ui, final Request request) {
 		// TODO add resources to display

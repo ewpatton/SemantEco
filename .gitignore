@@ -11,3 +11,4 @@ webapp/src/.DS_Store
 
 webapp/src/main/.DS_Store
 redeploy
+.pom.xml.swp

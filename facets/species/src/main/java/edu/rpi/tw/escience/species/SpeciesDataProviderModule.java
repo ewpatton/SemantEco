@@ -2010,7 +2010,7 @@ WHERE
 		} else if ( action == HierarchyVerb.SEARCH ) {
 			return searcheBird( request, (String) request.getParam("string") );
 		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
-			return eBirdPathToNode( request, (String) request.getParam("node") );
+			return eBirdPathToNode( request, (String) request.getParam("uri") );
 		}
 		return items;
 	}
