@@ -676,7 +676,7 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 //				entry.setAltLabel("birdicus quatro");
 //				items.add(entry);
 //			}
-			return  queryAnnotatorClassHMChildren(request, (String) request.getParam("species"));
+			return  queryAnnotatorClassHMChildren(request, (String) request.getParam("SubClass"));
 		} else if ( action == HierarchyVerb.SEARCH ) {
 			return searchAnnotatorClass( request, (String) request.getParam("string") );
 		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
