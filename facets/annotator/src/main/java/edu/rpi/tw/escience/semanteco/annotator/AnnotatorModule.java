@@ -648,7 +648,7 @@ public Model writeEnhancementForRange(String header, String rangeClass){
 	}
 	
 
-	//@HierarchicalMethod(parameter = "annotatorClasses")
+	@HierarchicalMethod(parameter = "annotatorClasses")
 	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 		if(action == HierarchyVerb.ROOTS) {
