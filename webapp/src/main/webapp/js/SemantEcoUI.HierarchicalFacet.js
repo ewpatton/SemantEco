@@ -324,12 +324,13 @@ SemantEcoUI.HierarchicalFacet = {};
     /**
      * 
      */
-    SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param) {
+    SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param, jstreeArgs) {
+        jstreeArgs = jstreeArgs || {};
         div = $(div);
         //div.addClass("ui-front");
         div.append("<input type=\"text\" class=\"search\" />");
         div.append("<input type=\"button\" value=\"Search\" />");
-        div.append("<div class=\"wrapper\"><div class=\"loading\"><img src=\"images/spinner.gif\" /><br />Loading...</div><div class=\"jstree-placeholder\"></div></div>");
+        div.append("<div class=\"wrapper\"><div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div><div class=\"jstree-placeholder\"></div></div>");
         var text = $("input[type='text']", div);
         text.autocomplete({minLength: 4, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);
