@@ -707,8 +707,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 		OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
 
-		HierarchyEntry entry = new HierarchyEntry();
 		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
 			OntProperty subProperty = i.next();
 
 			entry.setUri(subProperty.getURI());
@@ -842,8 +842,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 		OntClass superclass = model.getOntClass( classRequiresSubclassesString );
 
-		HierarchyEntry entry = new HierarchyEntry();
 		for (Iterator<OntClass> i = superclass.listSubClasses(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+
 			OntClass subClass = i.next();
 			entry.setUri(subClass.getURI());
 
