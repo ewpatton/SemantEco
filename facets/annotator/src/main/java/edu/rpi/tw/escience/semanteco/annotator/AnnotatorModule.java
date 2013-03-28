@@ -136,16 +136,20 @@ public class AnnotatorModule implements Module {
 	public void initModel() {
 		if(model == null) {
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
 			/*
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
 			*/
 		}
 	}
