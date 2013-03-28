@@ -2,6 +2,8 @@ package edu.rpi.tw.escience.semanteco;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -16,9 +18,13 @@ import org.json.JSONObject;
  */
 public class HierarchyEntry {
 	private Map<String, String> contents;
+	private Hashtable<String,HashSet<String>> axioms;
+	
 	
 	public HierarchyEntry() {
 		this.contents = new HashMap<String, String>();
+		this.axioms = new Hashtable<String,HashSet<String>>();
+		
 	}
 	
 	public HierarchyEntry(final URI uri, final String label) {
@@ -32,6 +38,10 @@ public class HierarchyEntry {
 		this.contents.put("uri", uri.toASCIIString());
 		this.contents.put("parent", parent.toASCIIString());
 		this.contents.put("label", label);
+	}
+	
+	public void setAxioms(final Hashtable<String,HashSet<String>> axioms) {
+		this.axioms = axioms;
 	}
 	
 	public void setAltLabel(final String altLabel) {
@@ -56,6 +66,9 @@ public class HierarchyEntry {
 	
 	public String getAltLabel() {
 		return this.contents.get("altLabel");
+	}
+	public Hashtable<String,HashSet<String>> getAxioms(){
+		return this.axioms;
 	}
 	
 	public URI getUri() {

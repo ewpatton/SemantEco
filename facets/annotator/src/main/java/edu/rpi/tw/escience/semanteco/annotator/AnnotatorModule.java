@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -216,7 +217,6 @@ public class AnnotatorModule implements Module {
 		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
 		FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
-
 		String ov = "http://open.vocab.org/terms/";
 		//this should be retrieved
 		//how? list statements . null,property,voiddataset
@@ -226,8 +226,6 @@ public class AnnotatorModule implements Module {
 		Property propertyClassName = model.createProperty(conversionPrefix + "class_name");
 		Property propertySubclassOf = model.createProperty(conversionPrefix + "subclass_of");
 		Property propertyCsvHeader = model.createProperty(ov + "csvHeader");
-
-
 		Literal literalHeader = model.createLiteral("Deviated_Well");
 		Resource superClass = model.createResource("SpatialLocation");
 
@@ -818,6 +816,15 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			System.out.println("label: " + hierarchyRoot.getLabel(null));
 
 			entry.setUri(hierarchyRoot.getURI());
+			Hashtable<String,HashSet<String>> axioms = this.getAxiomsForClass(request, hierarchyRoot);
+			entry.setAxioms(axioms);
+			//call a method that given the class, returns a hashSet with all the axioms.
+			
+			//I think I will put into HierarchyEntry object a HashTable<String,HashSet<String>> where 
+			//e.g. "annotation" is a key and we have a set of strings that represent annotations... what do you think
+			
+			
+			
 
 			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
 				entry.setLabel(getShortName(hierarchyRoot.toString()));
@@ -1227,9 +1234,149 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	 * need a method to collect axioms for a given class. can use HM pattern where a constant is suppied
 	 * to indicate objectProperty, dataPropery, of annotationProperty axioms
 	 */
-
+	
+	
+	@QueryMethod
 	public String  getAxiomsForClass(OWLClass c){
+	
+
+		
 		return null;
+	}
+	
+	//@QueryMethod
+	public Hashtable<String,HashSet<String>> getAxiomsForClass(final Request request, OntClass clazz){
+		Hashtable<String,HashSet<String>> axioms = new Hashtable<String,HashSet<String>>();
+
+		//this.initModel();
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+		
+		//for clazz collect all the statements for it.
+		//StmtIterator sTest = clazz.listProperties(null);
+
+		//model.getOntClass(clazz);
+		//one method is to get the class in connection to the model:
+		//OntClass c = model.getOntClass(clazz.toString());
+		OntClass c = model.getOntClass("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement");
+		//StmtIterator sTest = c.listProperties(null);
+	
+		HashSet<String> statements = new HashSet<String> ();
+		for(StmtIterator enhanceStatements3 = c.listProperties(null) ; enhanceStatements3.hasNext() ;){
+			Statement s1 = enhanceStatements3.next();			
+			//need to also check if it is a subClassOf, EquivalentClass, DisjointWith, DisjointUnionOf 
+			
+			if(s1.getPredicate().canAs(OntProperty.class)){
+			//check what type of statements these are.
+			OntProperty o = (OntProperty) s1.getPredicate().as(OntProperty.class);			
+			//OntProperty o = s1.getProperty(null);
+					
+			if(o.isObjectProperty()){
+				System.out.println("is an object Property");
+				request.getLogger().debug("is an object property");
+				//return null;
+			}
+			else if(o.isDatatypeProperty()){
+				System.out.println("is an data Property");
+				request.getLogger().debug("is a data property");
+			}
+			else if(o.isAnnotationProperty()){
+				System.out.println("is an annotation Property");
+				request.getLogger().debug("is an anno property");
+			}	
+			else if(o.isSameAs(null)){
+				request.getLogger().debug("is sameAs ");
+			}
+			//com.hp.hpl.jena.vocabulary.RDFS.subClassOf
+			else if(o.equals(com.hp.hpl.jena.vocabulary.RDFS.subClassOf)){				
+				request.getLogger().debug("is subclassOf");
+			}
+			
+		}
+			statements.add(s1.toString());
+			//s1.getPredicate();
+		}
+		axioms.put("annotations", statements);
+
+		//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement
+
+		
+		//OR
+		
+		
+		//StmtIterator enhanceStatements3 =  model.listStatements((OntClass) clazz, (Property) null , (Literal) null );
+		/*
+		HashSet<String> statements = new HashSet<String> ();
+		for(StmtIterator enhanceStatements3 =  model.listStatements((OntClass) clazz, (Property) null , (Literal) null) ; enhanceStatements3.hasNext() ;){
+			Statement s1 = enhanceStatements3.next();
+			statements.add(s1.toString());
+			//s1.getPredicate();
+		}
+		*/
+			
+		
+		return axioms;
+		//return null;
+		
+		//put into a set of toString() 's
+
+
+		//StmtIterator sTest = c.listProperties(null);
+		//return sTest.next();
+		
+		/*
+		for(StmtIterator s = c.listProperties(null); ; s.hasNext()){
+			Statement s1 = s.next();
+			s1.getPredicate();
+		}
+		*/
+		
+	//	s.next().getPredicate();
+
+		//////s.
+		//isObjectProperty
+		//isDatatypeProperty
+		//isAnnotationProperty
+		
+		//asAnnotationProperty
+		//asDatatypeProperty
+		//asObjectProperty		
+	}
+	
+	
+	@QueryMethod
+	public String getAxiomsForClassTester(final Request request){
+		//this.initModel();
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) null );
+		return enhanceStatements1.next().toString();
+
+		//StmtIterator sTest = c.listProperties(null);
+		//return sTest.next();
+		
+		/*
+		for(StmtIterator s = c.listProperties(null); ; s.hasNext()){
+			Statement s1 = s.next();
+			s1.getPredicate();
+		}
+		*/
+		
+	//	s.next().getPredicate();
+
+		//////s.
+		//isObjectProperty
+		//isDatatypeProperty
+		//isAnnotationProperty
+		
+		//asAnnotationProperty
+		//asDatatypeProperty
+		//asObjectProperty		
 	}
 
 
