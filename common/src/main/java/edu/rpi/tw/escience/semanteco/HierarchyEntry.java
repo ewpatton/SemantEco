@@ -17,24 +17,24 @@ import org.json.JSONObject;
  *
  */
 public class HierarchyEntry {
-	private Map<String, String> contents;
+	private Map<String, Object> contents;
 	private Hashtable<String,HashSet<String>> axioms;
 	
 	
 	public HierarchyEntry() {
-		this.contents = new HashMap<String, String>();
+		this.contents = new HashMap<String, Object>();
 		this.axioms = new Hashtable<String,HashSet<String>>();
 		
 	}
 	
 	public HierarchyEntry(final URI uri, final String label) {
-		this.contents = new HashMap<String, String>();
+		this.contents = new HashMap<String, Object>();
 		this.contents.put("uri", uri.toASCIIString());
 		this.contents.put("label", label);
 	}
 	
 	public HierarchyEntry(final URI uri, final URI parent, final String label) {
-		this.contents = new HashMap<String, String>();
+		this.contents = new HashMap<String, Object>();
 		this.contents.put("uri", uri.toASCIIString());
 		this.contents.put("parent", parent.toASCIIString());
 		this.contents.put("label", label);
@@ -42,6 +42,7 @@ public class HierarchyEntry {
 	
 	public void setAxioms(final Hashtable<String,HashSet<String>> axioms) {
 		this.axioms = axioms;
+		this.contents.put("axioms", new JSONObject(axioms));
 	}
 	
 	public void setAltLabel(final String altLabel) {
@@ -65,14 +66,14 @@ public class HierarchyEntry {
 	}
 	
 	public String getAltLabel() {
-		return this.contents.get("altLabel");
+		return (String)this.contents.get("altLabel");
 	}
 	public Hashtable<String,HashSet<String>> getAxioms(){
 		return this.axioms;
 	}
 	
 	public URI getUri() {
-		final String uri = this.contents.get("uri");
+		final String uri = (String)this.contents.get("uri");
 		if(uri == null) {
 			return null;
 		}
@@ -82,11 +83,11 @@ public class HierarchyEntry {
 	}
 	
 	public String getLabel() {
-		return this.contents.get("label");
+		return (String)this.contents.get("label");
 	}
 	
 	public URI getParent() {
-		final String uri = this.contents.get("parent");
+		final String uri = (String)this.contents.get("parent");
 		if(uri == null) {
 			return null;
 		}
