@@ -17,7 +17,7 @@
     }
     #wrap{
       margin: 10px auto;
-      width: 960px;
+      width: 800px;
       padding: 10px;
       overflow: hidden;
       background: #FAFAFA;
@@ -626,9 +626,30 @@
     <form action="javascript:void(0);" id="the_form">
       <input type="file" id="the_file" required="required" accept=".csv"/>
       <input type="submit" id="initial_button" value="Go" class="btn"/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button id="commit_enhancement" style="padding: 10px;">Commit Enhancement</button>
+      <script type="text/javascript">
+        $(document).ready(function() {
+        $('#commit_enhancement').click(function() {
+        	$.bbq.pushState({"annotationMappings": window.a});
+        	AnnotatorModule.queryForEnhancing({},
+        			function(d) { console.log(d); });
+        })});
+      </script>
     </form>
   <div id="file_info"></div>
+  <table>
+  <tr><td>
+  <div id="source_info"  >Source<textarea id="source_input" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type source here!" onKeyPress="press_prop(event)"></textarea>
   </div>
+  </td></tr>
+  <tr><td>
+  <div id="dataset_info"  >Dataset<textarea id="dataset_input" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type dataset here!" onKeyPress="press_prop(event)"></textarea>
+  </div>
+  </td></tr>
+  </table>
+  </div>
+  
   
 <br><br>
 <div style="float:left;width:70%;">
@@ -705,15 +726,7 @@
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
  document.getElementById('the_file').addEventListener('change', fileInfo, false);
 </script>	
-<div><br><button id="commit_enhancement" style="padding: 10px;">Commit Enhancement</button></div>
-<script type="text/javascript">
-        $(document).ready(function() {
-        $('#commit_enhancement').click(function() {
-        	$.bbq.pushState({"annotationMappings": window.a});
-        	AnnotatorModule.queryForEnhancing({},
-        			function(d) { console.log(d); });
-        })});
-</script>
+
 </div>
 <div style="margin-left:70%; width:30%;">
 <div>
@@ -724,24 +737,23 @@
 		   
 		</td>
 	  </tr>
-
-	  <tr>
-        <td colspan="2">
+	 <tr>
+          <td colspan="2">
           <div id="annotator-module">
            <div class="facet">
             <div class="hierarchy"></div>       
             </div>
 		   </div>
           </div>
-		</td>
-      </tr>
-      <tr>
+		  </td>
+     </tr>
+     <tr>
           <td  ><div id="text_prop"  ><textarea name ="search" id="search_info_prop" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type message here!" onKeyPress="press_prop(event)"></textarea></div>
 		  <td style=" width:20%;"><input type=button onClick=" search_node_prop()" value="search"/></td>
 		  </td>         
       
-      </tr>
-      <tr>
+     </tr>
+          <tr>
           <td colspan="2">       
            <div id="description_prop" style="  border:1px solid #111111; overFlow: auto; " >
 			<div id="PropertyTree" class="demo3" style="width:120%;height:300px;">
@@ -750,7 +762,7 @@
 
 			</div>
 		  </td>
-      </tr>
+     </tr>
      
      <tr>
           <td colspan="2">       
