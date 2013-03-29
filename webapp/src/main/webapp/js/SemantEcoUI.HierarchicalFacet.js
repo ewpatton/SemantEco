@@ -329,6 +329,11 @@ SemantEcoUI.HierarchicalFacet = {};
     SemantEcoUI.HierarchicalFacet.create = function(div, module, qmethod, param, jstreeArgs) {
         jstreeArgs = jstreeArgs || {};
         div = $(div);
+        if(div.length == 0) {
+            console.warn("Unable to find given div for hierarchical method "+qmethod);
+            console.trace();
+            return;
+        }
         //div.addClass("ui-front");
         div.append("<input type=\"text\" class=\"search\" />");
         div.append("<input type=\"button\" value=\"Search\" />");
