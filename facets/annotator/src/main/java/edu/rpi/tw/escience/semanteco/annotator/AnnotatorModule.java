@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
@@ -175,7 +176,7 @@ public class AnnotatorModule implements Module {
 
 
 	@QueryMethod
-	public String queryForEnhancing(final Request request) throws FileNotFoundException{
+	public String queryForEnhancing(final Request request) throws IOException{
 
 		System.out.println(request.getParam("sourceName"));
 		System.out.println(request.getParam("dataSetName"));
@@ -191,6 +192,18 @@ public class AnnotatorModule implements Module {
 		//2) get the json object from bbq statement for input to the enhancement work
 		System.out.println(request.getParam("annotationMappings"));
         String annotationMappings = (String) request.getParam("annotationMappings");
+        
+        //	//Runtime.getRuntime().exec("pwd");
+        //awk -v conversionID="$eID" $paramsParams -f $h2p > $TMP_ePARAMS
+        String eId = null;
+        String paramParams = null;
+        String h2p = null;
+        String temp_eParams = null;
+        
+        Runtime.getRuntime().exec("awk -v conversionID=" + eId + " " + paramParams + " -f "  + h2p + " > " + temp_eParams );
+		  //so can i call the main of an object?
+        //java $csvHeadersClasspath $data $csvHeadersParams | awk -v conversionID="$eID" $paramsParams -f $h2p > $TMP_ePARAMS
+        //		does.
 
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
@@ -508,10 +521,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//Node anonNode = Node.createAnon();
 		//anonNode.
 
-
 		//Model model = null;
 		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-
 
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
