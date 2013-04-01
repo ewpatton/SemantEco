@@ -6,35 +6,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.mindswap.pellet.jena.PelletReasonerFactory;
-import org.openrdf.repository.Repository;
-
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
-
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import java.util.Set;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mindswap.pellet.jena.PelletReasonerFactory;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -54,13 +41,12 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-
-//import edu.rpi.tw.data.csv.CSV2RDFDemo;
-import edu.rpi.tw.data.csv.impl.DefaultEnhancementParameters;
-import edu.rpi.tw.data.rdf.utils.pipes.starts.Cat;
-//import edu.rpi.tw.data.csv.CSVHeadersForAnnotator;
+import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
+import edu.rpi.tw.escience.semanteco.HierarchyEntry;
+import edu.rpi.tw.escience.semanteco.HierarchyVerb;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
@@ -71,9 +57,6 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
-import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
-import edu.rpi.tw.escience.semanteco.HierarchyEntry;
-import edu.rpi.tw.escience.semanteco.HierarchyVerb;
 
 /*
  * treat enhancements atomically
@@ -132,12 +115,12 @@ public class AnnotatorModule implements Module {
 	private static final String FAILURE = "{\"success\":false}";
 	private static OntModel model = null;
 	private PrintWriter csvFileWriter = null;
-	private PrintWriter enhancementFileWriter = null;
 	private FileOutputStream enhancementFileStream;
 	private String dataSetName;
 	private String sourceName;
-	private String csvFile="/Users/apseyed/Documents/rpi/output.ttl";
+	private String csvFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
 
+	
 	public void setDataSetName(String dataSetName){this.dataSetName = dataSetName;}
 	public void setSourceName(String sourceName){this.sourceName = sourceName;}
 	public String getDataSetName(){return this.dataSetName;}
@@ -146,6 +129,8 @@ public class AnnotatorModule implements Module {
 	public void setModel(OntModel model){
 		AnnotatorModule.model = model;
 	}
+	
+	
 	public OntModel getModel(){
 		return AnnotatorModule.model;
 	}
@@ -153,42 +138,22 @@ public class AnnotatorModule implements Module {
 	public void initModel() {
 		if(model == null) {
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;	
-			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;	
-			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;		
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
 			/*
-					FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
-					FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
-					FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
-					FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-					FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-					FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
-			 */
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			*/
 		}
-	}
-	
-	public void mireot(String classUri, String ontologyUri) throws OWLOntologyCreationException{
-		//hard code both uris for testing
-		classUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl#ArtichokeTopping";
-		ontologyUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl";
-		//load the ontology from ontologyUri
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory = manager.getOWLDataFactory();
-		IRI documentIRI = IRI.create(ontologyUri);
-        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(documentIRI);
-        OWLClass classForAnno = dataFactory.getOWLClass(IRI.create(classUri));
-		//first collect all annotations for a class
-        Set<OWLAnnotation> annotations = classForAnno.getAnnotations(ontology);
-        System.out.println("annotations: " + annotations.toString());
-		//manager.loadOntology(IRI.create("http://"));
-		// "importedFrom" annotation property
-		
-		OWLAnnotationProperty importedFromProperty = dataFactory.getOWLAnnotationProperty(IRI.create("http://purl.obolibrary.org/obo/IAO_0000412"));
-
-		
-		
-		return;
 	}
 
 	/**
@@ -199,267 +164,54 @@ public class AnnotatorModule implements Module {
 	 * @throws FileNotFoundException 
 	 */
 	@QueryMethod(method=HTTP.POST)
-	public void readCsvFileForInitialConversion(final Request request) throws FileNotFoundException{
-		System.out.println(request.getParam("csvFile"));
+	public String readCsvFileForInitialConversion(final Request request) throws FileNotFoundException{
 		String csvFileAsString = (String) request.getParam("csvFile");
+		System.out.println(request.getParam("csvFile"));
 		request.getLogger().debug("The file object is of type : " + request.getParam("csvFile").getClass());
-		csvFileWriter = new PrintWriter(csvFile);
+		csvFileWriter = new PrintWriter("filename.txt");
 		csvFileWriter.println(csvFileAsString);
-		csvFileWriter.close();
 		request.getLogger().debug("CSV file written to : " + csvFileWriter);
-		return;
+		//FileUtils.writeStringToFile(new File("test.txt"), "Hello File");
+		return null;
 	}
 
 
 	@QueryMethod
 	public String queryForEnhancing(final Request request) throws FileNotFoundException{
 
-		System.out.println(request.getParam("annotationMappings"));
-		request.getLogger().debug("annotations: " + request.getParam("annotationMappings"));
+		System.out.println(request.getParam("sourceName"));
+		System.out.println(request.getParam("dataSetName"));
+		
+		//set the source, dataset, and csv file names based on user input
+		this.setDataSetName((String) request.getParam("sourceName"));
+		this.setSourceName((String) request.getParam("dataSetName"));
+		PrintWriter csvFile = this.csvFileWriter;
+		//String csvFileString = (String) request.getParam("csvFile");
+		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
 
-		//holder for reading file off a parameter.
-		//File f = (File) request.getParam("file");
-		//FileInputStream in = new FileInputStream(f);
-		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
-
+		
 		//1) run the initial conversion from here and get the enhancement file
-
-		//String[] arguments = new String[] {"/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/source/uk-offshore-oil-wells-short.csv"," --header-line '1'"," --delimiter ,"};
-		
-		//maybe the client can pass into the request object the name of the file
-		String[] arguments = new String[] {csvFile," --header-line '1'"," --delimiter ,"};
-		
-		//String csvFile = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/source/uk-offshore-oil-wells-short.csv";
-        //parameters file for output
-		//the name of the params file can be a variation of the csv file name as typical.
-		String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";     
-        String eId = "1";
-        
-        //String paramParams = "-v surrogate=https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI# -v sourceID=scraperwiki-com " +
-        //"-v datasetID=uk-offshore-oil-wells -v cellDelimiter=, -v header= -v dataStart= -v onlyIfCol= -v repeatAboveIfEmptyCol= -v interpretAsNull= " +
-        //"-v dataEnd= -v subjectDiscriminator= -v datasetVersion=2011-Jan-24 -v whoami=apseyed -v machine_uri= -v person_uri= -v nowXSD=2013-03-14T23:35:16-04:00";
-        
-        //String h2p = "/Users/apseyed/Documents/rpi/csv2rdf4lod-automation/bin/util/header2params2.awk";
-        String surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
-        String cellDelimiter = ",";
-        //get these from the request object
-        String username = "user";
-        String sourceId = "sourceX";
-        String datasetId = "datasetX";
-        String machineUri = "machineX";
-        String datasetVersion = "2011-Jan-24";
-        String conversionID = "1";
-        //provide that array as argument and -v options to a new method that uses Jena to generate what header2params2.awk
-        //simulateheader2params
-        
-        /*
-        //generate headers
+		//need to do initial conversion which first generates the params file
 		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
-		//using headers write the parameters file (this method is rewritten awk script)
-        generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
-    			datasetId, datasetVersion, null, 
-    			conversionID, cellDelimiter, null, null, null,
-    			null, null, null, username, 
-    			machineUri, username);
 
 		//2) get the json object from bbq statement for input to the enhancement work
+		System.out.println(request.getParam("annotationMappings"));
+        String annotationMappings = (String) request.getParam("annotationMappings");
 
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
 		//queryForHeaderToEnhance
-        //can test the augmenting of the enhancements file here
-        
-        convertToRdfWithEnhancementsFile(csvFile, paramsFile);     
-		*/
-		//next you can test augmentation of the params file
-		//you need to go back and pass appropriate params for raw vs. enhancement level params file (might need to retrace the logic, describe it, and mimic it.)
+
 		//4) should we send the rdf file back to the client?
 
+
 		return null;
-	}
-	
-	public static void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
-		// TODO Auto-generated method stub
-		//String inFilename                 = null;
-	      int    header                     = 1;
-	      int    primaryKeyColumn           = 0;
-	      int    uriKeyColumn               = 0;
-	      String baseURI                    = null;
-	      String datasetIDTag               = null;
-	      String conversionTag              = null;
-	      String classURI                   = null;
-	      String subjectNS                  = null; boolean uuidSubject   = true;
-	      String predicateNS                = null; boolean uuidPredicate = true;
-	      String objectNS                   = null; boolean uuidObject    = true;
-	      String outputFileName             = null;
-	      String metaOutputFileName         = null;
-	      String outputExtension            = "ttl";
-	      Set<String> voidFileExtensions    = null;
-	      //String resourceOrLiteralBitString = null; // TODO: Deprecate
-	    //  String enhancementParametersURL   = null;
-	      String provenanceParametersURL    = null;
-	      String converterIdentifier        = null;
-	      boolean examplesOnly              = false;
-	      int     sampleLimit               = -1;
-	      voidFileExtensions = new HashSet<String>(); 
-	    //java -Xmx3060m edu.rpi.tw.data.csv.CSVtoRDF 
-			//source/uk-offshore-oil-wells-short.csv -sample 10 -ep automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl 
-			//-VoIDDumpExtensions ttl.gz -w automatic/uk-offshore-oil-wells-short.csv.raw.sample.ttl 
-			//-id csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606   
-		//outputFileName = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.sample.ttl";
-	      
-	    /* shouldn't need these next two as they are passed in */  
-		//inFilename = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/source/uk-offshore-oil-wells-short.csv";
-		
-		//outputFileName = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.ttl";
-		outputFileName = "/Users/apseyed/Documents/rpi/output.ttl";
-		
-		//enhancementParametersURL = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl";
-		//enhancementParametersURL = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
-		converterIdentifier = "csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606";
-		
-		
-		voidFileExtensions.add(".ttl.gz");
-		// Load the initial enhancement parameters.
-	      Repository enhancementParamsRep = Cat.load(enhancementParametersURL);
-	      if( Cat.ENCOUNTERED_PARSE_ERROR ) {
-	         System.err.println("ERROR; invalid RDF syntax in " + enhancementParametersURL);
-	         System.exit(3);
-	      }
-	      DefaultEnhancementParameters enhancementParams = new DefaultEnhancementParameters(enhancementParamsRep, baseURI);
+		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 
-
-	         System.out.println("calling demo");
-
-	         CSV2RDFForAnnotator csv2rdfObject = new CSV2RDFForAnnotator(inFilename,classURI, subjectNS,  uuidSubject,  predicateNS, uuidPredicate, 
-                objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
-                voidFileExtensions, examplesOnly, sampleLimit);
-		
-		 Repository toRDF = csv2rdfObject.toRDF(outputFileName, metaOutputFileName);
-	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
-	      
-	      
-		/*
-		 * public CSVtoRDF(String inFileName,
-                   String classURI,                           // This is outdated, but could become the generalization.
-                   String subjectNS,   boolean uuidSubject,   // This is outdated, but could become the generalization.
-                   String predicateNS, boolean uuidPredicate, // This is outdated, but could become the generalization.
-                   String objectNS,    boolean uuidObject,    // This is outdated, but could become the generalization.
-                   //deprecated String resourceOrLiteralBitString, 
-                   EnhancementParameters enhancementParams, 
-                   String converterIdentifier, String enhancementParametersURL,
-                   Set<String> voidFileExtensions,
-                   boolean examplesOnly, int sampleLimit)
-		 */
 
 	}
 
-	/**
-	 * @throws FileNotFoundException 
-	 * 
-	 */
-	public void generateParmsFileFromHeaders(List<String> headers, String paramsFile, String surrogate, String sourceId, 
-			String datasetId, String datasetVersion, String subjectDiscriminator, 
-			String conversionID, String cellDelimiter, String header, String dataStart, String dataEnd,
-			String onlyIfCol, String repeatAboveIfEmptyCol, String interpretAsNull, String username, 
-			String machine_uri, String person_uri) throws FileNotFoundException{
-		//header2params2.sh
-		//simulates header2params2.awk
-		//at /Users/apseyed/Documents/rpi/csv2rdf4lod-automation/bin/util/header2params2.awk
 
-		//open a file stream
-		enhancementFileWriter = new PrintWriter(paramsFile);
-
-		//how do i assert prefix statements in jena?
-		String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-		String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
-		String todo = "http://www.w3.org/2000/01/rdf-schema#";
-		String skos = "http://www.w3.org/2004/02/skos/core#";
-		String time = "http://www.w3.org/2006/time#";
-		String was = "http://www.w3.org/2003/01/geo/wgs84_pos#";
-		String geonames = "http://www.geonames.org/ontology#";
-		String geonamesid = "http://sws.geonames.org/";
-		//String rdfs = "http://www.w3.org/2000/01/rdf-schema#";	
-		//can you wrire curis in jena?	
-		if(person_uri != null){
-			//printf("<%s> foaf:holdsAccount <%s#%s> .\n",person_uri,   machine_uri,whoami);
-			//create an rdf statement 
-			//skipping this for now as its not crucial for conversion
-		}
-		enhancementFileWriter.println("@prefix owl:           <http://www.w3.org/2002/07/owl#> .");
-		enhancementFileWriter.println("@prefix vann:          <http://purl.org/vocab/vann/> .");
-		enhancementFileWriter.println("@prefix skos:          <http://www.w3.org/2004/02/skos/core#> .");
-		enhancementFileWriter.println("@prefix time:          <http://www.w3.org/2006/time#> .");
-		enhancementFileWriter.println("@prefix wgs:           <http://www.w3.org/2003/01/geo/wgs84_pos#> .");
-		enhancementFileWriter.println("@prefix geonames:      <http://www.geonames.org/ontology#> .");
-		enhancementFileWriter.println("@prefix geonamesid:    <http://sws.geonames.org/> .");
-		enhancementFileWriter.println("@prefix govtrackusgov: <http://www.rdfabout.com/rdf/usgov/geo/us/> .");
-		enhancementFileWriter.println("@prefix dbpedia:       <http://dbpedia.org/resource/> .");
-		enhancementFileWriter.println("@prefix dbpediaprop:   <http://dbpedia.org/property/> .");
-		enhancementFileWriter.println("@prefix dbpediaowl:    <http://dbpedia.org/ontology/> .");
-		enhancementFileWriter.println("@prefix con:           <http://www.w3.org/2000/10/swap/pim/contact#> .");
-		enhancementFileWriter.println( "@prefix muo:           <http://purl.oclc.org/NET/muo/muo#> .");
-		enhancementFileWriter.println( "@prefix vs:            <http://www.w3.org/2003/06/sw-vocab-status/ns#> .");
-		enhancementFileWriter.println( "@prefix frbr:          <http://purl.org/vocab/frbr/core#> .");
-		enhancementFileWriter.println( "@prefix bibo:          <http://purl.org/ontology/bibo/> .");
-		enhancementFileWriter.println("@prefix doap:          <http://usefulinc.com/ns/doap#> .");
-		enhancementFileWriter.println("@prefix qb:            <http://purl.org/linked-data/cube#> .");
-		enhancementFileWriter.println("@prefix dgtwc:         <http://data-gov.tw.rpi.edu/2009/data-gov-twc.rdf#> .");
-		enhancementFileWriter.println("@prefix conversion:    <http://purl.org/twc/vocab/conversion/> .");
-		enhancementFileWriter.println("@prefix void:          <http://rdfs.org/ns/void#> .");
-		enhancementFileWriter.println("@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .");
-		enhancementFileWriter.println("@prefix dcterms:         <http://purl.org/dc/terms/> .");
-		enhancementFileWriter.println("@prefix foaf:         <http://xmlns.com/foaf/0.1/> .");
-		enhancementFileWriter.println("@prefix ov:         <http://open.vocab.org/terms/> .");
-		enhancementFileWriter.println("@prefix todo:         <http://www.w3.org/2000/01/rdf-schema#> .");
-		enhancementFileWriter.println("@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
-		enhancementFileWriter.println("@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .");
-
-
-		enhancementFileWriter.println();
-		enhancementFileWriter.println();
-
-		surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
-		String STEP =  "enhancement/1";
-		if(conversionID != null){
-			String dataset = "<" + surrogate + "/source/" + sourceId + "/dataset/" + datasetId + "/version/" + datasetVersion + "/conversion/" + STEP + ">"  ;
-			enhancementFileWriter.println(dataset);
-			enhancementFileWriter.println("  a conversion:LayerDataset, void:Dataset;");
-			enhancementFileWriter.println();
-			enhancementFileWriter.println("conversion:base_uri           " + "\"" + surrogate + "\"^^xsd:anyURI;");
-			enhancementFileWriter.println("conversion:source_identifier \"" + sourceId + "\";");
-			enhancementFileWriter.println("conversion:dataset_identifier \"" + datasetId + "\";");
-			enhancementFileWriter.println("conversion:version_identifier \"" + datasetVersion + "\";");
-			enhancementFileWriter.println("conversion:enhancement_identifier \"" + conversionID + "\";");
-			enhancementFileWriter.println();
-			enhancementFileWriter.println("conversion:conversion_process [");
-			enhancementFileWriter.println("   a conversion:EnhancementConversionProcess;");
-			enhancementFileWriter.println("   conversion:enhancement_identifier \"" + conversionID + "\";");
-			enhancementFileWriter.println();
-			enhancementFileWriter.println("dcterms:creator [ a foaf:OnlineAccount; foaf:accountName " + "\"" + username + "\" ];");
-			//     dcterms:created "2013-03-15T01:07:39-04:00"^^xsd:dateTime;
-			enhancementFileWriter.println("conversion:delimits_cell \",\";");
-			//loop on columns
-			int columnNumber = 1;
-			for(String header1 : headers ){
-				System.out.println("header: " + header1);
-				enhancementFileWriter.println("     conversion:enhance [ ");
-				enhancementFileWriter.println("       ov:csvCol     " + columnNumber + ";");
-				enhancementFileWriter.println("       ov:csvHeader     \"" + header1 + "\" ;");
-				enhancementFileWriter.println("       #conversion:label \"" + header1 + "\" ;");
-
-
-				enhancementFileWriter.println("       conversion:comment     " + columnNumber + ";");
-				enhancementFileWriter.println("       conversion:range     todo:Literal ; ");
-				enhancementFileWriter.println("    ];");
-				columnNumber++;
-			}
-
-		}
-		enhancementFileWriter.println("];");
-		enhancementFileWriter.println(".");
-		enhancementFileWriter.close();
-	}
 
 	/**
 	 * need to create new enhancement
@@ -505,7 +257,6 @@ public class AnnotatorModule implements Module {
 		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
 		FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
-
 		String ov = "http://open.vocab.org/terms/";
 		//this should be retrieved
 		//how? list statements . null,property,voiddataset
@@ -515,8 +266,6 @@ public class AnnotatorModule implements Module {
 		Property propertyClassName = model.createProperty(conversionPrefix + "class_name");
 		Property propertySubclassOf = model.createProperty(conversionPrefix + "subclass_of");
 		Property propertyCsvHeader = model.createProperty(ov + "csvHeader");
-
-
 		Literal literalHeader = model.createLiteral("Deviated_Well");
 		Resource superClass = model.createResource("SpatialLocation");
 
@@ -907,34 +656,280 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return response.toString();
 	}
 
+
+	public String jsonWrapperForEntries(Hashtable<String, String> table, String parent) throws JSONException{
+
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		JSONArray data = new JSONArray();
+		JSONObject response = new JSONObject();
+		response.put("success", true);
+		response.put("data", data);
+		String str;
+		Set<String> set = table.keySet();
+		Iterator<String> itr = set.iterator();
+		while (itr.hasNext()) {
+			str = itr.next();
+			System.out.println(str + ": " + table.get(str));
+
+			JSONObject mapping = new JSONObject();
+			mapping.put("id", str);
+			//should use "short name" if there is no label.
+
+			if(table.get(str) == ""){
+				table.put(str, getShortName(str));
+			}			
+			mapping.put("label", table.get(str));
+			mapping.put("parent", parent);
+			data.put(mapping);
+		}
+		return response.toString();
+	}
+
+
+	@HierarchicalMethod(parameter = "annotatorProperties")
+	public Collection<HierarchyEntry> queryAnnotatorPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+
+	protected Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
+		return null;
+	}
+
+	protected Collection<HierarchyEntry> annotatorPropertyToNode(final Request request, final String str) {
+		return null;
+	}
+
+	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		return entries;
+	}
+
+	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		return entries;		
+	}
+
+	@HierarchicalMethod(parameter = "annotatorClasses")
+	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			//			HierarchyEntry entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird1"));
+			//			entry.setLabel("bird1");
+			//			entry.setAltLabel("birdicus uno");
+			//			items.add(entry);
+			//			entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird2"));
+			//			entry.setLabel("bird2");
+			//			entry.setAltLabel("birdicus dos");
+			//			items.add(entry);
+			return  queryAnnotatorClassHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
+			//				HierarchyEntry entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird3"));
+			//				entry.setLabel("bird3");
+			//				entry.setAltLabel("birdicus tres");
+			//				items.add(entry);
+			//				entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird4"));
+			//				entry.setLabel("bird4");
+			//				entry.setAltLabel("birdicus quatro");
+			//				items.add(entry);
+			//			}
+			return  queryAnnotatorClassHMChildren(request, (String) request.getParam("annotatorClasses"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorClass( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorClassToNode( request, (String) request.getParam("node") );
+		}
+		return items;
+	}
+
+	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
+
+		//this.initModel();
+
+		//construct an owlontology and pose sparql queries against it.
+		//OntModel model = null;
+		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		//setModel(model);
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		final Variable id = query.getVariable(VAR_NS+ "child");
+		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable parent = query.getVariable(VAR_NS+ "parent");		
+
+		final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
+		final QueryResource Measurement = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement");
+		final QueryResource Thing = query.getResource("http://www.w3.org/2002/07/owl#Thing");
+		//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity
+		final QueryResource Entity = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity");
+
+		final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+		final Variable site = query.getVariable(VAR_NS+"site");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(parent);
+		vars.add(label);
+		query.setVariables(vars);
+		//query.addPattern(site, subClassOf, PollutedThing);
+		//query.addPattern(site, subClassOf, Measurement);
+		query.addPattern(id, subClassOf, parent);
+		query.addPattern(id, subClassOf, Entity);
+		query.addPattern(id, hasLabel, label);
+		//construct.addPattern(site, subClassOf, PollutedThing);
+		//return executeLocalQuery(query, model);
+		String responseStr = FAILURE;
+		//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);	
+		//Set master = new HashSet();		//model.
+		//Set<OntClass> classes = new HashSet<OntClass>();		//model.
+		//Set<String> labels = new HashSet<String>();		//model.
+
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		OntClass thing = model.getOntClass( OWL.Thing.getURI() );
+		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
+		for (Iterator<OntClass> i = thing.listSubClasses(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+
+			OntClass hierarchyRoot = i.next();	
+			System.out.println("root: " + hierarchyRoot.toString());
+			System.out.println("label: " + hierarchyRoot.getLabel(null));
+
+			entry.setUri(hierarchyRoot.getURI());
+			Hashtable<String,HashSet<String>> axioms = this.getAxiomsForClass(request, hierarchyRoot);
+			entry.setAxioms(axioms);
+			//call a method that given the class, returns a hashSet with all the axioms.		
+			//I think I will put into HierarchyEntry object a HashTable<String,HashSet<String>> where 
+			//e.g. "annotation" is a key and we have a set of strings that represent annotations... what do you think
+
+
+
+
+			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(hierarchyRoot.toString()));
+			}
+			else{
+				entry.setLabel(hierarchyRoot.getLabel(null));
+			}     
+
+			//entry.setParent(URI.create(thing.getURI()));
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		return entries;
+		//return jsonWrapper(table, OWL.Thing.getURI().toString());	
+	}
+
+	protected Collection<HierarchyEntry> queryAnnotatorClassHMChildren(final Request request, final String classRequiresSubclassesString) {
+
+		if(classRequiresSubclassesString == null){
+			return null;
+		}
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		OntClass superclass = model.getOntClass( classRequiresSubclassesString );
+
+		for (Iterator<OntClass> i = superclass.listSubClasses(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+
+			OntClass subClass = i.next();
+			entry.setUri(subClass.getURI());
+
+
+			if(subClass.getLabel(null) == "" || subClass.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subClass.toString()));
+			}
+			else{
+				//table.put(hierarchyRoot.toString(), hierarchyRoot.getLabel(null));
+				entry.setLabel(subClass.getLabel(null));
+			}
+			entry.setParent(URI.create(superclass.getURI()));
+			entries.add(entry);
+		}	
+		return entries;
+	}
+
+
+
+	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) {
+		return null;
+
+	}
+
+	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
+		return null;
+	}
+
+
 	//would it be better to have one model and reasoner for this module, instead of per query method? yes.
 	//do that through a constructor?
 	@QueryMethod
 	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
-
-
-		//construct an owlontology and pose sparql queries against it.
-		OntModel model = null;
-		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-
-
-		//load certain ontologies
-		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-		setModel(model);
+		// initialize the model if it doesn't already exist...
+		initModel();	
+		//setModel(model);
 		//model.
-		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
-
-
+		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));	
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		//final GraphComponentCollection construct = query.getConstructComponent();
@@ -1007,8 +1002,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		    labels.add( hierarchyRoot.getLabel(null));
 		}
 		 */
-		master.add(classes);
-		master.add(labels);
+		//master.add(classes);
+		//master.add(labels);
 
 		return jsonWrapper(table, OWL.Thing.getURI().toString());
 
@@ -1061,25 +1056,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			return null;
 		}
 
-		OntModel model = null;
-		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-
-
-		//load certain ontologies
-		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-		//construct an owlontology and pose sparql queries against it.
-		///	OntModel model = getModel();
-
+		initModel();
 
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -1203,23 +1180,26 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	@QueryMethod
 	public String queryForAnnotatorRootObjectProperties(Request request) throws JSONException{
 		//construct an owlontology and pose sparql queries against it.
-		OntModel model = null;
-		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		//OntModel model = null;
+		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
+		initModel();
 
 
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
+		/*
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
+				FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
+		 */
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
 
 
@@ -1243,17 +1223,19 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 		//return executeLocalQuery(query, model);
 
-		Set master = new HashSet();		//model.
-		Set<OntProperty> props = new HashSet<OntProperty>();		//model.
-		Set<String> labels = new HashSet<String>();		//model.
+		//Set master = new HashSet();		//model.
+		//Set<OntProperty> props = new HashSet<OntProperty>();		//model.
+		//Set<String> labels = new HashSet<String>();		//model.
 
 		//OntClass thing = model.getOntClass( OWL.Thing.getURI() );
 		//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
 		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
 
 		Hashtable<String, String> table = new Hashtable<String, String>();
-
+		topObjProp.getSubProperty();
+		System.out.println("properties are : " + topObjProp.listSubProperties(false).toString());
 		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			//System.out.println("properties are : " + i.toString());
 			OntProperty hierarchyRoot = i.next();
 
 			// props.add( hierarchyRoot);
@@ -1269,6 +1251,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 
 
+
 		/*
 		 * 
 				for (Iterator<OntClass> i = model.listHierarchyRootClasses(); i.hasNext(); ) {
@@ -1277,14 +1260,164 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 				    labels.add( hierarchyRoot.getLabel(null));
 				}
 		 */
-		master.add(props);
-		master.add(labels);
+
 		return jsonWrapper(table, topObjProp.toString());
 		//return master.toString();
 
 
 
 		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
+	}
+
+	/**
+	 * need a method to collect axioms for a given class. can use HM pattern where a constant is suppied
+	 * to indicate objectProperty, dataPropery, of annotationProperty axioms
+	 */
+
+
+	@QueryMethod
+	public String  getAxiomsForClass(OWLClass c){
+
+
+
+		return null;
+	}
+
+	//@QueryMethod
+	public Hashtable<String,HashSet<String>> getAxiomsForClass(final Request request, OntClass clazz){
+		Hashtable<String,HashSet<String>> axioms = new Hashtable<String,HashSet<String>>();
+
+		//this.initModel();
+		//OntModel model = null;
+		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+		//for clazz collect all the statements for it.
+		//StmtIterator sTest = clazz.listProperties(null);
+
+		//model.getOntClass(clazz);
+		//one method is to get the class in connection to the model:
+		//OntClass c = model.getOntClass(clazz.toString());
+		//OntClass c = model.getOntClass("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement");
+		OntClass c = model.getOntClass(clazz.getURI().toString());
+
+		//StmtIterator sTest = c.listProperties(null);
+
+		HashSet<String> statements = new HashSet<String> ();
+		for(StmtIterator statementsIter = c.listProperties(null) ; statementsIter.hasNext() ;){
+			Statement statement = statementsIter.next();			
+			//need to also check if it is a subClassOf, EquivalentClass, DisjointWith, DisjointUnionOf 
+
+			if(statement.getPredicate().canAs(OntProperty.class)){
+				//check what type of statements these are.
+				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			
+				//OntProperty o = s1.getProperty(null);
+
+				if(o.isObjectProperty()){
+					System.out.println("is an object Property");
+					request.getLogger().debug("is an object property");
+					//return null;
+				}
+				else if(o.isDatatypeProperty()){
+					System.out.println("is an data Property");
+					request.getLogger().debug("is a data property");
+				}
+				else if(o.isAnnotationProperty()){
+					System.out.println("is an annotation Property");
+					request.getLogger().debug("is an anno property");
+				}	
+				else if(o.isSameAs(null)){
+					request.getLogger().debug("is sameAs ");
+				}
+				//com.hp.hpl.jena.vocabulary.RDFS.subClassOf
+				else if(o.equals(com.hp.hpl.jena.vocabulary.RDFS.subClassOf)){				
+					request.getLogger().debug("is subclassOf");
+				}
+
+			}
+			statements.add(statement.toString());
+			//s1.getPredicate();
+		}
+		axioms.put("annotations", statements);
+
+		//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement
+
+
+		//OR
+
+
+		//StmtIterator enhanceStatements3 =  model.listStatements((OntClass) clazz, (Property) null , (Literal) null );
+		/*
+		HashSet<String> statements = new HashSet<String> ();
+		for(StmtIterator enhanceStatements3 =  model.listStatements((OntClass) clazz, (Property) null , (Literal) null) ; enhanceStatements3.hasNext() ;){
+			Statement s1 = enhanceStatements3.next();
+			statements.add(s1.toString());
+			//s1.getPredicate();
+		}
+		 */
+
+
+		return axioms;
+		//return null;
+
+		//put into a set of toString() 's
+
+
+		//StmtIterator sTest = c.listProperties(null);
+		//return sTest.next();
+
+		/*
+		for(StmtIterator s = c.listProperties(null); ; s.hasNext()){
+			Statement s1 = s.next();
+			s1.getPredicate();
+		}
+		 */
+
+		//	s.next().getPredicate();
+
+		//////s.
+		//isObjectProperty
+		//isDatatypeProperty
+		//isAnnotationProperty
+
+		//asAnnotationProperty
+		//asDatatypeProperty
+		//asObjectProperty		
+	}
+
+
+	@QueryMethod
+	public String getAxiomsForClassTester(final Request request){
+		//this.initModel();
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) null );
+		return enhanceStatements1.next().toString();
+
+		//StmtIterator sTest = c.listProperties(null);
+		//return sTest.next();
+
+		/*
+		for(StmtIterator s = c.listProperties(null); ; s.hasNext()){
+			Statement s1 = s.next();
+			s1.getPredicate();
+		}
+		 */
+
+		//	s.next().getPredicate();
+
+		//////s.
+		//isObjectProperty
+		//isDatatypeProperty
+		//isAnnotationProperty
+
+		//asAnnotationProperty
+		//asDatatypeProperty
+		//asObjectProperty		
 	}
 
 
@@ -1299,22 +1432,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-
+		initModel();
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-sbclter.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-temporal.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-spatial.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-biology.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-chemistry.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-anatomy.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-characteristics.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-taxa.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-standards.owl") ;
-		FileManager.get().readModel(model, "/Users/apseyed/Documents/rpi/semanteco-products/obo-e-ontologies/oboe-core.owl") ;
-		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));
-
-
+		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));			
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 		//final GraphComponentCollection construct = query.getConstructComponent();
@@ -1359,9 +1480,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			}
 
 		}	
-
-
-
 		/*
 		 * 
 				for (Iterator<OntClass> i = model.listHierarchyRootClasses(); i.hasNext(); ) {
@@ -1370,14 +1488,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 				    labels.add( hierarchyRoot.getLabel(null));
 				}
 		 */
-		master.add(props);
-		master.add(labels);
+		//master.add(props);
+		//master.add(labels);
 		return jsonWrapper(table, classRequiresSubpropertyString);
-
 		//return master.toString();
-
-
-
 		//return config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);
 	}
 
