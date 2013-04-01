@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
+import org.openrdf.repository.Repository;
 import org.semanticweb.owlapi.model.OWLClass;
 
 import com.hp.hpl.jena.ontology.OntClass;
@@ -44,6 +45,8 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 
+import edu.rpi.tw.data.csv.impl.DefaultEnhancementParameters;
+import edu.rpi.tw.data.rdf.utils.pipes.starts.Cat;
 import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
 import edu.rpi.tw.escience.semanteco.HierarchyEntry;
 import edu.rpi.tw.escience.semanteco.HierarchyVerb;
@@ -116,6 +119,7 @@ public class AnnotatorModule implements Module {
 	private static OntModel model = null;
 	private PrintWriter csvFileWriter = null;
 	private FileOutputStream enhancementFileStream;
+	private PrintWriter enhancementFileWriter = null;
 	private String dataSetName;
 	private String sourceName;
 	private String csvFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
@@ -188,15 +192,36 @@ public class AnnotatorModule implements Module {
 		PrintWriter csvFile = this.csvFileWriter;
 		//String csvFileString = (String) request.getParam("csvFile");
 		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
-
+		String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";     
+        String eId = "1";
+        String surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
+        String cellDelimiter = ",";
+        //get these from the request object
+        String username = "user";
+        String sourceId = "sourceX";
+        String datasetId = "datasetX";
+        String machineUri = "machineX";
+        String datasetVersion = "2011-Jan-24";
+        String conversionID = "1";
 		
 		//1) run the initial conversion from here and get the enhancement file
-		//need to do initial conversion which first generates the params file
+	
+        //get headers
 		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
+		//generate params file
+	       generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
+	    			datasetId, datasetVersion, null, 
+	    			conversionID, cellDelimiter, null, null, null,
+	    			null, null, null, username, 
+	    			machineUri, username);
+		
 
 		//2) get the json object from bbq statement for input to the enhancement work
 		System.out.println(request.getParam("annotationMappings"));
         String annotationMappings = (String) request.getParam("annotationMappings");
+        
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile);     
+
 
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
@@ -210,7 +235,188 @@ public class AnnotatorModule implements Module {
 
 
 	}
+	
+	public static void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
+		// TODO Auto-generated method stub
+		//String inFilename                 = null;
+	      int    header                     = 1;
+	      int    primaryKeyColumn           = 0;
+	      int    uriKeyColumn               = 0;
+	      String baseURI                    = null;
+	      String datasetIDTag               = null;
+	      String conversionTag              = null;
+	      String classURI                   = null;
+	      String subjectNS                  = null; boolean uuidSubject   = true;
+	      String predicateNS                = null; boolean uuidPredicate = true;
+	      String objectNS                   = null; boolean uuidObject    = true;
+	      String outputFileName             = null;
+	      String metaOutputFileName         = null;
+	      String outputExtension            = "ttl";
+	      Set<String> voidFileExtensions    = null;
+	      //String resourceOrLiteralBitString = null; // TODO: Deprecate
+	    //  String enhancementParametersURL   = null;
+	      String provenanceParametersURL    = null;
+	      String converterIdentifier        = null;
+	      boolean examplesOnly              = false;
+	      int     sampleLimit               = -1;
+	      voidFileExtensions = new HashSet<String>(); 
+	    //java -Xmx3060m edu.rpi.tw.data.csv.CSVtoRDF 
+			//source/uk-offshore-oil-wells-short.csv -sample 10 -ep automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl 
+			//-VoIDDumpExtensions ttl.gz -w automatic/uk-offshore-oil-wells-short.csv.raw.sample.ttl 
+			//-id csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606   
+		//outputFileName = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.sample.ttl";
+	      
+	    /* shouldn't need these next two as they are passed in */  
+		//inFilename = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/source/uk-offshore-oil-wells-short.csv";
+		
+		//outputFileName = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.ttl";
+		outputFileName = "/Users/apseyed/Documents/rpi/output.ttl";
+		
+		//enhancementParametersURL = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl";
+		//enhancementParametersURL = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
+		converterIdentifier = "csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606";
+		
+		
+		voidFileExtensions.add(".ttl.gz");
+		// Load the initial enhancement parameters.
+	      Repository enhancementParamsRep = Cat.load(enhancementParametersURL);
+	      if( Cat.ENCOUNTERED_PARSE_ERROR ) {
+	         System.err.println("ERROR; invalid RDF syntax in " + enhancementParametersURL);
+	         System.exit(3);
+	      }
+	      DefaultEnhancementParameters enhancementParams = new DefaultEnhancementParameters(enhancementParamsRep, baseURI);
 
+
+	         System.out.println("calling demo");
+
+	         CSV2RDFForAnnotator csv2rdfObject = new CSV2RDFForAnnotator(inFilename,classURI, subjectNS,  uuidSubject,  predicateNS, uuidPredicate, 
+                objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
+                voidFileExtensions, examplesOnly, sampleLimit);
+		
+		 Repository toRDF = csv2rdfObject.toRDF(outputFileName, metaOutputFileName);
+	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
+	      
+	      
+		/*
+		 * public CSVtoRDF(String inFileName,
+                   String classURI,                           // This is outdated, but could become the generalization.
+                   String subjectNS,   boolean uuidSubject,   // This is outdated, but could become the generalization.
+                   String predicateNS, boolean uuidPredicate, // This is outdated, but could become the generalization.
+                   String objectNS,    boolean uuidObject,    // This is outdated, but could become the generalization.
+                   //deprecated String resourceOrLiteralBitString, 
+                   EnhancementParameters enhancementParams, 
+                   String converterIdentifier, String enhancementParametersURL,
+                   Set<String> voidFileExtensions,
+                   boolean examplesOnly, int sampleLimit)
+		 */
+
+	}
+	/**
+	 * @throws FileNotFoundException 
+	 * 
+	 */
+	public void generateParmsFileFromHeaders(List<String> headers, String paramsFile, String surrogate, String sourceId, 
+			String datasetId, String datasetVersion, String subjectDiscriminator, 
+			String conversionID, String cellDelimiter, String header, String dataStart, String dataEnd,
+			String onlyIfCol, String repeatAboveIfEmptyCol, String interpretAsNull, String username, 
+			String machine_uri, String person_uri) throws FileNotFoundException{
+		//header2params2.sh
+		//simulates header2params2.awk
+		//at /Users/apseyed/Documents/rpi/csv2rdf4lod-automation/bin/util/header2params2.awk
+
+		//open a file stream
+		enhancementFileWriter = new PrintWriter(paramsFile);
+
+		//how do i assert prefix statements in jena?
+		String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+		String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
+		String todo = "http://www.w3.org/2000/01/rdf-schema#";
+		String skos = "http://www.w3.org/2004/02/skos/core#";
+		String time = "http://www.w3.org/2006/time#";
+		String was = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+		String geonames = "http://www.geonames.org/ontology#";
+		String geonamesid = "http://sws.geonames.org/";
+		//String rdfs = "http://www.w3.org/2000/01/rdf-schema#";	
+		//can you wrire curis in jena?	
+		if(person_uri != null){
+			//printf("<%s> foaf:holdsAccount <%s#%s> .\n",person_uri,   machine_uri,whoami);
+			//create an rdf statement 
+			//skipping this for now as its not crucial for conversion
+		}
+		enhancementFileWriter.println("@prefix owl:           <http://www.w3.org/2002/07/owl#> .");
+		enhancementFileWriter.println("@prefix vann:          <http://purl.org/vocab/vann/> .");
+		enhancementFileWriter.println("@prefix skos:          <http://www.w3.org/2004/02/skos/core#> .");
+		enhancementFileWriter.println("@prefix time:          <http://www.w3.org/2006/time#> .");
+		enhancementFileWriter.println("@prefix wgs:           <http://www.w3.org/2003/01/geo/wgs84_pos#> .");
+		enhancementFileWriter.println("@prefix geonames:      <http://www.geonames.org/ontology#> .");
+		enhancementFileWriter.println("@prefix geonamesid:    <http://sws.geonames.org/> .");
+		enhancementFileWriter.println("@prefix govtrackusgov: <http://www.rdfabout.com/rdf/usgov/geo/us/> .");
+		enhancementFileWriter.println("@prefix dbpedia:       <http://dbpedia.org/resource/> .");
+		enhancementFileWriter.println("@prefix dbpediaprop:   <http://dbpedia.org/property/> .");
+		enhancementFileWriter.println("@prefix dbpediaowl:    <http://dbpedia.org/ontology/> .");
+		enhancementFileWriter.println("@prefix con:           <http://www.w3.org/2000/10/swap/pim/contact#> .");
+		enhancementFileWriter.println( "@prefix muo:           <http://purl.oclc.org/NET/muo/muo#> .");
+		enhancementFileWriter.println( "@prefix vs:            <http://www.w3.org/2003/06/sw-vocab-status/ns#> .");
+		enhancementFileWriter.println( "@prefix frbr:          <http://purl.org/vocab/frbr/core#> .");
+		enhancementFileWriter.println( "@prefix bibo:          <http://purl.org/ontology/bibo/> .");
+		enhancementFileWriter.println("@prefix doap:          <http://usefulinc.com/ns/doap#> .");
+		enhancementFileWriter.println("@prefix qb:            <http://purl.org/linked-data/cube#> .");
+		enhancementFileWriter.println("@prefix dgtwc:         <http://data-gov.tw.rpi.edu/2009/data-gov-twc.rdf#> .");
+		enhancementFileWriter.println("@prefix conversion:    <http://purl.org/twc/vocab/conversion/> .");
+		enhancementFileWriter.println("@prefix void:          <http://rdfs.org/ns/void#> .");
+		enhancementFileWriter.println("@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .");
+		enhancementFileWriter.println("@prefix dcterms:         <http://purl.org/dc/terms/> .");
+		enhancementFileWriter.println("@prefix foaf:         <http://xmlns.com/foaf/0.1/> .");
+		enhancementFileWriter.println("@prefix ov:         <http://open.vocab.org/terms/> .");
+		enhancementFileWriter.println("@prefix todo:         <http://www.w3.org/2000/01/rdf-schema#> .");
+		enhancementFileWriter.println("@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
+		enhancementFileWriter.println("@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .");
+
+
+		enhancementFileWriter.println();
+		enhancementFileWriter.println();
+
+		surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
+		String STEP =  "enhancement/1";
+		if(conversionID != null){
+			String dataset = "<" + surrogate + "/source/" + sourceId + "/dataset/" + datasetId + "/version/" + datasetVersion + "/conversion/" + STEP + ">"  ;
+			enhancementFileWriter.println(dataset);
+			enhancementFileWriter.println("  a conversion:LayerDataset, void:Dataset;");
+			enhancementFileWriter.println();
+			enhancementFileWriter.println("conversion:base_uri           " + "\"" + surrogate + "\"^^xsd:anyURI;");
+			enhancementFileWriter.println("conversion:source_identifier \"" + sourceId + "\";");
+			enhancementFileWriter.println("conversion:dataset_identifier \"" + datasetId + "\";");
+			enhancementFileWriter.println("conversion:version_identifier \"" + datasetVersion + "\";");
+			enhancementFileWriter.println("conversion:enhancement_identifier \"" + conversionID + "\";");
+			enhancementFileWriter.println();
+			enhancementFileWriter.println("conversion:conversion_process [");
+			enhancementFileWriter.println("   a conversion:EnhancementConversionProcess;");
+			enhancementFileWriter.println("   conversion:enhancement_identifier \"" + conversionID + "\";");
+			enhancementFileWriter.println();
+			enhancementFileWriter.println("dcterms:creator [ a foaf:OnlineAccount; foaf:accountName " + "\"" + username + "\" ];");
+			//     dcterms:created "2013-03-15T01:07:39-04:00"^^xsd:dateTime;
+			enhancementFileWriter.println("conversion:delimits_cell \",\";");
+			//loop on columns
+			int columnNumber = 1;
+			for(String header1 : headers ){
+				System.out.println("header: " + header1);
+				enhancementFileWriter.println("     conversion:enhance [ ");
+				enhancementFileWriter.println("       ov:csvCol     " + columnNumber + ";");
+				enhancementFileWriter.println("       ov:csvHeader     \"" + header1 + "\" ;");
+				enhancementFileWriter.println("       #conversion:label \"" + header1 + "\" ;");
+
+
+				enhancementFileWriter.println("       conversion:comment     " + columnNumber + ";");
+				enhancementFileWriter.println("       conversion:range     todo:Literal ; ");
+				enhancementFileWriter.println("    ];");
+				columnNumber++;
+			}
+
+		}
+		enhancementFileWriter.println("];");
+		enhancementFileWriter.println(".");
+		enhancementFileWriter.close();
+	}
 
 
 	/**
@@ -724,6 +930,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			System.out.println("label: " + propertyRoot.getLabel(null));
 
 			entry.setUri(propertyRoot.getURI());
+			
 
 			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
 				entry.setLabel(getShortName(propertyRoot.toString()));
@@ -893,6 +1100,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 			OntClass subClass = i.next();
 			entry.setUri(subClass.getURI());
+			Hashtable<String,HashSet<String>> axioms = this.getAxiomsForClass(request, subClass);
+			entry.setAxioms(axioms);
+
 
 
 			if(subClass.getLabel(null) == "" || subClass.getLabel(null) == null){
