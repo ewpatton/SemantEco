@@ -220,12 +220,17 @@ public class AnnotatorModule implements Module {
 		System.out.println(request.getParam("annotationMappings"));
         String annotationMappings = (String) request.getParam("annotationMappings");
         
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile);     
-
-
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
 		//queryForHeaderToEnhance
+        //(original: writeToEnhancement)
+        //writeEnhancementForRange
+        //writeEnhancementForRangeTester
+        //
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile);     
+
+
+
 
 		//4) should we send the rdf file back to the client?
 
@@ -1102,8 +1107,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setUri(subClass.getURI());
 			Hashtable<String,HashSet<String>> axioms = this.getAxiomsForClass(request, subClass);
 			entry.setAxioms(axioms);
-
-
 
 			if(subClass.getLabel(null) == "" || subClass.getLabel(null) == null){
 				//table.put(subClass.toString(), getShortName(subClass.toString()));
