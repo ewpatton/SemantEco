@@ -312,7 +312,84 @@
           <div id="description_class" style="  border:1px solid #111111; overFlow: auto; " >
 		   <div id="ClassTree" class="demo3" style="width:120%;height:200px;">
             <script>
-            SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses");     
+            var dnd = {
+   		                "drop_target" : "#list th",
+   		                "drop_finish" : function (data) {
+   		                	$(data.r).css("background-color","#00ff00");
+                         //add the node name to the header, and get the parent node "id"
+   		                 var p = data.o.attr("id");
+   		                 //alert(p);
+
+   		                 var q = $(data.o).text();
+   		                 //alert(q);
+   		                 
+   		                 var i = data.r.attr("id");
+   		                 //alert(i);
+   		                 
+   		                 var r = $(data.r).text();
+   		                 //alert(r);
+   		                 
+   		                 var cn = i.split(',')[1];
+   		                 
+   		                 if (window.classRow ==1){
+   		                 $("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
+   		                 }
+   		              
+   		                 else
+   		                 {
+   		                 var tr = "<tr id='classRow'>";
+   		                 for (var j = 0; j < window.column_numbers; ++j) {
+   		                	 tr+="<td id='classRow,"+j+"'>";
+   		                	 if (j == cn) tr += q.replace(/^\s+|\s+$/g,'');
+   		                	 tr += "</td>";
+   		                 }
+   		                 tr+= "</tr>";
+   		                 $('#list tr:first').after(tr);
+   		                 window.classRow = 1;
+   		                 }
+   		                 
+   		            //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+   		                 
+   		            //    var args = {};
+   		            //    args[r] = p;
+   		            
+   		            function keySearch(dict,key) {
+   		            	for (var i in dict) if (key in dict[i]) 
+   		            		return dict[i][key];
+   		            	return null;                               		            
+   		            }
+   		            
+   		            var am = window.a
+   		            var kg = keySearch(am,r);
+   		            var args = {};
+   		            args[r]  = {"RangeClass":p};
+   		           
+   		            if (kg!=null){   		            	
+   		            	kg["RangeClass"] = p;   		            
+   		            }            
+			        else{
+				        am.push(args);
+			        };
+/*                         
+   		                 for (i in annotationMappings) {
+   		            	 for (j in annotationMappings[i][0]) {
+   		            	 alert(j+":"+annotationMappings[i][0][j]);
+   		            	 }
+   		            	 }
+   		 
+   		              
+   		                 for (i in annotationMappings) {
+   		            	 if ($.isArray(annotationMappings[i])) {
+   		            	 alert(i + ": " + "Array["+annotationMappings[i].length+"]<br />");
+   		            	 } else {
+   		            	 alert(i + ": Object<br />");
+   		            	 }
+   		            	 }	            	  
+*/   		                
+   		                }
+   		            };
+            
+            SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
             </script>
 		   </div>
           </div>
