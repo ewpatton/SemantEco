@@ -22,7 +22,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 import org.openrdf.repository.Repository;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -44,6 +57,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.OWL2;
 
 import edu.rpi.tw.data.csv.impl.DefaultEnhancementParameters;
 import edu.rpi.tw.data.rdf.utils.pipes.starts.Cat;
@@ -144,6 +158,8 @@ public class AnnotatorModule implements Module {
 	public void initModel() {
 		if(model == null) {
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			//model = ModelFactory.createOntologyModel();
+
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
 
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
@@ -190,8 +206,7 @@ public class AnnotatorModule implements Module {
 	public String queryForEnhancing(final Request request) throws FileNotFoundException{
 
 		System.out.println("source is : " +request.getParam("sourceName"));
-		System.out.println("datasetName is : " + request.getParam("dataSetName"));	
-		
+		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
 		//set the source, dataset, and csv file names based on user input
 		this.setDataSetName((String) request.getParam("sourceName"));
 		this.setSourceName((String) request.getParam("dataSetName"));
@@ -230,20 +245,18 @@ public class AnnotatorModule implements Module {
 		queryForPropertyToEnhance(request);
 		queryForHeaderToEnhance(request);
 
-
         //(original: writeToEnhancement)
        // writeEnhancementForRange(request);
         //writeEnhancementForRangeTester
-        //
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile);     
-
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        //do we have a uri for every ontology, and if a class is sleceted, how do we map it back to the uri?
+        
+        //iterate over all classes in annotation mappings
+        //mireot(String classUri, null, outputRdfFileLocation)
 		//4) should we send the rdf file back to the client?
-
 
 		return null;
 		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
-
-
 	}
 	
 	public void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
@@ -553,6 +566,122 @@ public class AnnotatorModule implements Module {
 		return null;
 	}
 	//can you just change the statement in the non-iterated model?
+	
+	public OWLOntology mireot(String classUri,String ontologyUri, String ontologyFileToUpdate) throws OWLOntologyCreationException, OWLOntologyStorageException{
+		//hard code both uris for testing
+		//classUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl#ArtichokeTopping";
+		//classUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl#InterestingPizza";
+		if(ontologyUri == null){
+		if (classUri.contains("#")){
+			//split on the #
+			String[] temp = classUri.split("#");
+			ontologyUri = temp[0];
+			System.out.println("ontology Uri is: " + classUri);
+		}
+		/*
+		else{
+			String[] temp2 = classUri.split("/");
+			ontologyUri = temp2[temp2.length-1];
+			System.out.println("ontology Uri is: " + classUri);
+		}	
+		*/
+		}
+		//match everything before the first pound
+		//ontologyUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl";
+		//load the ontology from ontologyUri
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLOntologyManager manager2 = OWLManager.createOWLOntologyManager();
+
+		OWLDataFactory dataFactory = manager.getOWLDataFactory();
+		IRI documentIRI = IRI.create(ontologyUri);
+        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(documentIRI);
+        OWLClass classForAnno = dataFactory.getOWLClass(IRI.create(classUri));
+        
+        //need to incorporate into an existing file
+       // OWLOntology newOntology = manager2.createOntology(IRI.create("file:/Users/apseyed/Documents/rpi/mireot.owl"));
+       // OWLOntology newOntology = manager2.createOntology(IRI.create("file:" + ontologyFileToUpdate));
+        OWLOntology newOntology = manager.loadOntologyFromOntologyDocument(IRI.create("file:" + ontologyFileToUpdate));
+
+        
+        //first collect all annotations for a class
+        Set<OWLAnnotation> annotations = classForAnno.getAnnotations(ontology);
+        System.out.println("annotations: " + annotations.toString());
+		// "importedFrom" annotation property		
+		OWLAnnotationProperty importedFromProperty = dataFactory.getOWLAnnotationProperty(IRI.create("http://purl.obolibrary.org/obo/IAO_0000412"));
+		OWLAnnotationProperty label = dataFactory.getRDFSLabel();
+
+		//getting annotations for class from the imports, too
+		for(OWLOntology ont : ontology.getImports()){
+			annotations.addAll(classForAnno.getAnnotations(ont));
+		}
+		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+		HashSet<OWLAnnotation> annotationsCopy = new HashSet<OWLAnnotation>(annotations);
+		
+		//processing annotations
+		//iterate through all annotations for the class
+		for(OWLAnnotation annotation : annotationsCopy){
+			//checking for any existing 'imported from' annotations
+			//exclude annotations that are import annotations
+			if(annotation.getProperty().getIRI().toString().equals(importedFromProperty.getIRI().toString())){
+				annotations.remove(annotation);
+				continue;
+			}
+			
+			//checking for annotation property labels
+			//collect all labels
+			//gets the annotations for the annotation property, specifically the range of rdfs:label
+			//getAnnotations(OWLOntology ontology, OWLAnnotationProperty annotationProperty)
+			//Obtains the annotations on this entity where the annotation has the specified annotation property.
+			Set<OWLAnnotation> propertyAnnotations = annotation.getProperty().getAnnotations(ontology, label);
+
+			//getting annotations from the imports, too
+			for(OWLOntology ont : ontology.getImports()){
+				propertyAnnotations.addAll(annotation.getProperty().getAnnotations(ont, label));
+			}
+			
+			
+			for (OWLAnnotation propertyAnnotation : propertyAnnotations) {
+				//Annotations are used in the various types of annotation axioms, which bind annotations to their subjects (i.e. axioms or declarations).
+				// getOWLAnnotation(OWLAnnotationProperty property, OWLAnnotationValue value)
+				//getOWLAnnotationAssertionAxiom(OWLAnnotationSubject subject, OWLAnnotation annotation)
+				//here asserting annotation property as subject and property assertion with label info as annotation
+				OWLAxiom ax = dataFactory.getOWLAnnotationAssertionAxiom(annotation.getProperty().getIRI(), propertyAnnotation);
+				changes.add(new AddAxiom(newOntology, ax));
+			}			
+		}
+		OWLAnnotation importedFromAnnotation = null;
+		
+		//create annotation from "imported from"
+				if(ontology.getOntologyID().getOntologyIRI() != null){
+					//
+					importedFromAnnotation = dataFactory.getOWLAnnotation(importedFromProperty, dataFactory.getOWLLiteral(ontology.getOntologyID().getOntologyIRI().toString()));
+				} else {
+					importedFromAnnotation = dataFactory.getOWLAnnotation(importedFromProperty, dataFactory.getOWLLiteral(ontologyUri));
+				}
+				
+				OWLAxiom ax = dataFactory.getOWLAnnotationAssertionAxiom(label, importedFromProperty.getIRI(), dataFactory.getOWLLiteral("imported from", "en"));
+				changes.add(new AddAxiom(newOntology, ax));
+				annotations.add(importedFromAnnotation);
+				
+				for (OWLAnnotation an : annotations) {
+					OWLAxiom ax1 = dataFactory.getOWLAnnotationAssertionAxiom(classForAnno.getIRI(), an);
+					changes.add(new AddAxiom(newOntology, ax1));
+				}
+				try{
+				manager.applyChanges(changes);
+				manager.saveOntology(newOntology);
+				}
+				catch(UnknownOWLOntologyException e){
+					e.printStackTrace();
+				}
+				
+				
+				//manager2.applyChanges(annotations);
+				//manager2.addAxioms(newOntology, annotations);
+
+		System.out.println("ontology is : " + newOntology.toString());
+		return null;
+	}
 
 	@QueryMethod
 	public String writeEnhancementForRangeTester(final Request request) throws FileNotFoundException{
@@ -1524,10 +1653,20 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			Statement statement = statementsIter.next();			
 			//need to also check if it is a subClassOf, EquivalentClass, DisjointWith, DisjointUnionOf 
 
+			
+			
 			if(statement.getPredicate().canAs(OntProperty.class)){
 				//check what type of statements these are.
 				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			
 				//OntProperty o = s1.getProperty(null);
+				
+				/*
+				o.equals(OWL2.disjointWith);
+				o.equals(OWL2.disjointUnionOf);
+				o.equals(OWL2.equivalentClass);
+				*/
+				
+				
 
 				if(o.isObjectProperty()){
 					System.out.println("is an object Property");
@@ -1542,9 +1681,13 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 					System.out.println("is an annotation Property");
 					request.getLogger().debug("is an anno property");
 				}	
-				else if(o.isSameAs(null)){
-					request.getLogger().debug("is sameAs ");
-				}
+				//for indivs
+				//else if(o.isSameAs(null)){
+				//	request.getLogger().debug("is sameAs ");
+				//}
+				//else if (o.is){
+				//	
+				//}
 				//com.hp.hpl.jena.vocabulary.RDFS.subClassOf
 				else if(o.equals(com.hp.hpl.jena.vocabulary.RDFS.subClassOf)){				
 					request.getLogger().debug("is subclassOf");
