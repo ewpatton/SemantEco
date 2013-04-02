@@ -203,10 +203,13 @@
   </div>
   </div>
   <div style="margin-top:10px; margin-left:70%; width:30%;">
-  <table><tr><td><div id="source_info"  >Source<textarea id="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type Source here!" onKeyPress="press(event)"></textarea></div>
-  <tr><td>
+  <table>
+  <tr><td><div id="user_info"  >DataSet<textarea id="user_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type DataSet here!" onKeyPress="press(event)"></textarea></div>
+  </td></tr> 
+  <tr><td><div id="source_info"  >Source<textarea id="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type Source here!" onKeyPress="press(event)"></textarea></div>
+  </td></tr>
   <tr><td><div id="dataset_info"  >DataSet<textarea id="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type DataSet here!" onKeyPress="press(event)"></textarea></div>
-  <tr><td>
+  </td></tr>
   </table>
   </div>
 
@@ -300,14 +303,13 @@
 <div>
 
  <table cellpadding="0"; cellspacing="0">
-      <tr>
-	    <td colspan="2">
-		   
-		</td>
-	  </tr>
 
 	  <tr>
-        <td colspan="2">
+        <td>
+        <div id="description_classTree" style="  border:1px solid #111111; overFlow: auto; " >
+        </div>
+        </td>
+        <td>
          ClassTree
           <div id="description_class" style="  border:1px solid #111111; overFlow: auto; " >
 		   <div id="ClassTree" class="demo3" style="width:120%;height:200px;">
@@ -320,7 +322,12 @@
       </tr>
       
       <tr>
-          <td colspan="2">
+       <td>
+        <div id="description_classTree" style="  border:1px solid #111111; overFlow: auto; " >
+        </div>
+        </td>
+
+          <td>
            PropertyTree        
            <div id="description_prop" style="  border:1px solid #111111; overFlow: auto; " >
 			<div id="PropertyTree" class="demo3" style="width:120%;height:200px;">
