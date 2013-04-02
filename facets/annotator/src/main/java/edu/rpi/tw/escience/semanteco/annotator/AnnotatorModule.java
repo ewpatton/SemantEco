@@ -124,6 +124,7 @@ public class AnnotatorModule implements Module {
 	private String sourceName;
 	private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
 	private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
+	private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";     
 
 	
 	public void setDataSetName(String dataSetName){this.dataSetName = dataSetName;}
@@ -175,9 +176,6 @@ public class AnnotatorModule implements Module {
 		//System.out.println("file : " + file);
 		System.out.println(request.getParam("csvFile"));
 		
-		
-		
-		
 		request.getLogger().debug("The file object is of type : " + request.getParam("csvFile").getClass());
 		csvFileWriter = new PrintWriter( csvFileLocation);
 		csvFileWriter.println(csvFileAsString);
@@ -191,8 +189,8 @@ public class AnnotatorModule implements Module {
 	@QueryMethod
 	public String queryForEnhancing(final Request request) throws FileNotFoundException{
 
-		System.out.println(request.getParam("sourceName"));
-		System.out.println(request.getParam("dataSetName"));
+		System.out.println("source is : " +request.getParam("sourceName"));
+		System.out.println("datasetName is : " + request.getParam("dataSetName"));	
 		
 		//set the source, dataset, and csv file names based on user input
 		this.setDataSetName((String) request.getParam("sourceName"));
@@ -200,7 +198,6 @@ public class AnnotatorModule implements Module {
 		PrintWriter csvFile = this.csvFileWriter;
 		//String csvFileString = (String) request.getParam("csvFile");
 		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
-		String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";     
         String eId = "1";
         String surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
         String cellDelimiter = ",";
@@ -213,7 +210,6 @@ public class AnnotatorModule implements Module {
         String conversionID = "1";
 		
 		//1) run the initial conversion from here and get the enhancement file
-	
         //get headers
 		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
 		request.getLogger().debug("headers are : " + headerList.toString());
@@ -224,22 +220,22 @@ public class AnnotatorModule implements Module {
 	    			null, null, null, username, 
 	    			machineUri, username);
 		
-
 		//2) get the json object from bbq statement for input to the enhancement work
 		System.out.println(request.getParam("annotationMappings"));
-        String annotationMappings = (String) request.getParam("annotationMappings");
+       // String annotationMappings = (String) request.getParam("annotationMappings");
         
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
-		//queryForHeaderToEnhance
+		//hard coded linking of class for Deviated Well
+		queryForPropertyToEnhance(request);
+		queryForHeaderToEnhance(request);
+
+
         //(original: writeToEnhancement)
-        //writeEnhancementForRange
+       // writeEnhancementForRange(request);
         //writeEnhancementForRangeTester
         //
         convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile);     
-
-
-
 
 		//4) should we send the rdf file back to the client?
 
@@ -431,7 +427,6 @@ public class AnnotatorModule implements Module {
 		enhancementFileWriter.close();
 	}
 
-
 	/**
 	 * need to create new enhancement
 	 * @param request
@@ -442,12 +437,13 @@ public class AnnotatorModule implements Module {
 	public String queryForPropertyToEnhance(final Request request) throws FileNotFoundException{
 		Model model = ModelFactory.createDefaultModel();
 		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
-		String enhancementFile2 = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params2.ttl";
-		FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
-		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
-		Literal literalHeader = model.createLiteral("Deviated_Well");
-		Resource propertyhasSpatialLocation = model.createResource("hasSpatialLocation");
+		//String enhancementFile2 = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params2.ttl";
+		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
+		FileManager.get().readModel(model, paramsFile);
 
+		//FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
+		Literal literalHeader = model.createLiteral("Deviated_Well");
+		Resource propertyhasSpatialLocation = model.createResource(conversionPrefix + "hasSpatialLocation");
 
 		Property propertyEquiv = model.createProperty(conversionPrefix + "equivalent_property");
 		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) literalHeader );
@@ -459,22 +455,35 @@ public class AnnotatorModule implements Module {
 		Resource subjectOfHeader = s.getSubject();
 		Statement equivStatement = ResourceFactory.createStatement(subjectOfHeader, propertyEquiv, propertyhasSpatialLocation);
 		model.add(equivStatement);
-		model.write(enhancementFileStream2, "N-TRIPLE");
-
-
-
+		
+		FileOutputStream paramsStream = new FileOutputStream(paramsFile);
+		model.write(paramsStream, "TURTLE");
+		//model.write(enhancementFileStream2, "N-TRIPLE");
 		return null;	
 	}
-
+	
+	/**
+	 * updates the params file with a range class enhancements. 
+	 * e.g., 		
+		 * conversion:enhance [
+         conversion:class_name "Site";
+         conversion:subclass_of wgs:SpatialThing;
+      ];	 
+	 * @param request
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	@QueryMethod
 	public String queryForHeaderToEnhance(final Request request) throws FileNotFoundException{
 		Model model = ModelFactory.createDefaultModel();
 		//Model newModel = ModelFactory.createDefaultModel();
 		//String enhancementFile = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
-		String enhancementFile2 = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params2.ttl";
+		//String enhancementFile2 = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params2.ttl";
 		//FileOutputStream enhancementFileStream = new FileOutputStream(enhancementFile);
-		FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
-		FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
+		//FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
+		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
+		FileManager.get().readModel(model, paramsFile);
+
 		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
 		String ov = "http://open.vocab.org/terms/";
 		//this should be retrieved
@@ -486,8 +495,7 @@ public class AnnotatorModule implements Module {
 		Property propertySubclassOf = model.createProperty(conversionPrefix + "subclass_of");
 		Property propertyCsvHeader = model.createProperty(ov + "csvHeader");
 		Literal literalHeader = model.createLiteral("Deviated_Well");
-		Resource superClass = model.createResource("SpatialLocation");
-
+		Resource superClass = model.createResource( conversionPrefix + "SpatialLocation");
 
 		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) propertyCsvHeader , (Literal) literalHeader );
 		Statement s = null;
@@ -497,7 +505,6 @@ public class AnnotatorModule implements Module {
 		}
 
 		Resource subjectOfHeader = s.getSubject();
-
 		//this is an object of what triple and what is the subject? that subject becomes subject of new triple with anonymous node enhancement.
 		StmtIterator getStatement =  model.listStatements((Resource) null, (Property) propertyEnhance , (Resource) subjectOfHeader );
 		Statement s2 = null;
@@ -513,13 +520,6 @@ public class AnnotatorModule implements Module {
 		System.out.println("anon node output is : " + conversionProcessEnhanceAnon);
 		model.add(conversionProcessEnhanceAnon);
 		//now just add triples from anon
-
-		/*
-		 * conversion:enhance [
-         conversion:class_name "Site";
-         conversion:subclass_of wgs:SpatialThing;
-      ];
-		 */
 
 		Statement classNameStatement = ResourceFactory.createStatement(newAnon, propertyClassName, literalHeader);
 		Statement subclassStatement = ResourceFactory.createStatement(newAnon, propertySubclassOf, superClass);
@@ -541,22 +541,16 @@ public class AnnotatorModule implements Module {
 
 		Statement replacement = ResourceFactory.createStatement(st.getSubject(), st.getPredicate(), model.createResource("http://www.w3.org/2000/01/rdf-schema#" +
 				"Resource"));
-
 		Statement newst = ResourceFactory.createStatement(st.getSubject(), propertyRangeName, literalHeader);
-
-
 		model.remove(st);
 		//st.changeObject(model.createResource("Resource"));
 		model.add(replacement);
 		model.add(newst);
 
-
-		model.write(enhancementFileStream2, "N-TRIPLE");
+		FileOutputStream paramsStream = new FileOutputStream(paramsFile);
+		//model.write(paramsStream, "N-TRIPLE");
+		model.write(paramsStream, "TURTLE");
 		return null;
-
-
-		//return null;
-
 	}
 	//can you just change the statement in the non-iterated model?
 
