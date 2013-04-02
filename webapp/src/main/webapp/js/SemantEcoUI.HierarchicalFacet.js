@@ -110,7 +110,8 @@ SemantEcoUI.HierarchicalFacet = {};
                 "themes": {
                     "theme": "default",
                     "dots": true,
-                    "icons": true
+                    "icons": true,
+                    "url": "../../js/jstree/themes/default/style.css"
                 },
                 "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
             };
