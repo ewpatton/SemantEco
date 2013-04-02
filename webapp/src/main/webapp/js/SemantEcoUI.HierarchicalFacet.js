@@ -114,8 +114,8 @@ SemantEcoUI.HierarchicalFacet = {};
                 },
                 "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
             };
-        jQuery.extend(true, args, jstreeArgs);
-        jqdiv.jstree(jstreeArgs).bind("select_node.jstree",
+        args = jQuery.extend(true, args, jstreeArgs);
+        jqdiv.jstree(args).bind("select_node.jstree",
                 clickHandler
                 ).delegate("a", "click", cancelClick);
         var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
