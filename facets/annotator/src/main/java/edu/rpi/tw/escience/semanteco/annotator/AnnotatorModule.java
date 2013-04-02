@@ -122,7 +122,8 @@ public class AnnotatorModule implements Module {
 	private PrintWriter enhancementFileWriter = null;
 	private String dataSetName;
 	private String sourceName;
-	private String csvFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
+	private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
+	private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
 
 	
 	public void setDataSetName(String dataSetName){this.dataSetName = dataSetName;}
@@ -169,12 +170,19 @@ public class AnnotatorModule implements Module {
 	 */
 	@QueryMethod(method=HTTP.POST)
 	public String readCsvFileForInitialConversion(final Request request) throws FileNotFoundException{
+		System.out.println("the request object is : " + request.toString());
 		String csvFileAsString = (String) request.getParam("csvFile");
+		//System.out.println("file : " + file);
 		System.out.println(request.getParam("csvFile"));
+		
+		
+		
+		
 		request.getLogger().debug("The file object is of type : " + request.getParam("csvFile").getClass());
-		csvFileWriter = new PrintWriter("filename.txt");
+		csvFileWriter = new PrintWriter( csvFileLocation);
 		csvFileWriter.println(csvFileAsString);
-		request.getLogger().debug("CSV file written to : " + csvFileWriter);
+		csvFileWriter.close();
+		request.getLogger().debug("CSV file written to : " + csvFileLocation);
 		//FileUtils.writeStringToFile(new File("test.txt"), "Hello File");
 		return null;
 	}
@@ -208,6 +216,7 @@ public class AnnotatorModule implements Module {
 	
         //get headers
 		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
+		request.getLogger().debug("headers are : " + headerList.toString());
 		//generate params file
 	       generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
 	    			datasetId, datasetVersion, null, 
@@ -241,7 +250,7 @@ public class AnnotatorModule implements Module {
 
 	}
 	
-	public static void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
+	public void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
 		// TODO Auto-generated method stub
 		//String inFilename                 = null;
 	      int    header                     = 1;
@@ -254,7 +263,7 @@ public class AnnotatorModule implements Module {
 	      String subjectNS                  = null; boolean uuidSubject   = true;
 	      String predicateNS                = null; boolean uuidPredicate = true;
 	      String objectNS                   = null; boolean uuidObject    = true;
-	      String outputFileName             = null;
+	     // String outputFileName             = null;
 	      String metaOutputFileName         = null;
 	      String outputExtension            = "ttl";
 	      Set<String> voidFileExtensions    = null;
@@ -275,7 +284,7 @@ public class AnnotatorModule implements Module {
 		//inFilename = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/source/uk-offshore-oil-wells-short.csv";
 		
 		//outputFileName = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.ttl";
-		outputFileName = "/Users/apseyed/Documents/rpi/output.ttl";
+		//outputFileName = "/Users/apseyed/Documents/rpi/output.ttl";
 		
 		//enhancementParametersURL = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl";
 		//enhancementParametersURL = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
@@ -298,10 +307,9 @@ public class AnnotatorModule implements Module {
                 objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
                 voidFileExtensions, examplesOnly, sampleLimit);
 		
-		 Repository toRDF = csv2rdfObject.toRDF(outputFileName, metaOutputFileName);
+		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
 	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
-	      
-	      
+	          
 		/*
 		 * public CSVtoRDF(String inFileName,
                    String classURI,                           // This is outdated, but could become the generalization.
