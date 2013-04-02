@@ -81,6 +81,7 @@
 	</style>
 	
 	<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+	<link rel="stylesheet" type="text/css" href="../../js/jstree/themes/default/style.css" />
 
 	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery.csvToTable.js"></script>
@@ -360,7 +361,7 @@
 
               document.getElementById('list').appendChild(table);
               window.file_contents = file.target.result;
-              alert(window.file_contents);
+            //alert(window.file_contents);
               window.column_numbers = rows[0].split(',').length;
               window.hasTable = 1;
             // annotationMappings initialization  
@@ -433,7 +434,7 @@
         <td>
         Description
         <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-        <div id="PropBox" style="width:100px;height:200px;">
+        <div id="DataTypeBox" style="width:100px;height:200px;">
         null
         </div>
         </div>
@@ -622,6 +623,12 @@
 	            
 			SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 			</script>
+			
+        <script>$("#ClassBox").text($("#ClassTree div.jstree").data("hierarchy.lookup"));
+        </script>
+        
+        <script>$("#PropBox").text($("#PropertyTree div.jstree").data("hierarchy.lookup"));
+        </script>			
 
 </body>
 </html>
