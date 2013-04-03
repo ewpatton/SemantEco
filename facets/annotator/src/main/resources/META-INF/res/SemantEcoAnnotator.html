@@ -117,7 +117,26 @@
 		$(window).trigger("initialize");
 		});
 */
-	</script>	
+	</script>
+	<script>
+	function toString(obj, level=0) {
+    var ret = "";
+    if (typeof obj == "object") {
+    ret += "\n";
+    for (var j = 0; j < level; ++j) ret += " ";
+    ret += "\u007B\n"; // left curly brace
+    for (i in obj) {
+    for (var j = 0; j < level; ++j) ret += " ";
+    ret += toString(i)+": "+toString(obj[i], level+2)+"\n";	
+    }
+    for (var j = 0; j < level; ++j) ret += " ";
+    ret += "\u007D"; // right curly brace
+    } else {
+    ret += obj;
+    }
+    return ret;
+    }	
+	</script>
 	
 	<script>
 	$(function() {
@@ -624,11 +643,7 @@
 			SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 			</script>
 			
-        <script>$("#ClassBox").text($("#ClassTree div.jstree").data("hierarchy.lookup"));
-        </script>
-        
-        <script>$("#PropBox").text($("#PropertyTree div.jstree").data("hierarchy.lookup"));
-        </script>			
+        		
 
 </body>
 </html>
