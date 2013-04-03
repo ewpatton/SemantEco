@@ -1619,17 +1619,23 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	 */
 
 
-	@QueryMethod
-	public String  getAxiomsForClass(OWLClass c){
-
-
-
-		return null;
-	}
+	//@QueryMethod
+	//public String  getAxiomsForClass(OWLClass c){
+//
+//		return null;
+//	}
 
 	//@QueryMethod
 	public Hashtable<String,HashSet<String>> getAxiomsForClass(final Request request, OntClass clazz){
+		request.getLogger().debug("got get getAxiomsForClass");
+		System.out.println("got to getAxioms for Class");
 		Hashtable<String,HashSet<String>> axioms = new Hashtable<String,HashSet<String>>();
+		//		axioms.put("annotations", statements);
+//		axioms.put("annotations", statements);
+	//	axioms.put("annotations", statements);
+	//	axioms.put("annotations", statements);
+	//	axioms.put("annotations", statements);
+
 
 		//this.initModel();
 		//OntModel model = null;
@@ -1648,7 +1654,17 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 		//StmtIterator sTest = c.listProperties(null);
 
-		HashSet<String> statements = new HashSet<String> ();
+		//HashSet<String> statements = new HashSet<String> ();
+		HashSet<String> annotations = new HashSet<String> ();
+		HashSet<String> objectPropertyAssertions = new HashSet<String> ();
+		HashSet<String> dataPropertyAssertions = new HashSet<String> ();
+		HashSet<String> subClassOfAssertions = new HashSet<String> ();
+		HashSet<String> equivalentClassAssertions = new HashSet<String> ();
+		HashSet<String> disjointUnionOfAssertions = new HashSet<String> ();
+		HashSet<String> disjointWithAssertions = new HashSet<String> ();
+
+
+		
 		for(StmtIterator statementsIter = c.listProperties(null) ; statementsIter.hasNext() ;){
 			Statement statement = statementsIter.next();			
 			//need to also check if it is a subClassOf, EquivalentClass, DisjointWith, DisjointUnionOf 
@@ -1659,45 +1675,77 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 				//check what type of statements these are.
 				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			
 				//OntProperty o = s1.getProperty(null);
-				
+				request.getLogger().debug("ontproperty : " + o.getURI().toString());
+				request.getLogger().debug("disjoint with : " + OWL.disjointWith.getURI());
+				request.getLogger().debug("disjoint union of : " + OWL2.disjointUnionOf.getURI());
+				request.getLogger().debug("subclass of : " + com.hp.hpl.jena.vocabulary.RDFS.subClassOf.getURI());	
 				/*
 				o.equals(OWL2.disjointWith);
 				o.equals(OWL2.disjointUnionOf);
 				o.equals(OWL2.equivalentClass);
 				*/
-				
-				
-
 				if(o.isObjectProperty()){
 					System.out.println("is an object Property");
+					//axioms.put("objectPropertyAssertions", statement);
 					request.getLogger().debug("is an object property");
 					//return null;
+					objectPropertyAssertions.add(statement.toString());
 				}
 				else if(o.isDatatypeProperty()){
 					System.out.println("is an data Property");
 					request.getLogger().debug("is a data property");
+					dataPropertyAssertions.add(statement.toString());
 				}
 				else if(o.isAnnotationProperty()){
 					System.out.println("is an annotation Property");
 					request.getLogger().debug("is an anno property");
+					annotations.add(statement.toString());
 				}	
-				//for indivs
-				//else if(o.isSameAs(null)){
-				//	request.getLogger().debug("is sameAs ");
-				//}
-				//else if (o.is){
-				//	
-				//}
-				//com.hp.hpl.jena.vocabulary.RDFS.subClassOf
-				else if(o.equals(com.hp.hpl.jena.vocabulary.RDFS.subClassOf)){				
-					request.getLogger().debug("is subclassOf");
-				}
-
 			}
-			statements.add(statement.toString());
+			
+				Property p = statement.getPredicate();
+				
+				if (p.getURI().equals(OWL.disjointWith.getURI())){
+					request.getLogger().debug("disjoint with");
+					disjointWithAssertions.add(statement.toString());
+				}
+				else if (p.getURI().equals(OWL2.disjointUnionOf.getURI())){
+					request.getLogger().debug("disjoint Union of");
+					disjointUnionOfAssertions.add(statement.toString());
+				}
+				else if (p.getURI().equals(OWL2.equivalentClass.getURI())){
+					request.getLogger().debug("equiv class");
+					equivalentClassAssertions.add(statement.toString());
+					
+				}			
+				else if(p.getURI().equals(com.hp.hpl.jena.vocabulary.RDFS.subClassOf.getURI())){				
+					request.getLogger().debug("is subclassOf");
+					subClassOfAssertions.add(statement.toString());
+				}
+			
+				
+
+			//for indivs
+			//else if(o.isSameAs(null)){
+			//	request.getLogger().debug("is sameAs ");
+			//}
+			//else if (o.is){
+			//	
+			//}
+			//com.hp.hpl.jena.vocabulary.RDFS.subClassOf
+			
+
+			
+			//statements.add(statement.toString());
 			//s1.getPredicate();
 		}
-		axioms.put("annotations", statements);
+		axioms.put("annotations", annotations);
+		axioms.put("objectPropertyAssertions", objectPropertyAssertions);
+		axioms.put("datatypePropertyAssertions", dataPropertyAssertions);
+		axioms.put("disjointWithAssertions", disjointWithAssertions);
+		axioms.put("disjointUnionOfAssertions", disjointUnionOfAssertions);
+		axioms.put("equivalentClassAssertions", equivalentClassAssertions);
+
 
 		//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement
 

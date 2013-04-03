@@ -139,6 +139,9 @@ public class SemantEcoServlet extends WebSocketServlet {
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		
+		
+		//request.getHeader("accept");
 		if(request.getServletPath().equals("/log")) {
 			super.doGet(request, response);
 			return;

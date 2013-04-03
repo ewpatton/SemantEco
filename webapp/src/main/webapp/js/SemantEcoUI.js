@@ -1,4 +1,4 @@
-var SemantEcoUI = {
+ var SemantEcoUI = {
     //store all reference to markers
     "markers": [],
     "markersByUri": {},
