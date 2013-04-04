@@ -236,7 +236,8 @@ public class AnnotatorModule implements Module {
 	    			machineUri, username);
 		
 		//2) get the json object from bbq statement for input to the enhancement work
-		System.out.println(request.getParam("annotationMappings"));
+		System.out.println("annotation mappings" + request.getParam("annotationMappings").toString());
+		request.getLogger().debug("annotation Mappings are: " + request.getParam("annotationMappings").toString());
        // String annotationMappings = (String) request.getParam("annotationMappings");
         
 		//3)do the conversion calling
