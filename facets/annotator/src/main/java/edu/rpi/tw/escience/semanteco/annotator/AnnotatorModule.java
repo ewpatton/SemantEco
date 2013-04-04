@@ -203,7 +203,7 @@ public class AnnotatorModule implements Module {
 
 
 	@QueryMethod
-	public String queryForEnhancing(final Request request) throws FileNotFoundException{
+	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException{
 
 		System.out.println("source is : " +request.getParam("sourceName"));
 		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
@@ -248,8 +248,30 @@ public class AnnotatorModule implements Module {
 		//{"Property":"http://www.co-ode.org/ontologies/ont.owl#testProperty1",
 		//"RangeClass":"http://ecoinformatics.org/oboe/oboe.1.0/oboe-biology.owl#AdultStageFish"}}]
 		
-		queryForPropertyToEnhance(request);
-		queryForHeaderToEnhance(request);
+		//queryForPropertyToEnhance(request);
+		//queryForHeaderToEnhance(request);
+		
+		JSONArray annotations = (JSONArray) request.getParam("annotationMappings");
+		System.out.println("annotationMappings JSONObject " +  annotations.toString());
+		//for every object in that array
+		for (int i = 0; i < annotations.length(); i++){
+			System.out.println("current object " +  annotations.getString(i));
+				System.out.println("class type is : " + annotations.get(i).getClass());
+				JSONObject o = (JSONObject) annotations.get(i);
+				Iterator<?> keys = o.keys();
+				String headerKey = null;
+				while( keys.hasNext() ){headerKey = keys.next().toString();}
+				System.out.println("The key is : " + headerKey);
+				//next get the object of the key and get "Property" and "RangeClass" from that key
+				JSONObject propAndRangeObj =  (JSONObject) o.get(headerKey);
+				System.out.println("the property is : " + propAndRangeObj.get("Property"));
+				System.out.println("the range class is : " + propAndRangeObj.get("RangeClass"));
+				
+				queryForPropertyToEnhance(request, headerKey, propAndRangeObj.get("Property").toString());
+				queryForHeaderToEnhance(request, headerKey, propAndRangeObj.get("RangeClass").toString());
+
+			
+		}
 
         //(original: writeToEnhancement)
        // writeEnhancementForRange(request);
@@ -453,7 +475,7 @@ public class AnnotatorModule implements Module {
 	 * @throws FileNotFoundException 
 	 */
 	@QueryMethod
-	public String queryForPropertyToEnhance(final Request request) throws FileNotFoundException{
+	public String queryForPropertyToEnhance(final Request request, String Header, String Property) throws FileNotFoundException{
 		Model model = ModelFactory.createDefaultModel();
 		String conversionPrefix = "http://purl.org/twc/vocab/conversion/";
 		//String enhancementFile2 = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params2.ttl";
@@ -461,8 +483,10 @@ public class AnnotatorModule implements Module {
 		FileManager.get().readModel(model, paramsFile);
 
 		//FileOutputStream enhancementFileStream2 = new FileOutputStream(enhancementFile2);
-		Literal literalHeader = model.createLiteral("Deviated_Well");
-		Resource propertyhasSpatialLocation = model.createResource(conversionPrefix + "hasSpatialLocation");
+		//Literal literalHeader = model.createLiteral("Deviated_Well");
+		//Resource propertyhasSpatialLocation = model.createResource(conversionPrefix + "hasSpatialLocation");
+		Literal literalHeader = model.createLiteral(Header);
+		Resource propertyhasSpatialLocation = model.createResource(Property);
 
 		Property propertyEquiv = model.createProperty(conversionPrefix + "equivalent_property");
 		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) literalHeader );
@@ -493,7 +517,7 @@ public class AnnotatorModule implements Module {
 	 * @throws FileNotFoundException
 	 */
 	@QueryMethod
-	public String queryForHeaderToEnhance(final Request request) throws FileNotFoundException{
+	public String queryForHeaderToEnhance(final Request request, String header, String rangeClass) throws FileNotFoundException{
 		Model model = ModelFactory.createDefaultModel();
 		//Model newModel = ModelFactory.createDefaultModel();
 		//String enhancementFile = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
@@ -513,8 +537,11 @@ public class AnnotatorModule implements Module {
 		Property propertyClassName = model.createProperty(conversionPrefix + "class_name");
 		Property propertySubclassOf = model.createProperty(conversionPrefix + "subclass_of");
 		Property propertyCsvHeader = model.createProperty(ov + "csvHeader");
-		Literal literalHeader = model.createLiteral("Deviated_Well");
-		Resource superClass = model.createResource( conversionPrefix + "SpatialLocation");
+		
+		//Literal literalHeader = model.createLiteral("Deviated_Well");
+		//Resource superClass = model.createResource( conversionPrefix + "SpatialLocation");
+		Literal literalHeader = model.createLiteral(header);
+		Resource superClass = model.createResource(rangeClass);
 
 		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) propertyCsvHeader , (Literal) literalHeader );
 		Statement s = null;
