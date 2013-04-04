@@ -1745,6 +1745,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		axioms.put("disjointWithAssertions", disjointWithAssertions);
 		axioms.put("disjointUnionOfAssertions", disjointUnionOfAssertions);
 		axioms.put("equivalentClassAssertions", equivalentClassAssertions);
+		axioms.put("subClassOfAssertions", equivalentClassAssertions);
 
 
 		//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement
