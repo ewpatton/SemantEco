@@ -127,6 +127,7 @@ SemantEcoUI.HierarchicalFacet = {};
             args[jqdiv.data("hierarchy.param")] = [];
             $.bbq.pushState(args);
         }
+        $(window).trigger("rendered_tree.semanteco", jqdiv);
     };
 
     // we should switch to using a library that supports futures
