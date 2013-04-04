@@ -118,25 +118,6 @@
 		});
 */
 	</script>
-	<script>
-	function toString(obj, level=0) {
-    var ret = "";
-    if (typeof obj == "object") {
-    ret += "\n";
-    for (var j = 0; j < level; ++j) ret += " ";
-    ret += "\u007B\n"; // left curly brace
-    for (i in obj) {
-    for (var j = 0; j < level; ++j) ret += " ";
-    ret += toString(i)+": "+toString(obj[i], level+2)+"\n";	
-    }
-    for (var j = 0; j < level; ++j) ret += " ";
-    ret += "\u007D"; // right curly brace
-    } else {
-    ret += obj;
-    }
-    return ret;
-    }	
-	</script>
 	
 	<script>
 	$(function() {
@@ -642,7 +623,39 @@
 	            
 			SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 			</script>
-			
+           
+<script>
+
+        	function toString(obj, level) {
+            if(typeof(level)==='undefined') level = 0;
+            var ret = "";
+            if (typeof obj == "object") {
+            alert(ret);
+            ret += "\n";
+            for (var j = 0; j < level; ++j) ret += " ";
+            ret += "\u007B\n"; // left curly brace
+            for (i in obj) {
+            for (var j = 0; j < level; ++j) ret += " ";
+            ret += toString(i)+": "+toString(obj[i], level+2)+"\n";	
+            }
+            for (var j = 0; j < level; ++j) ret += " ";
+            ret += "\u007D"; // right curly brace
+            } else {
+            ret += obj;
+            }
+            return ret;
+            }
+
+$("#ClassTree div.jstree").bind("select_node.jstree", function (NODE, REF_NODE) {
+        var a = $.jstree._focused().get_selected();
+        alert(a);
+        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
+        alert(lookup);
+        var axioms_contents = lookup[a.attr("hierarchy_id")].rawData.axioms;
+        alert(axioms_contents);
+        $("#ClassBox").text(toString(axioms_contents,0));
+    });
+</script>
         		
 
 </body>
