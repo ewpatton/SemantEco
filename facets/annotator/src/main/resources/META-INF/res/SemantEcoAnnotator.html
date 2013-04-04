@@ -645,7 +645,9 @@
             return ret;
             }
 
-$("#ClassTree div.jstree").bind("select_node.jstree", function (NODE, REF_NODE) {
+    $(window).bind("rendered_tree.semanteco", function(e, div) {
+      $(div).addClass("jstree-default");
+      $(div).bind("select_node.jstree", function (NODE, REF_NODE) {
         var a = $.jstree._focused().get_selected();
         alert(a);
         var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
@@ -653,6 +655,7 @@ $("#ClassTree div.jstree").bind("select_node.jstree", function (NODE, REF_NODE) 
         var axioms_contents = lookup[a.attr("hierarchy_id")].rawData.axioms;
         alert(axioms_contents);
         $("#ClassBox").text(toString(axioms_contents,0));
+      });
     });
 </script>
         		
