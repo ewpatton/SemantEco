@@ -243,6 +243,11 @@ public class AnnotatorModule implements Module {
 		//3)do the conversion calling
 		//queryForPropertyToEnhance
 		//hard coded linking of class for Deviated Well
+		
+		//[{"url":
+		//{"Property":"http://www.co-ode.org/ontologies/ont.owl#testProperty1",
+		//"RangeClass":"http://ecoinformatics.org/oboe/oboe.1.0/oboe-biology.owl#AdultStageFish"}}]
+		
 		queryForPropertyToEnhance(request);
 		queryForHeaderToEnhance(request);
 
