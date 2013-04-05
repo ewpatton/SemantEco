@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -203,7 +204,7 @@ public class AnnotatorModule implements Module {
 
 
 	@QueryMethod
-	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException{
+	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
 
 		System.out.println("source is : " +request.getParam("sourceName"));
 		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
@@ -253,6 +254,9 @@ public class AnnotatorModule implements Module {
 		
 		JSONArray annotations = (JSONArray) request.getParam("annotationMappings");
 		System.out.println("annotationMappings JSONObject " +  annotations.toString());
+		HashSet<String> rangeClasses = new HashSet<String>();
+		HashSet<String> properties = new HashSet<String>();
+
 		//for every object in that array
 		for (int i = 0; i < annotations.length(); i++){
 			System.out.println("current object " +  annotations.getString(i));
@@ -266,13 +270,12 @@ public class AnnotatorModule implements Module {
 				JSONObject propAndRangeObj =  (JSONObject) o.get(headerKey);
 				System.out.println("the property is : " + propAndRangeObj.get("Property"));
 				System.out.println("the range class is : " + propAndRangeObj.get("RangeClass"));
-				
+				//property must be done first!
 				queryForPropertyToEnhance(request, headerKey, propAndRangeObj.get("Property").toString());
-				queryForHeaderToEnhance(request, headerKey, propAndRangeObj.get("RangeClass").toString());
-
-			
+				queryForHeaderToEnhance(request, headerKey, propAndRangeObj.get("RangeClass").toString());		
+				rangeClasses.add(propAndRangeObj.get("RangeClass").toString());
+				properties.add(propAndRangeObj.get("Property").toString());		
 		}
-
         //(original: writeToEnhancement)
        // writeEnhancementForRange(request);
         //writeEnhancementForRangeTester
@@ -280,7 +283,15 @@ public class AnnotatorModule implements Module {
         //do we have a uri for every ontology, and if a class is sleceted, how do we map it back to the uri?
         
         //iterate over all classes in annotation mappings
-        //mireot(String classUri, null, outputRdfFileLocation)
+        for(String rangeClass : rangeClasses){
+        mireotClass(rangeClass, null, outputRdfFileLocation);
+       // mireotProperty(rangeClass, null, outputRdfFileLocation);
+        }
+        //iterate over all properties in annotation mappings
+     //   for(String property : properties){
+     //   mireotProperty(property, null, outputRdfFileLocation);
+       // mireotProperty(rangeClass, null, outputRdfFileLocation);
+      //  }
 		//4) should we send the rdf file back to the client?
 
 		return null;
@@ -600,7 +611,7 @@ public class AnnotatorModule implements Module {
 	}
 	//can you just change the statement in the non-iterated model?
 	
-	public OWLOntology mireot(String classUri,String ontologyUri, String ontologyFileToUpdate) throws OWLOntologyCreationException, OWLOntologyStorageException{
+	public OWLOntology mireotClass(String classUri,String ontologyUri, String ontologyFileToUpdate) throws OWLOntologyCreationException, OWLOntologyStorageException{
 		//hard code both uris for testing
 		//classUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl#ArtichokeTopping";
 		//classUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl#InterestingPizza";
@@ -714,6 +725,104 @@ public class AnnotatorModule implements Module {
 
 		System.out.println("ontology is : " + newOntology.toString());
 		return null;
+	}
+	
+	private void mireotProperty(String propertyUri,String ontologyUri, String ontologyFileToUpdate) throws OWLOntologyCreationException, OWLOntologyStorageException {
+		if(ontologyUri == null){
+			if (propertyUri.contains("#")){
+				//split on the #
+				String[] temp = propertyUri.split("#");
+				ontologyUri = temp[0];
+				System.out.println("ontology Uri is: " + propertyUri);
+			}
+			/*
+			else{
+				String[] temp2 = classUri.split("/");
+				ontologyUri = temp2[temp2.length-1];
+				System.out.println("ontology Uri is: " + classUri);
+			}	
+			*/
+			}
+			//match everything before the first pound
+			//ontologyUri = "http://www.co-ode.org/ontologies/pizza/pizza.owl";
+			//load the ontology from ontologyUri
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			OWLOntologyManager manager2 = OWLManager.createOWLOntologyManager();
+
+			OWLDataFactory dataFactory = manager.getOWLDataFactory();
+			IRI documentIRI = IRI.create(ontologyUri);
+	        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(documentIRI);
+	        OWLObjectProperty objProp = dataFactory.getOWLObjectProperty(IRI.create(propertyUri));
+	        
+	        //need to incorporate into an existing file
+	       // OWLOntology newOntology = manager2.createOntology(IRI.create("file:/Users/apseyed/Documents/rpi/mireot.owl"));
+	       // OWLOntology newOntology = manager2.createOntology(IRI.create("file:" + ontologyFileToUpdate));
+	        OWLOntology newOntology = manager.loadOntologyFromOntologyDocument(IRI.create("file:" + ontologyFileToUpdate));
+
+	        
+	        //first collect all annotations for a class
+	        Set<OWLAnnotation> annotations = objProp.getAnnotations(ontology);
+	        System.out.println("annotations: " + annotations.toString());
+			// "importedFrom" annotation property		
+			OWLAnnotationProperty importedFromProperty = dataFactory.getOWLAnnotationProperty(IRI.create("http://purl.obolibrary.org/obo/IAO_0000412"));
+			OWLAnnotationProperty label = dataFactory.getRDFSLabel();
+
+		//OWLObjectProperty objProp = msg.getObjectProperty();
+		//OWLOntology ontology = msg.getOntology();
+
+		//Set<OWLAnnotation> annotations = objProp.getAnnotations(ontology);
+
+		//getting annotations from the imports, too
+		for(OWLOntology ont : ontology.getImports()){
+			annotations.addAll(objProp.getAnnotations(ont));
+		}
+
+		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+		HashSet<OWLAnnotation> annotationsCopy = new HashSet<OWLAnnotation>(annotations);
+
+		//processing annotations
+		for(OWLAnnotation annotation : annotationsCopy){
+			//checking for any existing 'imported from' annotations
+			if(annotation.getProperty().getIRI().toString().equals(importedFromProperty.getIRI().toString())){
+				annotations.remove(annotation);
+				continue;
+			}
+
+			//checking for annotation property labels
+			Set<OWLAnnotation> propertyAnnotations = annotation.getProperty().getAnnotations(ontology, label);
+
+			//getting annotations from the imports, too
+			for(OWLOntology ont : ontology.getImports()){
+				propertyAnnotations.addAll(annotation.getProperty().getAnnotations(ont, label));
+			}
+			
+			
+			for (OWLAnnotation propertyAnnotation : propertyAnnotations) {
+				OWLAxiom ax = manager.getOWLDataFactory().getOWLAnnotationAssertionAxiom(annotation.getProperty().getIRI(), propertyAnnotation);
+				changes.add(new AddAxiom(newOntology, ax));
+			}
+			
+
+
+		}
+
+		OWLAnnotation importedFromAnnotation = null;
+
+		if(ontology.getOntologyID().getOntologyIRI() != null){
+			importedFromAnnotation = dataFactory.getOWLAnnotation(importedFromProperty, dataFactory.getOWLLiteral(ontology.getOntologyID().getOntologyIRI().toString()));
+		} else {
+			importedFromAnnotation = dataFactory.getOWLAnnotation(importedFromProperty, dataFactory.getOWLLiteral(ontologyUri));
+		}
+		
+		OWLAxiom ax = dataFactory.getOWLAnnotationAssertionAxiom(label, importedFromProperty.getIRI(), dataFactory.getOWLLiteral("imported from", "en"));
+		changes.add(new AddAxiom(newOntology, ax));
+		
+		annotations.add(importedFromAnnotation);
+
+		manager.applyChanges(changes);
+		manager.saveOntology(newOntology);
+		
+		//addObjectProperty(objProp, active, annotations);
 	}
 
 	@QueryMethod
