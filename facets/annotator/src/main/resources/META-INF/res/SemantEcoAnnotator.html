@@ -310,6 +310,7 @@
 
   function fileInfo(e){
     var file = e.target.files[0];
+    window.file_name = file.name;
     if (file.name.split(".")[1].toUpperCase() != "CSV"){
       alert('Invalid csv file !');
       e.target.parentNode.reset();
@@ -380,7 +381,7 @@
 <script type="text/javascript">
         $(document).ready(function() {
         $('#commit_enhancement').click(function() {
-        	$.bbq.pushState({Source:$("#source_info").val(),DataSet:$("#dataset_info").val(),"annotationMappings": window.a});
+        	$.bbq.pushState({"FileName": window.file_name,"Source":$("#source_info").val(),"DataSet":$("#dataset_info").val(),"annotationMappings": window.a});
         	AnnotatorModule.queryForEnhancing({},
         			function(d) { console.log(d); });
         })});
@@ -466,7 +467,7 @@
    		                 var p = data.o.attr("hierarchy_id");
    		                 //alert(p);
 
-   		                 var q = $(data.o).text();
+   		                 var q = $(data.o).text().split(/\s+/)[1];
    		                 //alert(q);
    		                 
    		                 var i = data.r.attr("id");
@@ -629,16 +630,17 @@
             if(typeof(level)==='undefined') level = 0;
             var ret = "";
             if (typeof obj == "object") {
-            alert(ret);
+           
+       //   alert(ret);
             ret += "\n";
+       //   for (var j = 0; j < level; ++j) ret += " ";
+       //   ret += "\u007B\n"; // left curly brace
+            for (i in obj) if (!$.isEmptyObject(obj[i])){
             for (var j = 0; j < level; ++j) ret += " ";
-            ret += "\u007B\n"; // left curly brace
-            for (i in obj) {
-            for (var j = 0; j < level; ++j) ret += " ";
-            ret += toString(i)+": "+toString(obj[i], level+2)+"\n";	
+            ret += toString(i)+": "+toString(obj[i], level+2)+"\n"+"\n";	
             }
-            for (var j = 0; j < level; ++j) ret += " ";
-            ret += "\u007D"; // right curly brace
+       //   for (var j = 0; j < level; ++j) ret += " ";
+       //   ret += "\u007D"; // right curly brace
             } else {
             ret += obj;
             }
@@ -649,12 +651,12 @@
       $(div).addClass("jstree-default");
       $(div).bind("select_node.jstree", function (NODE, REF_NODE) {
         var a = $.jstree._focused().get_selected();
-        alert(a);
+      //alert(a);
         var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
-        alert(lookup);
+      //alert(lookup);
         var axioms_contents = lookup[a.attr("hierarchy_id")].rawData.axioms;
-        alert(axioms_contents);
-        $("#ClassBox").text(toString(axioms_contents,0));
+      //alert(axioms_contents);
+        $("#ClassBox").html("<pre>"+toString(axioms_contents,0)+"</pre>");
       });
     });
 </script>
