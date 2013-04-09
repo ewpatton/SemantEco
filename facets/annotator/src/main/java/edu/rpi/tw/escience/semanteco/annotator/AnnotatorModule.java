@@ -158,8 +158,8 @@ public class AnnotatorModule implements Module {
 
 	public void initModel() {
 		if(model == null) {
-			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			//model = ModelFactory.createOntologyModel();
+			//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			model = ModelFactory.createOntologyModel();
 
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
 
