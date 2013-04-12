@@ -13,15 +13,10 @@
     body {
       font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
       color: #404040;
-      background: #47496D;
-      background-image: -webkit-radial-gradient(center, circle cover, #6b6e8c, #212649);
-      background-image: -moz-radial-gradient(center, circle cover, #6b6e8c, #212649);
-      background-image: -o-radial-gradient(center, circle cover, #6b6e8c, #212649);
-      background-image: radial-gradient(center, circle cover, #6b6e8c, #212649);
+      background: #F8F8F8;
     }
     #wrap{
       float:left;
-      margin: 10px auto; 
       width: 68%;
       padding: 10px; 
       overflow: hidden;
@@ -282,6 +277,11 @@
 
 </head>
 <body onload="">
+        <div id="header">
+	      <div class="header-text" style="background-color:#3300CC">
+	        <img src="patrice_banner4.jpg" alt="SemantAnnotator" />
+	      </div>
+	    </div>
   <div id="wrap" style="float:left; width:68%;">
     <h1>Please select a csv file</h1>
     <form action="javascript:void(0);" id="the_form">
@@ -291,7 +291,7 @@
   <div id="file_info" style="float:left;"></div><div style="float:right;"><button id="commit_enhancement" style="margin-top: 10px; padding: 10px;">Commit Enhancement</button>
   </div>
   </div>
-  <div style="margin-top:10px; margin-left:70%; width:30%;">
+  <div style="margin-left:70%; width:30%;">
   <table>
   <tr><td><div id="user_box"  >User Name<textarea id="user_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Type UserName here!"></textarea></div>
   </td></tr> 
