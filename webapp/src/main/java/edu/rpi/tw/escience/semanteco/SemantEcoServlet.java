@@ -48,7 +48,8 @@ import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
  *
  */
 @WebServlet(name="SemantEco",
-			urlPatterns={"/rest/*","/js/modules/*","/js/config.js","/log"},
+			urlPatterns={"/rest/*","/js/modules/*","/js/config.js","/log",
+						 "/provenance"},
 			description="SemantEco Portal",
 			displayName="SemantEco")
 public class SemantEcoServlet extends WebSocketServlet {
@@ -75,6 +76,12 @@ public class SemantEcoServlet extends WebSocketServlet {
 	 * Stores WebSocket connections used for client-side logging.
 	 */
 	private static final Map<Integer, ResponseChannel> channels;
+
+	/**
+	 * Stores WebSocket connections used for accumulating provenance on the
+	 * client.
+	 */
+	private static final Map<Integer, ProvenanceChannel> provenanceChannels;
 
 	static {
 		channels = new TreeMap<Integer, ResponseChannel>();
@@ -161,6 +168,10 @@ public class SemantEcoServlet extends WebSocketServlet {
 		if(request.getServletPath().equals("/log")) {
 			super.doGet(request, response);
 			return;
+		}
+		if(request.getServletPath().equals("/provenance")) {
+		  super.doGet(request, response);
+		  return;
 		}
 		int socketId = extractSocketId(request);
 		WsOutbound clientStream = null;
@@ -396,6 +407,28 @@ public class SemantEcoServlet extends WebSocketServlet {
 		return rc;
 	}
 	
+	private static class ProvenanceChannel extends MessageInbound {
+		private int id = 0;
+
+		public ProvenanceChannel(int id) {
+		  this.id = id;
+		}
+
+	    @Override
+	    protected void onBinaryMessage(ByteBuffer message) throws IOException {
+	    }
+
+	    @Override
+	    protected void onTextMessage(CharBuffer message) throws IOException {
+	    }
+
+	    @Override
+	    protected void onClose(int status) {
+	      super.onClose(status);
+	      provenanceChannels.remove(id);
+	    }
+	}
+
 	private static class ResponseChannel extends MessageInbound {
 		
 		private int id = 0;
