@@ -18,7 +18,7 @@
   <repositories>
     <repository>
       <id>tetherless</id>
-      <url>https://orion.tw.rpi.edu/artifactory/libs-release/</url>
+      <url>http://orion.tw.rpi.edu/artifactory/libs-release/</url>
     </repository>
   </repositories>
 
