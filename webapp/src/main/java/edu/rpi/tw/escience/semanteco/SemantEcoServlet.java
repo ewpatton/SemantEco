@@ -8,7 +8,6 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -36,6 +35,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
+import edu.rpi.tw.escience.semanteco.i18n.Messages;
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.JavaScriptGenerator;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
@@ -57,23 +57,39 @@ public class SemantEcoServlet extends WebSocketServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -5803626987887478846L;
+	private static final String pomProperties =
+		"/META-INF/maven/edu.rpi.tw.escience/semanteco-webapp/pom.properties";
 	
 	private Properties props = new Properties();
 	
 	private static final int HTTP = 80;
 	private static final int HTTPS = 443;
-	
+
+	/**
+	 * Default logger for the SemantEcoServlet. Request objects may be used in
+	 * place of loggers to send debugging messages to the client.
+	 */
 	private static Logger log = null;
-	
-	private static Map<Integer, ResponseChannel> channels = new TreeMap<Integer, ResponseChannel>();
-	
+
+	/**
+	 * Stores WebSocket connections used for client-side logging.
+	 */
+	private static final Map<Integer, ResponseChannel> channels;
+
+	static {
+		channels = new TreeMap<Integer, ResponseChannel>();
+		provenanceChannels = new TreeMap<Integer, ProvenanceChannel>();
+	}
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		initLogger(config);
 		log.info("Initializing SemantEco");
-		log.debug("Running on servlet version: "+getServletContext().getMajorVersion());
-		log.debug("Servlet context path: "+getServletContext().getContextPath());
+		log.debug("Running on servlet version: "+
+				getServletContext().getMajorVersion());
+		log.debug("Servlet context path: "+
+				getServletContext().getContextPath());
 		SemantEcoConfiguration.configure(getServletContext());
 		final String webinf = config.getServletContext().getRealPath("WEB-INF");
 		log.debug("WEB-INF: "+webinf);
@@ -101,12 +117,14 @@ public class SemantEcoServlet extends WebSocketServlet {
 			log.info("Creating modules directory");
 			modules.mkdir();
 		}
-		ModuleManagerFactory.getInstance().setModulePath(modules.getAbsolutePath());
+		ModuleManagerFactory.getInstance().
+			setModulePath(modules.getAbsolutePath());
 		log.info("Finished initializing SemantEco");
 	}
 	
 	private void initLogger(ServletConfig config) {
-		String log4jconfig = config.getInitParameter("log4j-properties-location");
+		final String log4jconfig =
+				config.getInitParameter("log4j-properties-location");
 		ServletContext context = config.getServletContext();
 		if(log4jconfig == null) {
 			BasicConfigurator.configure();
@@ -138,10 +156,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 	}
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		
-		
-		//request.getHeader("accept");
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 		if(request.getServletPath().equals("/log")) {
 			super.doGet(request, response);
 			return;
@@ -172,7 +188,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 	}
 
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 		int socketId = extractSocketId(request);
 		WsOutbound clientStream = null;
 		if(socketId != -1) {
@@ -184,8 +201,9 @@ public class SemantEcoServlet extends WebSocketServlet {
 		if(!request.getServletPath().startsWith("/rest")) {
 			response.setStatus(405);
 			response.setHeader("Accept", "HEAD GET");
-			PrintStream ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
-			ps.println("Only GET is allowed for this resource.");
+			PrintStream ps =
+					new PrintStream(response.getOutputStream(), true, "UTF-8");
+			ps.println(Messages.METHOD_ONLYGET);
 			ps.close();
 			return;
 		}
@@ -195,7 +213,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 
 	@Override
 	public String getServletInfo() {
-		getServletContext().getResourceAsStream("/META-INF/maven/edu.rpi.tw.escience/semanteco-webapp/pom.properties");
+		getServletContext().getResourceAsStream(pomProperties);
 		return "SemantEco";
 	}
 	
@@ -204,22 +222,28 @@ public class SemantEcoServlet extends WebSocketServlet {
 		return -1;
 	}
 	
-	private void printConfig(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void printConfig(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 		response.setHeader("Content-Type", "text/javascript");
-		PrintStream ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
+		PrintStream ps =
+				new PrintStream(response.getOutputStream(), true, "UTF-8");
 		String baseUrl = computeBaseUrl(request);
 		if(SemantEcoConfiguration.get().isDebug()) {
-			ps.println("// file autogenerated by "+getClass().getName()+"#printConfig");
+			ps.println(Messages.AUTOGEN+getClass().getName()+
+					"#printConfig");
 		}
 		ps.println("SemantEco.baseUrl=\""+baseUrl+"\";\n" +
 				"SemantEco.restBaseUrl=\""+baseUrl+"rest/\";");
 		ps.close();
 	}
 	
-	private void printAjax(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void printAjax(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 		response.setHeader("Content-Type", "text/javascript");
-		PrintStream ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
-		String module = request.getPathInfo().replace("/", "").replace(".js", "");
+		PrintStream ps =
+				new PrintStream(response.getOutputStream(), true, "UTF-8");
+		String module =
+				request.getPathInfo().replace("/", "").replace(".js", "");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 		Module mod = mgr.getModuleByName(module);
 		if(mod != null) {
@@ -242,8 +266,9 @@ public class SemantEcoServlet extends WebSocketServlet {
 		}
 	}
 
-	private void invokeRestCall(HttpServletRequest request, HttpServletResponse response, 
-			WsOutbound clientStream) throws IOException {
+	private void invokeRestCall(HttpServletRequest request,
+			HttpServletResponse response, WsOutbound clientStream)
+					throws IOException {
 		URL original = getURL(request);
 		String processed = request.getPathInfo();
 		processed = processed.substring(1);
@@ -251,22 +276,26 @@ public class SemantEcoServlet extends WebSocketServlet {
 		final String methodName = processed.substring(processed.indexOf('/')+1);
 		log.debug("module name = "+modName);
 		log.debug("method name = "+methodName);
-		final Module module = ModuleManagerFactory.getInstance().getManager().getModuleByName(modName);
-		final ClientRequest logger = new ClientRequest(module.getClass().getName(), request.getParameterMap(), clientStream, original);
+		final Module module = ModuleManagerFactory.getInstance().getManager()
+				.getModuleByName(modName);
+		final ClientRequest logger =
+				new ClientRequest(module.getClass().getName(),
+						request.getParameterMap(), clientStream, original);
 		Method m;
 		try {
 			try {
 				m = module.getClass().getMethod(methodName, Request.class);
 			} catch(NoSuchMethodException e) {
 				try {
-					m = module.getClass().getMethod(methodName, Request.class, HierarchyVerb.class);
+					m = module.getClass().getMethod(methodName, Request.class,
+							HierarchyVerb.class);
 				} catch(NoSuchMethodException e2) {
 					throw e;
 				}
 			}
 			if(m == null || !(m.getAnnotation(QueryMethod.class) != null ||
 					m.getAnnotation(HierarchicalMethod.class) != null)) {
-				response.sendError(403, "Invalid module or method specified in REST call");
+				response.sendError(403, Messages.MODULE_INVALID);
 				return;
 			}
 			logger.debug("Invoking "+methodName+" of "+modName);
@@ -277,24 +306,27 @@ public class SemantEcoServlet extends WebSocketServlet {
 			} else if(m.isAnnotationPresent(HierarchicalMethod.class)) {
 				Object mode = logger.getParam("mode");
 				if(mode == null || !(mode instanceof String)) {
-					response.sendError(400, "Mode parameter was not valid");
+					response.sendError(400, Messages.MODE_NOTVALID);
 					return;
 				}
 				HierarchyVerb verb = null;
 				try {
 					verb = HierarchyVerb.valueOf((String)mode);
 				} catch(IllegalArgumentException e) {
-					response.sendError(400, "Mode parameter was not valid");
+					response.sendError(400, Messages.MODE_NOTVALID);
 					return;
 				}
 				@SuppressWarnings("unchecked")
 				Collection<HierarchyEntry> entries =
-						(Collection<HierarchyEntry>) m.invoke(module, logger, verb);
+						(Collection<HierarchyEntry>) m.invoke(module, logger,
+															  verb);
 				result = serializeHierarchyEntries(entries);
 			}
-			log.debug("Response time: "+(System.currentTimeMillis()-start)+" ms");
+			log.debug("Response time: "+(System.currentTimeMillis()-start)+
+					" ms");
 			logger.debug("Returning response to client");
-			PrintStream ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
+			PrintStream ps =
+					new PrintStream(response.getOutputStream(), true, "UTF-8");
 			ps.print(result);
 			ps.close();
 		} catch (SecurityException e) {
@@ -332,10 +364,12 @@ public class SemantEcoServlet extends WebSocketServlet {
 			path += request.getScheme();
 			path += "://";
 			path += request.getServerName();
-			if(request.getScheme().equals("http") && request.getServerPort() != HTTP) {
+			if(request.getScheme().equals("http") &&
+					request.getServerPort() != HTTP) {
 				path += ":"+request.getServerPort();
 			}
-			else if(request.getScheme().equals("https") && request.getServerPort() != HTTPS) {
+			else if(request.getScheme().equals("https") &&
+					request.getServerPort() != HTTPS) {
 				path += ":"+request.getServerPort();
 			}
 			path += request.getContextPath();
