@@ -165,17 +165,17 @@ public class AnnotatorModule implements Module {
 
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
 
-			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
 
-			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
-			/*
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+			
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
-			*/
+			
 		}
 	}
 
