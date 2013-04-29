@@ -259,17 +259,25 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			return this;
 		}
 	}
-	
-public String executeLocalQuery(Query query, Model model) {
-		
-		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
+
+	protected boolean shouldSaveModel() {
+		return System.getProperty("edu.rpi.tw.escience.writemodel", "false")
+				.equals("true");
+	}
+
+	protected String doLocalQuery(final Query query, final Model model) {
+		if(shouldSaveModel()) {
+			FileOutputStream fos = null;
 			try {
-				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
+				fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+
+						"/model.rdf");
 				model.write(fos);
-				fos.close();
-			}
-			catch(Exception e) {
+			} catch(Exception e) {
 				// do nothing
+			} finally {
+				try {
+					fos.close();
+				} catch(IOException e) { }
 			}
 		}
 		assert(owner!=null);
@@ -317,70 +325,23 @@ public String executeLocalQuery(Query query, Model model) {
 			}
 		}
 		catch(Exception e) {
-		log.warn("Unable to execute query due to exception", e);
+			log.warn("Unable to execute query due to exception", e);
 		}
 		return null;
 	}
 
+	/**
+	 * Executes a local query on a model other than the default.
+	 * @param query Query to execute on the model
+	 * @param model Jena Model containing content to query
+	 */
+	public String executeLocalQuery(Query query, Model model) {
+		return doLocalQuery(query, model);
+	}
+
 	@Override
 	public String executeLocalQuery(Query query) {
-		assert(owner!=null);
-		final Module mod = owner.get();
-		assert(mod!=null);
-		final String modName = mod.getName();
-		assert(modName != null);
-		log.trace("executeLocalQuery");
-		Model model = request.getCombinedModel();
-		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
-			try {
-				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
-				model.write(fos);
-				fos.close();
-			}
-			catch(Exception e) {
-				// do nothing
-			}
-		}
-		log.debug("Module '"+modName+"' executing local query");
-		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-		mgr.augmentQuery(query, request, mod);
-		log.debug("Query: "+query.toString());
-		Model resultModel = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		long start = System.currentTimeMillis();
-		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
-		try {
-			switch(query.getType()) {
-			case SELECT:
-				ResultSet results = qe.execSelect();
-				ResultSetFormatter.outputAsJSON(baos, results);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
-			case DESCRIBE:
-				resultModel = qe.execDescribe();
-				resultModel.write(baos);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
-			case CONSTRUCT:
-				resultModel = qe.execConstruct();
-				resultModel.write(baos);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
-			case ASK:
-				if(qe.execAsk()) {
-					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-					return "{\"result\":true}";
-				}
-				else {
-					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-					return "{\"result\":false}";
-				}
-			}
-		}
-		catch(Exception e) {
-			log.warn("Unable to execute query due to exception", e);
-		}
-		return null;
+		return doLocalQuery(query, request.getCombinedModel());
 	}
 	
 	/**
