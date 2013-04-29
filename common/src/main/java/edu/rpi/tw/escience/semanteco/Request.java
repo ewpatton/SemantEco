@@ -53,4 +53,18 @@ public interface Request {
 	 * @return A URL object that encodes this request.
 	 */
 	URL getOriginalURL();
+
+	/**
+	 * Returns whether or not this Request can log provenance information
+	 * to clients.
+	 * @return
+	 */
+	boolean canLogProvenance();
+
+	/**
+	 * Logs provenance information related to the processing of the request.
+	 * @param graph Graph name for use in provenance capture
+	 * @param contents Contents of the named graph
+	 */
+	void logProvenance(String graph, String contents);
 }

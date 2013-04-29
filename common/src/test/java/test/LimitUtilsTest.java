@@ -59,6 +59,16 @@ public class LimitUtilsTest extends TestCase {
 		public URL getOriginalURL() {
 			return null;
 		}
+
+		@Override
+		public boolean canLogProvenance() {
+			return false;
+		}
+
+		@Override
+		public void logProvenance(String graph, String contents) {
+
+		}
 		
 	}
 	

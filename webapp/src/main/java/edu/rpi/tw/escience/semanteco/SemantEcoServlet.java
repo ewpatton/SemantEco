@@ -37,6 +37,7 @@ import org.json.simple.JSONObject;
 
 import edu.rpi.tw.escience.semanteco.i18n.Messages;
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
+import edu.rpi.tw.escience.semanteco.request.ClientRequest;
 import edu.rpi.tw.escience.semanteco.util.JavaScriptGenerator;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
 
@@ -148,18 +149,30 @@ public class SemantEcoServlet extends WebSocketServlet {
 			}
 		}
 	}
-	
-	protected int extractSocketId(HttpServletRequest request) {
+
+	protected int getIntCookie(HttpServletRequest request, String name) {
 		Cookie[] cookies = request.getCookies();
 		if(cookies != null) {
 			for(int i=0;i<cookies.length;i++) {
 				Cookie cookie = cookies[i];
-				if(cookie.getName().equals("socketId")) {
-					return Integer.parseInt(cookie.getValue());
+				if(cookie.getName().equals(name)) {
+					try {
+						return Integer.parseInt(cookie.getValue());
+					} catch(NumberFormatException e) {
+						return -1;
+					}
 				}
 			}
 		}
 		return -1;
+	}
+
+	protected int extractSocketId(HttpServletRequest request) {
+		return getIntCookie(request, "socketId");
+	}
+
+	protected int extractProvenanceId(HttpServletRequest request) {
+		return getIntCookie(request, "provenanceId");
 	}
 
 	@Override
@@ -181,6 +194,14 @@ public class SemantEcoServlet extends WebSocketServlet {
 				clientStream = channel.getWsOutbound();
 			}
 		}
+		int provId = extractProvenanceId(request);
+		WsOutbound provenanceStream = null;
+		if(provId != -1) {
+			ProvenanceChannel channel = provenanceChannels.get(provId);
+			if(channel != null) {
+				provenanceStream = channel.getWsOutbound();
+			}
+		}
 		PrintStream ps = null;
 		if(request.getServletPath().equals("/js/config.js")) {
 			printConfig(request, response);
@@ -189,7 +210,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 			printAjax(request, response);
 		}
 		else if(request.getServletPath().startsWith("/rest")) {
-			invokeRestCall(request, response, clientStream);
+			invokeRestCall(request, response, clientStream, provenanceStream);
 		}
 		else {
 			ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
@@ -209,6 +230,14 @@ public class SemantEcoServlet extends WebSocketServlet {
 				clientStream = channel.getWsOutbound();
 			}
 		}
+		int provId = extractProvenanceId(request);
+		WsOutbound provenanceStream = null;
+		if(provId != -1) {
+			ProvenanceChannel channel = provenanceChannels.get(provId);
+			if(channel != null) {
+				provenanceStream = channel.getWsOutbound();
+			}
+		}
 		if(!request.getServletPath().startsWith("/rest")) {
 			response.setStatus(405);
 			response.setHeader("Accept", "HEAD GET");
@@ -219,7 +248,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 			return;
 		}
 		log.debug("Handling POST call");
-		invokeRestCall(request, response, clientStream);
+		invokeRestCall(request, response, clientStream, provenanceStream);
 	}
 
 	@Override
@@ -278,7 +307,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 	}
 
 	private void invokeRestCall(HttpServletRequest request,
-			HttpServletResponse response, WsOutbound clientStream)
+			HttpServletResponse response, WsOutbound clientStream,
+			WsOutbound provenanceStream)
 					throws IOException {
 		URL original = getURL(request);
 		String processed = request.getPathInfo();
@@ -291,7 +321,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 				.getModuleByName(modName);
 		final ClientRequest logger =
 				new ClientRequest(module.getClass().getName(),
-						request.getParameterMap(), clientStream, original);
+						request.getParameterMap(), original, clientStream,
+						provenanceStream);
 		Method m;
 		try {
 			try {
@@ -410,6 +441,10 @@ public class SemantEcoServlet extends WebSocketServlet {
 	private static class ProvenanceChannel extends MessageInbound {
 		private int id = 0;
 
+		/**
+		 * Constructs a provenance channel identified by the specified id.
+		 * @param id A unique identifier for the channel.
+		 */
 		public ProvenanceChannel(int id) {
 		  this.id = id;
 		}

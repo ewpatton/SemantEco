@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.semanteco;
+package edu.rpi.tw.escience.semanteco.request;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,8 +21,10 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
+import edu.rpi.tw.escience.semanteco.i18n.Messages;
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.LoggerWrapper;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.Request;
 
@@ -39,6 +41,7 @@ import edu.rpi.tw.escience.semanteco.Request;
 public class ClientRequest extends LoggerWrapper implements Request {
 	
 	private WsOutbound clientLog;
+	private WsOutbound provenanceLog;
 	private Logger log;
 	private Map<String, String> params;
 	private OntModel model = null;
@@ -59,12 +62,18 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	}
 	
 	/**
-	 * Creates a new ClientRequest object with the given parameters and a WebSocket channel
+	 * Creates a new ClientRequest object with the given parameters and a
+	 * WebSocket channel
 	 * @param name Class name used for the Logger
 	 * @param params Request parameters extracted from the query string
-	 * @param channel optional web socket channel where debugging information is sent
+	 * @param original Original URL being processed by server
+	 * @param channel optional web socket channel where debugging information
+	 * is sent
+	 * @param provenance optional web socket channel where provenance
+	 * information is sent
 	 */
-	public ClientRequest(String name, Map<String, String[]> params, WsOutbound channel, URL original) {
+	public ClientRequest(String name, Map<String, String[]> params,
+			URL original, WsOutbound channel, WsOutbound provenance) {
 		super(name);
 		this.params = new HashMap<String, String>();
 		if(params != null) {
@@ -101,6 +110,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		this.clientLog = channel;
 		this.log = Logger.getLogger(name);
 		this.original = original;
+		this.provenanceLog = provenance;
 		setLogger(log);
 	}
 
@@ -254,4 +264,30 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		return original;
 	}
 
+	@Override
+	public boolean canLogProvenance() {
+		return provenanceLog != null;
+	}
+
+	@Override
+	public void logProvenance(String graph, String contents) {
+		if(!canLogProvenance()) {
+			return;
+		}
+		try {
+			String trigBlock = "<"+graph+"> {\n"+contents+"\n}\n";
+			CharBuffer cb = CharBuffer.wrap(trigBlock);
+			provenanceLog.writeTextMessage(cb);
+			provenanceLog.flush();
+		} catch(IOException e) {
+			log.warn(Messages.PROVENANCE_CONNECTION_LOST, e);
+			try {
+				provenanceLog.close(200, null);
+			} catch(IOException e1) {
+				log.warn(Messages.PROVENANCE_CONNECTION_NOCLOSE);
+			} finally {
+				provenanceLog = null;
+			}
+		}
+	}
 }

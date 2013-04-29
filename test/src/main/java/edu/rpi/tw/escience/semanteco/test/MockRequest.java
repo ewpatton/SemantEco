@@ -49,4 +49,14 @@ public class MockRequest implements Request {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public boolean canLogProvenance() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void logProvenance(String graph, String contents) {
+		throw new UnsupportedOperationException();
+	}
+
 }
