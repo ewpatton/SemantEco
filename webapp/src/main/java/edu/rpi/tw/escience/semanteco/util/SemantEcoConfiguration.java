@@ -28,7 +28,11 @@ public class SemantEcoConfiguration extends Properties {
 	private static boolean debugging = false;
 	private static String basePath = null;
 
-	public SemantEcoConfiguration(ServletContext context) {
+	/**
+	 * Constructs a new configuration object given the servlet context.
+	 * @param context
+	 */
+	protected SemantEcoConfiguration(ServletContext context) {
 		if( context == null ) {
 			basePath = "";
 		} else {
@@ -80,7 +84,8 @@ public class SemantEcoConfiguration extends Properties {
 	 * @return
 	 */
 	public String getTripleStore() {
-		return config.getProperty("triple-store", "http://sparql.tw.rpi.edu/virtuoso/sparql");
+		return config.getProperty("triple-store",
+				"http://sparql.tw.rpi.edu/virtuoso/sparql");
 	}
 	
 	protected final static void install(SemantEcoConfiguration config) {
@@ -90,6 +95,10 @@ public class SemantEcoConfiguration extends Properties {
 		}
 	}
 
+	/**
+	 * Gets the base path to where SemantEco lives on disk.
+	 * @return
+	 */
 	public String getBasePath() {
 		return basePath;
 	}
