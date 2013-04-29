@@ -39,6 +39,12 @@
       <version>1.5.8</version>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.5.8</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>aterm</groupId>
       <artifactId>aterm-java</artifactId>
       <version>1.6</version>
@@ -59,37 +65,37 @@
 	</exclusion>
       </exclusions>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
       <artifactId>owlapi-api</artifactId>
       <version>3.4</version>
     </dependency>
- <dependency>
+    <dependency>
       <groupId>csv2rdf4lod</groupId>
       <artifactId>csv2rdf4lod</artifactId>
       <version>1.0</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>openrdf-sesame-2.3.1</groupId>
       <artifactId>openrdf-sesame-2.3.1</artifactId>
       <version>2.3.1</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>pml</groupId>
       <artifactId>pml</artifactId>
       <version>pml</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>edu.rpi.tw.data.digest</groupId>
       <artifactId>datadigest</artifactId>
       <version>1.0-20130401.055219-1</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>javacsv</groupId>
       <artifactId>javacsv</artifactId>
       <version>javacsv</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
       <artifactId>owlapi-apibinding</artifactId>
       <version>3.4</version>
@@ -209,13 +215,13 @@
       <version>4.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
- <dependency>
+    <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-annotator</artifactId>
       <version>4.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
- <dependency>
+    <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-provenance</artifactId>
       <version>4.1-SNAPSHOT</version>
@@ -239,19 +245,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.owlapi</groupId>
-      <artifactId>owlapi-api</artifactId>
-      <version>3.4</version>
-    </dependency>
-    <dependency>
       <groupId>com.clarkparsia.pellet</groupId>
       <artifactId>pellet-owlapi</artifactId>
       <version>2.2.2</version>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.owlapi</groupId>
-      <artifactId>owlapi-apibinding</artifactId>
-      <version>3.4</version>
+      <groupId>net.sourceforge.jwebunit</groupId>
+      <artifactId>jwebunit-htmlunit-plugin</artifactId>
+      <version>3.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -394,12 +396,12 @@
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-species-dataprovider</artifactId>
                   <version>4.1-SNAPSHOT</version>
-                   <destFileName>semanteco-cspecies.jar</destFileName>
+                  <destFileName>semanteco-cspecies.jar</destFileName>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
-<artifactItem>
+                <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-provenance</artifactId>
                   <version>4.1-SNAPSHOT</version>
@@ -407,7 +409,7 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
-<artifactItem>
+                <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-annotator</artifactId>
                   <version>4.1-SNAPSHOT</version>
