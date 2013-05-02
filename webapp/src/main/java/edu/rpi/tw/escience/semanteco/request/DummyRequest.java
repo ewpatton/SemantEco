@@ -3,6 +3,7 @@ package edu.rpi.tw.escience.semanteco.request;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -17,7 +18,7 @@ public class DummyRequest implements Request {
 		if("available-domains".equals(key)) {
 			return ModuleManagerFactory.getInstance().getManager().listDomains();
 		}
-		return new String[0];
+		return new JSONArray();
 	}
 
 	@Override
