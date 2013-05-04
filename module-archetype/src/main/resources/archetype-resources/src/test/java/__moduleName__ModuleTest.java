@@ -25,7 +25,7 @@ public class ${moduleName}ModuleTest extends TestCase {
 		${moduleName}Module module = new ${moduleName}Module();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((Model)null, null);
+		module.visit((Model)null, null, null);
 	}
 	
 	@Test
@@ -33,7 +33,7 @@ public class ${moduleName}ModuleTest extends TestCase {
 		${moduleName}Module module = new ${moduleName}Module();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((OntModel)null, null);
+		module.visit((OntModel)null, null, null);
 	}
 	
 	@Test
