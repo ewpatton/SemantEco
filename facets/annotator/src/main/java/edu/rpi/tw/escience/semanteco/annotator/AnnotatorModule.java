@@ -62,6 +62,7 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 
 import edu.rpi.tw.data.csv.impl.DefaultEnhancementParameters;
 import edu.rpi.tw.data.rdf.utils.pipes.starts.Cat;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
 import edu.rpi.tw.escience.semanteco.HierarchyEntry;
 import edu.rpi.tw.escience.semanteco.HierarchyVerb;
@@ -2099,12 +2100,12 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 
 	@Override
-	public void visit(final Model model, final Request request) {
+	public void visit(final Model model, final Request request, final Domain domain) {
 		// TODO populate data model
 	}
 
 	@Override
-	public void visit(final OntModel model, final Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		// TODO populate ontology model
 	}
 

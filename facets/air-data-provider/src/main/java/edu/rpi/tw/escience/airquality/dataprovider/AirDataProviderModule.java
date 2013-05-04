@@ -54,7 +54,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(final Model model, final Request request, final Domain domain) {
 		final Logger log = request.getLogger();
 		log.debug("Visiting AirDataProviderModule building data model");
 		this.stateAbbr = (String)request.getParam("state");
@@ -125,7 +125,7 @@ public class AirDataProviderModule implements Module, ProvidesDomain {
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		request.getLogger().debug("AirDataProviderModule loading air.owl");
 		model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 	}

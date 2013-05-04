@@ -3,6 +3,7 @@ package test;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;
@@ -12,13 +13,13 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 public class MockModule implements Module {
 
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 		// TODO Auto-generated method stub
 
 	}

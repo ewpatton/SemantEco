@@ -56,13 +56,13 @@ public class TimeModuleTest extends TestCase {
 	@Test
 	public void testVisitModel() {
 		TimeModule module = new TimeModule();
-		module.visit((Model)null, null);
+		module.visit((Model)null, null, null);
 	}
 	
 	@Test
 	public void testVisitOntModel() {
 		TimeModule module = new TimeModule();
-		module.visit((OntModel)null, null);
+		module.visit((OntModel)null, null, null);
 	}
 	
 	@Test

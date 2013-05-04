@@ -3,23 +3,29 @@ package edu.rpi.tw.escience.semanteco.debugger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
+
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeAsk;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeConstruct;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeDescribe;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeSelect;
 
 /**
  * The Debugger class provides a client-side interface to
@@ -35,12 +41,12 @@ public class Debugger implements Module {
 	private ModuleConfiguration config=null;
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 
 	}
 
@@ -92,41 +98,38 @@ public class Debugger implements Module {
 		boolean reason = false;
 		if(request.getParam("reason") != null && request.getParam("reason")==Boolean.TRUE) {
 			reason = true;
-			
 		}
-		
+
 		if(request.getParam("query") == null || !(request.getParam("query") instanceof String)) {
 			log.error("No query parameter supplied for call to sparql");
 			return "{\"success\":false,\"error\"No query parameter supplied for call to sparql\"}";
 		}
 		final String queryStr = (String)request.getParam("query");
-		Model model = null;
-		
-		log.debug("Building model for query execution");
-		if(reason == true) {
-			model = request.getCombinedModel();
-		}
-		else {
-			model = mergeModels(request.getDataModel(), request.getModel());
+
+		log.debug("Building models for query execution");
+		List<Domain> domains = request.listActiveDomains();
+		List<Model> models = new ArrayList<Model>();
+		for(Domain d : domains) {
+			models.add(reason ? request.getCombinedModel(d) : 
+				mergeModels(request.getDataModel(d), request.getModel(d)));
 		}
 		
 		final com.hp.hpl.jena.query.Query query = QueryFactory.create(queryStr);
-		QueryExecution qe = QueryExecutionFactory.create(query, model);
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		log.debug("Executing debugger query");
 		long start = System.currentTimeMillis();
 		if(query.isSelectType()) {
-			ResultSet rs = qe.execSelect();
+			ResultSet rs = executeSelect(queryStr, models, false);
 			ResultSetFormatter.outputAsJSON(buffer, rs);
 		}
 		else if(query.isConstructType()) {
-			qe.execConstruct().write(buffer);
+			executeConstruct(queryStr, models, false).write(buffer);
 		}
 		else if(query.isDescribeType()) {
-			qe.execDescribe().write(buffer);
+			executeDescribe(queryStr, models, false).write(buffer);
 		}
 		else if(query.isAskType()) {
-			boolean bool = qe.execAsk();
+			boolean bool = executeAsk(queryStr, models, false);
 			ResultSetFormatter.outputAsJSON(buffer, bool);
 		}
 		log.debug("Query execution took "+(System.currentTimeMillis()-start)+" ms");

@@ -27,6 +27,7 @@ public class SemantEcoConfiguration extends Properties {
 	
 	private static boolean debugging = false;
 	private static String basePath = null;
+	private static boolean parallel = false;
 
 	/**
 	 * Constructs a new configuration object given the servlet context.
@@ -93,6 +94,9 @@ public class SemantEcoConfiguration extends Properties {
 		if(config.getProperty("debug", "false").equals("true")) {
 			debugging = true;
 		}
+		if(config.getProperty("parallel", "false").equals("true")) {
+			parallel = true;
+		}
 	}
 
 	/**
@@ -101,5 +105,9 @@ public class SemantEcoConfiguration extends Properties {
 	 */
 	public String getBasePath() {
 		return basePath;
+	}
+
+	public boolean isParallel() {
+		return parallel;
 	}
 }

@@ -22,7 +22,7 @@ public class AnnotatorModuleTest extends TestCase {
 		AnnotatorModule module = new AnnotatorModule();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((Model)null, null);
+		module.visit((Model)null, null, null);
 	}
 	
 	@Test
@@ -30,7 +30,7 @@ public class AnnotatorModuleTest extends TestCase {
 		AnnotatorModule module = new AnnotatorModule();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((OntModel)null, null);
+		module.visit((OntModel)null, null, null);
 	}
 	
 	@Test

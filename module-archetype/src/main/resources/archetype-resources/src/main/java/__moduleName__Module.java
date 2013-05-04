@@ -10,6 +10,7 @@ import java.util.List;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;
@@ -22,12 +23,12 @@ public class ${moduleName}Module implements Module {
 	private ModuleConfiguration config = null;
 	
 	@Override
-	public void visit(final Model model, final Request request) {
+	public void visit(final Model model, final Request request, final Domain domain) {
 		// TODO populate data model
 	}
 
 	@Override
-	public void visit(final OntModel model, final Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		// TODO populate ontology model
 	}
 

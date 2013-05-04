@@ -6,6 +6,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.zipcode.ZipCodeLookup.ServerFailedToRespondException;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
@@ -25,12 +26,12 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 public class ZipCodeModule implements Module {
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 
 	}
 

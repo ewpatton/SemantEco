@@ -136,12 +136,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void buildOntologyModel(OntModel model, Request request) {
+	public void buildOntologyModel(OntModel model, Request request, Domain domain) {
 		log.trace("buildOntologyModel");
 		for(Module module : modules) {
-			if(shouldCallModule(module, request)) {
+			if(shouldCallModule(module, domain)) {
 				try {
-					module.visit((OntModel)model, request);
+					module.visit((OntModel)model, request, domain);
 				}
 				catch(Exception e) {
 					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
@@ -153,12 +153,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void buildDataModel(Model model, Request request) {
+	public void buildDataModel(Model model, Request request, Domain domain) {
 		log.trace("buildDataModel");
 		for(Module module : modules) {
-			if(shouldCallModule(module, request)) {
+			if(shouldCallModule(module, domain)) {
 				try {
-					module.visit((Model)model, request);
+					module.visit((Model)model, request, domain);
 				}
 				catch(Exception e) {
 					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
@@ -485,10 +485,18 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			}
 		}
 	}
-	
+
+	private boolean shouldCallModule(final Module module, final Domain domain) {
+		List<Domain> domains = moduleDomainMap.get(module);
+		if(domains == null || domains.size() == 0) {
+			return true;
+		}
+		return domains.contains(domain);
+	}
+
 	private boolean shouldCallModule(final Module module, final Request request) {
 		List<Domain> domains = moduleDomainMap.get(module);
-		if(domains == null) {
+		if(domains == null || domains.size() == 0) {
 			return true;
 		}
 		JSONArray arr = (JSONArray)request.getParam("domain");

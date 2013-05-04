@@ -4,11 +4,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -60,62 +57,53 @@ public class RegulationModule implements Module {
 	private ModuleConfiguration config = null;
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 		final Logger log = request.getLogger();
-		log.debug("Loading '"+POL_NS+"'");
-		model.read(POL_NS);
+		if(domain.getRegulations().size() == 0) {
+			log.debug("Domain does not declare regulations... skipping");
+			return;
+		}
+
 		// load the appropriate regulation ontology here
 		JSONObject regulation = (JSONObject)request.getParam("regulation");
-		JSONArray domains = (JSONArray)request.getParam("domain");
-		Map<String, Domain> domainMap = new HashMap<String, Domain>();
-		List<Domain> allDomains = config.listDomains();
-		for(Domain i : allDomains) {
-			domainMap.put(i.getUri().toString(), i);
+		String name = NameUtils.cleanName(domain.getLabel());
+		if(!regulation.has(name)) {
+			log.debug("Regulation data does not include current domain... skipping");
+			return;
 		}
-		Map<String, Domain> activeDomains = new HashMap<String, Domain>();
-		for(int i=0;i<domains.length();i++) {
-			String uri = domains.optString(i);
-			if(domainMap.containsKey(uri)) {
-				activeDomains.put(NameUtils.cleanName(domainMap.get(uri).getLabel()), domainMap.get(uri));
+		String reg = regulation.optString(name);
+		if(reg == null || reg.equals("")) {
+			log.debug("Domain is in regulation data, but the string is empty... skipping");
+		}
+
+		log.debug("Loading '"+POL_NS+"'");
+		model.read(POL_NS);
+		log.debug("Loading regulation ontology '"+reg+"' for domain '"+name+"'");
+		try {
+			final URL url = new URL(reg);
+			final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			conn.connect();
+			final String type = conn.getContentType();
+			final InputStream content = conn.getInputStream();
+			if(type.equals("application/rdf+xml") || type.equals("text/xml")) {
+				model.read(content, reg);
+			}
+			else if(type.equals("text/turtle")) {
+				model.read(content, reg, "TTL");
+			}
+			else if(type.equals("text/n3")) {
+				model.read(content, reg, "N3");
+			}
+			else {
+				log.warn("Unexpected content type "+type+" received for '"+reg+"'");
 			}
 		}
-		@SuppressWarnings("unchecked")
-		Iterator<String> keys = (Iterator<String>)regulation.keys();
-		while(keys.hasNext()) {
-			String key = keys.next();
-			String reg = regulation.optString(key);
-			if(reg == null || reg.equals("")) {
-				continue;
-			}
-			if(activeDomains.get(key) != null) {
-				log.debug("Loading regulation ontology '"+reg+"' for domain '"+key+"'");
-				try {
-					final URL url = new URL(reg);
-					final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-					conn.connect();
-					final String type = conn.getContentType();
-					final InputStream content = conn.getInputStream();
-					if(type.equals("application/rdf+xml") || type.equals("text/xml")) {
-						model.read(content, reg);
-					}
-					else if(type.equals("text/turtle")) {
-						model.read(content, reg, "TTL");
-					}
-					else if(type.equals("text/n3")) {
-						model.read(content, reg, "N3");
-					}
-					else {
-						log.warn("Unexpected content type "+type+" received for '"+reg+"'");
-					}
-				}
-				catch(Exception e) {
-					log.warn("Had a problem reading the regulation file '"+reg+"'", e);
-				}
-			}
+		catch(Exception e) {
+			log.warn("Had a problem reading the regulation file '"+reg+"'", e);
 		}
 	}
 
@@ -183,15 +171,7 @@ public class RegulationModule implements Module {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		
 		query.setNamespace("pol", POL_NS);
-		
-		
-		
-		//0: "http://was.tw.rpi.edu/semanteco/air/air.owl#"
-		//1: "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#"
-		boolean air, water = false;
-		
-		
-		
+
 		// Variables
 		final Variable site = query.getVariable(VAR_NS+SITE_VAR);
 		final Variable lat = query.getVariable(VAR_NS+"lat");
@@ -200,10 +180,6 @@ public class RegulationModule implements Module {
 		final Variable facility = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a pol:Facility } as ?"+FACILITY_VAR);
 		final Variable polluted = query.createVariableExpression("EXISTS { ?"+SITE_VAR+" a pol:PollutedSite } as ?"+POLLUTED_VAR);
 		final Variable label = query.createVariable(VAR_NS+LABEL_VAR);
-		
-		
-		
-		
 		
 		// known uris
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");

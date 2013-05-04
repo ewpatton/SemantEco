@@ -62,13 +62,13 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 	private static final Logger log = Logger.getLogger(WaterDataProviderModule.class);
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 		DataModelBuilder builder = new DataModelBuilder(request, config);
 		builder.build(model);
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 		model.read(WATER_NS);
 	}
 
