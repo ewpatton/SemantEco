@@ -3,7 +3,9 @@ package edu.rpi.tw.escience.semanteco.request;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -23,7 +25,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import edu.rpi.tw.escience.semanteco.i18n.Messages;
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
+import edu.rpi.tw.escience.semanteco.util.JSONUtils;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.LoggerWrapper;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.Request;
@@ -44,10 +48,15 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	private WsOutbound provenanceLog;
 	private Logger log;
 	private Map<String, String> params;
-	private OntModel model = null;
-	private Model dataModel = null;
-	private boolean combined = false;
+	private Map<Domain, ModelCache> models = new HashMap<Domain, ModelCache>();
 	private URL original = null;
+	private List<Domain> activeDomains = new ArrayList<Domain>();
+
+	private static final class ModelCache {
+		private OntModel model = null;
+		private Model dataModel = null;
+		private boolean combined = false;
+	}
 	
 	protected final String arrayToString(String[] arr) {
 		StringBuilder res = new StringBuilder("[");
@@ -112,10 +121,17 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		this.original = original;
 		this.provenanceLog = provenance;
 		setLogger(log);
+		List<String> domainUris = JSONUtils.toList((JSONArray) getParam("domain"));
+		List<Domain> allDomains = ModuleManagerFactory.getInstance().getManager().listDomains();
+		for(Domain d : allDomains) {
+			if(domainUris.contains(d.getUri().toString())) {
+				activeDomains.add(d);
+			}
+		}
 	}
 
 	@Override
-	public Object getParam(String key) {
+	public final Object getParam(String key) {
 		String value = params.get(key);
 		Object result = null;
 		if(value != null) {
@@ -228,35 +244,43 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		}
 	}
 
-	@Override
-	public OntModel getModel() {
-		if(model == null) {
-			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			mgr.buildOntologyModel(model, this);
+	private void ensureModelCacheForDomain(Domain domain) {
+		if(!models.containsKey(domain)) {
+			models.put(domain, new ModelCache());
 		}
-		return model;
 	}
 
 	@Override
-	public Model getDataModel() {
-		if(dataModel == null) {
+	public OntModel getModel(Domain domain) {
+		ensureModelCacheForDomain(domain);
+		if(models.get(domain).model == null) {
 			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-			dataModel = ModelFactory.createDefaultModel();
-			mgr.buildDataModel(dataModel, this);
+			models.get(domain).model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			mgr.buildOntologyModel(models.get(domain).model, this, domain);
 		}
-		return dataModel;
+		return models.get(domain).model;
 	}
 
 	@Override
-	public Model getCombinedModel() {
-		if(combined == false) {
+	public Model getDataModel(Domain domain) {
+		if(models.get(domain).dataModel == null) {
 			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-			getModel();
-			mgr.buildDataModel(model, this);
-			combined = true;
+			models.get(domain).dataModel = ModelFactory.createDefaultModel();
+			mgr.buildDataModel(models.get(domain).dataModel, this, domain);
 		}
-		return model;
+		return models.get(domain).dataModel;
+	}
+
+	@Override
+	public Model getCombinedModel(Domain domain) {
+		ensureModelCacheForDomain(domain);
+		if(!models.get(domain).combined) {
+			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
+			getModel(domain);
+			mgr.buildDataModel(models.get(domain).model, this, domain);
+			models.get(domain).combined = true;
+		}
+		return models.get(domain).model;
 	}
 
 	@Override
@@ -289,5 +313,10 @@ public class ClientRequest extends LoggerWrapper implements Request {
 				provenanceLog = null;
 			}
 		}
+	}
+
+	@Override
+	public List<Domain> listActiveDomains() {
+		return activeDomains;
 	}
 }

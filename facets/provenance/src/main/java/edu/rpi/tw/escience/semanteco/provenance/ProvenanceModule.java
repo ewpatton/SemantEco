@@ -35,6 +35,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
@@ -85,7 +86,8 @@ public class ProvenanceModule implements Module {
 		
 
 		//get the combined model
-		Model model = request.getCombinedModel();
+		// TODO fix this to access each domain independently
+		Model model = request.getCombinedModel(null);
 		
 		//sparql construct (not graph specific, on the model)
 		final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -186,7 +188,8 @@ public class ProvenanceModule implements Module {
 	
 	@QueryMethod
 	public String birdTester(final Request request){
-		Model model = request.getCombinedModel();
+		// TODO fix this to access each domain independently
+		Model model = request.getCombinedModel(null);
 		ByteArrayOutputStream bufferedModel = new ByteArrayOutputStream();
 		model.write(bufferedModel);
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(bufferedModel.toByteArray());
@@ -225,7 +228,8 @@ public class ProvenanceModule implements Module {
 		
 		
 		//assume you have the jena model converted into an owl model, by calling OwlapiQueryExecutorImpl.executeLocalQuery
-		Model model = request.getCombinedModel();
+		// TODO fix this to access each domain independently
+		Model model = request.getCombinedModel(null);
 		ByteArrayOutputStream bufferedModel = new ByteArrayOutputStream();
 		model.write(bufferedModel);
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(bufferedModel.toByteArray());
@@ -579,12 +583,12 @@ OPTIONAL {
 	}
 	
 	@Override
-	public void visit(final Model model, final Request request) {
+	public void visit(final Model model, final Request request, final Domain domain) {
 		// TODO populate data model
 	}
 
 	@Override
-	public void visit(final OntModel model, final Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		// TODO populate ontology model
 	}
 

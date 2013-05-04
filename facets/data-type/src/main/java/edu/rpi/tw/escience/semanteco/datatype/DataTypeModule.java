@@ -28,11 +28,11 @@ public class DataTypeModule implements Module {
 	private ModuleConfiguration config = null;
 	
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 	}
 
 	@Override

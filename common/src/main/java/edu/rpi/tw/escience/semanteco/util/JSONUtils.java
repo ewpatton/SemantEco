@@ -29,8 +29,11 @@ public final class JSONUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> toList(JSONArray array) {
+	public static final <T> List<T> toList(JSONArray array) {
 		List<T> result = new ArrayList<T>();
+		if(array == null) {
+			return result;
+		}
 		for(int i=0;i<array.length();i++) {
 			try {
 				T o = (T)array.get(i);

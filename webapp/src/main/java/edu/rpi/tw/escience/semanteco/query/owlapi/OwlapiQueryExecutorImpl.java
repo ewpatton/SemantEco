@@ -67,7 +67,8 @@ public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 		final String modName = mod.getName();
 		assert(modName != null);
 		log.trace("executeLocalQuery");
-		Model model = request.getCombinedModel();
+		// TODO fix this to act per domain
+		Model model = request.getCombinedModel(null);
 		log.debug("Module '"+modName+"' executing local query");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 		mgr.augmentQuery(query, request, mod);

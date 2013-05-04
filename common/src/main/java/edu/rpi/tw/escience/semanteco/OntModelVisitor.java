@@ -25,5 +25,5 @@ public interface OntModelVisitor {
 	 * @param model OntModel used for reasoning
 	 * @param params Parameters passed from the client in the RESTful call
 	 */
-	void visit(OntModel model, Request request);
+	void visit(OntModel model, Request request, Domain domain);
 }

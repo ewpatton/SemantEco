@@ -12,24 +12,29 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.QueryExecutor;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.Query;
+
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeAsk;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeDescribe;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeConstruct;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeSelect;
 
 /**
  * QueryExecutorImpl provides the default implementation used by
@@ -265,19 +270,23 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 				.equals("true");
 	}
 
-	protected String doLocalQuery(final Query query, final Model model) {
+	protected String doLocalQuery(final Query query, final List<Model> models) {
 		if(shouldSaveModel()) {
-			FileOutputStream fos = null;
-			try {
-				fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+
-						"/model.rdf");
-				model.write(fos);
-			} catch(Exception e) {
-				// do nothing
-			} finally {
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			int i=0;
+			for(Model m : models) {
+				FileOutputStream fos = null;
 				try {
-					fos.close();
-				} catch(IOException e) { }
+					fos = new FileOutputStream(tmpDir+"/model"+i+".rdf");
+					m.write(fos);
+				} catch(Exception e) {
+					// do nothing
+				} finally {
+					try {
+						fos.close();
+					} catch(IOException e) { }
+				}
+				i++;
 			}
 		}
 		assert(owner!=null);
@@ -295,26 +304,27 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		long start = System.currentTimeMillis();
-		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		//QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		boolean parallel = SemantEcoConfiguration.get().isParallel();
 		try {
 			switch(query.getType()) {
 			case SELECT:
-				ResultSet results = qe.execSelect();
+				ResultSet results = executeSelect(query, models, parallel);
 				ResultSetFormatter.outputAsJSON(baos, results);
 				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case DESCRIBE:
-				resultModel = qe.execDescribe();
+				resultModel = executeDescribe(query, models, parallel);
 				resultModel.write(baos);
 				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case CONSTRUCT:
-				resultModel = qe.execConstruct();
+				resultModel = executeConstruct(query, models, parallel);
 				resultModel.write(baos);
 				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case ASK:
-				if(qe.execAsk()) {
+				if(executeAsk(query, models, parallel)) {
 					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 					return "{\"result\":true}";
 				}
@@ -336,12 +346,17 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	 * @param model Jena Model containing content to query
 	 */
 	public String executeLocalQuery(Query query, Model model) {
-		return doLocalQuery(query, model);
+		return doLocalQuery(query, Arrays.asList(model));
 	}
 
 	@Override
 	public String executeLocalQuery(Query query) {
-		return doLocalQuery(query, request.getCombinedModel());
+		final List<Model> models = new ArrayList<Model>();
+		final List<Domain> activeDomains = request.listActiveDomains();
+		for(Domain i : activeDomains) {
+			models.add(request.getCombinedModel(i));
+		}
+		return doLocalQuery(query, models);
 	}
 	
 	/**

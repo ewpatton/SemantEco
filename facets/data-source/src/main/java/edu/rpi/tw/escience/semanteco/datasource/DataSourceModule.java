@@ -38,12 +38,12 @@ public class DataSourceModule implements Module {
 	 * populate the data model.
 	 */
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 		// data source is a UI module, it does not modify the data model at all
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 		// do nothing as we are simply a data provider, not an ontology provider
 	}
 

@@ -72,7 +72,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	 * 	 this executes the query on the remote endpoint and provides the results to the model passed in
 	 */
 	@Override
-	public void visit(final Model model, final Request request) {
+	public void visit(final Model model, final Request request, final Domain domain) {
 		boolean bird = false;
 		boolean fish = false;
 		
@@ -410,7 +410,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	 * Loads the bird and fish ontologies.
 	 */
 	@Override
-	public void visit(final OntModel model, final Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		model.read(BIRD_NS);		
 		model.read(FISH_NS);
 		//create a bird.owl that imports pollution.owl and asserts a subclass of Measurement site

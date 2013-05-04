@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.semanteco;
 
 import java.net.URL;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -33,20 +34,20 @@ public interface Request {
 	 * Gets the T-Box model for the current request
 	 * @return
 	 */
-	OntModel getModel();
+	OntModel getModel(Domain domain);
 	
 	/**
 	 * Gets the A-Box model for the current request
 	 * @return
 	 */
-	Model getDataModel();
+	Model getDataModel(Domain domain);
 	
 	/**
 	 * Gets a model combining the A- and T-Boxes into
 	 * a single model
 	 * @return
 	 */
-	Model getCombinedModel();
+	Model getCombinedModel(Domain domain);
 
 	/**
 	 * Gets the URL that generated this request
@@ -67,4 +68,11 @@ public interface Request {
 	 * @param contents Contents of the named graph
 	 */
 	void logProvenance(String graph, String contents);
+
+	/**
+	 * Lists the active domains based on the information passed by the client
+	 * cross-referenced with the ModuleManager's list of domains.
+	 * @return
+	 */
+	List<Domain> listActiveDomains();
 }

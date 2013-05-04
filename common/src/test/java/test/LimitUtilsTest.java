@@ -1,6 +1,7 @@
 package test;
 
 import java.net.URL;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.util.LimitUtils;
 
@@ -41,17 +43,17 @@ public class LimitUtilsTest extends TestCase {
 		}
 
 		@Override
-		public OntModel getModel() {
+		public OntModel getModel(Domain domain) {
 			return null;
 		}
 
 		@Override
-		public Model getDataModel() {
+		public Model getDataModel(Domain domain) {
 			return null;
 		}
 
 		@Override
-		public Model getCombinedModel() {
+		public Model getCombinedModel(Domain domain) {
 			return null;
 		}
 
@@ -69,7 +71,11 @@ public class LimitUtilsTest extends TestCase {
 		public void logProvenance(String graph, String contents) {
 
 		}
-		
+
+		@Override
+		public List<Domain> listActiveDomains() {
+			return null;
+		}
 	}
 	
 	@Test

@@ -306,7 +306,7 @@ public class WaterDataProviderModuleTest extends TestCase {
 		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
 		try {
-			module.visit(model, request);
+			module.visit(model, request, null);
 			fail();
 		}
 		catch(IllegalArgumentException e) {
@@ -314,7 +314,7 @@ public class WaterDataProviderModuleTest extends TestCase {
 		}
 		try {
 			request.setParam("source", new String[] { "[\"http://sparql.tw.rpi.edu/garbage\"]" });
-			module.visit(model, request);
+			module.visit(model, request, null);
 			fail();
 		}
 		catch(IllegalArgumentException e) {
@@ -342,7 +342,7 @@ public class WaterDataProviderModuleTest extends TestCase {
 		TestRequest request = new TestRequest();
 		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
-		module.visit(model, request);
+		module.visit(model, request, null);
 	}
 	
 	@Test
