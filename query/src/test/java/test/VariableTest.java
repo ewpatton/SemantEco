@@ -13,18 +13,27 @@ public class VariableTest extends TestCase {
 	public void testConstructor() {
 		new VariableImpl(Query.VAR_NS+"x");
 	}
-	
+
+	@Test
+	public void testConstructorException() {
+		try {
+			new VariableImpl("http://example.com/failure");
+			fail();
+		} catch(IllegalArgumentException e) {
+		}
+	}
+
 	@Test
 	public void testGetUri() {
 		VariableImpl x = new VariableImpl(Query.VAR_NS+"x");
 		assertEquals(Query.VAR_NS+"x", x.getUri());
 	}
-	
+
 	@Test
 	public void testToString() {
 		assertEquals("?x", (new VariableImpl(Query.VAR_NS+"x")).toString());
 	}
-	
+
 	@Test
 	public void testEquals() {
 		VariableImpl x = new VariableImpl(Query.VAR_NS+"x");
@@ -41,10 +50,16 @@ public class VariableTest extends TestCase {
 		assertFalse(nv.equals(x));
 		assertTrue(nv.equals(nv2));
 	}
-	
+
 	@Test
 	public void testHashCode() {
 		Variable x = new VariableImpl(Query.VAR_NS+"x");
 		assertEquals(31+(Query.VAR_NS+"x").hashCode(), x.hashCode());
+	}
+
+	@Test
+	public void testGetName() {
+		Variable x = new VariableImpl(Query.VAR_NS+"x");
+		assertEquals("x", x.getName());
 	}
 }

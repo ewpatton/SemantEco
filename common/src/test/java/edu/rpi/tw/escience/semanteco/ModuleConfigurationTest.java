@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.semanteco;
 
 import java.net.URI;
 import java.util.List;

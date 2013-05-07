@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.semanteco.query;
 
 import org.junit.Test;
 

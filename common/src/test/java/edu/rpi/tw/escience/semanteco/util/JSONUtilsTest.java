@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.semanteco.util;
 
 import java.util.List;
 
