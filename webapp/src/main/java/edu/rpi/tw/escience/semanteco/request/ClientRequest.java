@@ -27,8 +27,8 @@ import edu.rpi.tw.escience.semanteco.i18n.Messages;
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.JSONUtils;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.wrapper.LoggerWrapper;
 import edu.rpi.tw.escience.semanteco.Domain;
-import edu.rpi.tw.escience.semanteco.LoggerWrapper;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.Request;
 

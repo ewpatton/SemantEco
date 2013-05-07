@@ -57,27 +57,22 @@ public final class DomainQueryUtils {
 	 */
 	public static ResultSet executeSelect(String query, List<Model> models,
 			boolean parallel) {
-		if(parallel) {
-			//TODO parallel version
-		} else {
-			MultiResultSet results = new MultiResultSet();
-			com.hp.hpl.jena.query.Query queryObj;
-			try {
-				queryObj = QueryFactory.create(query);
-			} catch(Exception e) {
-				log.warn("Invalid SPARQL query", e);
-				return null;
-			}
-			for(Model m : models) {
-				log.debug("Processing next model");
-				long start = System.currentTimeMillis();
-				QueryExecution qe = QueryExecutionFactory.create(queryObj, m);
-				results.addResultSet(qe.execSelect());
-				log.debug("Executed subquery in "+(System.currentTimeMillis()-start)+" ms");
-			}
-			return results;
+		MultiResultSet results = new MultiResultSet();
+		com.hp.hpl.jena.query.Query queryObj;
+		try {
+			queryObj = QueryFactory.create(query);
+		} catch(Exception e) {
+			log.warn("Invalid SPARQL query", e);
+			return null;
 		}
-		return null;
+		for(Model m : models) {
+			log.debug("Processing next model");
+			long start = System.currentTimeMillis();
+			QueryExecution qe = QueryExecutionFactory.create(queryObj, m);
+			results.addResultSet(qe.execSelect());
+			log.debug("Executed subquery in "+(System.currentTimeMillis()-start)+" ms");
+		}
+		return results;
 	}
 
 	/**

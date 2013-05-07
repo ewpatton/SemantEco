@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.semanteco;
+package edu.rpi.tw.escience.semanteco.wrapper;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Graph;
@@ -97,6 +99,7 @@ public class OntModelWrapper implements OntModel {
 	
 	private OntModel m;
 	private WeakReference<Module> requestor;
+	private Logger log;
 
 	/**
 	 * Void constructor
@@ -112,9 +115,10 @@ public class OntModelWrapper implements OntModel {
 	 * @param requestor Requesting module that any modifications
 	 * will be attributed to.
 	 */
-	public OntModelWrapper(OntModel model, Module requestor) {
+	public OntModelWrapper(OntModel model, Module requestor, Logger log) {
 		this.m = model;
 		this.requestor = new WeakReference<Module>(requestor);
+		this.log = log;
 	}
 	
 	@Override
@@ -491,6 +495,7 @@ public class OntModelWrapper implements OntModel {
 
 	@Override
 	public Model read(String arg0) {
+		log.debug("Module "+requestor.get().getName()+" loads document "+arg0);
 		return m.read(arg0);
 	}
 

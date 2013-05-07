@@ -1,4 +1,4 @@
-package edu.rpi.tw.escience.semanteco;
+package edu.rpi.tw.escience.semanteco.wrapper;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

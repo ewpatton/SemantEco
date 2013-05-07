@@ -16,6 +16,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1342,7 +1343,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			System.out.println("label: " + hierarchyRoot.getLabel(null));
 
 			entry.setUri(hierarchyRoot.getURI());
-			Hashtable<String,HashSet<String>> axioms = this.getAxiomsForClass(request, hierarchyRoot);
+			Map<String, Set<String>> axioms = this.getAxiomsForClass(request, hierarchyRoot);
 			entry.setAxioms(axioms);
 			//call a method that given the class, returns a hashSet with all the axioms.		
 			//I think I will put into HierarchyEntry object a HashTable<String,HashSet<String>> where 
@@ -1379,7 +1380,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 			OntClass subClass = i.next();
 			entry.setUri(subClass.getURI());
-			Hashtable<String,HashSet<String>> axioms = this.getAxiomsForClass(request, subClass);
+			Map<String, Set<String>> axioms = this.getAxiomsForClass(request, subClass);
 			entry.setAxioms(axioms);
 
 			if(subClass.getLabel(null) == "" || subClass.getLabel(null) == null){
@@ -1769,10 +1770,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 //	}
 
 	//@QueryMethod
-	public Hashtable<String,HashSet<String>> getAxiomsForClass(final Request request, OntClass clazz){
+	public Map<String, Set<String>> getAxiomsForClass(final Request request, OntClass clazz){
 		request.getLogger().debug("got get getAxiomsForClass");
 		System.out.println("got to getAxioms for Class");
-		Hashtable<String,HashSet<String>> axioms = new Hashtable<String,HashSet<String>>();
+		Map<String, Set<String>> axioms = new Hashtable<String, Set<String>>();
 		//		axioms.put("annotations", statements);
 //		axioms.put("annotations", statements);
 	//	axioms.put("annotations", statements);

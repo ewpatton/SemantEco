@@ -29,7 +29,7 @@ public final class JSONUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static final <T> List<T> toList(JSONArray array) {
+	public static <T> List<T> toList(JSONArray array) {
 		List<T> result = new ArrayList<T>();
 		if(array == null) {
 			return result;
