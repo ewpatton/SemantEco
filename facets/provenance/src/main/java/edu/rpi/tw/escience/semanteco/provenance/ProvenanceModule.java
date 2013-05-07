@@ -50,8 +50,16 @@ import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 
+/**
+ * The Provenance module provides mechanisms for clients to query for
+ * provenance information from SemantEco.
+ * @author apseyed
+ * @author ewpatton
+ *
+ */
 public class ProvenanceModule implements Module {
 
+	private Logger log = Logger.getLogger(ProvenanceModule.class);
 	private ModuleConfiguration config = null;
 	private String site = null;
 	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
@@ -66,10 +74,13 @@ public class ProvenanceModule implements Module {
 	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 	private static final String XSD_NS = "http://www.w3.org/2001/XMLSchema#";
 	private static final String PROP_VAR = "p";
-	
+
+	/**
+	 * Create a new provenance module
+	 */
 	public ProvenanceModule(){
 		//test if this executes once tomcat is restarted
-		System.out.println("Provenance Module has started");
+		log.debug("Provenance Module has started");
 		
 	}
 
@@ -185,7 +196,12 @@ public class ProvenanceModule implements Module {
 
 		
 	}
-	
+
+	/**
+	 * Tests OwlApi for use in querying bird sites.
+	 * @param request
+	 * @return
+	 */
 	@QueryMethod
 	public String birdTester(final Request request){
 		// TODO fix this to access each domain independently
@@ -221,7 +237,12 @@ public class ProvenanceModule implements Module {
 		
 		return null;
 	}
-	
+
+	/**
+	 * Tests the ability to use the OwlApi to query for site and pollution data
+	 * @param request
+	 * @return
+	 */
 	@QueryMethod
 	public String owlApiTester(final Request request){
 		

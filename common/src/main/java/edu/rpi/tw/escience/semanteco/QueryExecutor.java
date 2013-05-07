@@ -75,6 +75,14 @@ public interface QueryExecutor {
 	 * @param query SPARQL query object to execute
 	 */
 	String executeLocalQuery(Query query);
+
+	/**
+	 * Executes a SPARQL query on the specified model.
+	 * @param query SPARQL query object to execute
+	 * @param model A Jena model containing the RDF graph to evaluate the query
+	 * against
+	 * @return
+	 */
 	String executeLocalQuery(Query query, Model model);
 
 }

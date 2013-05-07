@@ -13,6 +13,13 @@ import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 
+/**
+ * An implementatino of the Request interface used to simulate a client request
+ * during the construction of certain SemantEco features, such as the user
+ * interface.
+ * @author ewpatton
+ *
+ */
 public class DummyRequest implements Request {
 
 	@Override

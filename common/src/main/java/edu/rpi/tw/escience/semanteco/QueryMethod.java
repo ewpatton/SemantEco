@@ -13,9 +13,20 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface QueryMethod {
+	/**
+	 * Enum to represent different HTTP methods currently supported by
+	 * SemantEco's Java servlet.
+	 * @author ewpatton
+	 *
+	 */
 	public enum HTTP {
 		GET,
 		POST
 	}
+	/**
+	 * The HTTP method to use when the query method is called. Defaults to
+	 * HTTP GET.
+	 * @return
+	 */
 	HTTP method() default HTTP.GET;
 }
