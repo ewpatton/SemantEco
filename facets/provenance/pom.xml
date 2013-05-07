@@ -10,10 +10,8 @@
 
   <artifactId>semanteco-provenance</artifactId>
 
-  <groupId>edu.rpi.tw.escience</groupId>
   <packaging>jar</packaging>
   <name>semanteco Provenance facet</name>
-  <version>4.1-SNAPSHOT</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

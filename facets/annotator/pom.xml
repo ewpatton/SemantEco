@@ -10,10 +10,8 @@
 
   <artifactId>semanteco-annotator</artifactId>
 
-  <groupId>edu.rpi.tw.escience</groupId>
   <packaging>jar</packaging>
   <name>semanteco Annotator facet</name>
-  <version>4.1-SNAPSHOT</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
