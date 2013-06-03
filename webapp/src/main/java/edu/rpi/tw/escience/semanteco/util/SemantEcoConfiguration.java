@@ -110,4 +110,8 @@ public class SemantEcoConfiguration extends Properties {
 	public boolean isParallel() {
 		return parallel;
 	}
+
+	protected void setDebug(boolean debug) {
+		debugging = debug;
+	}
 }

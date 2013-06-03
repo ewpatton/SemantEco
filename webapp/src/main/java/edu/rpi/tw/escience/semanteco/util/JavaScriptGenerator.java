@@ -88,88 +88,80 @@ public final class JavaScriptGenerator {
 			return result.toString();
 		}
 	}
-	
-	private static String processQueryMethod(final Class<?> cls, final Method m) {
-		final String ending = (SemantEcoConfiguration.get().isDebug() ? "\n  " : "");
-		final String ending2 = (SemantEcoConfiguration.get().isDebug() ? "  " : "");
+
+	private static String processMethod(final Class<?> cls, final Method m,
+			final HTTP verb, final boolean hasMode) {
 		final StringBuilder result = new StringBuilder();
-		final QueryMethod attrs = m.getAnnotation(QueryMethod.class);
+
+		// extra line endings for debugging
+		final boolean debug = SemantEcoConfiguration.get().isDebug();
+		final String ending = (debug ? "\n  " : "");
+		final String spacing = (debug ? "  " : "");
 		result.append("\"");
 		result.append(m.getName());
 		result.append("\": ");
-		result.append("function(args,success,error){");
+
+		// start function definition
+		result.append("function(");
+		if(hasMode) {
+			result.append("mode,");
+		}
+		result.append("args,success,error){");
 		result.append(ending);
-		result.append(ending2);
-		result.append("var a=$.extend({},SemantEcoUI.getState(),args);");
+		result.append(spacing);
+
+		// extend arguments
+		result.append("var a=$.extend(");
+		if(hasMode) {
+			result.append("{'mode':mode},");
+		}
+		result.append("SemantEcoUI.getState(),args);");
 		result.append(ending);
-		result.append(ending2);
+		result.append(spacing);
+
+		// ajax request
 		result.append("var b=$.ajax(SemantEco.restBaseUrl+\"");
 		result.append(cls.getSimpleName());
 		result.append("/");
 		result.append(m.getName());
 		result.append("\",{\"data\":SemantEco.prepareArgs(a)");
-		if(attrs != null) {
-			if(attrs.method() == HTTP.POST) {
-				result.append(",\"type\":\"POST\"");
-			}
+		if(verb == HTTP.POST) {
+			result.append(",\"type\":\"POST\"");
 		}
 		result.append("});");
 		result.append(ending);
-		result.append(ending2);
+		result.append(spacing);
+
+		// configure success handler
 		result.append("if(success)");
 		result.append(ending);
-		result.append(ending2);
-		result.append(ending2);
+		result.append(spacing);
+		result.append(spacing);
 		result.append("b.done(success);");
 		result.append(ending);
-		result.append(ending2);
+		result.append(spacing);
+
+		// configure error handler
 		result.append("if(error)");
 		result.append(ending);
-		result.append(ending2);
-		result.append(ending2);
+		result.append(spacing);
+		result.append(spacing);
 		result.append("b.fail(error);");
 		result.append(ending);
-		result.append(ending2);
+		result.append(spacing);
+
+		// end function definition
 		result.append("}");
 		return result.toString();
 	}
 
+	private static String processQueryMethod(final Class<?> cls, final Method m) {
+		QueryMethod attrs = m.getAnnotation(QueryMethod.class);
+		return processMethod(cls, m, attrs.method(), false);
+	}
+
 	private static String processHierarchicalMethod(final Class<?> cls, final Method m) {
-		final String ending = (SemantEcoConfiguration.get().isDebug() ? "\n  " : "");
-		final String ending2 = (SemantEcoConfiguration.get().isDebug() ? "  " : "");
-		final StringBuilder result = new StringBuilder();
-		result.append("\"");
-		result.append(m.getName());
-		result.append("\": ");
-		result.append("function(mode,args,success,error){");
-		result.append(ending);
-		result.append(ending2);
-		result.append("var a=$.extend({'mode':mode},SemantEcoUI.getState(),args);");
-		result.append(ending);
-		result.append(ending2);
-		result.append("var b=$.ajax(SemantEco.restBaseUrl+\"");
-		result.append(cls.getSimpleName());
-		result.append("/");
-		result.append(m.getName());
-		result.append("\",{\"data\":SemantEco.prepareArgs(a)});");
-		result.append(ending);
-		result.append(ending2);
-		result.append("if(success)");
-		result.append(ending);
-		result.append(ending2);
-		result.append(ending2);
-		result.append("b.done(success);");
-		result.append(ending);
-		result.append(ending2);
-		result.append("if(error)");
-		result.append(ending);
-		result.append(ending2);
-		result.append(ending2);
-		result.append("b.fail(error);");
-		result.append(ending);
-		result.append(ending2);
-		result.append("}");
-		return result.toString();
+		return processMethod(cls, m, HTTP.GET, true);
 	}
 
 }
