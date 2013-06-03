@@ -100,9 +100,18 @@ public class QueryVariableUtilsTest extends TestCase {
 		}
 
 		@Override
-		public Variable createVariable(String uri) {
-			// TODO Auto-generated method stub
-			return null;
+		public Variable createVariable(final String uri) {
+			return new Variable() {
+				@Override
+				public String getUri() {
+					return uri;
+				}
+				@Override
+				public String getName() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
 		}
 
 		@Override
@@ -294,6 +303,8 @@ public class QueryVariableUtilsTest extends TestCase {
 	
 	@Test
 	public void testUtil() {
-		
+		TestQueryImpl query = new TestQueryImpl();
+		QueryVariableUtils utils = new QueryVariableUtils(query);
+		assertEquals(Query.VAR_NS + "site", utils.SITE.getUri());
 	}
 }
