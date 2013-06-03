@@ -660,3 +660,7 @@ div.hierarchy div.loading {
 	position: absolute;
 	text-align: center;
 }
+
+div.rightcolumn div.hierarchy div.wrapper {
+	height: 400px;
+}

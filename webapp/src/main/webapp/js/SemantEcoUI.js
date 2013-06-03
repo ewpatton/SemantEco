@@ -145,6 +145,9 @@
                 //this column is for the tree
                 rightcolumngenerater=function(){
                     var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
+                    var specietree = $("<div></div>").addClass("hierarchy").appendTo(rightcolumn);
+                    SemantEcoUI.HierarchicalFacet.create(specietree, SpeciesDataProviderModule, "queryeBirdTaxonomyHM", "species");
+                    /*
                     var specietree=$(document.createElement('div')).addClass("specietree").html('<div class="hierarchy_wrapper"><input type="text" name="search" id="search_info_map" style="overflow:hidden;padding:0;resize:none;" placeholder="Type message here!" autocomplete="off" /><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;"/><div id="show_map"></div><div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="jstree" style="width:100%;height:100px;"></div></div></div>').appendTo(rightcolumn);
                     specietree.keyup(keyUp1);
                     SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
@@ -152,7 +155,7 @@
                         jsonHier2=jsonHier2["data"];
                         initial_hierachy1();                                     
                            });
-                    
+                    */
                     
                     return rightcolumn;
            
@@ -185,7 +188,7 @@
                     //push the processed data to the chartdata, which a data array will be used as input for jqplot
                     chartdata.push(chartseries1);
                     //if exists limit, then push to chartdata to plot limit as an aditional series
-                    if(limitThreshold.length!=0){
+                    if(limitThreshold.length!=0 && measurementData[0].limit != undefined){
                         limitThresholdValue=mesurementData[0].limit.value;
                         chartdata.push(limitThreshold);
                     }
