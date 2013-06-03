@@ -22,7 +22,7 @@ public class QueryFactoryImpl implements QueryFactory {
 	
 	@Override
 	public Query newQuery() {
-		return new QueryImpl(Type.SELECT);
+		return newQuery(Type.SELECT);
 	}
 
 	@Override
