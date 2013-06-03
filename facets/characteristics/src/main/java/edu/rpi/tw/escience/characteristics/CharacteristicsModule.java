@@ -332,9 +332,11 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		
 		
 		final Variable element = query.getVariable(QUERY_NS+"element");
-		String singletonCharacteristic ="";
+		if( request.getParam("characteristic") == null ) {
+			return;
+		}
 		
-		if(request.getParam("characteristic") != null && ((JSONArray) request.getParam("characteristic")).length() > 1  ){
+		if( ((JSONArray) request.getParam("characteristic")).length() > 1  ){
 			
 		JSONArray characteristicParams = (JSONArray)request.getParam("characteristic");			
 		final UnionComponent union = query.createUnion();
