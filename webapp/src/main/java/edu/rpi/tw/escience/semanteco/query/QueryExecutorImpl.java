@@ -64,6 +64,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	public QueryExecutorImpl(Module owner, String tripleStore) {
 		if(owner != null) {
 			this.owner = new WeakReference<Module>(owner);
+		} else {
+			throw new IllegalArgumentException("Attempting to create QueryExecutorImpl without an owner.");
 		}
 		endpoint = tripleStore;
 	}
