@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.semanteco.query.impl;
 
 import java.util.HashSet;
 import java.util.Set;

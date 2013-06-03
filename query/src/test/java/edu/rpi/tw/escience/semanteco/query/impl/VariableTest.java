@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.semanteco.query.impl;
 
 import org.junit.Test;
 
@@ -55,6 +55,9 @@ public class VariableTest extends TestCase {
 	public void testHashCode() {
 		Variable x = new VariableImpl(Query.VAR_NS+"x");
 		assertEquals(31+(Query.VAR_NS+"x").hashCode(), x.hashCode());
+		x = new VariableImpl(null);
+		assertEquals(31, x.hashCode());
+		assertEquals(x.hashCode(), x.hashCode());
 	}
 
 	@Test
