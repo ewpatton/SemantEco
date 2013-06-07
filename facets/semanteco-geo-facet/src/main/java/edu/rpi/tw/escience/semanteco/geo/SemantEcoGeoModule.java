@@ -51,6 +51,9 @@ public class SemantEcoGeoModule implements Module {
 	private static final String LONG = "long";
 	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
     private static final String OBOE_NS = "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#";
+	public static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
+	public static final String REPR_NS = "http://sweet.jpl.nasa.gov/2.1/repr.owl#";
+
 	
 	// Define some constants
 	private static final String FAILURE = "{\"success\":false}";
@@ -72,6 +75,8 @@ public class SemantEcoGeoModule implements Module {
 			assert (stateAbbr != null);
 			
 			final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+			final QueryResource WaterSite = query.getResource(WATER_NS
+					+ "WaterSite");
 			final QueryResource waterSite = query.getResource(WATER_NS
 					+ "waterSite");
 			final Variable s = query.getVariable(QUERY_NS + "s");
@@ -95,10 +100,19 @@ public class SemantEcoGeoModule implements Module {
 			final QueryResource rdfType = query.getResource(RDF_NS + "type");
 			final QueryResource site = query
 					.getResource(DEFAULT_NS + "site");
-			
+			final QueryResource polHasCharacteristic = query.getResource(POL_NS+"hasCharacteristic");
+			final QueryResource polHasMeasurement = query.getResource(POL_NS+"hasMeasurement");
+
+			final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
+			final Variable element = query.getVariable(QUERY_NS+"element");
+			final Variable value = query.getVariable(QUERY_NS+"value");
+			final Variable unit = query.getVariable(QUERY_NS+"unit");
+			final QueryResource reprHasUnit = query.getResource(REPR_NS+"hasUnit");
+
 			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
 			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
-			
+			final QueryResource unitHasUnit = query.getResource(POL_NS+"hasUnit");
+
 			
 
 			final QueryResource countyCoded = query
@@ -106,29 +120,37 @@ public class SemantEcoGeoModule implements Module {
 			final QueryResource stateAbbrev = query
 					.getResource(POL_NS + "hasStateCode");
 			
-			construct.addPattern(s, rdfType, waterSite);
+			construct.addPattern(s, rdfType, WaterSite);
 			construct.addPattern(s, rdfsLabel, label);
 			construct.addPattern(s, wgsLat, lat);
 			construct.addPattern(s, wgsLong, lng);
+			construct.addPattern(s, polHasMeasurement, measurement);
+			construct.addPattern(measurement, polHasCharacteristic, element);
+			construct.addPattern(measurement, polHasValue, value);
+			construct.addPattern(measurement, reprHasUnit, unit);
+
 			
 			final GraphComponentCollection graph = query
 					.getNamedGraph("AEAP_NYSERDA");
 			final GraphComponentCollection graph2 = query
 					.getNamedGraph("AEAP_NYSERDA_Locations");
 			
+			
+			graph.addPattern(measurement, ofEntity, entity);
+			graph.addPattern(entity, hasContext, s);
+			graph.addPattern(measurement, polHasCharacteristic, element);
+			graph.addPattern(measurement, polHasValue, value);
+			graph.addPattern(measurement, unitHasUnit, unit);
+
 			graph2.addPattern(s, rdfType, waterSite);
 			graph2.addPattern(s, rdfsLabel, label);
 			//graph.addPattern(measurement, site, s);
-			graph.addPattern(measurement, ofEntity, entity);
-			graph.addPattern(entity, hasContext, s);
-
-			
 			graph2.addPattern(s, countyCoded, countyCode, null);
 			graph2.addPattern(s, stateAbbrev, stateAbbr, null);
 			graph2.addPattern(s, wgsLat, lat);
 			graph2.addPattern(s, wgsLong, lng);
 			
-			config.getQueryExecutor(request).accept("application/rdf+xml")
+			config.getQueryExecutor(request).accept("text/turtle")
 			.execute(query, model);
 			
 			
