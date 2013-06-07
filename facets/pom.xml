@@ -63,6 +63,7 @@
 	<module>debugger</module>
 	<module>annotator</module>
 	<module>provenance</module>
+	<module>semanteco-geo-facet</module>
       </modules>
     </profile>
     <profile>
