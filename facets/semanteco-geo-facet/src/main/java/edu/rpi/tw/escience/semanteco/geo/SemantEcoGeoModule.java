@@ -47,15 +47,7 @@ public class SemantEcoGeoModule implements Module {
 	
 	private ModuleConfiguration config = null;
 	
-	@Override
-	public void visit(final Model model, final Request request) {
-		// TODO populate data model
-	}
-
-	@Override
-	public void visit(final OntModel model, final Request request) {
-		// TODO populate ontology model
-	}
+	
 
 	@Override
 	public void visit(final Query query, final Request request) {
@@ -181,5 +173,17 @@ public class SemantEcoGeoModule implements Module {
 		domain.addDataType("clean-air", "DFW - Temp - 1", res);
 		res = config.getResource("polluted-air.png");
 		domain.addDataType("polluted-air", "DFW - Temp - 2", res);
+	}
+
+	@Override
+	public void visit(Model model, Request request, Domain domain) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(OntModel model, Request request, Domain domain) {
+		// TODO Auto-generated method stub
+		
 	}
 }
