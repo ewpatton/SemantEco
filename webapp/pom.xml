@@ -85,6 +85,14 @@
       <artifactId>pml</artifactId>
       <version>pml</version>
     </dependency>
+
+<dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-geo-facet</artifactId>
+      <version>4.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>edu.rpi.tw.data.digest</groupId>
       <artifactId>datadigest</artifactId>
@@ -424,6 +432,15 @@
 		  <destFileName>annotator.jar</destFileName>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
+	 <artifactItem>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-geo-facet</artifactId>
+      <version>4.1-SNAPSHOT</version>
+      <type>jar</type>
+      <overWrite>true</overWrite>
+      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+    </artifactItem>
+
 
 	      </artifactItems>
 	    </configuration>
