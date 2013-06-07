@@ -49,6 +49,8 @@ public class SemantEcoGeoModule implements Module {
 	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	private static final String LAT = "lat";
 	private static final String LONG = "long";
+	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
+    private static final String OBOE_NS = "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#";
 	
 	// Define some constants
 	private static final String FAILURE = "{\"success\":false}";
@@ -71,29 +73,38 @@ public class SemantEcoGeoModule implements Module {
 			
 			final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 			final QueryResource waterSite = query.getResource(WATER_NS
-					+ "Water_Site");
+					+ "waterSite");
 			final Variable s = query.getVariable(QUERY_NS + "s");
 			final GraphComponentCollection construct = query
 					.getConstructComponent();
 			final QueryResource wgsLat = query.getResource(WGS_NS + LAT);
 			final QueryResource wgsLong = query.getResource(WGS_NS + LONG);
+			final QueryResource ofEntity = query.getResource(OBOE_NS + "ofEntity");
+			final QueryResource hasContext = query.getResource(OBOE_NS + "hasContext");
+
+
 			final Variable measurement = query.getVariable(QUERY_NS
 					+ "measurement");
 			final Variable lat = query.getVariable(QUERY_NS + LAT);
 			final Variable lng = query.getVariable(QUERY_NS + LONG);
 			final Variable label = query.getVariable(QUERY_NS + "label");
-	
+			final Variable entity = query.getVariable(QUERY_NS + "entity");
 			
 			final QueryResource rdfsLabel = query
 					.getResource(RDFS_NS + "label");
 			final QueryResource rdfType = query.getResource(RDF_NS + "type");
 			final QueryResource site = query
 					.getResource(DEFAULT_NS + "site");
+			
+			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
+			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
+			
+			
 
 			final QueryResource countyCoded = query
-					.getResource(DEFAULT_NS + "countycoded");
+					.getResource(POL_NS + "hasCountyCode");
 			final QueryResource stateAbbrev = query
-					.getResource(DEFAULT_NS + "statecoded");
+					.getResource(POL_NS + "hasStateCode");
 			
 			construct.addPattern(s, rdfType, waterSite);
 			construct.addPattern(s, rdfsLabel, label);
@@ -105,11 +116,15 @@ public class SemantEcoGeoModule implements Module {
 			final GraphComponentCollection graph2 = query
 					.getNamedGraph("AEAP_NYSERDA_Locations");
 			
-			graph.addPattern(s, rdfType, waterSite);
-			graph.addPattern(s, rdfsLabel, label);
-			graph.addPattern(measurement, countyCoded, countyCode, null);
-			graph.addPattern(measurement, stateAbbrev, stateAbbr, null);
-			graph.addPattern(measurement, site, s);
+			graph2.addPattern(s, rdfType, waterSite);
+			graph2.addPattern(s, rdfsLabel, label);
+			//graph.addPattern(measurement, site, s);
+			graph.addPattern(measurement, ofEntity, entity);
+			graph.addPattern(entity, hasContext, s);
+
+			
+			graph2.addPattern(s, countyCoded, countyCode, null);
+			graph2.addPattern(s, stateAbbrev, stateAbbr, null);
 			graph2.addPattern(s, wgsLat, lat);
 			graph2.addPattern(s, wgsLong, lng);
 			
