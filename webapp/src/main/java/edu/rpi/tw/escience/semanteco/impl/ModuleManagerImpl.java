@@ -315,7 +315,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				if(entry.getName().startsWith(RES_DIR) &&
 						!entry.getName().endsWith("/")) {
 					File dest = new File(resDir, entry.getName().substring(RES_DIR.length()));
-					if(ensureExists(new File(dest.getParent()))) {
+					if(!ensureExists(new File(dest.getParent()))) {
 						log.error("Unable to create subdirectory for resources. Aborting...");
 						return null;
 					}
