@@ -92,6 +92,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		log.trace("ModuleManagerImpl");
 		this.path = path;
 		fm = new DefaultFileMonitor(this);
+	}
+
+	public void initialize() {
 		try {
 			log.debug("Starting VFS file manager monitor");
 			FileSystemManager manager = VFS.getManager();
@@ -115,7 +118,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 		initializing = false;
 	}
-	
+
 	@Override
 	public Module getModuleByName(String name) {
 		log.trace("getModuleByName");

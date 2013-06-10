@@ -311,8 +311,11 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	protected boolean augmentQuery(final Query query) {
 		try {
+			assert(owner != null);
+			Module mod = owner.get();
+			assert(mod != null);
 			long start = System.currentTimeMillis();
-			manager.augmentQuery(query, request);
+			manager.augmentQuery(query, request, mod);
 			logPerformance(AUGMENTATION, start);
 			log.debug("Query: "+query.toString());
 			return true;

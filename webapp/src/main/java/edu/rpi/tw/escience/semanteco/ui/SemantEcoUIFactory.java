@@ -52,7 +52,7 @@ public class SemantEcoUIFactory {
 		if(ui == null || lastModified < mgr.getLastModified()) {
 			ui = new SemantEcoUIImpl();
 			log.debug("building user interface");
-			mgr.buildUserInterface(ui, new DummyRequest(null));
+			mgr.buildUserInterface(ui, new DummyRequest(mgr));
 			lastModified = mgr.getLastModified();
 		}
 		return ui;
