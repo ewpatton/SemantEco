@@ -1,8 +1,5 @@
 package edu.rpi.tw.escience.semanteco.geo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -22,7 +19,7 @@ public class SemantEcoGeoModuleTest extends TestCase {
 		SemantEcoGeoModule module = new SemantEcoGeoModule();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((Model)null, null);
+		//module.visit((Model)null, null, null);
 	}
 	
 	@Test
@@ -30,7 +27,7 @@ public class SemantEcoGeoModuleTest extends TestCase {
 		SemantEcoGeoModule module = new SemantEcoGeoModule();
 		TestModuleConfiguration config = new TestModuleConfiguration();
 		module.setModuleConfiguration(config);
-		module.visit((OntModel)null, null);
+		module.visit((OntModel)null, null, null);
 	}
 	
 	@Test
