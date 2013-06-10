@@ -107,7 +107,7 @@ public class SemantEcoGeoModule implements Module {
 			final Variable element = query.getVariable(QUERY_NS+"element");
 			final Variable value = query.getVariable(QUERY_NS+"value");
 			final Variable unit = query.getVariable(QUERY_NS+"unit");
-			final QueryResource reprHasUnit = query.getResource(REPR_NS+"hasUnit");
+			final QueryResource reprHasUnit = query.getResource(UNIT_NS+"hasUnit");
 
 			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
 			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
