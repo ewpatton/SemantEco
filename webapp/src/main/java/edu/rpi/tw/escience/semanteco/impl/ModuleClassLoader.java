@@ -75,10 +75,8 @@ public class ModuleClassLoader extends ClassLoader {
 	}
 	
 	protected Class<?> findClass(String name) {
-		if(!classes.containsKey(name)) {
-			if(clazzBytes.containsKey(name)) {
-				registerClass(name, clazzBytes.get(name));
-			}
+		if(!classes.containsKey(name) && clazzBytes.containsKey(name)) {
+			registerClass(name, clazzBytes.get(name));
 		}
 		return classes.get(name);
 	}

@@ -21,7 +21,7 @@ public class DomainImpl implements Domain {
 	private final URI uri;
 	private Map<URI, String> sources = new LinkedHashMap<URI, String>();
 	private Map<URI, String> regulations = new LinkedHashMap<URI, String>();
-	private final class DataType {
+	private static final class DataType {
 		private String name;
 		private Resource icon;
 	}

@@ -11,20 +11,23 @@ import java.util.ResourceBundle;
  */
 public final class Messages {
 
-	public static final ResourceBundle bundle
+	private Messages() {
+	}
+
+	public static final ResourceBundle BUNDLE
 		= ResourceBundle.getBundle("Messages", Locale.getDefault());
 
 	public static final String MODULE_INVALID
-		= bundle.getString("module.invalid");
+		= BUNDLE.getString("module.invalid");
 	public static final String METHOD_ONLYGET
-		= bundle.getString("method.onlyget");
+		= BUNDLE.getString("method.onlyget");
 	public static final String AUTOGEN
-		= bundle.getString("autogen");
+		= BUNDLE.getString("autogen");
 	public static final String MODE_NOTVALID
-		= bundle.getString("mode.notvalid");
+		= BUNDLE.getString("mode.notvalid");
 	public static final String PROVENANCE_CONNECTION_LOST
-		= bundle.getString("provenance.connection.lost");
+		= BUNDLE.getString("provenance.connection.lost");
 	public static final String PROVENANCE_CONNECTION_NOCLOSE
-		= bundle.getString("provenance.connection.noclose");
+		= BUNDLE.getString("provenance.connection.noclose");
 
 }

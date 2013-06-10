@@ -2,6 +2,7 @@ package edu.rpi.tw.escience.semanteco.taglib;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -36,7 +37,7 @@ public class FacetTag extends TagSupport {
 	 * 
 	 */
 	private static final long serialVersionUID = -7656285413071676382L;
-	private Logger log = Logger.getLogger(FacetTag.class);
+	private final transient Logger log = Logger.getLogger(FacetTag.class);
 	
 	/**
 	 * Default constructor used by the JSP processor to instantiate this class
@@ -88,8 +89,8 @@ public class FacetTag extends TagSupport {
 	private static class ModuleJspEvaluator extends HttpServletResponseWrapper {
 
 		private final WrapperOutputStream output = new WrapperOutputStream();
-		private final Logger log = Logger.getLogger(ModuleJspEvaluator.class);
-		private final PrintWriter writer = new PrintWriter(output, true);
+		private final transient Logger log = Logger.getLogger(ModuleJspEvaluator.class);
+		private final PrintWriter writer;
 		
 		/**
 		 * Provides a response wrapper that can be passed to a JSP processor
@@ -99,6 +100,13 @@ public class FacetTag extends TagSupport {
 		 */
 		public ModuleJspEvaluator(HttpServletResponse response) {
 			super(response);
+			PrintWriter temp = null;
+			try {
+				temp = new PrintWriter(new OutputStreamWriter(output, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				log.error("Environment does not support UTF-8");
+			}
+			writer = temp;
 		}
 		
 		@Override

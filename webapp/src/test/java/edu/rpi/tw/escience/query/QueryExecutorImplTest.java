@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import edu.rpi.tw.escience.semanteco.query.QueryExecutorImpl;
 import edu.rpi.tw.escience.semanteco.test.TestModule;
+import edu.rpi.tw.escience.semanteco.test.TestModuleManager;
 import edu.rpi.tw.escience.semanteco.test.TestRequest;
 import edu.rpi.tw.escience.semanteco.util.TestSemantEcoConfiguration;
 
@@ -28,25 +29,25 @@ public class QueryExecutorImplTest extends TestCase {
 	public void testConstructors() throws CloneNotSupportedException {
 		QueryExecutorImpl qe = null;
 		try {
-			qe = new QueryExecutorImpl(null, null);
+			qe = new QueryExecutorImpl(null, null, null);
 			fail();
 		} catch(IllegalArgumentException e) {
 			// expected behavior
 		}
-		qe = new QueryExecutorImpl(new TestModule(), null);
+		qe = new QueryExecutorImpl(new TestModule(), null, new TestModuleManager());
 		qe.clone();
 	}
 
 	@Test
 	public void testAccept() {
-		QueryExecutorImpl qe = new QueryExecutorImpl(new TestModule(), null);
+		QueryExecutorImpl qe = new QueryExecutorImpl(new TestModule(), null, new TestModuleManager());
 		QueryExecutorImpl qe2 = (QueryExecutorImpl)qe.accept("application/json");
 		assertNotSame(qe, qe2);
 	}
 
 	@Test
 	public void testSetRequest() {
-		QueryExecutorImpl qe = new QueryExecutorImpl(new TestModule(), null);
+		QueryExecutorImpl qe = new QueryExecutorImpl(new TestModule(), null, new TestModuleManager());
 		qe.setRequest(new TestRequest());
 	}
 

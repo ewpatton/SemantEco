@@ -1,12 +1,16 @@
 package test;
 
 import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.request.ClientRequest;
+import edu.rpi.tw.escience.semanteco.test.TestModuleManager;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
 
 import junit.framework.TestCase;
@@ -45,7 +49,11 @@ public class ClientRequestTest extends TestCase {
 		new TestConfiguration();
 		TestWsOutbound ws = new TestWsOutbound();
 		Logger req = new ClientRequest(getClass().getName(), null, null,
-				ws, null);
+				ws, null, new TestModuleManager() {
+			public List<Domain> listDomains() {
+				return new ArrayList<Domain>();
+			}
+		});
 		req.info("Test");
 	}
 	

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectStreamException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +16,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.TreeMap;
 
 import javax.servlet.ServletConfig;
@@ -59,10 +61,11 @@ public class SemantEcoServlet extends WebSocketServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -5803626987887478846L;
-	private static final String pomProperties =
+	private static final String POM_PROPERTIES =
 		"/META-INF/maven/edu.rpi.tw.escience/semanteco-webapp/pom.properties";
 	
 	private Properties props = new Properties();
+	private Random random = new Random();
 	
 	private static final int HTTP = 80;
 	private static final int HTTPS = 443;
@@ -76,18 +79,15 @@ public class SemantEcoServlet extends WebSocketServlet {
 	/**
 	 * Stores WebSocket connections used for client-side logging.
 	 */
-	private static final Map<Integer, ResponseChannel> channels;
+	private final transient Map<Integer, ResponseChannel> channels =
+			new TreeMap<Integer, ResponseChannel>();
 
 	/**
 	 * Stores WebSocket connections used for accumulating provenance on the
 	 * client.
 	 */
-	private static final Map<Integer, ProvenanceChannel> provenanceChannels;
-
-	static {
-		channels = new TreeMap<Integer, ResponseChannel>();
-		provenanceChannels = new TreeMap<Integer, ProvenanceChannel>();
-	}
+	private final transient Map<Integer, ProvenanceChannel> provenanceChannels =
+			new TreeMap<Integer, ProvenanceChannel>();;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -123,7 +123,11 @@ public class SemantEcoServlet extends WebSocketServlet {
 		File modules = new File(webinf+"/modules");
 		if(!modules.exists()) {
 			log.info("Creating modules directory");
-			modules.mkdir();
+			if(!modules.mkdir()) {
+				log.error("Unable to make module directory. Running modules " +
+						"will be restricted to those packaged in the " +
+						"web archive.");
+			}
 		}
 		ModuleManagerFactory.getInstance().
 			setModulePath(modules.getAbsolutePath());
@@ -213,7 +217,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 			invokeRestCall(request, response, clientStream, provenanceStream);
 		}
 		else {
-			ps = new PrintStream(response.getOutputStream(), true, "UTF-8");
+			ps = new PrintStream(response.getOutputStream(), true,
+					SemantEcoConfiguration.get().getEncoding());
 			ps.println("<h1>It works!</h1>");
 			ps.close();
 		}
@@ -239,10 +244,11 @@ public class SemantEcoServlet extends WebSocketServlet {
 			}
 		}
 		if(!request.getServletPath().startsWith("/rest")) {
-			response.setStatus(405);
+			response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 			response.setHeader("Accept", "HEAD GET");
 			PrintStream ps =
-					new PrintStream(response.getOutputStream(), true, "UTF-8");
+					new PrintStream(response.getOutputStream(), true,
+							SemantEcoConfiguration.get().getEncoding());
 			ps.println(Messages.METHOD_ONLYGET);
 			ps.close();
 			return;
@@ -253,7 +259,7 @@ public class SemantEcoServlet extends WebSocketServlet {
 
 	@Override
 	public String getServletInfo() {
-		getServletContext().getResourceAsStream(pomProperties);
+		getServletContext().getResourceAsStream(POM_PROPERTIES);
 		return "SemantEco";
 	}
 	
@@ -266,7 +272,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 			HttpServletResponse response) throws IOException {
 		response.setHeader("Content-Type", "text/javascript");
 		PrintStream ps =
-				new PrintStream(response.getOutputStream(), true, "UTF-8");
+				new PrintStream(response.getOutputStream(), true,
+						SemantEcoConfiguration.get().getEncoding());
 		String baseUrl = computeBaseUrl(request);
 		if(SemantEcoConfiguration.get().isDebug()) {
 			ps.println(Messages.AUTOGEN+getClass().getName()+
@@ -281,7 +288,8 @@ public class SemantEcoServlet extends WebSocketServlet {
 			HttpServletResponse response) throws IOException {
 		response.setHeader("Content-Type", "text/javascript");
 		PrintStream ps =
-				new PrintStream(response.getOutputStream(), true, "UTF-8");
+				new PrintStream(response.getOutputStream(), true,
+						SemantEcoConfiguration.get().getEncoding());
 		String module =
 				request.getPathInfo().replace("/", "").replace(".js", "");
 		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
@@ -306,6 +314,46 @@ public class SemantEcoServlet extends WebSocketServlet {
 		}
 	}
 
+	private Method getMethod(Module module, String name)
+			throws NoSuchMethodException {
+		Method m = null;
+		try {
+			m = module.getClass().getMethod(name, Request.class);
+		} catch(NoSuchMethodException e) {
+			try {
+				m = module.getClass().getMethod(name, Request.class,
+						HierarchyVerb.class);
+			} catch(NoSuchMethodException e2) {
+				throw e;
+			}
+		}
+		return m;
+	}
+
+	private String invokeHierarchyMethod(HttpServletResponse response,
+			ClientRequest logger, Module module, Method m)
+			throws IOException, IllegalAccessException, InvocationTargetException {
+		Object mode = logger.getParam("mode");
+		if(!(mode instanceof String)) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+					Messages.MODE_NOTVALID);
+			return null;
+		}
+		HierarchyVerb verb = null;
+		try {
+			verb = HierarchyVerb.valueOf((String)mode);
+		} catch(IllegalArgumentException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+					Messages.MODE_NOTVALID);
+			return null;
+		}
+		@SuppressWarnings("unchecked")
+		Collection<HierarchyEntry> entries =
+				(Collection<HierarchyEntry>) m.invoke(module, logger,
+													  verb);
+		return serializeHierarchyEntries(entries);
+	}
+
 	private void invokeRestCall(HttpServletRequest request,
 			HttpServletResponse response, WsOutbound clientStream,
 			WsOutbound provenanceStream)
@@ -322,58 +370,37 @@ public class SemantEcoServlet extends WebSocketServlet {
 		final ClientRequest logger =
 				new ClientRequest(module.getClass().getName(),
 						request.getParameterMap(), original, clientStream,
-						provenanceStream);
-		Method m;
+						provenanceStream, ModuleManagerFactory.getInstance().getManager());
 		try {
-			try {
-				m = module.getClass().getMethod(methodName, Request.class);
-			} catch(NoSuchMethodException e) {
-				try {
-					m = module.getClass().getMethod(methodName, Request.class,
-							HierarchyVerb.class);
-				} catch(NoSuchMethodException e2) {
-					throw e;
-				}
-			}
-			if(m == null || !(m.getAnnotation(QueryMethod.class) != null ||
-					m.getAnnotation(HierarchicalMethod.class) != null)) {
-				response.sendError(403, Messages.MODULE_INVALID);
-				return;
-			}
-			logger.debug("Invoking "+methodName+" of "+modName);
+			Method m = getMethod(module, methodName);
+			logger.debug("Invoking " + methodName + " of " + modName);
 			final long start = System.currentTimeMillis();
 			String result = null;
 			if(m.isAnnotationPresent(QueryMethod.class)) {
 				result = (String) m.invoke(module, logger);
 			} else if(m.isAnnotationPresent(HierarchicalMethod.class)) {
-				Object mode = logger.getParam("mode");
-				if(mode == null || !(mode instanceof String)) {
-					response.sendError(400, Messages.MODE_NOTVALID);
-					return;
-				}
-				HierarchyVerb verb = null;
-				try {
-					verb = HierarchyVerb.valueOf((String)mode);
-				} catch(IllegalArgumentException e) {
-					response.sendError(400, Messages.MODE_NOTVALID);
-					return;
-				}
-				@SuppressWarnings("unchecked")
-				Collection<HierarchyEntry> entries =
-						(Collection<HierarchyEntry>) m.invoke(module, logger,
-															  verb);
-				result = serializeHierarchyEntries(entries);
+				result = invokeHierarchyMethod(response, logger, module, m);
+			} else {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN,
+						Messages.MODULE_INVALID);
+				return;
+			}
+			if( result == null ) {
+				return;
 			}
 			log.debug("Response time: "+(System.currentTimeMillis()-start)+
 					" ms");
 			logger.debug("Returning response to client");
 			PrintStream ps =
-					new PrintStream(response.getOutputStream(), true, "UTF-8");
+					new PrintStream(response.getOutputStream(), true,
+							SemantEcoConfiguration.get().getEncoding());
 			ps.print(result);
 			ps.close();
 		} catch (SecurityException e) {
 			logger.error("Unable to execute specified method", e);
 		} catch (NoSuchMethodException e) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN,
+					Messages.MODULE_INVALID);
 			logger.error("Invalid method", e);
 		} catch (IllegalArgumentException e) {
 			logger.error("Illegal argument", e);
@@ -431,22 +458,27 @@ public class SemantEcoServlet extends WebSocketServlet {
 		log.debug("createWebSocketInbound");
 		log.debug("subProtocol: "+subProtocol);
 		log.debug("request: "+request);
-		int id = (int)(Math.random()*Integer.MAX_VALUE);
+		int id;
+		synchronized(random) {
+			id = random.nextInt();
+		}
 		log.debug("creating response channel");
-		ResponseChannel rc = new ResponseChannel(id);
-		channels.put(id, rc);
-		return rc;
+		return new ResponseChannel(channels, id);
 	}
 	
 	private static class ProvenanceChannel extends MessageInbound {
 		private int id = 0;
+		private Map<Integer, ProvenanceChannel> channels;
 
 		/**
 		 * Constructs a provenance channel identified by the specified id.
 		 * @param id A unique identifier for the channel.
 		 */
-		public ProvenanceChannel(int id) {
+		@SuppressWarnings("unused")
+		public ProvenanceChannel(Map<Integer, ProvenanceChannel> channels, int id) {
 		  this.id = id;
+		  this.channels = channels;
+		  channels.put(id, this);
 		}
 
 	    @Override
@@ -460,20 +492,23 @@ public class SemantEcoServlet extends WebSocketServlet {
 	    @Override
 	    protected void onClose(int status) {
 	      super.onClose(status);
-	      provenanceChannels.remove(id);
+	      channels.remove(id);
 	    }
 	}
 
 	private static class ResponseChannel extends MessageInbound {
 		
 		private int id = 0;
+		private Map<Integer, ResponseChannel> channels;
 		
 		/**
 		 * Constructs a response channel identified by the specified id.
 		 * @param id A unique identifier for the channel.
 		 */
-		public ResponseChannel(int id) {
+		public ResponseChannel(Map<Integer, ResponseChannel> channels, int id) {
 			this.id = id;
+			this.channels = channels;
+			channels.put(id, this);
 		}
 
 		@Override
@@ -492,8 +527,14 @@ public class SemantEcoServlet extends WebSocketServlet {
 		protected void onClose(int status) {
 			super.onClose(status);
 			channels.remove(id);
+			channels = null;
 		}
 
 	}
 
+	private Object readResolve() throws ObjectStreamException {
+		channels.clear();
+		provenanceChannels.clear();
+		return this;
+	}
 }

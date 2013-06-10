@@ -20,7 +20,7 @@ public final class JavaScriptGenerator {
 	private JavaScriptGenerator() {
 	
 	}
-	
+
 	/**
 	 * Generates JavaScript to provide an AJAX interface for talking
 	 * to the specified Module. Any method annotated with \@QueryMethod
@@ -30,10 +30,9 @@ public final class JavaScriptGenerator {
 	 */
 	public static String ajaxForModule(Module mod) {
 		final Class<?> cls = mod.getClass();
+		final String lineReturn = SemantEcoConfiguration.get().isDebug() ? "\n" : "";
 		final StringBuilder result = new StringBuilder("var "+cls.getSimpleName()+" = {");
-		if(SemantEcoConfiguration.get().isDebug()) {
-			result.append("\n");
-		}
+		result.append(lineReturn);
 		int methodCount = 0;
 		
 		final Method[] methods = cls.getMethods();
@@ -41,30 +40,25 @@ public final class JavaScriptGenerator {
 		boolean first = true;
 		for(int i=0;i<methods.length;i++) {
 			Method m = methods[i];
-			if(m.isAnnotationPresent(QueryMethod.class) ||
-				m.isAnnotationPresent(HierarchicalMethod.class)) {
-				methodCount++;
-				if(first) {
-					first = false;
-				}
-				else {
-					result.append(",");
-					if(SemantEcoConfiguration.get().isDebug()) {
-						result.append("\n");
-					}
-				}
-				if(m.isAnnotationPresent(QueryMethod.class)) {
-					result.append(processQueryMethod(cls, m));
-				}
-				else if(m.isAnnotationPresent(HierarchicalMethod.class)) {
-					hms.add(m);
-					result.append(processHierarchicalMethod(cls, m));
-				}
+			if(!m.isAnnotationPresent(QueryMethod.class) &&
+					!m.isAnnotationPresent(HierarchicalMethod.class)) {
+				continue;
+			}
+			methodCount++;
+			if(first) {
+				first = false;
+			} else {
+				result.append(",");
+				result.append(lineReturn);
+			}
+			if(m.isAnnotationPresent(QueryMethod.class)) {
+				result.append(processQueryMethod(cls, m));
+			} else {
+				hms.add(m);
+				result.append(processHierarchicalMethod(cls, m));
 			}
 		}
-		if(SemantEcoConfiguration.get().isDebug()) {
-			result.append("\n");
-		}
+		result.append(lineReturn);
 		result.append("};");
 		result.append("$(window).bind(\"initialize\",function(){");
 		for(Method m : hms) {
@@ -83,8 +77,7 @@ public final class JavaScriptGenerator {
 		
 		if(methodCount == 0) {
 			return "";
-		}
-		else {
+		} else {
 			return result.toString();
 		}
 	}
