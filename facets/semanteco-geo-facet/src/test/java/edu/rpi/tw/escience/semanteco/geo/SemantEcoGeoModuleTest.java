@@ -17,7 +17,21 @@ import junit.framework.TestCase;
 
 public class SemantEcoGeoModuleTest extends TestCase {
 	
+	@Test
+	public void testVisitModel() {
+		SemantEcoGeoModule module = new SemantEcoGeoModule();
+		TestModuleConfiguration config = new TestModuleConfiguration();
+		module.setModuleConfiguration(config);
+		module.visit((Model)null, null);
+	}
 	
+	@Test
+	public void testVisitOntModel() {
+		SemantEcoGeoModule module = new SemantEcoGeoModule();
+		TestModuleConfiguration config = new TestModuleConfiguration();
+		module.setModuleConfiguration(config);
+		module.visit((OntModel)null, null);
+	}
 	
 	@Test
 	public void testVisitQuery() {

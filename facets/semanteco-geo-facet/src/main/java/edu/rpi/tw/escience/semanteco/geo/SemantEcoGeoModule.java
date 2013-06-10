@@ -1,4 +1,3 @@
-
 package edu.rpi.tw.escience.semanteco.geo;
 
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
@@ -18,6 +17,7 @@ import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
