@@ -131,7 +131,7 @@ public class SemantEcoGeoModule implements Module {
 
 			
 			final GraphComponentCollection graph = query
-					.getNamedGraph("AEAP_NYSERDA");
+					.getNamedGraph("AEAP_NYSERDA_2");
 			final GraphComponentCollection graph2 = query
 					.getNamedGraph("AEAP_NYSERDA_Locations");
 			
