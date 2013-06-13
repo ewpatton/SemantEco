@@ -39,7 +39,7 @@ public interface ModuleManager {
 	 * @param model
 	 * @param params
 	 */
-	void buildOntologyModel(OntModel model, Request request);
+	void buildOntologyModel(OntModel model, Request request, Domain domain);
 	
 	/**
 	 * Requests that the ModuleManager help construct the data model
@@ -47,7 +47,7 @@ public interface ModuleManager {
 	 * @param model
 	 * @param params
 	 */
-	void buildDataModel(Model model, Request request);
+	void buildDataModel(Model model, Request request, Domain domain);
 	
 	/**
 	 * Requests that the provided module give an updated code fragment

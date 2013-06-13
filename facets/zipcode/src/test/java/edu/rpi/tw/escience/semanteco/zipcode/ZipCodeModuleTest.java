@@ -40,8 +40,8 @@ public class ZipCodeModuleTest extends TestCase {
 	@Test
 	public void testVisits() {
 		ZipCodeModule module = new ZipCodeModule();
-		module.visit((Model)null, null);
-		module.visit((OntModel)null, null);
+		module.visit((Model)null, null, null);
+		module.visit((OntModel)null, null, null);
 		module.visit((Query)null, null);
 		module.visit((SemantEcoUI)null, null);
 	}

@@ -12,24 +12,29 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.QueryExecutor;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.Query;
+
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeAsk;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeDescribe;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeConstruct;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeSelect;
 
 /**
  * QueryExecutorImpl provides the default implementation used by
@@ -59,6 +64,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	public QueryExecutorImpl(Module owner, String tripleStore) {
 		if(owner != null) {
 			this.owner = new WeakReference<Module>(owner);
+		} else {
+			throw new IllegalArgumentException("Attempting to create QueryExecutorImpl without an owner.");
 		}
 		endpoint = tripleStore;
 	}
@@ -259,17 +266,29 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			return this;
 		}
 	}
-	
-public String executeLocalQuery(Query query, Model model) {
-		
-		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
-			try {
-				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
-				model.write(fos);
-				fos.close();
-			}
-			catch(Exception e) {
-				// do nothing
+
+	protected boolean shouldSaveModel() {
+		return System.getProperty("edu.rpi.tw.escience.writemodel", "false")
+				.equals("true");
+	}
+
+	protected String doLocalQuery(final Query query, final List<Model> models) {
+		if(shouldSaveModel()) {
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			int i=0;
+			for(Model m : models) {
+				FileOutputStream fos = null;
+				try {
+					fos = new FileOutputStream(tmpDir+"/model"+i+".rdf");
+					m.write(fos);
+				} catch(Exception e) {
+					// do nothing
+				} finally {
+					try {
+						fos.close();
+					} catch(IOException e) { }
+				}
+				i++;
 			}
 		}
 		assert(owner!=null);
@@ -287,26 +306,27 @@ public String executeLocalQuery(Query query, Model model) {
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		long start = System.currentTimeMillis();
-		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		//QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		boolean parallel = SemantEcoConfiguration.get().isParallel();
 		try {
 			switch(query.getType()) {
 			case SELECT:
-				ResultSet results = qe.execSelect();
+				ResultSet results = executeSelect(query, models, parallel);
 				ResultSetFormatter.outputAsJSON(baos, results);
 				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case DESCRIBE:
-				resultModel = qe.execDescribe();
+				resultModel = executeDescribe(query, models, parallel);
 				resultModel.write(baos);
 				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case CONSTRUCT:
-				resultModel = qe.execConstruct();
+				resultModel = executeConstruct(query, models, parallel);
 				resultModel.write(baos);
 				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 				return baos.toString("UTF-8");
 			case ASK:
-				if(qe.execAsk()) {
+				if(executeAsk(query, models, parallel)) {
 					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
 					return "{\"result\":true}";
 				}
@@ -317,70 +337,28 @@ public String executeLocalQuery(Query query, Model model) {
 			}
 		}
 		catch(Exception e) {
-		log.warn("Unable to execute query due to exception", e);
+			log.warn("Unable to execute query due to exception", e);
 		}
 		return null;
 	}
 
+	/**
+	 * Executes a local query on a model other than the default.
+	 * @param query Query to execute on the model
+	 * @param model Jena Model containing content to query
+	 */
+	public String executeLocalQuery(Query query, Model model) {
+		return doLocalQuery(query, Arrays.asList(model));
+	}
+
 	@Override
 	public String executeLocalQuery(Query query) {
-		assert(owner!=null);
-		final Module mod = owner.get();
-		assert(mod!=null);
-		final String modName = mod.getName();
-		assert(modName != null);
-		log.trace("executeLocalQuery");
-		Model model = request.getCombinedModel();
-		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
-			try {
-				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
-				model.write(fos);
-				fos.close();
-			}
-			catch(Exception e) {
-				// do nothing
-			}
+		final List<Model> models = new ArrayList<Model>();
+		final List<Domain> activeDomains = request.listActiveDomains();
+		for(Domain i : activeDomains) {
+			models.add(request.getCombinedModel(i));
 		}
-		log.debug("Module '"+modName+"' executing local query");
-		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-		mgr.augmentQuery(query, request, mod);
-		log.debug("Query: "+query.toString());
-		Model resultModel = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		long start = System.currentTimeMillis();
-		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
-		try {
-			switch(query.getType()) {
-			case SELECT:
-				ResultSet results = qe.execSelect();
-				ResultSetFormatter.outputAsJSON(baos, results);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
-			case DESCRIBE:
-				resultModel = qe.execDescribe();
-				resultModel.write(baos);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
-			case CONSTRUCT:
-				resultModel = qe.execConstruct();
-				resultModel.write(baos);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
-			case ASK:
-				if(qe.execAsk()) {
-					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-					return "{\"result\":true}";
-				}
-				else {
-					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-					return "{\"result\":false}";
-				}
-			}
-		}
-		catch(Exception e) {
-			log.warn("Unable to execute query due to exception", e);
-		}
-		return null;
+		return doLocalQuery(query, models);
 	}
 	
 	/**

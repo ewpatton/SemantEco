@@ -21,5 +21,10 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HierarchicalMethod {
+	/**
+	 * Names the parameter used in the query string for all client-server
+	 * communication. Must be a valid string for an HTML id attribute.
+	 * @return
+	 */
 	String parameter();
 }

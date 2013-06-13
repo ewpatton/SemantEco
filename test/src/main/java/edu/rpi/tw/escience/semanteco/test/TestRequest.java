@@ -1,6 +1,7 @@
 package edu.rpi.tw.escience.semanteco.test;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Request;
 
 /**
@@ -61,17 +63,17 @@ public class TestRequest implements Request {
 	}
 
 	@Override
-	public OntModel getModel() {
+	public OntModel getModel(Domain domain) {
 		return null;
 	}
 
 	@Override
-	public Model getDataModel() {
+	public Model getDataModel(Domain domain) {
 		return null;
 	}
 
 	@Override
-	public Model getCombinedModel() {
+	public Model getCombinedModel(Domain domain) {
 		return null;
 	}
 	
@@ -95,6 +97,21 @@ public class TestRequest implements Request {
 
 	@Override
 	public URL getOriginalURL() {
+		return null;
+	}
+
+	@Override
+	public boolean canLogProvenance() {
+		return false;
+	}
+
+	@Override
+	public void logProvenance(String graph, String contents) {
+
+	}
+
+	@Override
+	public List<Domain> listActiveDomains() {
 		return null;
 	}
 

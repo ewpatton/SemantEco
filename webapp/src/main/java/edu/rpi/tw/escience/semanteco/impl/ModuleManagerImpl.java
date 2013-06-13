@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -41,6 +40,7 @@ import edu.rpi.tw.escience.semanteco.ProvidesDomain;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.request.DummyRequest;
 
 /**
  * ModuleManagerImpl provides the default implementation of the ModuleManager interface
@@ -136,12 +136,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void buildOntologyModel(OntModel model, Request request) {
+	public void buildOntologyModel(OntModel model, Request request, Domain domain) {
 		log.trace("buildOntologyModel");
 		for(Module module : modules) {
-			if(shouldCallModule(module, request)) {
+			if(shouldCallModule(module, domain)) {
 				try {
-					module.visit((OntModel)model, request);
+					module.visit((OntModel)model, request, domain);
 				}
 				catch(Exception e) {
 					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
@@ -153,12 +153,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public void buildDataModel(Model model, Request request) {
+	public void buildDataModel(Model model, Request request, Domain domain) {
 		log.trace("buildDataModel");
 		for(Module module : modules) {
-			if(shouldCallModule(module, request)) {
+			if(shouldCallModule(module, domain)) {
 				try {
-					module.visit((Model)model, request);
+					module.visit((Model)model, request, domain);
 				}
 				catch(Exception e) {
 					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
@@ -485,10 +485,18 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			}
 		}
 	}
-	
+
+	private boolean shouldCallModule(final Module module, final Domain domain) {
+		List<Domain> domains = moduleDomainMap.get(module);
+		if(domains == null || domains.size() == 0) {
+			return true;
+		}
+		return domains.contains(domain);
+	}
+
 	private boolean shouldCallModule(final Module module, final Request request) {
 		List<Domain> domains = moduleDomainMap.get(module);
-		if(domains == null) {
+		if(domains == null || domains.size() == 0) {
 			return true;
 		}
 		JSONArray arr = (JSONArray)request.getParam("domain");
@@ -510,39 +518,4 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 		return result;
 	}
-	
-	private static class DummyRequest implements Request {
-
-		@Override
-		public Object getParam(String key) {
-			return null;
-		}
-
-		@Override
-		public Logger getLogger() {
-			return Logger.getLogger(DummyRequest.class);
-		}
-
-		@Override
-		public OntModel getModel() {
-			return null;
-		}
-
-		@Override
-		public Model getDataModel() {
-			return null;
-		}
-
-		@Override
-		public Model getCombinedModel() {
-			return null;
-		}
-
-		@Override
-		public URL getOriginalURL() {
-			return null;
-		}
-
-	}
-
 }

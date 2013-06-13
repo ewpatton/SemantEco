@@ -65,4 +65,12 @@ public class VariableExprImpl implements Variable {
 		return result;
 	}
 
+	@Override
+	public String getName() {
+		int pos = expr.toLowerCase().indexOf("as ?");
+		if ( pos == -1 ) {
+			return null;
+		}
+		return expr.substring(pos + 4);
+	}
 }

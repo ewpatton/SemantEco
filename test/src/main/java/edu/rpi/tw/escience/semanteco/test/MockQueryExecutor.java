@@ -50,10 +50,10 @@ public class MockQueryExecutor implements QueryExecutor {
 	public String executeLocalQuery(Query query) {
 		throw new UnsupportedOperationException();
 	}
-
 	@Override
 	public String executeLocalQuery(Query query, Model model) {
 		throw new UnsupportedOperationException();
 	}
+
 
 }

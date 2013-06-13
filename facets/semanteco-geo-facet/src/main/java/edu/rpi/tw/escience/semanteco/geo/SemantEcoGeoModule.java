@@ -1,3 +1,4 @@
+
 package edu.rpi.tw.escience.semanteco.geo;
 
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
@@ -16,6 +17,7 @@ import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
@@ -37,9 +39,18 @@ import org.json.JSONObject;
 
 public class SemantEcoGeoModule implements Module {
 	// Define that name spaces!
+	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
 	private static final String POLLUTION_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
 	private static final String DEFAULT_NS = "http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/version/2013-April-24/";
+    private static final String WATER_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#";
+	//public static final String FISH_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/fish.owl#";
+	public static final String QUERY_NS = "http://aquarius.tw.rpi.edu/projects/semantaqua/data-source/query-variable/";
+	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+	private static final String LAT = "lat";
+	private static final String LONG = "long";
+	private static final String POL_NS = "http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#";
+    private static final String OBOE_NS = "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#";
 	
 	// Define some constants
 	private static final String FAILURE = "{\"success\":false}";
@@ -47,24 +58,90 @@ public class SemantEcoGeoModule implements Module {
 	
 	private ModuleConfiguration config = null;
 	
+
 	@Override
-	public void visit(final Model model, final Request request) {
-		// TODO populate data model
+	public void visit(Model model, Request request, Domain domain) {
+		// TODO Auto-generated method stub
+		
+		String domainUri = domain.getUri().toString();
+
+		if (domainUri.equals(WATER_NS)) {
+			String countyCode = (String) request.getParam("county");
+			String stateAbbr = (String) request.getParam("state");
+			assert (countyCode != null);
+			assert (stateAbbr != null);
+			
+			final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
+			final QueryResource waterSite = query.getResource(WATER_NS
+					+ "waterSite");
+			final Variable s = query.getVariable(QUERY_NS + "s");
+			final GraphComponentCollection construct = query
+					.getConstructComponent();
+			final QueryResource wgsLat = query.getResource(WGS_NS + LAT);
+			final QueryResource wgsLong = query.getResource(WGS_NS + LONG);
+			final QueryResource ofEntity = query.getResource(OBOE_NS + "ofEntity");
+			final QueryResource hasContext = query.getResource(OBOE_NS + "hasContext");
+
+
+			final Variable measurement = query.getVariable(QUERY_NS
+					+ "measurement");
+			final Variable lat = query.getVariable(QUERY_NS + LAT);
+			final Variable lng = query.getVariable(QUERY_NS + LONG);
+			final Variable label = query.getVariable(QUERY_NS + "label");
+			final Variable entity = query.getVariable(QUERY_NS + "entity");
+			
+			final QueryResource rdfsLabel = query
+					.getResource(RDFS_NS + "label");
+			final QueryResource rdfType = query.getResource(RDF_NS + "type");
+			final QueryResource site = query
+					.getResource(DEFAULT_NS + "site");
+			
+			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
+			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
+			
+			
+
+			final QueryResource countyCoded = query
+					.getResource(POL_NS + "hasCountyCode");
+			final QueryResource stateAbbrev = query
+					.getResource(POL_NS + "hasStateCode");
+			
+			construct.addPattern(s, rdfType, waterSite);
+			construct.addPattern(s, rdfsLabel, label);
+			construct.addPattern(s, wgsLat, lat);
+			construct.addPattern(s, wgsLong, lng);
+			
+			final GraphComponentCollection graph = query
+					.getNamedGraph("AEAP_NYSERDA");
+			final GraphComponentCollection graph2 = query
+					.getNamedGraph("AEAP_NYSERDA_Locations");
+			
+			graph2.addPattern(s, rdfType, waterSite);
+			graph2.addPattern(s, rdfsLabel, label);
+			//graph.addPattern(measurement, site, s);
+			graph.addPattern(measurement, ofEntity, entity);
+			graph.addPattern(entity, hasContext, s);
+
+			
+			graph2.addPattern(s, countyCoded, countyCode, null);
+			graph2.addPattern(s, stateAbbrev, stateAbbr, null);
+			graph2.addPattern(s, wgsLat, lat);
+			graph2.addPattern(s, wgsLong, lng);
+			
+			config.getQueryExecutor(request).accept("application/rdf+xml")
+			.execute(query, model);
+			
+			
+			
+		}
+
+		
 	}
 
 	@Override
-	public void visit(final OntModel model, final Request request) {
-		// TODO populate ontology model
-	}
-
-	@Override
-	public void visit(final Query query, final Request request) {
-		// TODO modify queries
-	}
-	
-	@Override
-	public void visit(final SemantEcoUI ui, final Request request) {
-		// TODO add resources to display
+	public void visit(OntModel model, Request request, Domain domain) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -182,4 +259,17 @@ public class SemantEcoGeoModule implements Module {
 		res = config.getResource("polluted-air.png");
 		domain.addDataType("polluted-air", "DFW - Temp - 2", res);
 	}
+
+	@Override
+	public void visit(Query query, Request request) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(SemantEcoUI ui, Request request) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

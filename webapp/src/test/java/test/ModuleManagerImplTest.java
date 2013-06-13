@@ -37,6 +37,7 @@ public class ModuleManagerImplTest extends TestCase {
 		private static final long serialVersionUID = 1L;
 
 		public TestConfig() {
+			super(null);
 			SemantEcoConfiguration.setConfig(this);
 		}
 	}
@@ -101,8 +102,8 @@ public class ModuleManagerImplTest extends TestCase {
 			assertNotNull("Unable to find "+testJar.getAbsolutePath(), obj);
 			TestModuleManagerImpl test = new TestModuleManagerImpl();
 			test.fileCreated(new CreateEvent(obj));
-			Module m = test.getModuleByName("MockModule");
-			assertNotNull("MockModule not found in test jar", m);
+			Module m = test.getModuleByName("TestModule");
+			assertNotNull("TestModule not found in test jar", m);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -150,10 +151,20 @@ public class ModuleManagerImplTest extends TestCase {
 		PrintStream ps = new PrintStream(zos);
 		ps.println("Hello world!");
 		zos.closeEntry();
-		zos.putNextEntry(new ZipEntry("test/"));
+		zos.putNextEntry(new ZipEntry("edu/"));
 		zos.closeEntry();
-		zos.putNextEntry(new ZipEntry("test/MockModule.class"));
-		InputStream cls = getClass().getClassLoader().getResourceAsStream("test/MockModule.class");
+		zos.putNextEntry(new ZipEntry("edu/rpi/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/semanteco/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/semanteco/test/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/semanteco/test/TestModule.class"));
+		InputStream cls = getClass().getClassLoader().getResourceAsStream("edu/rpi/tw/escience/semanteco/test/TestModule.class");
 		final byte[] buffer = new byte[BUFSIZE];
 		int read = 0;
 		while((read = cls.read(buffer)) > 0) {

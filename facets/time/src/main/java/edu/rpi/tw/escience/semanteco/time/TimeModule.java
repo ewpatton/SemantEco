@@ -10,6 +10,7 @@ import java.util.Set;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;
@@ -46,12 +47,12 @@ public class TimeModule implements Module {
 	private static final String DC_NS = "http://purl.org/dc/terms/";
 	
 	@Override
-	public void visit(final Model model, final Request request) {
+	public void visit(final Model model, final Request request, final Domain domain) {
 		// no need to modify the A-Box
 	}
 
 	@Override
-	public void visit(final OntModel model, final Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		// no need to modify the T-Box
 	}
 

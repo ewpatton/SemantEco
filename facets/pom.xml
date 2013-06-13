@@ -18,8 +18,8 @@
 
   <repositories>
     <repository>
-      <id>central</id>
-      <url>https://orion.tw.rpi.edu/artifactory/libs-release</url>
+      <id>tetherless</id>
+      <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
   </repositories>
 
@@ -61,13 +61,13 @@
     	<module>characteristics</module>
 	<module>industry</module>
 	<module>debugger</module>
+	<module>annotator</module>
+	<module>provenance</module>
+	<module>semanteco-geo-facet</module>
       </modules>
     </profile>
     <profile>
       <id>parent-only</id>
     </profile>
   </profiles>
-  <modules>
-    <module>semanteco-geo-facet</module>
-  </modules>
 </project>

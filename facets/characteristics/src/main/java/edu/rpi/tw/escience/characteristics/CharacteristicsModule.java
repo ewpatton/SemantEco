@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
@@ -51,8 +52,9 @@ public class CharacteristicsModule implements Module {
 	private static final Logger log = Logger.getLogger(CharacteristicsModule.class);
 
 	//private ModuleConfiguration config = null;
-	
-	public void visit(Model model, Request request) {
+
+	@Override
+	public void visit(final Model model, final Request request, final Domain domain) {
 		//DataModelBuilder builder = new DataModelBuilder(request, config);
 		//builder.build(model);
 	}
@@ -69,7 +71,7 @@ public class CharacteristicsModule implements Module {
 	
 	
 	@Override
-	public void visit(final OntModel model, final Request request) {
+	public void visit(final OntModel model, final Request request, final Domain domain) {
 		//model.read(CHARACTERISTIC_NS);
 	}
 
@@ -330,9 +332,11 @@ public String queryIfTaxonomicCategoryForJstree(Request request) throws JSONExce
 		
 		
 		final Variable element = query.getVariable(QUERY_NS+"element");
-		String singletonCharacteristic ="";
+		if( request.getParam("characteristic") == null ) {
+			return;
+		}
 		
-		if(request.getParam("characteristic") != null && ((JSONArray) request.getParam("characteristic")).length() > 1  ){
+		if( ((JSONArray) request.getParam("characteristic")).length() > 1  ){
 			
 		JSONArray characteristicParams = (JSONArray)request.getParam("characteristic");			
 		final UnionComponent union = query.createUnion();
