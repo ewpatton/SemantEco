@@ -10,3 +10,11 @@ different domains based on location.
 
 SemantEco provides a number of different data providers for different
 domains including water, air, and various species.
+
+For more details on the research work on SemantEco, please see the project 
+page hosted by the Tetherless World Constellation:
+http://tw.rpi.edu/web/project/SemantEco
+
+For a live demonstration of SemantEco, please see our demo site hosted at
+Rensselaer Polytechnic Institute:
+http://aquarius.tw.rpi.edu/projects/semanteco/
