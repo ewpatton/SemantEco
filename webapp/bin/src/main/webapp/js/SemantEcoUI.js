@@ -1125,7 +1125,7 @@ function addPolygonToMap(coords, aName){
 
     // We are OK if a name was not given, we can generate one
     if (typeof aName == undefined) {
-        aName = Math.random().toString(36).slice(2)l; // Generate a random alphanumeric string
+        aName = Math.random().toString(36).slice(2); // Generate a random alphanumeric string
     }
 
     var polygonCoords;
