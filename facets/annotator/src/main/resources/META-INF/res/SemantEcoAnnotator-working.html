@@ -295,12 +295,24 @@
   	<table>
   	<tr><th colspan="3"><p><em>Please provide the following pieces of information about your dataset:</em></p>
   	</th></tr>
-  	<tr><td><div id="source_box"  >Data Source<textarea id="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?"></textarea></div>
+  	<tr><td><div id="source_box">Data Source<form><select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
+  	<option value="">--Select source--</option>
+  	<option value="add-new"><i>add new</i></option>
+  	<option value="org1">Organization 1</option>
+  	<option value="org2">University 2</option>
+  	<option value="org3">Agency 3</option>
+  	</select></form></div>
   	</td>
-  	<td><div id="dataset_box"  >Data Set Name<textarea id="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?"></textarea></div>
+  	<td><div id="dataset_box">Data Set Name<form><select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
+  	<option value="">--Select data set name--</option>
+  	<option value="add-new">add new</option>
+  	<option value="ds1">dataset 1</option>
+  	<option value="ds2">dataset 2</option>
+  	<option value="ds3">dataset 3</option>
+  	</select></form></div>
   	</td>
   	<!--changed from <div id="user_box"> and <textarea id="user_info", just in case this blows anything else up....-->
-  	<td><div id="version_box"  >Version Information<textarea id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What version is this data? You may use today's date."></textarea></div>
+  	<td><div id="version_box">Version Information<textarea id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What version is this data? You may use today's date."></textarea></div>
   	</td></tr>
   	</table>
   </div>
