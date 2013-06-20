@@ -162,34 +162,34 @@
                 };
 
                 //this is the chart generater, it gets raw input, which is "binding"s in the returned data, and turn them into data format can be used by jqplot
-                chartgenerator=function(mesurementData,nearbySpeciesData){
+                chartgenerator=function(measurementData,nearbySpeciesData){
                     var chartdata=[];
                     
                     var chartseries1=[];
                     
                     var limitThreshold=[];
                     var limitThresholdValue="";
-                    var unit=mesurementData[0].unit.value;
+                    var unit=measurementData[0].unit.value;
                     //develop use only, for fake data
                     var year="";
-                    year=parseInt(mesurementData[0].time.value.substring(0,4));
+                    year=parseInt(measurementData[0].time.value.substring(0,4));
 
                     //this loop is getting data to generate array of arraies that will be used by jqplot [["2012-01-01",3],["2012-01-01",8]]
-                    for(var i=0;i<mesurementData.length;i++) {
-                        var time = mesurementData[i].time.value.substring(0,10);
+                    for(var i=0;i<measurementData.length;i++) {
+                        var time = measurementData[i].time.value.substring(0,10);
                         if(time.length == 8) {
                             time = time.substr(0,4)+"-"+time.substr(4,2)+"-"+time.substr(6,2);
                         }
-                        chartseries1.push([time,Math.round( mesurementData[i].value.value*100 )/100]);
-                        if(mesurementData[i].limit){
-                            limitThreshold.push([time,Math.round( mesurementData[i].limit.value*100 )/100]);
+                        chartseries1.push([time,Math.round( measurementData[i].value.value*100 )/100]);
+                        if(measurementData[i].limit){
+                            limitThreshold.push([time,Math.round( measurementData[i].limit.value*100 )/100]);
                         }
                     }
                     //push the processed data to the chartdata, which a data array will be used as input for jqplot
                     chartdata.push(chartseries1);
                     //if exists limit, then push to chartdata to plot limit as an aditional series
                     if(limitThreshold.length!=0 && measurementData[0].limit != undefined){
-                        limitThresholdValue=mesurementData[0].limit.value;
+                        limitThresholdValue=measurementData[0].limit.value;
                         chartdata.push(limitThreshold);
                     }
 
