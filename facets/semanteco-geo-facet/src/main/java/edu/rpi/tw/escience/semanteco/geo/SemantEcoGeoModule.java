@@ -37,7 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class SemantEcoGeoModule implements Module {
+public class SemantEcoGeoModule implements Module, ProvidesDomain {
 	// Define that name spaces!
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String WGS_NS = "http://www.w3.org/2003/01/geo/wgs84_pos#";
@@ -128,6 +128,9 @@ public class SemantEcoGeoModule implements Module {
 			construct.addPattern(measurement, polHasCharacteristic, element);
 			construct.addPattern(measurement, polHasValue, value);
 			construct.addPattern(measurement, reprHasUnit, unit);
+			final QueryResource waterWaterMeasurement = query.getResource(WATER_NS+"WaterMeasurement");
+			construct.addPattern(measurement, rdfType, waterWaterMeasurement);
+
 
 			
 			final GraphComponentCollection graph = query
@@ -254,14 +257,14 @@ public class SemantEcoGeoModule implements Module {
 	
 	public List<Domain> getDomains(final Request request) {
 		List<Domain> domains = new ArrayList<Domain>();
-	    Domain semantGeoDomain = config.getDomain(URI.create("http://purl.org/twc/SemantGeo/"), true);
+	    //Domain semantGeoDomain = config.getDomain(URI.create("http://purl.org/twc/SemantGeo/"), true);
 		Domain water = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#"), true);
 	    // add data sources, regulations, and data types here
-	    domains.add(semantGeoDomain);
-	    semantGeoDomain.setLabel("SemantGeo");
-		addDataSources(semantGeoDomain, request);
-		addRegulations(water);
-		addDataTypes(semantGeoDomain);
+	   // domains.add(semantGeoDomain);
+	   // semantGeoDomain.setLabel("SemantGeo");
+		//addDataSources(semantGeoDomain, request);
+		//addRegulations(water);
+		//addDataTypes(semantGeoDomain);
 	    return domains;
 	 }
 	
@@ -273,7 +276,7 @@ public class SemantEcoGeoModule implements Module {
 	protected void addRegulations(final Domain domain) {
 		// TODO query for regulations and add them here
 		//domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/EPA-air-regulation.owl"), "Darrin Fresh Water");
-		domain.addRegulation(URI.create("http://dataone.tw.rpi.edu/darrin-fresh-water.owl"), "Darrin Fresh Water");
+		//domain.addRegulation(URI.create("http://dataone.tw.rpi.edu/darrin-fresh-water.owl"), "Darrin Fresh Water");
 
 	}
 	
@@ -281,10 +284,10 @@ public class SemantEcoGeoModule implements Module {
 	
 	protected void addDataTypes(final Domain domain) {
 		// change to icon names here should also occur in air-data-provider.js
-		Resource res = config.getResource("clean-air.png");
-		domain.addDataType("clean-air", "DFW - Temp - 1", res);
-		res = config.getResource("polluted-air.png");
-		domain.addDataType("polluted-air", "DFW - Temp - 2", res);
+		//Resource res = config.getResource("clean-air.png");
+		//domain.addDataType("clean-air", "DFW - Temp - 1", res);
+		//res = config.getResource("polluted-air.png");
+		//domain.addDataType("polluted-air", "DFW - Temp - 2", res);
 	}
 
 	@Override
