@@ -75,6 +75,44 @@
     table tr:first-child{
       font-weight: bold;
     }
+    
+    
+    .col-select .ui-selecting { background: #FECA40; }
+	.col-select .ui-selected { background: #F39814; }
+	.col-select .ui-unselecting { background: #dddddd; }
+		
+	.draggable-prop, .draggable-class { 
+		width: 90px;
+		height: 15px;
+		padding: 0.5em;
+		float: left;
+		margin: 10px 10px 10px 0; 
+	}
+	
+	.ui-widget-content {
+		border: 1px solid #aaaaaa;
+		background: #fff;
+		color: #222222;
+	}
+		
+	.ui-state-highlight,
+	.ui-widget-content .ui-state-highlight,
+	.ui-widget-header .ui-state-highlight {
+		background: #80ea69;
+		color: black;
+	}
+	.ui-state-hover,
+	.ui-widget-content .ui-state-hover,
+	.ui-widget-header .ui-state-hover,
+	.ui-state-focus,
+	.ui-widget-content .ui-state-focus,
+	.ui-widget-header .ui-state-focus {
+		background: #fb3f51;
+		font-weight: bold;
+		color: white;
+	}
+    
+    
 	</style>
 	
 	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
@@ -100,10 +138,11 @@
     <script type="text/javascript" src="../../js/config.js"></script>
     <script type="text/javascript" src="../../js/modules/AnnotatorModule.js"></script>
     <script type="text/javascript" src="../../js/jqplot/jquery.jqplot.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.highlighter.js"></script>
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.cursor.min.js"></script>
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+    
+     <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
 	 
 	<script type="text/javascript" class="source below">
 /*	
@@ -184,14 +223,14 @@
                 var cn = i.split(',')[1];
                 
                 if (window.classRow ==1){
-                $("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
+                $("[class='droppable-class' id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
                 }
              
                 else
                 {
                 var tr = "<tr id='classRow'>";
                 for (var j = 0; j < window.column_numbers; ++j) {
-               	 tr+="<td id='classRow,"+j+"'>";
+               	 tr+="<td class='droppable-class' id='classRow,"+j+"'>";
                	 if (j == cn) tr += q.replace(/^\s+|\s+$/g,'');
                	 tr += "</td>";
                 }
@@ -255,6 +294,69 @@
         "plugins": ["themes", "json_data", "ui", "dnd", "crrm"]
     });
 });
+	
+	// Katie's additions
+	// for making column headers selectable
+	$(function() {
+			$( ".col-select" ).selectable({
+				filter: "th", 
+				selected: function( event, ui ) {
+					$( ".ui-selected", this ).each(function() {
+						var index = $( ".col-select th" ).index( this );
+						console.log("selecting col " + index + "....");
+						//isSelected[index] = true;
+						
+					});
+				/*	for (var i = 0; i < isSelected.length; i++) {
+						console.log( i + " = " + isSelected[i]);
+					}*/
+				}, // /selected
+				unselected: function( event, ui ) {
+					$( ui.unselected, this ).each(function() {
+						var index = $( ".col-select th").index( this );
+						console.log("unselecting col " + index + "....");
+						//isSelected[index] = false;
+					});
+				} // /unselected
+			}); // /selectable
+		}); // /select function
+		
+		// Responsible for draggable and droppable functions for classes
+		//   and properties. They are separate from each other, to assist
+		//   with target highlighting.
+		$(function() {
+			// Draggable and Droppable for PROPERTIES
+			$( ".draggable-prop" ).draggable( 
+				{helper: function( event ) {
+					return $( "<div style=\"color:#aaa\">property!</div>");
+				}// /helper
+			});// /draggable-prop
+			$( ".droppable-prop" ).droppable({
+				accept: ".draggable-prop",
+				activeClass: "ui-state-hover",
+				drop: function( event, ui ) {
+					$( this )
+						.addClass( "ui-state-highlight" );
+				}// /drop
+			});// /droppable-prop
+			
+			// Draggable and Droppable for CLASSES
+			$( ".draggable-class" ).draggable(
+				{helper: function( event ) {
+					return $( "<div style=\"color:#aaa\">class!</div>");
+				}// /helper
+			});// /draggable-class
+			$( ".droppable-class" ).droppable({
+				accept: ".draggable-class",
+				activeClass: "ui-state-hover",
+				drop: function( event, ui ) {
+					$( this )
+						.addClass( "ui-state-highlight" );
+				}// /drop function
+			});// /droppable-class
+		});// /all draggable and droppable functions
+	
+	
 	</script>
 	
 
@@ -278,7 +380,7 @@
 </head>
 <body onload="">
         <div id="header">
-	      <div class="header-text" style="background-color:#3300CC">
+	      <div class="header-text" style="background-color:#0033CC">
 	        <img src="patrice_banner4.jpg" alt="SemantAnnotator" />
 	      </div>
 	    </div>
@@ -291,27 +393,39 @@
   <div id="file_info" style="float:left;"></div><div style="float:right;"><button id="commit_enhancement" style="margin-top: 10px; padding: 10px;">Commit Enhancement</button>
   </div>
   </div>
+  <script>
+  // allows user input for the dropdown forms
+  		function dropdownAdd (theForm){
+			var DropdownBox =document.getElementById("dataset_info");
+			var optn = document.createElement("OPTION");
+			var theAddition = theForm.elements['data_add_new'];
+			optn.text = theAddition;
+			optn.value = theAddition;
+			DropdownBox.add(optn);
+		}
+  </script>
   <div style="float:left; width:70%;">
   	<table>
-  	<tr><th colspan="3"><p><em>Please provide the following pieces of information about your dataset:</em></p>
-  	</th></tr>
+  	<tr><td colspan="3"><p><em>Please provide the following pieces of information about your dataset:</em></p>
+  	</td></tr>
   	<tr><td><div id="source_box">Data Source<form><select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
   	<option value="">--Select source--</option>
-  	<option value="add-new"><i>add new</i></option>
   	<option value="org1">Organization 1</option>
   	<option value="org2">University 2</option>
   	<option value="org3">Agency 3</option>
-  	</select></form></div>
+  	</select>OR
+  	<input type="text" name="data_add_new" placeholder="add a new source" onsubmit="dropdownAdd(this);">
+	<button type="submit">Add</button></form></div>
   	</td>
   	<td><div id="dataset_box">Data Set Name<form><select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
-  	<option value="">--Select data set name--</option>
-  	<option value="add-new">add new</option>
+  	<option value="">--Select Dataset Name--</option>
   	<option value="ds1">dataset 1</option>
   	<option value="ds2">dataset 2</option>
   	<option value="ds3">dataset 3</option>
-  	</select></form></div>
+  	</select>OR
+  	<input type="text" name="data_add_new" placeholder="add a new dataset" onsubmit="dropdownAdd(this);">
+	<button type="submit">Add</button></form></form></div>
   	</td>
-  	<!--changed from <div id="user_box"> and <textarea id="user_info", just in case this blows anything else up....-->
   	<td><div id="version_box">Version Information<textarea id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What version is this data? You may use today's date."></textarea></div>
   	</td></tr>
   	</table>
@@ -350,10 +464,12 @@
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
 				var td;
+				//var subtable = document.createElement('table'); 
  // this is where the table headers are created!  
                 for (var j = 0; j < arr.length; j++){
                   if (i==0) {
                     td = document.createElement('th');
+                    $(td).attr("class", "col-select");
                     $(td).attr("id", i+','+j); 
                   }
                   else {
@@ -582,14 +698,14 @@
 	                 var cn = i.split(',')[1];
 	                 
 	                 if (window.propertyRow ==1){
-	                 $("[id='propertyRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
+	                 $("[class='droppable-prop' id='propertyRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
 	                 }
 	              
 	                 else
 	                 {
 	                 var tr = "<tr id='propertyRow'>";
 	                 for (var j = 0; j < window.column_numbers; ++j) {
-	                	 tr+="<td id='propertyRow,"+j+"'>";
+	                	 tr+="<td class='droppable-prop' id='propertyRow,"+j+"'>";
 	                	 if (j == cn) tr += q.replace(/^\s+|\s+$/g,'');
 	                	 tr += "</td>";
 	                 }
