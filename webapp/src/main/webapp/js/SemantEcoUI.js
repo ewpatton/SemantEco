@@ -6,8 +6,8 @@
     //initializing the map the element such as infowindow and content containers in infowindow
     "configureMap": function() {
         var mapOptions = {
-                center: new google.maps.LatLng(37.4419, -122.1419),
-                zoom: 8,
+                center: new google.maps.LatLng(37.6058, -98.8641),
+                zoom: 4,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 zoomControl: true,
                 panControl: true
@@ -583,6 +583,9 @@
         var params = {};
         $("div#facets .facet").each(function() {
             var that = $(this);
+            if(that.hasClass("unmanaged")) {
+                return;
+            }
             $("input[name]", that).each(function() {
                 var type = this.getAttribute("type").toLowerCase();
                 var name = this.getAttribute("name");
@@ -618,7 +621,7 @@
     "populateFacets": function() {
         var params = $.bbq.getState();
         for(var param in params) {
-            var inputs = $("*[name='"+param+"']");
+            var inputs = $("div.facet:not([class ~= 'unmanaged']) *[name='"+param+"']");
             if(inputs.length > 0) {
                 if(inputs[0].tagName == "INPUT") {
                     var type = inputs[0].type.toLowerCase();
@@ -652,6 +655,9 @@
     "initializeFacets": function() {
         var facets = $("div#facets .facet").each(function() {
             var that = this;
+            if($(that).hasClass("unmanaged")) {
+                return;
+            }
             $("input", this).change(function(e) {
                 var me = $(this);
                 var name = me.attr("name");
