@@ -403,12 +403,15 @@
 			optn.value = theAddition;
 			DropdownBox.add(optn);
 		}
+  
+  		
   </script>
-  <div style="float:left; width:70%;">
+  <div id="data_info_form" style="float:left; width:70%; visibility:hidden">
   	<table>
   	<tr><td colspan="3"><p><em>Please provide the following pieces of information about your dataset:</em></p>
+  	<span id="tentative-uri">(it may take a moment to render your data table)</span>
   	</td></tr>
-  	<tr><td><div id="source_box">Data Source<form><select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
+  	<tr><td><div id="source_box"><em>Data Source</em><form><select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
   	<option value="">--Select source--</option>
   	<option value="org1">Organization 1</option>
   	<option value="org2">University 2</option>
@@ -417,7 +420,7 @@
   	<input type="text" name="data_add_new" placeholder="add a new source" onsubmit="dropdownAdd(this);">
 	<button type="submit">Add</button></form></div>
   	</td>
-  	<td><div id="dataset_box">Data Set Name<form><select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
+  	<td><div id="dataset_box"><em>Data Set Name</em><form><select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
   	<option value="">--Select Dataset Name--</option>
   	<option value="ds1">dataset 1</option>
   	<option value="ds2">dataset 2</option>
@@ -426,7 +429,7 @@
   	<input type="text" name="data_add_new" placeholder="add a new dataset" onsubmit="dropdownAdd(this);">
 	<button type="submit">Add</button></form></form></div>
   	</td>
-  	<td><div id="version_box">Version Information<textarea id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What version is this data? You may use today's date."></textarea></div>
+  	<td><div id="version_box"><em>Version Information</em><form><input type="text" id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Version, eg. today's date"></form></div>
   	</td></tr>
   	</table>
   </div>
@@ -451,7 +454,7 @@
   
  //csv file parser and table loader
  function handleFileSelect(){
-  if (window.hasTable == 1) return; 
+  if (window.hasTable == 1) return;
   var file = document.getElementById("the_file").files[0];
   var reader = new FileReader();
   var link_reg = /(http:\/\/|https:\/\/)/i;
@@ -504,6 +507,7 @@
             		  function(d) { console.log(d); });
           };
   reader.readAsText(file);
+  document.getElementById('data_info_form').style.visibility='visible';
   
  }
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
