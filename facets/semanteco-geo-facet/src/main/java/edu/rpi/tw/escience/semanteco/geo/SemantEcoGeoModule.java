@@ -131,7 +131,7 @@ public class SemantEcoGeoModule implements Module {
 
 			
 			final GraphComponentCollection graph = query
-					.getNamedGraph("AEAP_NYSERDA_2");
+					.getNamedGraph("AEAP_NYSERDA_ph2");
 			final GraphComponentCollection graph2 = query
 					.getNamedGraph("AEAP_NYSERDA_Locations");
 			
@@ -196,7 +196,7 @@ public class SemantEcoGeoModule implements Module {
 		
 		//Build the lake chemical query!
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);	
-		final NamedGraphComponent graph = query.getNamedGraph("AEAP_NYSERDA");
+		final NamedGraphComponent graph = query.getNamedGraph("AEAP_NYSERDA_ph2");
 		final QueryResource hasCharacteristic = query.getResource(POLLUTION_NS + "hasCharacteristic");
 		final QueryResource hasValue = query.getResource(POLLUTION_NS + "hasValue");
 		final Variable aWaterMeasurement = query.getVariable(VAR_NS +  "aWaterMeasurement");
@@ -255,11 +255,12 @@ public class SemantEcoGeoModule implements Module {
 	public List<Domain> getDomains(final Request request) {
 		List<Domain> domains = new ArrayList<Domain>();
 	    Domain semantGeoDomain = config.getDomain(URI.create("http://purl.org/twc/SemantGeo/"), true);
+		Domain water = config.getDomain(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#"), true);
 	    // add data sources, regulations, and data types here
 	    domains.add(semantGeoDomain);
 	    semantGeoDomain.setLabel("SemantGeo");
 		addDataSources(semantGeoDomain, request);
-		addRegulations(semantGeoDomain);
+		addRegulations(water);
 		addDataTypes(semantGeoDomain);
 	    return domains;
 	 }
@@ -272,7 +273,11 @@ public class SemantEcoGeoModule implements Module {
 	protected void addRegulations(final Domain domain) {
 		// TODO query for regulations and add them here
 		//domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/EPA-air-regulation.owl"), "Darrin Fresh Water");
+		domain.addRegulation(URI.create("http://dataone.tw.rpi.edu/darrin-fresh-water.owl"), "Darrin Fresh Water");
+
 	}
+	
+
 	
 	protected void addDataTypes(final Domain domain) {
 		// change to icon names here should also occur in air-data-provider.js
