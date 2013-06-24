@@ -77,9 +77,9 @@
     }
     
     
-    .col-select .ui-selecting { background: #FECA40; }
-	.col-select .ui-selected { background: #F39814; }
-	.col-select .ui-unselecting { background: #dddddd; }
+    .col-selectable .ui-selecting { background: #FECA40; }
+	.col-selectable .ui-selected { background: #F39814; }
+	.col-selectable .ui-unselecting { background: #dddddd; }
 		
 	.draggable-prop, .draggable-class { 
 		width: 90px;
@@ -298,11 +298,11 @@
 	// Katie's additions
 	// for making column headers selectable
 	$(function() {
-			$( ".col-select" ).selectable({
+			$( ".col-selectable" ).selectable({
 				filter: "th", 
 				selected: function( event, ui ) {
 					$( ".ui-selected", this ).each(function() {
-						var index = $( ".col-select th" ).index( this );
+						var index = $( ".col-selectable th" ).index( this );
 						console.log("selecting col " + index + "....");
 						//isSelected[index] = true;
 						
@@ -313,7 +313,7 @@
 				}, // /selected
 				unselected: function( event, ui ) {
 					$( ui.unselected, this ).each(function() {
-						var index = $( ".col-select th").index( this );
+						var index = $( ".col-selectable th").index( this );
 						console.log("unselecting col " + index + "....");
 						//isSelected[index] = false;
 					});
@@ -452,6 +452,27 @@
     }
   }
   
+	// every subtable will be the same, (except for the ID's of the cells)
+	//    with 3 rows in 1 column. These are the DEFAULT subtables; ones for
+	//    IMPLICIT or EXPLICIT BUNDLES will be different (and in other functions) 
+	// input parameters are
+	// * text: presumably the header for the column from the original CSV file,
+	//	   to be placed in the first row of the column.
+	// * colIndex: the position of that cell in the table. Subrows are 
+	//	   identified as header row, "propertyRow,colIndex", and "classRow,colIndex" - these last two
+	//	   are classed as droppable targets.
+	function createSubtable(text,colIndex) {
+		var theader = '<table class="col-selectable" style:"border-collapse: collapse">\n';
+		var tbody = '';
+		tbody += '<tr><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
+		tbody += '<tr><td id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
+		tbody += '<tr><td id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
+		var tfooter = '</table>';
+		var subtable = theader + tbody + tfooter;
+		console.log("subtabling....");
+		return subtable;
+	}
+  
  //csv file parser and table loader
  function handleFileSelect(){
   if (window.hasTable == 1) return;
@@ -463,36 +484,45 @@
               var rows = file.target.result.split(/[\r\n|\n]+/);
               var table = document.createElement('table');
               
-              for (var i = 0; i < rows.length; i++){
+			  var thr = document.createElement('tr');
+			  var tharr = rows[0].split(',');
+			  var th;
+			  // create subtabled column headers
+			  for (var j = 0; j < tharr.length; j++){ // i == 0, so this is just for the column headers
+                    th = document.createElement('th');
+                    $(th).attr("class", "col-selectable");
+                 // $(th).attr("class", "context-menu"); // add this in once you have your context menu things ready~
+                    $(th).attr("id", '0,'+j);
+					var temp = document.createElement('div');
+                    //$(st).attr("id", "subTable"+j);
+                    var stContent = createSubtable(tharr[j], j);
+                    //console.log(stContent);
+                    temp.innerHTML = stContent;
+					th.appendChild(temp);
+					thr.appendChild(th);
+			  }// /for
+			  table.appendChild(thr);
+              // create the rest of the table
+			  for (var i = 1; i < rows.length; i++){
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
 				var td;
-				//var subtable = document.createElement('table'); 
- // this is where the table headers are created!  
                 for (var j = 0; j < arr.length; j++){
-                  if (i==0) {
-                    td = document.createElement('th');
-                    $(td).attr("class", "col-select");
-                    $(td).attr("id", i+','+j); 
-                  }
-                  else {
                     td = document.createElement('td');
                     $(td).attr("id", i+','+j);
-                  }
-                  if( link_reg.test(arr[j]) ){
-                    var a = document.createElement('a');
-                    a.href = arr[j];
-                    a.target = "_blank";
-                    a.innerHTML = arr[j];
-                    td.appendChild(a);
-                  }else{
-                    td.innerHTML = arr[j];
+                  if( link_reg.test(arr[j]) ){ // if the thing from the CSV file is a link
+						var a = document.createElement('a');
+						a.href = arr[j];
+						a.target = "_blank";
+						a.innerHTML = arr[j];
+						td.appendChild(a);
+                  } else{ // the thing is not a link
+						td.innerHTML = arr[j];
                   }
                   tr.appendChild(td);
-                }
-
+                }// /for each column in a row
                 table.appendChild(tr);
-              }
+              }// /for rows
 
               document.getElementById('list').appendChild(table);
               window.file_contents = file.target.result;
@@ -505,11 +535,11 @@
             // send the csv file to the server
               AnnotatorModule.readCsvFileForInitialConversion({"csvFile":window.file_contents},
             		  function(d) { console.log(d); });
-          };
+          };// /reader.onload
   reader.readAsText(file);
   document.getElementById('data_info_form').style.visibility='visible';
+  }// /handleFileSelect
   
- }
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
  document.getElementById('the_file').addEventListener('change', fileInfo, false);
 </script>	
