@@ -9,6 +9,7 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.test.TestModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.test.TestUI;
+import edu.rpi.tw.escience.semanteco.test.TestUI;
 import edu.rpi.tw.escience.semanteco.geo.SemantEcoGeoModule;
 
 import junit.framework.TestCase;

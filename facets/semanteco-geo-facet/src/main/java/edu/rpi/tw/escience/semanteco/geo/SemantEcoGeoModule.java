@@ -84,7 +84,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			final QueryResource WaterSite = query.getResource(WATER_NS
 					+ "WaterSite");
 			final QueryResource waterSite = query.getResource(WATER_NS
-					+ "waterSite");
+					+ "WaterSite");
 			final Variable s = query.getVariable(QUERY_NS + "s");
 			final GraphComponentCollection construct = query
 					.getConstructComponent();
@@ -123,17 +123,24 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
 			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
 			final QueryResource unitHasUnit = query.getResource(POL_NS+"hasUnit");
-			String geofeatures = (String) request.getParam("geofeatures");
+			
+			JSONArray geofeaturesParams = (JSONArray) request
+					.getParam("geofeatures");
+			String geofeatures = geofeaturesParams.optString(0);
+			
+			request.getLogger().debug("geofeatures : " + geofeaturesParams.toString());
+			request.getLogger().debug("first entry: " + geofeatures);
+			if(geofeaturesParams !=null  && geofeaturesParams.length() == 1){
+				request.getLogger().debug("got inside");
 
-			if(geofeatures !=null  && geofeatures.length() == 1){
 				request.getLogger().debug(
 						"species length: "
 								+ ((JSONArray) request.getParam("geofeatures"))
 										.length());
 				request.getLogger().debug("(got to if where geofeatures == 1)");
-				JSONArray geoFeaturesParams = (JSONArray) request
-						.getParam("geofeatures");
-				String geoFeaturesInArray = geoFeaturesParams.optString(0);
+				//JSONArray geoFeaturesParams = (JSONArray) request
+				//		.getParam("geofeatures");
+				//String geoFeaturesInArray = geoFeaturesParams.optString(0);
 				
 				
 				//the standard query pre-lake constraint
@@ -159,7 +166,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 				graph.addPattern(measurement, ofEntity, entity); //so entity is the sample
 				
 				//in this block, we are binding to selected lakes, no commenting out below.
-				final QueryResource geoFeature = query.getResource(geoFeaturesInArray);
+				final QueryResource geoFeature = query.getResource(geofeatures);
 
 				//graph.addPattern(entity, hasContext, s);
 				graph.addPattern(entity, hasContext, geoFeature);
@@ -169,7 +176,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 				graph.addPattern(measurement, polHasValue, value);
 				graph.addPattern(measurement, unitHasUnit, unit);
 
-				graph2.addPattern(s, rdfType, waterSite);
+				graph2.addPattern(s, rdfType, WaterSite);
 				graph2.addPattern(s, rdfsLabel, label);
 				//graph.addPattern(measurement, site, s);
 				//graph2.addPattern(s, countyCoded, countyCode, null);
