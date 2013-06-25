@@ -247,7 +247,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 	 * @param action
 	 * @return
 	 */
-	@HierarchicalMethod(parameter = "geofeatures")
+	@HierarchicalMethod(parameter = "darrinspecies")
 	public Collection<HierarchyEntry> querydarrinTaxonomyHM(
 			final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
@@ -279,7 +279,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			// items.add(entry);
 			// }
 			return querydarrinTaxonomyHMChildren(request,
-					(String) request.getParam("geofeatures"));
+					(String) request.getParam("darrinspecies"));
 		} else if (action == HierarchyVerb.SEARCH) {
 			return searchDarrinSpecies(request, (String) request.getParam("string"));
 		} else if (action == HierarchyVerb.PATH_TO_NODE) {
@@ -425,7 +425,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 	
 	
 	/*...MY HIERARCHY...*/
-	@HierarchicalMethod(parameter = "lakes")
+	@HierarchicalMethod(parameter = "geofeatures")
 		public Collection<HierarchyEntry> queryeLakeTypesHM(
 				final Request request, final HierarchyVerb action) {
 			List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
@@ -434,7 +434,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			return queryeLakeTypesHMRoots(request);
 			} else if (action == HierarchyVerb.CHILDREN) { 
 				return queryeLakeTypesHMChildren(request,
-					(String) request.getParam("lakes"));
+					(String) request.getParam("geofeatures"));
 			} else if (action == HierarchyVerb.SEARCH) {
 				return searcheLake(request, (String) request.getParam("string"));
 			} else if (action == HierarchyVerb.PATH_TO_NODE) {
