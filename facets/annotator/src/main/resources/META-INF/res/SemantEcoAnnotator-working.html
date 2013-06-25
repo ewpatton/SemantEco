@@ -222,22 +222,24 @@
                 
                 var cn = i.split(',')[1];
                 
+				$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
+				
+				/* Robin's previous class target script
                 if (window.classRow ==1){
-                $("[class='droppable-class' id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
+					$("[class='droppable-class' id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,'')); 
                 }
              
-                else
-                {
-                var tr = "<tr id='classRow'>";
-                for (var j = 0; j < window.column_numbers; ++j) {
-               	 tr+="<td class='droppable-class' id='classRow,"+j+"'>";
-               	 if (j == cn) tr += q.replace(/^\s+|\s+$/g,'');
-               	 tr += "</td>";
-                }
-                tr+= "</tr>";
-                $('#list tr:first').after(tr);
-                window.classRow = 1;
-                }
+                else {
+					var tr = "<tr id='classRow'>";
+					for (var j = 0; j < window.column_numbers; ++j) {
+						tr+="<td class='droppable-class' id='classRow,"+j+"'>";
+						if (j == cn) tr += q.replace(/^\s+|\s+$/g,'');
+							tr += "</td>";
+					}
+					tr+= "</tr>";
+					$('#list tr:first').after(tr);
+					window.classRow = 1;
+                }*/
                 
            //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
                 
@@ -436,7 +438,7 @@
 
 <div style="float:left;width:70%;">
 
-  <div id="list" style="overflow:scroll; height:736px; margin-right:6px;"></div>
+  <div id="list" style="overflow:scroll; height:350px; margin-right:6px;"></div>
 
   <script type="text/javascript">
 
@@ -465,11 +467,10 @@
 		var theader = '<table class="col-selectable" style:"border-collapse: collapse">\n';
 		var tbody = '';
 		tbody += '<tr><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
-		tbody += '<tr><td id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr><td id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
+		tbody += '<tr><td class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
+		tbody += '<tr><td class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
-		console.log("subtabling....");
 		return subtable;
 	}
   
@@ -494,15 +495,14 @@
                  // $(th).attr("class", "context-menu"); // add this in once you have your context menu things ready~
                     $(th).attr("id", '0,'+j);
 					var temp = document.createElement('div');
-                    //$(st).attr("id", "subTable"+j);
                     var stContent = createSubtable(tharr[j], j);
-                    //console.log(stContent);
                     temp.innerHTML = stContent;
 					th.appendChild(temp);
 					thr.appendChild(th);
 			  }// /for
 			  table.appendChild(thr);
-              // create the rest of the table
+			  // Once the header row with subtables has been created,
+              //   continue and create the rest of the table
 			  for (var i = 1; i < rows.length; i++){
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
@@ -644,6 +644,9 @@
    		                 
    		                 var cn = i.split(',')[1];
    		                 
+						 $("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
+						 
+						 /* Robin's previous ontology class script
    		                 if (window.classRow ==1){
    		                 $("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
    		                 }
@@ -659,7 +662,7 @@
    		                 tr+= "</tr>";
    		                 $('#list tr:first').after(tr);
    		                 window.classRow = 1;
-   		                 }
+   		                 }*/
    		                 
    		            //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
    		                 
@@ -730,7 +733,10 @@
 	                 //alert(r);
 	                 
 	                 var cn = i.split(',')[1];
+					 
+					 $("[id='propertyRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
 	                 
+					 /* Robin's previous property target script
 	                 if (window.propertyRow ==1){
 	                 $("[class='droppable-prop' id='propertyRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));   		                	 
 	                 }
@@ -746,7 +752,7 @@
 	                 tr+= "</tr>";
 	                 $('#list tr:first').after(tr);
 	                 window.propertyRow = 1;
-	                 }
+	                 }*/
 	                 
 	             //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
 	                 
