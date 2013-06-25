@@ -24,6 +24,7 @@ import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.UnionComponent;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.SortType;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
@@ -74,12 +75,10 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 		// TODO Auto-generated method stub
 		
 		String domainUri = domain.getUri().toString();
+		String countyCode = (String) request.getParam("county");
+		String stateAbbr = (String) request.getParam("state");
 
 		if (domainUri.equals(WATER_NS)) {
-			String countyCode = (String) request.getParam("county");
-			String stateAbbr = (String) request.getParam("state");
-			assert (countyCode != null);
-			assert (stateAbbr != null);
 			
 			final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
 			final QueryResource WaterSite = query.getResource(WATER_NS
@@ -115,17 +114,89 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			final Variable value = query.getVariable(QUERY_NS+"value");
 			final Variable unit = query.getVariable(QUERY_NS+"unit");
 			final QueryResource reprHasUnit = query.getResource(UNIT_NS+"hasUnit");
-
-			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
-			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
-			final QueryResource unitHasUnit = query.getResource(POL_NS+"hasUnit");
-
 			
-
 			final QueryResource countyCoded = query
 					.getResource(POL_NS + "hasCountyCode");
 			final QueryResource stateAbbrev = query
 					.getResource(POL_NS + "hasStateCode");
+
+			//        <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> ;
+			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
+			final QueryResource unitHasUnit = query.getResource(POL_NS+"hasUnit");
+			String geofeatures = (String) request.getParam("geofeatures");
+
+			if(geofeatures !=null  && geofeatures.length() == 1){
+				request.getLogger().debug(
+						"species length: "
+								+ ((JSONArray) request.getParam("geofeatures"))
+										.length());
+				request.getLogger().debug("(got to if where geofeatures == 1)");
+				JSONArray geoFeaturesParams = (JSONArray) request
+						.getParam("geofeatures");
+				String geoFeaturesInArray = geoFeaturesParams.optString(0);
+				
+				
+				//the standard query pre-lake constraint
+				construct.addPattern(s, rdfType, WaterSite);
+				construct.addPattern(s, rdfsLabel, label);
+				construct.addPattern(s, wgsLat, lat);
+				construct.addPattern(s, wgsLong, lng);
+				construct.addPattern(s, polHasMeasurement, measurement);
+				construct.addPattern(measurement, polHasCharacteristic, element);
+				construct.addPattern(measurement, polHasValue, value);
+				construct.addPattern(measurement, reprHasUnit, unit);
+				final QueryResource waterWaterMeasurement = query.getResource(WATER_NS+"WaterMeasurement");
+				construct.addPattern(measurement, rdfType, waterWaterMeasurement);
+				
+
+				
+				final GraphComponentCollection graph = query
+						.getNamedGraph("AEAP_NYSERDA_ph2");
+				final GraphComponentCollection graph2 = query
+						.getNamedGraph("AEAP_NYSERDA_Locations");
+				
+				
+				graph.addPattern(measurement, ofEntity, entity); //so entity is the sample
+				
+				//in this block, we are binding to selected lakes, no commenting out below.
+				final QueryResource geoFeature = query.getResource(geoFeaturesInArray);
+
+				//graph.addPattern(entity, hasContext, s);
+				graph.addPattern(entity, hasContext, geoFeature);
+
+				
+				graph.addPattern(measurement, polHasCharacteristic, element);
+				graph.addPattern(measurement, polHasValue, value);
+				graph.addPattern(measurement, unitHasUnit, unit);
+
+				graph2.addPattern(s, rdfType, waterSite);
+				graph2.addPattern(s, rdfsLabel, label);
+				//graph.addPattern(measurement, site, s);
+				//graph2.addPattern(s, countyCoded, countyCode, null);
+				//graph2.addPattern(s, stateAbbrev, stateAbbr, null);
+				graph2.addPattern(s, wgsLat, lat);
+				graph2.addPattern(s, wgsLong, lng);
+				
+				config.getQueryExecutor(request).accept("text/turtle")
+				.execute(query, model);
+				
+				
+				
+				
+				
+				
+			//	final UnionComponent union = query.createUnion();
+			//	final NamedGraphComponent graph2 = query
+			//			.getNamedGraph("http://darrin-lakes");
+				
+			}
+			
+			
+			
+			else if(countyCode !=null && stateAbbr !=null ){
+
+			assert (countyCode != null);
+			assert (stateAbbr != null);
 			
 			construct.addPattern(s, rdfType, WaterSite);
 			construct.addPattern(s, rdfsLabel, label);
@@ -137,7 +208,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			construct.addPattern(measurement, reprHasUnit, unit);
 			final QueryResource waterWaterMeasurement = query.getResource(WATER_NS+"WaterMeasurement");
 			construct.addPattern(measurement, rdfType, waterWaterMeasurement);
-
+			
 
 			
 			final GraphComponentCollection graph = query
@@ -163,7 +234,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			config.getQueryExecutor(request).accept("text/turtle")
 			.execute(query, model);
 			
-			
+			}
 			
 		}
 
@@ -176,7 +247,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 	 * @param action
 	 * @return
 	 */
-	@HierarchicalMethod(parameter = "species")
+	@HierarchicalMethod(parameter = "geofeatures")
 	public Collection<HierarchyEntry> querydarrinTaxonomyHM(
 			final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
@@ -208,7 +279,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			// items.add(entry);
 			// }
 			return querydarrinTaxonomyHMChildren(request,
-					(String) request.getParam("species"));
+					(String) request.getParam("geofeatures"));
 		} else if (action == HierarchyVerb.SEARCH) {
 			return searchDarrinSpecies(request, (String) request.getParam("string"));
 		} else if (action == HierarchyVerb.PATH_TO_NODE) {
@@ -352,6 +423,121 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 
 	}
 	
+	
+	/*...MY HIERARCHY...*/
+	@HierarchicalMethod(parameter = "lakes")
+		public Collection<HierarchyEntry> queryeLakeTypesHM(
+				final Request request, final HierarchyVerb action) {
+			List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+			if (action == HierarchyVerb.ROOTS) {
+				
+			return queryeLakeTypesHMRoots(request);
+			} else if (action == HierarchyVerb.CHILDREN) { 
+				return queryeLakeTypesHMChildren(request,
+					(String) request.getParam("lakes"));
+			} else if (action == HierarchyVerb.SEARCH) {
+				return searcheLake(request, (String) request.getParam("string"));
+			} else if (action == HierarchyVerb.PATH_TO_NODE) {
+				return eLakePathToNode(request, (String) request.getParam("uri"));
+			}
+			return items;
+	    }
+	
+	
+	protected Collection<HierarchyEntry> queryeLakeTypesHMChildren(
+			final Request request, String lakes) {
+				return null;		
+	}
+	
+	protected Collection<HierarchyEntry> searcheLake(
+			final Request request, String lakes) {
+				return null;		
+	}
+	
+	protected Collection<HierarchyEntry> eLakePathToNode(
+			final Request request, String lakes) {
+				return null;		
+	}
+	
+	protected Collection<HierarchyEntry> queryeLakeTypesHMRoots(
+			final Request request) {
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		// Variables
+		final Variable id = query.getVariable(VAR_NS + "child");
+		final Variable label = query.getVariable(VAR_NS + "label");
+		final Variable parent = query.getVariable(VAR_NS + "parent");
+		// URIs
+		final QueryResource typeOf = query.getResource(RDF_NS
+				+ "type");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+
+		final QueryResource lakeTypes = query
+				.getResource("http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/vocab/Lake");
+		request.getLogger().info("reached queryeLakesRoots\n");
+
+		// build query
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		vars.add(id);
+		vars.add(label);
+		vars.add(parent);
+		query.setVariables(vars);
+		query.addOrderBy(label, SortType.ASC);
+		// query.addPattern(site, inDataSet, dataSet);
+		/* this is what our query looks like
+		 * PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		 * PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+		   PREFIX owl: <http://www.w3.org/2002/07/owl#>
+		   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		   SELECT ?child ?label ?parent 
+		   WHERE 
+		  {
+		  graph <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/vocab/lake> {
+		  ?child <http://www.w3.org/2000/01/rdf-schema#type> ?parent . 
+		  ?child <http://www.w3.org/2000/01/rdf-schema#type> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/vocab/lake> . 
+		  ?child <http://www.w3.org/2000/01/rdf-schema#label> ?label . 
+		  }
+		  }
+		 */
+		String LAKE_NS = "http://darrin-lakes";
+		final NamedGraphComponent graph = query
+				.getNamedGraph(LAKE_NS);
+		graph.addPattern(id, typeOf, parent);
+		graph.addPattern(id, typeOf, lakeTypes);
+
+		graph.addPattern(id, hasLabel, label);
+		// for testing common names
+		// graph.addPattern(id, hasCommonName, label);
+
+		// get only the subclasses of the subclasses of OWL thing
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		String resultStr = config.getQueryExecutor(request)
+				.accept("application/json").execute(query);
+		if (resultStr == null) {
+			return entries;
+		}
+		try {
+			JSONObject results = new JSONObject(resultStr);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
+			for (int i = 0; i < bindings.length(); i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				String subclassId = binding.getJSONObject("child").getString(
+						"value");
+				String subclassLabel = binding.getJSONObject("label")
+						.getString("value");
+				HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(subclassId);
+				entry.setLabel(subclassLabel);
+				entries.add(entry);
+			}
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return entries;}
+
+	
+	
 
 	@Override
 	public void visit(OntModel model, Request request, Domain domain) {
@@ -361,7 +547,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 
 	@Override
 	public String getName() {
-		return "SemantEcoGeo";
+		return "NYState Lakes";
 	}
 
 	@Override
@@ -489,10 +675,20 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
 		Resource res = null;
+		Resource res2 = null;
+		/*
 		res = config.getResource("darrinSpeciesHierarchy.js");
-		Resource res2 = config.getResource("darrinSpeciesHierarchy.jsp");
+		res2 = config.getResource("darrinSpeciesHierarchy.jsp");
+		
 		ui.addScript(res);
 		ui.addFacet(res2);
+		*/
+		
+		res = config.getResource("sampleHierarchy.js");
+		res2 = config.getResource("sampleHierarchy.jsp");
+		ui.addScript(res);
+		ui.addFacet(res2);
+		
 	}
 
 }
