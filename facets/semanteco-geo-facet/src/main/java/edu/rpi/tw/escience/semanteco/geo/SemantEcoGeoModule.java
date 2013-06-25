@@ -10,6 +10,9 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 
+import edu.rpi.tw.escience.semanteco.HierarchicalMethod;
+import edu.rpi.tw.escience.semanteco.HierarchyEntry;
+import edu.rpi.tw.escience.semanteco.HierarchyVerb;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
@@ -22,12 +25,14 @@ import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
+import edu.rpi.tw.escience.semanteco.query.Query.SortType;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.ProvidesDomain;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -53,6 +58,8 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
     private static final String OBOE_NS = "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#";
 	public static final String UNIT_NS = "http://sweet.jpl.nasa.gov/2.1/reprSciUnits.owl#";
 	public static final String REPR_NS = "http://sweet.jpl.nasa.gov/2.1/repr.owl#";
+	private static final String BINDINGS = "bindings";
+
 
 	
 	// Define some constants
@@ -162,6 +169,189 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 
 		
 	}
+	
+	/**
+	 * Provides the hierarchical behavior for the darrin species module's facet.
+	 * @param request
+	 * @param action
+	 * @return
+	 */
+	@HierarchicalMethod(parameter = "species")
+	public Collection<HierarchyEntry> querydarrinTaxonomyHM(
+			final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		if (action == HierarchyVerb.ROOTS) {
+			// HierarchyEntry entry = new HierarchyEntry();
+			// entry.setUri(URI.create("http://example.com/bird1"));
+			// entry.setLabel("bird1");
+			// entry.setAltLabel("birdicus uno");
+			// items.add(entry);
+			// entry = new HierarchyEntry();
+			// entry.setUri(URI.create("http://example.com/bird2"));
+			// entry.setLabel("bird2");
+			// entry.setAltLabel("birdicus dos");
+			// items.add(entry);
+			return queryedarrinTaxonomyHMRoots(request);
+		} else if (action == HierarchyVerb.CHILDREN) {
+			// if (
+			// request.getParam("species").equals("http://example.com/bird1") )
+			// {
+			// HierarchyEntry entry = new HierarchyEntry();
+			// entry.setUri(URI.create("http://example.com/bird3"));
+			// entry.setLabel("bird3");
+			// entry.setAltLabel("birdicus tres");
+			// items.add(entry);
+			// entry = new HierarchyEntry();
+			// entry.setUri(URI.create("http://example.com/bird4"));
+			// entry.setLabel("bird4");
+			// entry.setAltLabel("birdicus quatro");
+			// items.add(entry);
+			// }
+			return querydarrinTaxonomyHMChildren(request,
+					(String) request.getParam("species"));
+		} else if (action == HierarchyVerb.SEARCH) {
+			return searchDarrinSpecies(request, (String) request.getParam("string"));
+		} else if (action == HierarchyVerb.PATH_TO_NODE) {
+			return darrinSpeciesPathToNode(request, (String) request.getParam("uri"));
+		}
+		return items;
+	}
+	
+	protected Collection<HierarchyEntry> queryedarrinTaxonomyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		// Variables
+		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+
+				final Variable id = query.getVariable(VAR_NS + "child");
+				final Variable label = query.getVariable(VAR_NS + "label");
+				final Variable parent = query.getVariable(VAR_NS + "parent");
+				
+				final QueryResource subClassOf = query.getResource(RDFS_NS
+						+ "subClassOf");
+				final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+
+				final QueryResource darrinTaxonomy = query
+						.getResource("http://darrin-taxonomy");
+				request.getLogger().info("reached darrin-taxonomy \n");
+				
+				// build query
+				Set<Variable> vars = new LinkedHashSet<Variable>();
+				vars.add(id);
+				vars.add(label);
+				vars.add(parent);
+				query.setVariables(vars);
+				query.addOrderBy(label, SortType.ASC);
+				final NamedGraphComponent graph = query
+						.getNamedGraph("http://darrin-taxonomy");
+				graph.addPattern(id, subClassOf, parent);
+				graph.addPattern(id, subClassOf, darrinTaxonomy);
+				graph.addPattern(id, hasLabel, label);
+				
+				String resultStr = config.getQueryExecutor(request)
+						.accept("application/json").execute(query);
+				if (resultStr == null) {
+					return entries;
+				}
+				
+				try {
+					JSONObject results = new JSONObject(resultStr);
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for (int i = 0; i < bindings.length(); i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						String subclassId = binding.getJSONObject("child").getString(
+								"value");
+						String subclassLabel = binding.getJSONObject("label")
+								.getString("value");
+						HierarchyEntry entry = new HierarchyEntry();
+						entry.setUri(subclassId);
+						entry.setLabel(subclassLabel);
+						entries.add(entry);
+					}
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				
+
+		
+		return entries;
+
+	}
+	protected Collection<HierarchyEntry> querydarrinTaxonomyHMChildren(
+			final Request request, final String species) {
+			Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+			
+				final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+				// Variables
+				final Variable id = query.getVariable(VAR_NS + "child");
+				final Variable label = query.getVariable(VAR_NS + "label");
+				final Variable parent = query.getVariable(VAR_NS + "parent");
+				// URIs
+				final QueryResource subClassOf = query.getResource(RDFS_NS
+						+ "subClassOf");
+				final QueryResource classPredicate = query
+						.getResource("http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/vocab/enhancement/1/class");
+			
+				final QueryResource classRequiresSubclasses = query
+						.getResource(species);
+				final QueryResource rdfsLabel = query
+						.getResource(RDFS_NS + "label");
+
+				// build query
+				Set<Variable> vars = new LinkedHashSet<Variable>();
+				vars.add(id);
+				vars.add(label);
+				vars.add(parent);
+				query.setVariables(vars);
+				query.addOrderBy(label, SortType.ASC);
+				final NamedGraphComponent graph = query
+						.getNamedGraph("http://darrin-taxonomy");
+				graph.addPattern(id, classPredicate, parent);
+				graph.addPattern(id, classPredicate, classRequiresSubclasses);
+
+				graph.addPattern(id, rdfsLabel, label);
+				String resultStr = config.getQueryExecutor(request)
+						.accept("application/json").execute(query);
+				if (resultStr == null) {
+					return entries;
+				}
+				try {
+					JSONObject results = new JSONObject(resultStr);
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for (int i = 0; i < bindings.length(); i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						HierarchyEntry entry = new HierarchyEntry();
+						entry.setUri(binding.getJSONObject("child").getString("value"));
+						entry.setLabel(binding.getJSONObject("label")
+								.getString("value"));
+
+						try {
+							entry.setParent(URI.create(binding.getJSONObject("parent")
+									.getString("value")));
+						} catch (Exception e) {
+						}
+
+						entries.add(entry);
+					}
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				
+			return entries;
+	}
+	protected Collection<HierarchyEntry> searchDarrinSpecies(final Request request,
+			final String str) {
+		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		return entries;
+	}
+	protected Collection<HierarchyEntry> darrinSpeciesPathToNode(final Request request,
+			final String node) {
+		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		return entries;
+
+	}
+	
 
 	@Override
 	public void visit(OntModel model, Request request, Domain domain) {
@@ -298,8 +488,11 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
-		// TODO Auto-generated method stub
-		
+		Resource res = null;
+		res = config.getResource("darrinSpeciesHierarchy.js");
+		Resource res2 = config.getResource("darrinSpeciesHierarchy.jsp");
+		ui.addScript(res);
+		ui.addFacet(res2);
 	}
 
 }
