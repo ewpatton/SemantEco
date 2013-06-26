@@ -63,8 +63,12 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 	
 	@Override
 	public void visit(Model model, Request request, Domain domain) {
-		DataModelBuilder builder = new DataModelBuilder(request, config);
-		builder.build(model);
+		try {
+			DataModelBuilder builder = new DataModelBuilder(request, config);
+			builder.build(model);
+		} catch(IllegalArgumentException e) {
+			request.getLogger().info("Water Data Provider will not load data due to an exception.", e);
+		}
 	}
 
 	@Override

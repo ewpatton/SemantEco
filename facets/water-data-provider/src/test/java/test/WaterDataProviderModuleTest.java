@@ -305,21 +305,9 @@ public class WaterDataProviderModuleTest extends TestCase {
 		TestRequest request = new TestRequest();
 		WaterDataProviderModule module = new WaterDataProviderModule();
 		module.setModuleConfiguration(config);
-		try {
-			module.visit(model, request, null);
-			fail();
-		}
-		catch(IllegalArgumentException e) {
-			
-		}
-		try {
-			request.setParam("source", new String[] { "[\"http://sparql.tw.rpi.edu/garbage\"]" });
-			module.visit(model, request, null);
-			fail();
-		}
-		catch(IllegalArgumentException e) {
-			
-		}
+		module.visit(model, request, null);
+		request.setParam("source", new String[] { "[\"http://sparql.tw.rpi.edu/garbage\"]" });
+		module.visit(model, request, null);
 		request.setParam("source", new String[] { "[\"http://sparql.tw.rpi.edu/source/usgs-gov\"]", "[\"http://sparql.tw.rpi.edu/source/epa-gov\"]" });
 		request.setParam("state",new String[] { "RI" });
 		request.setParam("county",new String[] { "1" });
