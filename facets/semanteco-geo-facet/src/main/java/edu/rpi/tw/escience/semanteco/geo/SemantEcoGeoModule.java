@@ -201,8 +201,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 				//graph2.addPattern(s, stateAbbrev, stateAbbr, null);
 				graph2.addPattern(geoFeature, wgsLat, lat);
 				graph2.addPattern(geoFeature, wgsLong, lng);
-				//graph2.addPattern(s, hasContext, );
-				
+				//graph2.addPattern(s, hasContext, );				
 				config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
 			}
 			else if(geofeaturesParams != null  && geofeaturesParams.length() > 1){
@@ -227,16 +226,13 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 					coll.addPattern(addedGeofeature, rdfType, WaterSite);
 					coll.addPattern(addedGeofeature, rdfsLabel, label);
 					coll.addPattern(addedGeofeature, wgsLat, lat);
-					coll.addPattern(addedGeofeature, wgsLong, lng);		
-				
+					coll.addPattern(addedGeofeature, wgsLong, lng);						
 				}
-				config.getQueryExecutor(request).accept("text/turtle")
-				.execute(query, model);
-
+				config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
 			}
 			
 			
-			
+			//should be if and create union against geoFeature queries
 			else if(countyCode !=null && stateAbbr !=null ){
 
 			assert (countyCode != null);
