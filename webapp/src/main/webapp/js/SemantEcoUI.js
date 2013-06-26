@@ -738,6 +738,20 @@ var SemantEcoUI = {
         SemantEco.action = null;
         $(window).trigger('show-marker-info');
     },
+    "focusMap": function() {
+        if(SemantEcoUI.markers.length == 0) {
+            return;
+        }
+        var latlng = SemantEcoUI.markers[0].getPosition();
+        var bounds = new google.maps.LatLngBounds(latlng, latlng);
+        for(var i=1;i<SemantEcoUI.markers.length;i++) {
+            bounds.extend(SemantEcoUI.markers[i].getPosition());
+        }
+        SemantEcoUI.map.fitBounds(bounds);
+        if(SemantEcoUI.map.getZoom() > 15) {
+            SemantEcoUI.map.setZoom(15);
+        }
+    },
     "showSpinner": function() {
         $("#spinner").css("display", "block");
     },

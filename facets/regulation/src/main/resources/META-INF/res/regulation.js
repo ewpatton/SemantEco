@@ -62,6 +62,7 @@ RegulationModule.getData = function() {
 			}
 			$(window).trigger("create-marker", json.results.bindings[binding]);
 		}
+		SemantEcoUI.focusMap();
 	});
 };
 
@@ -97,7 +98,6 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 		    else{
 		        contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Characteristic</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
 			    for(var i=0;i<bindings.length;i++) {
-			      	// try {
 						var result = bindings[i];
 						var element = result["element"].value;
 						var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
