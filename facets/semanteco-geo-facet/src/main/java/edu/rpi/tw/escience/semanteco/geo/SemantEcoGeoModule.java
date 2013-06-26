@@ -180,7 +180,16 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 				else{
 					graph.addPattern(entity, hasContext, s);
 				}
-								
+				
+				final UnionComponent union = query.createUnion();			
+				graph2.addGraphComponent(union);
+				GraphComponentCollection coll;
+				int unionElementCount = 0;
+				
+				coll = union.getUnionComponent(unionElementCount);
+				unionElementCount++;
+
+				
 				if(geofeaturesParams != null  && geofeaturesParams.length() == 1){
 					request.getLogger().debug("got inside");
 					request.getLogger().debug("geofeatures : " + geofeaturesParams.toString());
@@ -194,15 +203,20 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 					final QueryResource geoFeature = query.getResource(geofeatures);
 					request.getLogger().debug("first entry: " + geofeatures);
 
-				graph2.addPattern(geoFeature, rdfType, WaterSite);
-				graph2.addPattern(geoFeature, rdfsLabel, label);
+				//graph2.addPattern(geoFeature, rdfType, WaterSite);
+				//graph2.addPattern(geoFeature, rdfsLabel, label);
+				//graph2.addPattern(geoFeature, wgsLat, lat);
+				//graph2.addPattern(geoFeature, wgsLong, lng);
+				
+				coll.addPattern(geoFeature, rdfType, WaterSite);
+				coll.addPattern(geoFeature, rdfsLabel, label);
+				coll.addPattern(geoFeature, wgsLat, lat);
+				coll.addPattern(geoFeature, wgsLong, lng);
+							
 				//graph.addPattern(measurement, site, s);
 				//graph2.addPattern(s, countyCoded, countyCode, null);
-				//graph2.addPattern(s, stateAbbrev, stateAbbr, null);
-				graph2.addPattern(geoFeature, wgsLat, lat);
-				graph2.addPattern(geoFeature, wgsLong, lng);
-				//graph2.addPattern(s, hasContext, );
-				
+				//graph2.addPattern(s, stateAbbrev, stateAbbr, null);				
+				//graph2.addPattern(s, hasContext, );				
 				config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
 			}
 			else if(geofeaturesParams != null  && geofeaturesParams.length() > 1){
@@ -212,32 +226,30 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 								+ ((JSONArray) request.getParam("geofeatures"))
 										.length());
 				request.getLogger().debug("(got to else if where geofeatures > 1)");
-				final UnionComponent union = query.createUnion();			
-				graph2.addGraphComponent(union);
-				GraphComponentCollection coll;
-				for (int i = 0; i < geofeaturesParams.length(); i++) {
+				
+				//GraphComponentCollection coll;
+				for (int i =0; i < geofeaturesParams.length(); i++) {
 					String geofeaturesInArray = null;
-					geofeaturesInArray = geofeaturesParams.optString(i);
-					
+					geofeaturesInArray = geofeaturesParams.optString(i);					
 					//this is a flat list of lakes so don't need to queryIfTaxonomicCategory just eBird
 					//handle as if like 322 for speciesdataprovider "(no results for queryIfTaxonomicCategory)"
 					//will need to revisit
+					coll = union.getUnionComponent(unionElementCount);
 					final QueryResource addedGeofeature = query.getResource(geofeaturesInArray);
-					coll = union.getUnionComponent(i);
+					coll = union.getUnionComponent(unionElementCount);
 					coll.addPattern(addedGeofeature, rdfType, WaterSite);
 					coll.addPattern(addedGeofeature, rdfsLabel, label);
 					coll.addPattern(addedGeofeature, wgsLat, lat);
-					coll.addPattern(addedGeofeature, wgsLong, lng);		
-				
+					coll.addPattern(addedGeofeature, wgsLong, lng);	
+					unionElementCount++;
 				}
-				config.getQueryExecutor(request).accept("text/turtle")
-				.execute(query, model);
-
 			}
 			
-			
-			
-			else if(countyCode !=null && stateAbbr !=null ){
+				request.getLogger().debug("before county");
+
+			//should be if and create union against geoFeature queries
+			if(countyCode !=null && stateAbbr !=null ){
+				request.getLogger().debug("within county");
 
 			assert (countyCode != null);
 			assert (stateAbbr != null);
@@ -269,6 +281,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			graph.addPattern(measurement, unitHasUnit, unit);
 			*/
 
+			/*
 			graph2.addPattern(s, rdfType, waterSite);
 			graph2.addPattern(s, rdfsLabel, label);
 			//graph.addPattern(measurement, site, s);
@@ -276,11 +289,22 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			graph2.addPattern(s, stateAbbrev, stateAbbr, null);
 			graph2.addPattern(s, wgsLat, lat);
 			graph2.addPattern(s, wgsLong, lng);
+			*/
+			coll = union.getUnionComponent(unionElementCount);
+			coll.addPattern(s, rdfType, waterSite);
+			coll.addPattern(s, rdfsLabel, label);
+			//graph.addPattern(measurement, site, s);
+			coll.addPattern(s, countyCoded, countyCode, null);
+			coll.addPattern(s, stateAbbrev, stateAbbr, null);
+			coll.addPattern(s, wgsLat, lat);
+			coll.addPattern(s, wgsLong, lng);
 			
 			config.getQueryExecutor(request).accept("text/turtle")
 			.execute(query, model);
 			
 			}
+			config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
+
 			
 		}
 
