@@ -1,6 +1,9 @@
 ZipCodeModule.showAddress = function(zip) {
     zip = zip || $("#zip").val();
     if(zip == null || zip == "") {
+        // trigger default behavior...
+        SemantEcoUI.showSpinner();
+        $(window).trigger("get-data");
         return;
     }
     if(zip.length != 5) {
