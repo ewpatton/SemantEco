@@ -52,9 +52,6 @@ $(window).bind('initialize',function() {
     }
     return true;
   };
-  $("div.search").bind("click", function() {
-    ZipCodeModule.showAddress();
-  });
   ZipCodeModule.deferLookup = ($.bbq.getState('zip') != null);
 });
 
@@ -62,4 +59,8 @@ $(window).bind('initialized.semanteco', function() {
   if(ZipCodeModule.deferLookup) {
     SemantEco.decodeZipCode();
   }
+  $("div.search").unbind("click");
+  $("div.search").bind("click", function() {
+    ZipCodeModule.showAddress();
+  });
 });

@@ -153,13 +153,16 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 			$(window).trigger('pop-infowindow',marker);
 		});
 	}
-	
 
 };
 
 $(window).bind("initialize", function() {
 	console.log("regulation.js#initialize");
-	
+
+    $("div.search").bind("click", function() {
+        $(window).trigger("get-data");
+    });
+
 	// set the action for when another module or the UI raises a "get-data" event
 	$(window).bind("get-data", RegulationModule.getData);
 	
