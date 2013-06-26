@@ -232,7 +232,7 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ma-regulation.owl"), "MA Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ny-regulation.owl"), "NY Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl"), "RI Regulation");
-		domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/darrin-fresh-water.owl"), "Darrin Fresh Water");
+		//domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/darrin-fresh-water.owl"), "Darrin Fresh Water");
 
 	}
 	

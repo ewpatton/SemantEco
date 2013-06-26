@@ -124,25 +124,6 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			//<http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846> <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#hasContext> <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/lake/040752> .
 			final QueryResource unitHasUnit = query.getResource(POL_NS+"hasUnit");
 			
-			JSONArray geofeaturesParams = (JSONArray) request
-					.getParam("geofeatures");
-			String geofeatures = geofeaturesParams.optString(0);
-			
-			request.getLogger().debug("geofeatures : " + geofeaturesParams.toString());
-			request.getLogger().debug("first entry: " + geofeatures);
-			if(geofeaturesParams !=null  && geofeaturesParams.length() == 1){
-				request.getLogger().debug("got inside");
-
-				request.getLogger().debug(
-						"species length: "
-								+ ((JSONArray) request.getParam("geofeatures"))
-										.length());
-				request.getLogger().debug("(got to if where geofeatures == 1)");
-				//JSONArray geoFeaturesParams = (JSONArray) request
-				//		.getParam("geofeatures");
-				//String geoFeaturesInArray = geoFeaturesParams.optString(0);
-				
-				
 				//the standard query pre-lake constraint
 				construct.addPattern(s, rdfType, WaterSite);
 				construct.addPattern(s, rdfsLabel, label);
@@ -161,41 +142,97 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 						.getNamedGraph("AEAP_NYSERDA_ph2");
 				final GraphComponentCollection graph2 = query
 						.getNamedGraph("AEAP_NYSERDA_Locations");
-				
-				
-				graph.addPattern(measurement, ofEntity, entity); //so entity is the sample
-				
-				//in this block, we are binding to selected lakes, no commenting out below.
-				final QueryResource geoFeature = query.getResource(geofeatures);
-
-				//graph.addPattern(entity, hasContext, s);
-				graph.addPattern(entity, hasContext, geoFeature);
-
-				
+								
+				graph.addPattern(measurement, ofEntity, entity); //so entity is the sample				
+				//in this block, we are binding to selected lakes, no commenting out below.			
 				graph.addPattern(measurement, polHasCharacteristic, element);
 				graph.addPattern(measurement, polHasValue, value);
 				graph.addPattern(measurement, unitHasUnit, unit);
+				
+				
+				JSONArray geofeaturesParams = (JSONArray) request
+						.getParam("geofeatures");
+				request.getLogger().debug("geofeatures parms is : " + geofeaturesParams.toString());
+				
+				
+				//handling of the first graph update
+				if(geofeaturesParams != null  && geofeaturesParams.length() == 1){
+				String geofeatures = geofeaturesParams.optString(0);
+				final QueryResource geoFeature = query.getResource(geofeatures);
+				graph.addPattern(entity, hasContext, s);
+				graph.addPattern(entity, hasContext, geoFeature);
+				}
+				else if(geofeaturesParams != null  && geofeaturesParams.length() > 1){
+					final UnionComponent union = query.createUnion();
+					graph.addGraphComponent(union);
+					GraphComponentCollection coll;
+					graph.addPattern(entity, hasContext, s);
+					for (int i = 0; i < geofeaturesParams.length(); i++) {
+						String geospeciesInArray = null;
+						geospeciesInArray = geofeaturesParams.optString(i);
+						final QueryResource addedGeoFeature = query
+								.getResource(geospeciesInArray);
+						coll = union.getUnionComponent(i);
+						coll.addPattern(entity, hasContext, addedGeoFeature);
+					}
 
-				graph2.addPattern(s, rdfType, WaterSite);
-				graph2.addPattern(s, rdfsLabel, label);
+				}				
+				else{
+					graph.addPattern(entity, hasContext, s);
+				}
+								
+				if(geofeaturesParams != null  && geofeaturesParams.length() == 1){
+					request.getLogger().debug("got inside");
+					request.getLogger().debug("geofeatures : " + geofeaturesParams.toString());
+					request.getLogger().debug(
+							"species length: "
+									+ ((JSONArray) request.getParam("geofeatures"))
+											.length());
+					request.getLogger().debug("(got to if where geofeatures == 1)");
+									
+					String geofeatures = geofeaturesParams.optString(0);
+					final QueryResource geoFeature = query.getResource(geofeatures);
+					request.getLogger().debug("first entry: " + geofeatures);
+
+				graph2.addPattern(geoFeature, rdfType, WaterSite);
+				graph2.addPattern(geoFeature, rdfsLabel, label);
 				//graph.addPattern(measurement, site, s);
 				//graph2.addPattern(s, countyCoded, countyCode, null);
 				//graph2.addPattern(s, stateAbbrev, stateAbbr, null);
-				graph2.addPattern(s, wgsLat, lat);
-				graph2.addPattern(s, wgsLong, lng);
+				graph2.addPattern(geoFeature, wgsLat, lat);
+				graph2.addPattern(geoFeature, wgsLong, lng);
+				//graph2.addPattern(s, hasContext, );
 				
+				config.getQueryExecutor(request).accept("text/turtle").execute(query, model);
+			}
+			else if(geofeaturesParams != null  && geofeaturesParams.length() > 1){
+				
+				request.getLogger().debug(
+						"geofeature length: "
+								+ ((JSONArray) request.getParam("geofeatures"))
+										.length());
+				request.getLogger().debug("(got to else if where geofeatures > 1)");
+				final UnionComponent union = query.createUnion();			
+				graph2.addGraphComponent(union);
+				GraphComponentCollection coll;
+				for (int i = 0; i < geofeaturesParams.length(); i++) {
+					String geofeaturesInArray = null;
+					geofeaturesInArray = geofeaturesParams.optString(i);
+					
+					//this is a flat list of lakes so don't need to queryIfTaxonomicCategory just eBird
+					//handle as if like 322 for speciesdataprovider "(no results for queryIfTaxonomicCategory)"
+					//will need to revisit
+					final QueryResource addedGeofeature = query.getResource(geofeaturesInArray);
+					coll = union.getUnionComponent(i);
+					coll.addPattern(addedGeofeature, rdfType, WaterSite);
+					coll.addPattern(addedGeofeature, rdfsLabel, label);
+					coll.addPattern(addedGeofeature, wgsLat, lat);
+					coll.addPattern(addedGeofeature, wgsLong, lng);		
+				
+				}
 				config.getQueryExecutor(request).accept("text/turtle")
 				.execute(query, model);
-				
-				
-				
-				
-				
-				
-			//	final UnionComponent union = query.createUnion();
-			//	final NamedGraphComponent graph2 = query
-			//			.getNamedGraph("http://darrin-lakes");
-				
+
 			}
 			
 			
@@ -205,6 +242,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			assert (countyCode != null);
 			assert (stateAbbr != null);
 			
+			/*
 			construct.addPattern(s, rdfType, WaterSite);
 			construct.addPattern(s, rdfsLabel, label);
 			construct.addPattern(s, wgsLat, lat);
@@ -229,6 +267,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 			graph.addPattern(measurement, polHasCharacteristic, element);
 			graph.addPattern(measurement, polHasValue, value);
 			graph.addPattern(measurement, unitHasUnit, unit);
+			*/
 
 			graph2.addPattern(s, rdfType, waterSite);
 			graph2.addPattern(s, rdfsLabel, label);
@@ -254,6 +293,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 	 * @param action
 	 * @return
 	 */
+	/*
 	@HierarchicalMethod(parameter = "darrinspecies")
 	public Collection<HierarchyEntry> querydarrinTaxonomyHM(
 			final Request request, final HierarchyVerb action) {
@@ -294,7 +334,8 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 		}
 		return items;
 	}
-	
+	*/
+	/*
 	protected Collection<HierarchyEntry> queryedarrinTaxonomyHMRoots(final Request request) {
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 		// Variables
@@ -355,6 +396,8 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 		return entries;
 
 	}
+	*/
+	/*
 	protected Collection<HierarchyEntry> querydarrinTaxonomyHMChildren(
 			final Request request, final String species) {
 			Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
@@ -429,7 +472,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 		return entries;
 
 	}
-	
+	*/
 	
 	/*...MY HIERARCHY...*/
 	@HierarchicalMethod(parameter = "geofeatures")
@@ -554,7 +597,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 
 	@Override
 	public String getName() {
-		return "NYState Lakes";
+		return "NY State Lakes";
 	}
 
 	@Override
@@ -648,8 +691,24 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 		//addDataSources(semantGeoDomain, request);
 		//addRegulations(water);
 		//addDataTypes(semantGeoDomain);
+		
+		addDataSourcesDarrin(water, request);
+		addRegulations(water);
+		domains.add(water);
 	    return domains;
 	 }
+	
+	/**
+	 * This method adds the uri and label for the Bird data source, here
+	 * "http://ebird#" and "eBird", resp.
+	 * 
+	 * @param domain
+	 * @param request
+	 */
+	protected void addDataSourcesDarrin(final Domain domain, final Request request) {
+		domain.addSource(URI.create("http://darrin#"), "Darrin Freshwater Institute");
+		// this is what is put into the bbq state for sources
+	}
 	
 	protected void addDataSources(final Domain domain, final Request request) {
 		// TODO query for data sources and add them here (cf {@link WaterDataProviderModule#addDataSources(Domain, Request)})
@@ -660,6 +719,8 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
 		// TODO query for regulations and add them here
 		//domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/EPA-air-regulation.owl"), "Darrin Fresh Water");
 		//domain.addRegulation(URI.create("http://dataone.tw.rpi.edu/darrin-fresh-water.owl"), "Darrin Fresh Water");
+		domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/darrin-fresh-water.owl"), "Darrin Fresh Water");
+
 
 	}
 	
