@@ -10,12 +10,12 @@
    
 	<style>
 	
-    body {
+    body{
       font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
       color: #404040;
       background: #F8F8F8;
     }
-    #wrap{
+    #wrap {
       float:left;
       width: 68%;
       padding: 10px; 
@@ -25,7 +25,7 @@
       -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
       box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
     }
-    form{
+    form {
       background: #CCC;
       border-radius: 2px;
       padding: 10px;
@@ -37,20 +37,7 @@
       border-spacing: 0;
       width: 100%;
       margin-bottom: 20px;
-    }
-    table th{
-      background: #eae4ff;
-    }
-    table th,
-    table td {
-      padding: 8px;
-      line-height: 20px;
-      text-align: left;
-      vertical-align: top;
-      border-top: 1px solid #dddddd;
-    }
-    table {
-      border: 1px solid #dddddd;
+	  border: 1px solid #dddddd;
       border-collapse: separate;
       *border-collapse: collapse;
       border-left: 0;
@@ -58,24 +45,42 @@
          -moz-border-radius: 4px;
               border-radius: 4px;
     }
-    table th,
+    table th{
+      background: #eae4ff;
+	  line-height: 20px;
+      text-align: left;
+      vertical-align: top;
+      border-top: 1px solid #dddddd;
+	  border-left: 1px solid #dddddd;
+    }
     table td {
-      border-left: 1px solid #dddddd;
+      padding: 8px;
+      line-height: 20px;
+      text-align: left;
+      vertical-align: top;
+      border-top: 1px solid #dddddd;
+	  border-left: 1px solid #dddddd;
+    }
+	
+    table tr:first-child {
+      font-weight: bold;
     }
 
     table tr:nth-child(odd){
       background-color: #f9f9f9;
     }
 
-    table tr:hover td
-    {
+    table tr:hover td {
       background-color: #f5f5f5;
     }
-
-    table tr:first-child{
-      font-weight: bold;
-    }
+	
+	.bundledRow {
+		background-color: #3865e6;
+	}
     
+	.annotationRow {
+		background-color: #6787e6
+	}
     
     .col-selectable .ui-selecting { background: #FECA40; }
 	.col-selectable .ui-selected { background: #F39814; }
@@ -112,7 +117,21 @@
 		color: white;
 	}
     
+    .context-menu-list {
+		margin:0; 
+		padding:0;
+   
+		min-width: 120px;
+		max-width: 250px;
+		display: inline-block;
+		position: absolute;
+		list-style-type: none;
     
+		border: 1px solid #DDD;
+		background: #EEE;
+   	}
+	
+	
 	</style>
 	
 	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
@@ -211,15 +230,19 @@
                 var p = data.o.attr("id");
                 //alert(p);
 
+				// q = ???
                 var q = $(data.o).text();
                 //alert(q);
                 
+				// i = ???
                 var i = data.r.attr("id");
                 //alert(i);
                 
+				// r = ????
                 var r = $(data.r).text();
                 //alert(r);
                 
+				// cn = column number
                 var cn = i.split(',')[1];
                 
 				$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
@@ -297,14 +320,13 @@
     });
 });
 	
-	// Katie's additions
-	// for making column headers selectable
+	// For making column headers selectable
 	$(function() {
 			$( ".col-selectable" ).selectable({
-				filter: "th", 
+				filter: "td", 
 				selected: function( event, ui ) {
 					$( ".ui-selected", this ).each(function() {
-						var index = $( ".col-selectable th" ).index( this );
+						var index = $( ".col-selectable td" ).index( this );
 						console.log("selecting col " + index + "....");
 						//isSelected[index] = true;
 						
@@ -315,7 +337,7 @@
 				}, // /selected
 				unselected: function( event, ui ) {
 					$( ui.unselected, this ).each(function() {
-						var index = $( ".col-selectable th").index( this );
+						var index = $( ".col-selectable td").index( this );
 						console.log("unselecting col " + index + "....");
 						//isSelected[index] = false;
 					});
@@ -397,6 +419,7 @@
   </div>
   <script>
   // allows user input for the dropdown forms
+  /*
   		function dropdownAdd (theForm){
 			var DropdownBox =document.getElementById("dataset_info");
 			var optn = document.createElement("OPTION");
@@ -404,7 +427,7 @@
 			optn.text = theAddition;
 			optn.value = theAddition;
 			DropdownBox.add(optn);
-		}
+		}*/
   
   		
   </script>
@@ -413,25 +436,27 @@
   	<tr><td colspan="3"><p><em>Please provide the following pieces of information about your dataset:</em></p>
   	<span id="tentative-uri">(it may take a moment to render your data table)</span>
   	</td></tr>
-  	<tr><td><div id="source_box"><em>Data Source</em><form><select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
+  	<tr><td style="width:33%"><div id="source_box"><em>Data Source</em><form><select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
   	<option value="">--Select source--</option>
   	<option value="org1">Organization 1</option>
   	<option value="org2">University 2</option>
   	<option value="org3">Agency 3</option>
   	</select>OR
-  	<input type="text" name="data_add_new" placeholder="add a new source" onsubmit="dropdownAdd(this);">
-	<button type="submit">Add</button></form></div>
+  	<input type="text" name="source_add_new" placeholder="add a new source" onsubmit="dropdownAdd(this);">
+	<!--<button type="submit">Add</button> -->
+	</form></div>
   	</td>
-  	<td><div id="dataset_box"><em>Data Set Name</em><form><select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
+  	<td style="width:33%"><div id="dataset_box"><em>Data Set Name</em><form><select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
   	<option value="">--Select Dataset Name--</option>
   	<option value="ds1">dataset 1</option>
   	<option value="ds2">dataset 2</option>
   	<option value="ds3">dataset 3</option>
   	</select>OR
-  	<input type="text" name="data_add_new" placeholder="add a new dataset" onsubmit="dropdownAdd(this);">
-	<button type="submit">Add</button></form></form></div>
+  	<input type="text" name="name_add_new" placeholder="add a new dataset" onsubmit="dropdownAdd(this);">
+	<!--<button type="submit">Add</button>-->
+	</form></div>
   	</td>
-  	<td><div id="version_box"><em>Version Information</em><form><input type="text" id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Version, eg. today's date"></form></div>
+  	<td style="width:33%"><div id="version_box"><em>Version Information</em><form><input type="text" id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Version, eg. today's date"></form></div>
   	</td></tr>
   	</table>
   </div>
@@ -454,6 +479,7 @@
     }
   }
   
+    // Generates the subtables for each column header in the CSV file.
 	// every subtable will be the same, (except for the ID's of the cells)
 	//    with 3 rows in 1 column. These are the DEFAULT subtables; ones for
 	//    IMPLICIT or EXPLICIT BUNDLES will be different (and in other functions) 
@@ -461,8 +487,8 @@
 	// * text: presumably the header for the column from the original CSV file,
 	//	   to be placed in the first row of the column.
 	// * colIndex: the position of that cell in the table. Subrows are 
-	//	   identified as header row, "propertyRow,colIndex", and "classRow,colIndex" - these last two
-	//	   are classed as droppable targets.
+	//	   identified as header row, "propertyRow,"+colIndex, and "classRow,"+colIndex - these last two
+	//	   rows are classed as droppable targets.
 	function createSubtable(text,colIndex) {
 		var theader = '<table class="col-selectable" style:"border-collapse: collapse">\n';
 		var tbody = '';
@@ -473,6 +499,31 @@
 		var subtable = theader + tbody + tfooter;
 		return subtable;
 	}
+	
+	// Creates and enables the context menu on the column headers
+	// Each function appears under "items" and should have a NAME and a CALLBACK,
+	//   the latter being to the javascript function for that menu choice.
+	$(function(){
+			$.contextMenu({
+				selector: '.the-context-menu', 
+				callback: function(key, options) {
+					var m = "clicked: " + key;
+					window.console && console.log(m) || alert(m); 
+				},
+				items: {
+					"toggle-cell-based": {name: "Designate for Cell-based Conversion"},
+					"toggle-links_via": {name: "Enable/Disable links_via"},
+					"bundle": {name: "Create Bundle"},
+					"comment": {name: "Add Comment"},
+					"eg": {name: "Add Canonical Value (eg)"},
+					"new-triple": {name: "Forge New Triple"},
+				}// /items
+			}); // /context menu
+			// for debugging:
+			$('.context-menu-one').on('click', function(e){
+				console.log('clicked', this);
+			})// /on click
+		});// /context menu function
   
  //csv file parser and table loader
  function handleFileSelect(){
@@ -485,22 +536,42 @@
               var rows = file.target.result.split(/[\r\n|\n]+/);
               var table = document.createElement('table');
               
+			  // Create subtabled column headers
 			  var thr = document.createElement('tr');
 			  var tharr = rows[0].split(',');
-			  var th;
-			  // create subtabled column headers
-			  for (var j = 0; j < tharr.length; j++){ // i == 0, so this is just for the column headers
+			  var numcols = tharr.length;
+			  // Create row for bundled properties
+			  // * This is empty at table generation, and hidden by default
+			  var btr = document.createElement('tr');
+			  //$(btr).attr("style", 'visibility:hidden'); // this is only commented right now so you can see it =)
+			  // Create row for annotations (and additional triples
+			  var atr = document.createElement('tr');
+			  //$(atr).attr("style", 'visibility:hidden');
+			  var th,btd,atd;
+			  for (var j = 0; j < numcols; j++){ // i == 0 for all of these because they're not rows of data from CSV
+				// column header
                     th = document.createElement('th');
-                    $(th).attr("class", "col-selectable");
-                 // $(th).attr("class", "context-menu"); // add this in once you have your context menu things ready~
+                    $(th).attr("class", "col-selectable the-context-menu");
                     $(th).attr("id", '0,'+j);
 					var temp = document.createElement('div');
                     var stContent = createSubtable(tharr[j], j);
                     temp.innerHTML = stContent;
 					th.appendChild(temp);
 					thr.appendChild(th);
-			  }// /for
+				// bundled column row
+					btd = document.createElement('td');
+					$(btd).attr("id", 'bundledRow,'+j);
+					$(btd).attr("class", 'bundledRow');
+					btr.appendChild(btd);
+				// annotation row
+					atd = document.createElement('td');
+					$(atd).attr("id", 'annotationRow,'+j);
+					$(atd).attr("class", 'annotationRow');
+					atr.appendChild(atd);
+			  }//
 			  table.appendChild(thr);
+			  table.appendChild(btr);
+			  table.appendChild(atr);
 			  // Once the header row with subtables has been created,
               //   continue and create the rest of the table
 			  for (var i = 1; i < rows.length; i++){
@@ -571,7 +642,7 @@
         <td>
          ClassTree
           <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
-		   <div id="ClassTree" class="hierarchy" style="width:120%;height:200px;">
+		   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
 		   </div>
           </div>
 		</td>
@@ -589,7 +660,7 @@
           <td>
            PropertyTree        
            <div id="description_prop" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="PropertyTree" class="hierarchy" style="width:120%;height:200px;">
+			<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
 			</div>
 
 			</div>
