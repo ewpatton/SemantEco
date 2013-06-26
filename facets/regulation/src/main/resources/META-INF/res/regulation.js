@@ -107,7 +107,16 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 						if(unit.indexOf("http://")>=0) {
 						  unit = unit.substr(unit.lastIndexOf("/")+1);
 						}
-						var op = result["op"].value;
+						var op = "<=";
+						if(result["op"] !== undefined) {
+                          op = result["op"].value;
+						} else {
+						  console.warn("No op field in result, will assume <=");
+						}
+						if(result["limit"]===undefined) {
+						  console.warn("No limit found in violation. Skipping record.");
+						  continue;
+						}
 						var limit = result["limit"].value;
 						contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td class='characteristics' data-value='"+ element +"'>";
 						contents += label+"</td><td>"+value+" "+unit+"</td><td>";
