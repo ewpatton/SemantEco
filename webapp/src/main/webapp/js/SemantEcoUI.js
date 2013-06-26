@@ -1,4 +1,4 @@
- var SemantEcoUI = {
+var SemantEcoUI = {
     //store all reference to markers
     "markers": [],
     "markersByUri": {},
@@ -688,6 +688,8 @@
                 $.bbq.pushState(state);
             });
         });
+        $("div#facets").sortable({axis:"y", items: "table", handle:"th",
+            placeholder:"ui-state-highlight"}).find("th").disableSelection();
     },
     "createMarker": function(uri, lat, lng, icon, visible, label) {
         var opts = {"clickable": true,

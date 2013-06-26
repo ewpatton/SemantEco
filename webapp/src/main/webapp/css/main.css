@@ -81,6 +81,7 @@ table {
   border: 1px solid black;
   margin-bottom: 1em;
   width: 100%;
+  background-color: white;
 }
 
 table th {
@@ -694,4 +695,12 @@ div.button {
 
 div.button:hover {
     background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
+}
+
+div#facets table.ui-state-highlight {
+    display: block;
+    border: 1px dashed #8686fc;
+    height: 100px;
+    background: white;
+    margin-bottom: 1em;
 }
