@@ -30,7 +30,7 @@ SemantEcoUI.HierarchicalFacet = {};
     var cancelClick = function(e, d) { e.preventDefault(); };
 
     var clickHandler = function(e, d) {
-        updateState.apply(this, e, d);
+        updateState.call(this, e, d);
         var jqdiv = $(this);
         var li = d.rslt.obj;
         var uri = li.attr("hierarchy_id");
