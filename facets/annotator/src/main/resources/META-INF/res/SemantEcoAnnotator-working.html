@@ -30,7 +30,9 @@
       border-radius: 2px;
       padding: 10px;
     }
-    table {
+    
+	
+	table {
       max-width: 100%;
       background-color: #fff;
       border-collapse: collapse;
@@ -74,8 +76,10 @@
       background-color: #f5f5f5;
     }
 	
-	.bundledRow { }
-	.annotationRow { }
+	.bundledRow { 	}
+	.annotationRow {	
+		font-size:5px;
+	}
     
     .col-selectable .ui-selecting { background: #FECA40; }
 	.col-selectable .ui-selected { background: #F39814; }
@@ -106,16 +110,22 @@
     .context-menu-list {
 		margin:0; 
 		padding:0;
-   
 		min-width: 120px;
 		max-width: 250px;
 		display: inline-block;
 		position: absolute;
 		list-style-type: none;
-    
 		border: 1px solid #DDD;
 		background: #EEE;
    	}
+	
+	.draggable-prop, .draggable-class { 
+		width: 90px;
+		height: 15px;
+		padding: 0.5em;
+		float: left;
+		margin: 10px 10px 10px 0; 
+	}
 	
 	
 	</style>
@@ -457,11 +467,11 @@
 	//	   identified as header row, "propertyRow,"+colIndex, and "classRow,"+colIndex - these last two
 	//	   rows are classed as droppable targets.
 	function createSubtable(text,colIndex) {
-		var theader = '<table class="col-selectable">\n';
+		var theader = '<table>\n';
 		var tbody = '';
-		tbody += '<tr class="ui-widget-content"><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
-		tbody += '<tr class="ui-widget-content"><td class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr class="ui-widget-content"><td class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
+		tbody += '<tr><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
+		tbody += '<tr><td class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
+		tbody += '<tr><td class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
 		return subtable;
@@ -470,16 +480,16 @@
 	// For making column headers selectable
 	$(function() {
 			$( ".col-selectable" ).selectable({
-				filter: "td", 
+				filter: "th", 
 				selected: function( event, ui ) {
 					$( ".ui-selected", this ).each(function() {
-						var index = $( ".col-selectable td" ).index( this );
+						var index = $( ".col-selectable th" ).index( this );
 						console.log("selecting col " + index + "....");
 					});
 				}, // /selected
 				unselected: function( event, ui ) {
 					$( ui.unselected, this ).each(function() {
-						var index = $( ".col-selectable td").index( this );
+						var index = $( ".col-selectable th").index( this );
 						console.log("unselecting col " + index + "....");
 					});
 				} // /unselected
@@ -511,6 +521,9 @@
 				console.log('clicked', this);
 			})// /on click
 		});// /context menu function
+	
+	
+	
   
  //csv file parser and table loader
  function handleFileSelect(){
@@ -522,24 +535,26 @@
               var content = file.target.result;
               var rows = file.target.result.split(/[\r\n|\n]+/);
               var table = document.createElement('table');
-              
-			  // Create subtabled column headers
+              $(table).attr("class", 'col-selectable');
+			  
+		// Create subtabled column headers
 			  var thr = document.createElement('tr');
-			  //$(thr).attr("class", 'col-selectable'); 
 			  var tharr = rows[0].split(',');
 			  var numcols = tharr.length;
-			  // Create row for bundled properties
-			  // * This is empty at table generation, and hidden by default
+		// Create row for bundled properties
+		// * This is empty at table generation, and hidden by default
 			  var btr = document.createElement('tr');
 			  $(btr).attr("style", 'display:none'); 
-			  // Create row for annotations (and additional triples
+		// Create row for annotations (and additional triples
+		// * This row is also empty and hidden at table generation
 			  var atr = document.createElement('tr');
 			  $(atr).attr("style", 'display:none');
 			  var th,btd,atd;
-			  for (var j = 0; j < numcols; j++){ // i == 0 for all of these because they're not rows of data from CSV
+			  for (var j = 0; j < numcols; j++){ // i == 0 because this is only concerned with the column headers
 				// column header
                     th = document.createElement('th');
-                    $(th).attr("class", "the-context-menu");
+					$(th).attr("class", "ui-widget-content");
+                    // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
                     $(th).attr("id", '0,'+j);
 					var temp = document.createElement('div');
                     var stContent = createSubtable(tharr[j], j);
@@ -561,7 +576,8 @@
 			  table.appendChild(btr);
 			  table.appendChild(atr);
 			  // Once the header row with subtables has been created,
-              //   continue and create the rest of the table
+              //   continue and create the rest of the table. 
+			  // This is actually data from the CSV file!
 			  for (var i = 1; i < rows.length; i++){
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
