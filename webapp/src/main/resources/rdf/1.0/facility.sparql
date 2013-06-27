@@ -1,5 +1,0 @@
-prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix this: <http://tw2.tw.rpi.edu/zhengj3/owl/epa.owl#>
-
-
-select * where{?s this:hasMeasurement ?o. ?o rdf:type this:Violation}
