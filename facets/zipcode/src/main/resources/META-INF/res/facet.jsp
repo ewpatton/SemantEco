@@ -5,6 +5,7 @@
   <p>
     Try:<br />
     <a href="javascript:ZipCodeModule.showAddress('12845');">Lake George, NY: 12845</a>,<br/> 
+    <a href="javascript:ZipCodeModule.showAddress('13353');">Hoffmeister, NY: 13353</a>,<br/> 
     <a href="javascript:ZipCodeModule.showAddress('02809');">Bristol, RI: 02809</a>,<br/> 
     <a href="javascript:ZipCodeModule.showAddress('21613');">Cambridge, MD: 21613</a>,<br/>
     <a href="javascript:ZipCodeModule.showAddress('90813');">Los Angeles, CA: 90813</a>,<br/>

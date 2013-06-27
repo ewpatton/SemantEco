@@ -148,8 +148,8 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
       graph.addPattern(measurement, unitHasUnit, unit);
 
       JSONArray geofeaturesParams = (JSONArray) request.getParam("geofeatures");
-      request.getLogger().debug(
-          "geofeatures parms is : " + geofeaturesParams.toString());
+      //request.getLogger().debug(
+      //    "geofeatures parms is : " + geofeaturesParams.toString());
 
       graph.addPattern(entity, hasContext, s);
       if (geofeaturesParams != null && geofeaturesParams.length() > 0) {
