@@ -164,17 +164,44 @@ var SemantEcoUI = {
                 //this is the chart generater, it gets raw input, which is "binding"s in the returned data, and turn them into data format can be used by jqplot
                 chartgenerator=function(measurementData,nearbySpeciesData){
                     var chartdata=[];
+                    /*
                     
                     var chartseries1=[];
                     
                     var limitThreshold=[];
                     var limitThresholdValue="";
-                    var unit=measurementData[0].unit.value;
-                    //develop use only, for fake data
-                    var year="";
-                    year=parseInt(measurementData[0].time.value.substring(0,4));
+                    */
+                    var unit=measurementData[0].unit.value || "";
 
-                    //this loop is getting data to generate array of arraies that will be used by jqplot [["2012-01-01",3],["2012-01-01",8]]
+                    // aggregate measurements based on URI (e.g. lower and upper
+                    // bound generate two entries per measurement)
+                    var measurements = {};
+                    for(var i=0;i<measurementData.length;i++) {
+                        var uri = measurementData[i].measurement.value;
+                        if(measurements[uri] == undefined) {
+                            measurements[uri] = [];
+                        }
+                        measurements[uri].push(measurementData[i]);
+                    }
+                    var limits = [[], []];
+                    var values = [];
+                    for(var uri in measurements) {
+                        // time will be the same in each entry, so use the first
+                        var time = measurements[uri][0].time.value.substring(0,10);
+                        if(time.length == 8) {
+                            time = time.substr(0,4)+"-"+time.substr(4,2)+"-"+time.substr(6,2);
+                        }
+                        var mLimits = [];
+                        for(var i=0; i<measurements[uri].length; i++) {
+                            mLimits.push(measurements[uri][i].limit.value);
+                        }
+                        mLimits.sort();
+                        for(var i=0;i<mLimits.length;i++) {
+                            limits[i].push([time, Math.round( mLimits[i] * 100 ) / 100]);
+                        }
+                        values.push([time, Math.round( measurements[uri][0].value.value*100 )/100]);
+                    }
+                    /*
                     for(var i=0;i<measurementData.length;i++) {
                         var time = measurementData[i].time.value.substring(0,10);
                         if(time.length == 8) {
@@ -185,12 +212,20 @@ var SemantEcoUI = {
                             limitThreshold.push([time,Math.round( measurementData[i].limit.value*100 )/100]);
                         }
                     }
+                    */
                     //push the processed data to the chartdata, which a data array will be used as input for jqplot
-                    chartdata.push(chartseries1);
+                    chartdata.push(values);
                     //if exists limit, then push to chartdata to plot limit as an aditional series
+                    /*
                     if(limitThreshold.length!=0 && measurementData[0].limit != undefined){
                         limitThresholdValue=measurementData[0].limit.value;
                         chartdata.push(limitThreshold);
+                    }*/
+                    if(limits[0].length > 0) {
+                        chartdata.push(limits[0]);
+                    }
+                    if(limits[1].length > 0) {
+                        chartdata.push(limits[1]);
                     }
 
                     //aggregating species
@@ -205,15 +240,17 @@ var SemantEcoUI = {
                         speciessobj[nearbySpeciesData[i]["commonName"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
                     }
 
+                    var label = $("#selectforcharacteristic option:selected").html();
                     //the series for the characteristic
                     //after preparing the actually data, start to initial the series
                     var series=[];
                     series.push({
-                        label:$("#selectforcharacteristic option:selected").html()
+                        label:label
                         ,yaxis:'yaxis'
                     });
 
                     //the series for the limit for characteristic if limit exists
+                    /*
                     if(limitThreshold.length!=0){
                         series.push({
                             label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
@@ -224,6 +261,20 @@ var SemantEcoUI = {
                                 ,bringSeriesToFront:false
                             }
                         });
+                    }
+                    */
+                    for(var i=0;i<limits.length;i++) {
+                        if(limits[i].length > 0) {
+                            series.push({
+                                label:label+" Threshold Limit ("+limits[i][0][1]+")"
+                                ,yaxis:'yaxis'
+                                ,showMarker: false
+                                ,highlighter:{
+                                    show:false
+                                    ,bringSeriesToFront:false
+                                }
+                            })
+                        }
                     }
                     
                     //based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
