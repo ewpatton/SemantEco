@@ -74,25 +74,11 @@
       background-color: #f5f5f5;
     }
 	
-	.bundledRow {
-		background-color: #3865e6;
-	}
-    
-	.annotationRow {
-		background-color: #6787e6
-	}
+	.bundledRow { }
+	.annotationRow { }
     
     .col-selectable .ui-selecting { background: #FECA40; }
 	.col-selectable .ui-selected { background: #F39814; }
-	.col-selectable .ui-unselecting { background: #dddddd; }
-		
-	.draggable-prop, .draggable-class { 
-		width: 90px;
-		height: 15px;
-		padding: 0.5em;
-		float: left;
-		margin: 10px 10px 10px 0; 
-	}
 	
 	.ui-widget-content {
 		border: 1px solid #aaaaaa;
@@ -160,6 +146,8 @@
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.highlighter.js"></script>
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.cursor.min.js"></script>
     <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+	<script src="http://lacuna.ithiltari.com/vault/jquery.contextMenu.js"></script>
+	<script src="http://lacuna.ithiltari.com/vault/jquery.ui.position.js"></script>
     
      <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
 	 
@@ -223,22 +211,24 @@
         },
         
         "dnd" : {
-               "drop_target" : "#list th",
+               "drop_target" : "#list td",
                "drop_finish" : function (data) {
-               	$(data.r).css("background-color","#00ff00");
+               	//$(data.r).css("background-color","#00ff00");
              //add the node name to the header, and get the parent node "id"
+				// p = node id of the datathing from the JS tree
                 var p = data.o.attr("id");
                 //alert(p);
 
-				// q = ???
+				// q = text in the datathing from the JS tree,
+				//     essentially, the data type name itself
                 var q = $(data.o).text();
                 //alert(q);
                 
-				// i = ???
+				// i = id of the destination cell where the user drops the thing dragged from the JS tree
                 var i = data.r.attr("id");
                 //alert(i);
                 
-				// r = ????
+				// r = the text of that cell
                 var r = $(data.r).text();
                 //alert(r);
                 
@@ -274,7 +264,8 @@
            		return dict[i][key];
            	return null;                               		            
            }
-           
+           // These are for the row-adding function, if there is no propertyRow or classRow
+		   // * This is currently not in use (?)
            var am = window.a
            var kg = keySearch(am,r);
            var args = {};
@@ -320,30 +311,6 @@
     });
 });
 	
-	// For making column headers selectable
-	$(function() {
-			$( ".col-selectable" ).selectable({
-				filter: "td", 
-				selected: function( event, ui ) {
-					$( ".ui-selected", this ).each(function() {
-						var index = $( ".col-selectable td" ).index( this );
-						console.log("selecting col " + index + "....");
-						//isSelected[index] = true;
-						
-					});
-				/*	for (var i = 0; i < isSelected.length; i++) {
-						console.log( i + " = " + isSelected[i]);
-					}*/
-				}, // /selected
-				unselected: function( event, ui ) {
-					$( ui.unselected, this ).each(function() {
-						var index = $( ".col-selectable td").index( this );
-						console.log("unselecting col " + index + "....");
-						//isSelected[index] = false;
-					});
-				} // /unselected
-			}); // /selectable
-		}); // /select function
 		
 		// Responsible for draggable and droppable functions for classes
 		//   and properties. They are separate from each other, to assist
@@ -490,15 +457,35 @@
 	//	   identified as header row, "propertyRow,"+colIndex, and "classRow,"+colIndex - these last two
 	//	   rows are classed as droppable targets.
 	function createSubtable(text,colIndex) {
-		var theader = '<table class="col-selectable" style:"border-collapse: collapse">\n';
+		var theader = '<table class="col-selectable">\n';
 		var tbody = '';
-		tbody += '<tr><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
-		tbody += '<tr><td class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr><td class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
+		tbody += '<tr class="ui-widget-content"><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
+		tbody += '<tr class="ui-widget-content"><td class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
+		tbody += '<tr class="ui-widget-content"><td class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
 		return subtable;
 	}
+	
+	// For making column headers selectable
+	$(function() {
+			$( ".col-selectable" ).selectable({
+				filter: "td", 
+				selected: function( event, ui ) {
+					$( ".ui-selected", this ).each(function() {
+						var index = $( ".col-selectable td" ).index( this );
+						console.log("selecting col " + index + "....");
+					});
+				}, // /selected
+				unselected: function( event, ui ) {
+					$( ui.unselected, this ).each(function() {
+						var index = $( ".col-selectable td").index( this );
+						console.log("unselecting col " + index + "....");
+					});
+				} // /unselected
+			}); // /selectable
+		}); // /select function
+	
 	
 	// Creates and enables the context menu on the column headers
 	// Each function appears under "items" and should have a NAME and a CALLBACK,
@@ -538,20 +525,21 @@
               
 			  // Create subtabled column headers
 			  var thr = document.createElement('tr');
+			  //$(thr).attr("class", 'col-selectable'); 
 			  var tharr = rows[0].split(',');
 			  var numcols = tharr.length;
 			  // Create row for bundled properties
 			  // * This is empty at table generation, and hidden by default
 			  var btr = document.createElement('tr');
-			  //$(btr).attr("style", 'visibility:hidden'); // this is only commented right now so you can see it =)
+			  $(btr).attr("style", 'display:none'); 
 			  // Create row for annotations (and additional triples
 			  var atr = document.createElement('tr');
-			  //$(atr).attr("style", 'visibility:hidden');
+			  $(atr).attr("style", 'display:none');
 			  var th,btd,atd;
 			  for (var j = 0; j < numcols; j++){ // i == 0 for all of these because they're not rows of data from CSV
 				// column header
                     th = document.createElement('th');
-                    $(th).attr("class", "col-selectable the-context-menu");
+                    $(th).attr("class", "the-context-menu");
                     $(th).attr("id", '0,'+j);
 					var temp = document.createElement('div');
                     var stContent = createSubtable(tharr[j], j);
