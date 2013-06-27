@@ -167,7 +167,7 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
           sb.append(geofeaturesParams.optString(i));
         }
         sb.append(">)");
-        GraphComponentCollection bgp = union.getUnionComponent(block++);
+        GraphComponentCollection bgp = union.getUnionComponent(block);
         bgp.addFilter(sb.toString());
         bgp.addPattern(s, rdfsLabel, label);
         bgp.addPattern(s, wgsLat, lat);
