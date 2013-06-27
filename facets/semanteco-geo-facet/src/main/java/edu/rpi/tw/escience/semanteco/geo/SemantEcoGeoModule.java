@@ -152,6 +152,12 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
           "geofeatures parms is : " + geofeaturesParams.toString());
 
       graph.addPattern(entity, hasContext, s);
+      request.getLogger().debug("before county");
+
+      graph2.addPattern(s, rdfType, waterSite);
+      UnionComponent union = query.createUnion();
+      graph2.addGraphComponent(union);
+      int block = 0;
       if (geofeaturesParams != null && geofeaturesParams.length() > 0) {
         StringBuilder sb = new StringBuilder("?s IN (<");
         for (int i = 0; i < geofeaturesParams.length(); i++) {
@@ -161,15 +167,13 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
           sb.append(geofeaturesParams.optString(i));
         }
         sb.append(">)");
-        graph.addFilter(sb.toString());
+        GraphComponentCollection bgp = union.getUnionComponent(block++);
+        bgp.addFilter(sb.toString());
+        bgp.addPattern(s, rdfsLabel, label);
+        bgp.addPattern(s, wgsLat, lat);
+        bgp.addPattern(s, wgsLong, lng);
+        block++;
       }
-
-      request.getLogger().debug("before county");
-
-      graph2.addPattern(s, rdfType, waterSite);
-      graph2.addPattern(s, rdfsLabel, label);
-      graph2.addPattern(s, wgsLat, lat);
-      graph2.addPattern(s, wgsLong, lng);
       // should be if and create union against geoFeature queries
       if (countyCode != null && stateAbbr != null) {
         request.getLogger().debug("within county");
@@ -211,8 +215,12 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
          * lng);
          */
         // graph.addPattern(measurement, site, s);
-        graph2.addPattern(s, countyCoded, countyCode, null);
-        graph2.addPattern(s, stateAbbrev, stateAbbr, null);
+        GraphComponentCollection bgp = union.getUnionComponent(block++);
+        bgp.addPattern(s, rdfsLabel, label);
+        bgp.addPattern(s, wgsLat, lat);
+        bgp.addPattern(s, wgsLong, lng);
+        bgp.addPattern(s, countyCoded, countyCode, null);
+        bgp.addPattern(s, stateAbbrev, stateAbbr, null);
 
         config.getQueryExecutor(request).accept("text/turtle")
             .execute(query, model);
