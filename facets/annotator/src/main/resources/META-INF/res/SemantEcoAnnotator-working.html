@@ -221,8 +221,12 @@
             ]
         }, // /json_data
         
-		// drag and drop DATA TYPES 
-		// (this is the hard-coded tree)
+		// drag and drop for DATA TYPES 
+		// From the documentation:
+		//   data.o - the object being dragged
+		//   data.r - the drop target
+		// * The drop target will be the node in which the mouse button
+		//   is released, NOT the node in which the object text will appear!
         "dnd" : {
             "drop_target" : "#list td",
             "drop_finish" : function (data) {
@@ -639,6 +643,11 @@
 			// These are the parameters for this function for the hierarchical facet
 			//    tree for the classes in the imported ontology(s). This variable is 
 			//    hard-coded and then passed into the tree when it is rendered below.
+			// From the documentation:
+			//   data.o - the object being dragged
+			//   data.r - the drop target
+			// * The drop target will be the node in which the mouse button
+			//   is released, NOT the node in which the object text will appear!
             var dnd = {
             	
    		                "drop_target" : "#list th",
@@ -694,6 +703,11 @@
 			// As above, these are the parameters to enable this function for the 
 			//    hierarchical facet containing the properties from the imported 
 			//    ontolgy/ontologies(?). 
+			// From the documentation:
+			//   data.o - the object being dragged
+			//   data.r - the drop target
+			// * The drop target will be the node in which the mouse button
+			//   is released, NOT the node in which the object text will appear!
        		var dnd_prop = {
 	                "drop_target" : "#list th",
 	                "drop_finish" : function (data) {
