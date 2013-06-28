@@ -477,17 +477,21 @@
 		return subtable;
 	}
 	
+  console.log("[AD] EVENT FIRED");
 	// For making column headers selectable
 	$(function() {
-			$( ".col-selectable" ).selectable({
+      console.log("[AC] EVENT FIRED");
+			$(".col-selectable").children().first().selectable({
 				filter: "th", 
 				selected: function( event, ui ) {
+          console.log("[AA] EVENT FIRED");
 					$( ".ui-selected", this ).each(function() {
 						var index = $( ".col-selectable th" ).index( this );
 						console.log("selecting col " + index + "....");
 					});
 				}, // /selected
 				unselected: function( event, ui ) {
+          console.log("[AB] EVENT FIRED");
 					$( ui.unselected, this ).each(function() {
 						var index = $( ".col-selectable th").index( this );
 						console.log("unselecting col " + index + "....");
