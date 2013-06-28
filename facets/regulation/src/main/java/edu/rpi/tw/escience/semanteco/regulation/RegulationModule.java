@@ -78,6 +78,7 @@ public class RegulationModule implements Module {
 		String reg = regulation.optString(name);
 		if(reg == null || reg.equals("")) {
 			log.debug("Domain is in regulation data, but the string is empty... skipping");
+			return;
 		}
 
 		log.debug("Loading '"+POL_NS+"'");
