@@ -81,6 +81,7 @@ table {
   border: 1px solid black;
   margin-bottom: 1em;
   width: 100%;
+  background-color: white;
 }
 
 table th {
@@ -189,6 +190,7 @@ div#spinner {
 	background-color: #fff;
 	opacity: 0.8;
 	text-align: center;
+	z-index: 100000;
 }
 
 div#spinner img {
@@ -436,6 +438,7 @@ div.sidebar {
   float:right;
   width: 18%;
   position: relative;
+  height: 100%;
 }
 
 div#facets {
@@ -513,7 +516,7 @@ div#infowindowcontrol a:hover{
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 100;
+    z-index: 50000;
 }
 
 .lightbox .lb_shadow{
@@ -663,4 +666,41 @@ div.hierarchy div.loading {
 
 div.rightcolumn div.hierarchy div.wrapper {
 	height: 400px;
+}
+
+div.button {
+	position: relative;
+	z-index: 2000;
+	display:block;
+	clear:both;
+    font-family: Arial,Helvetica,verdana,sans-serif;
+    text-align: center;
+    border-radius: 3px;
+    cursor: pointer;
+    /*display: block;*/
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 0px;
+    text-decoration: none;
+    text-shadow: 0 -1px 0.3px rgba(0, 0, 0, 0.3);
+    /*vertical-align: middle;*/
+    /*background: #0076ca;*/
+    background: url("../images/grad_bg_sprite.png") 0 -35px repeat-x;
+    border: 1px solid #1B6CDE;
+    color: #FFFFFF;
+    height: 13px;
+    width: 100%;
+    margin-bottom: 5pt;
+}
+
+div.button:hover {
+    background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
+}
+
+div#facets table.ui-state-highlight {
+    display: block;
+    border: 1px dashed #8686fc;
+    height: 100px;
+    background: white;
+    margin-bottom: 1em;
 }

@@ -334,14 +334,6 @@
 		</artifactItem>
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semanteco-zipcode</artifactId>
-		  <version>4.1-SNAPSHOT</version>
-		  <type>jar</type>
-		  <overWrite>true</overWrite>
-		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
-		</artifactItem>
-		<artifactItem>
-		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-regulation</artifactId>
 		  <version>4.1-SNAPSHOT</version>
 		  <type>jar</type>
@@ -404,15 +396,6 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
-		<artifactItem>
-                  <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semanteco-species-dataprovider</artifactId>
-                  <version>4.1-SNAPSHOT</version>
-                  <destFileName>semanteco-cspecies.jar</destFileName>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
-                </artifactItem>
                 <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-provenance</artifactId>
@@ -428,14 +411,6 @@
                   <type>jar</type>
                   <overWrite>true</overWrite>
 		  <destFileName>annotator.jar</destFileName>
-                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semanteco-geo-facet</artifactId>
-                  <version>4.1-SNAPSHOT</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
 	      </artifactItems>
@@ -545,6 +520,84 @@
 	    </executions>
 	  </plugin>
 	</plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>semanteco</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.5.1</version>
+            <executions>
+              <execution>
+                <id>copy-semanteco-modules</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+		    <artifactItem>
+                      <groupId>edu.rpi.tw.escience</groupId>
+                      <artifactId>semanteco-species-dataprovider</artifactId>
+                      <version>4.1-SNAPSHOT</version>
+                      <destFileName>semanteco-cspecies.jar</destFileName>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                    </artifactItem>
+		    <artifactItem>
+		      <groupId>edu.rpi.tw.escience</groupId>
+		      <artifactId>semanteco-zipcode</artifactId>
+		      <version>4.1-SNAPSHOT</version>
+		      <type>jar</type>
+		      <overWrite>true</overWrite>
+		      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+		    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>darrin</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.5.1</version>
+            <executions>
+              <execution>
+                <id>copy-darrin-module</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>edu.rpi.tw.escience</groupId>
+                      <artifactId>semanteco-geo-facet</artifactId>
+                      <version>4.1-SNAPSHOT</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
     <profile>

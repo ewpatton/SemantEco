@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -32,6 +34,7 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Query.SortType;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.UnionComponent;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.util.LimitUtils;
 
@@ -237,7 +240,8 @@ public class DataModelBuilder extends QueryUtils {
 		final Variable element = query.getVariable(QUERY_NS+"element");
 		final Variable value = query.getVariable(QUERY_NS+"value");
 		final Variable unit = query.getVariable(QUERY_NS+"unit");
-		
+		final Variable test = query.getVariable(QUERY_NS+"test");
+
 		// known uris
 		final QueryResource rdfType = query.getResource(RDF_NS+TYPE);
 		final QueryResource waterWaterMeasurement = query.getResource(WATER_NS+"WaterMeasurement");
@@ -245,7 +249,9 @@ public class DataModelBuilder extends QueryUtils {
 		final QueryResource polHasValue = query.getResource(POL_NS+"hasValue");
 		final QueryResource unitHasUnit = query.getResource(UNIT_NS+"hasUnit");
 		final QueryResource reprHasUnit = query.getResource(REPR_NS+"hasUnit");
-		
+		final QueryResource polTestType = query.getResource(POL_NS+"test_type");
+		final QueryResource localTestType = query.getResource(getInternalURI(graphUri));
+
 		// build construct query
 		construct.addPattern(measurement, rdfType, waterWaterMeasurement);
 		construct.addPattern(measurement, polHasCharacteristic, element);
@@ -261,6 +267,7 @@ public class DataModelBuilder extends QueryUtils {
 			construct.addPattern(measurement, polHasLimitOperator, op);
 			construct.addPattern(measurement, polHasLimitValue, lval);
 			construct.addPattern(measurement, polHasPermit, permit);
+			construct.addPattern(measurement, polTestType, test);
 		}
 		
 		// build where clause
@@ -279,6 +286,10 @@ public class DataModelBuilder extends QueryUtils {
 			graph.addPattern(measurement, polHasLimitOperator, op);
 			graph.addPattern(measurement, polHasLimitValue, lval);
 			graph.addPattern(measurement, polHasPermit, permit);
+			UnionComponent union = query.createUnion();
+			union.getUnionComponent(0).addPattern(measurement, polTestType, test);
+			union.getUnionComponent(1).addPattern(measurement, localTestType, test);
+			graph.addGraphComponent(union);
 		}
 		graph.addPattern(measurement, polHasCharacteristic, element);
 		if(graphUri.contains("echo")) {
@@ -292,7 +303,20 @@ public class DataModelBuilder extends QueryUtils {
 		
 		return true;
 	}
-	
+
+	protected String getInternalURI(String measuresUri) {
+		final Pattern converterPattern = Pattern.compile("(.*)/source/([^/]*)/dataset/([^/]*)/.*");
+		final Matcher matcher = converterPattern.matcher(measuresUri);
+		matcher.find();
+		String propUri = matcher.group(1);
+		propUri += "/source/";
+		propUri += matcher.group(2);
+		propUri += "/dataset/";
+		propUri += matcher.group(3);
+		propUri += "/vocab/enhancement/1/test_type";
+		return propUri;
+	}
+
 	/**
 	 * Extends the query under construction with a graph component that encodes the structure of
 	 * EPA facilities in the SPARQL endpoint.

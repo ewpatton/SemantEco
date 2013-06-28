@@ -279,7 +279,7 @@ function getSelectedValue() {
     $.each(nodes, function(i, n) {  
     	temp.push(class_hierachy[this.id][2]);
     });
-    $.bbq.pushState({"species":temp});
+    $.bbq.pushState({"geofeatures":temp});
 }  
 
 /** build second layer nodes
@@ -367,12 +367,11 @@ function ajax_node() {
 }
 
 
-//document.onkeydown = keyDown;
+document.onkeydown = keyDown;
 /**the funciton handle "delete" key
  * this function listened to event every time you use the delete key / backspace in the search box.
  * 
  * */
- /*
 function keyDown(){
      if(event.keyCode==8){
     	 //temp is the string you entered
@@ -416,7 +415,7 @@ function keyDown(){
      }
      
  }
-*/
+
 /**handle other key except "delete" key*/
 function press(event){
  var e=event.srcElement;

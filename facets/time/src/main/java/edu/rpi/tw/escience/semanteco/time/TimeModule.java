@@ -1,7 +1,9 @@
 package edu.rpi.tw.escience.semanteco.time;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -70,10 +72,11 @@ public class TimeModule implements Module {
 		}
 		
 		// extract the time passed from the client
-		String time = (String)request.getParam("time");
+		String startDate = (String)request.getParam("from");
+		String endDate = (String)request.getParam("until");
 		
 		// process request based on query type
-		boolean updated = updateWhereClause(query, time);
+		boolean updated = updateWhereClause(query, startDate, endDate);
 		if(query.getType().equals(Type.CONSTRUCT) && updated) {
 			handleConstructQuery(query);
 		}
@@ -106,8 +109,40 @@ public class TimeModule implements Module {
 			}
 		}
 	}
-	
-	protected boolean updateWhereClause(final Query query, final String deltaT) {
+
+	protected boolean areValidDates(final String start, final String end) {
+	  final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	  boolean validStart = false;
+	  boolean validEnd = false;
+	  Date parsedStart = null;
+	  Date parsedEnd = null;
+	  if(start == null || start.isEmpty()) {
+	    validStart = true;
+	  } else {
+	    try {
+	      parsedStart = format.parse(start);
+	      validStart = true;
+	    } catch(ParseException e) {
+	      validStart = false;
+	    }
+	  }
+	  if(end == null || end.isEmpty()) {
+	    validEnd = true;
+	  } else {
+	    try {
+	      parsedEnd = format.parse(end);
+	    } catch(ParseException e) {
+	      validEnd = false;
+	    }
+	  }
+	  if(parsedStart != null && parsedEnd != null) {
+	    return parsedStart.before(parsedEnd);
+	  } else {
+	    return validStart | validEnd;
+	  }
+	}
+
+	protected boolean updateWhereClause(final Query query, final String start, final String end) {
 		// find components that mention the type of the measurement
 		final Variable measurement = query.getVariable(VAR_NS+"measurement");
 		final QueryResource rdfType = query.getResource(RDF_NS+"type");
@@ -139,12 +174,22 @@ public class TimeModule implements Module {
 		graph.addGraphComponent(union);
 
 		// process the deltaT from the client and add a filter
-		if(deltaT == null || deltaT.isEmpty()) {
+		if(!areValidDates(start, end)) {
 			return true;
 		}
-		final Calendar time = processTimeParam(deltaT);
-		final String xsdTime = sdf.format(time.getTime());
-		graph.addFilter("?"+TIME_VAR+" > xsd:dateTime(\""+xsdTime+"\")");
+		StringBuffer filter = new StringBuffer();
+		if(start != null && !start.isEmpty()) {
+		  filter.append("?"+TIME_VAR+" > xsd:dateTime(\""+start+"\")");
+		  if(end != null && !end.isEmpty()) {
+		    filter.append(" && ");
+		  }
+		}
+		if(end != null && !end.isEmpty()) {
+		  filter.append("?"+TIME_VAR+" < xsd:dateTime(\""+end+"\")");
+		}
+		if(filter.length() > 0) {
+		  graph.addFilter(filter.toString());
+		}
 		return true;
 	}
 
@@ -153,6 +198,8 @@ public class TimeModule implements Module {
 		// we just have the one display item, no javascript
 		Resource res = config.getResource("time.jsp");
 		ui.addFacet(res);
+		res = config.getResource("time.js");
+		ui.addScript(res);
 	}
 
 	@Override

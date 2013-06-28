@@ -62,6 +62,7 @@ RegulationModule.getData = function() {
 			}
 			$(window).trigger("create-marker", json.results.bindings[binding]);
 		}
+		SemantEcoUI.focusMap();
 	});
 };
 
@@ -97,7 +98,6 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 		    else{
 		        contents += "<div class=\"table-wrapper\"><table border=\"1\"><tr><th>Characteristic</th><th>Measured Value</th><th>Limit Value</th><th>Time</th></tr>";
 			    for(var i=0;i<bindings.length;i++) {
-			      	// try {
 						var result = bindings[i];
 						var element = result["element"].value;
 						var label = element.substr(element.indexOf("#")+1).replace(/_/g," ");
@@ -107,7 +107,16 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 						if(unit.indexOf("http://")>=0) {
 						  unit = unit.substr(unit.lastIndexOf("/")+1);
 						}
-						var op = result["op"].value;
+						var op = "<=";
+						if(result["op"] !== undefined) {
+                          op = result["op"].value;
+						} else {
+						  console.warn("No op field in result, will assume <=");
+						}
+						if(result["limit"]===undefined) {
+						  console.warn("No limit found in violation. Skipping record.");
+						  continue;
+						}
 						var limit = result["limit"].value;
 						contents += "<tr class=\""+(i%2==0?"even":"odd")+"\"><td class='characteristics' data-value='"+ element +"'>";
 						contents += label+"</td><td>"+value+" "+unit+"</td><td>";
@@ -153,13 +162,16 @@ RegulationModule.showMarkerInfo = function(event, marker) {
 			$(window).trigger('pop-infowindow',marker);
 		});
 	}
-	
 
 };
 
 $(window).bind("initialize", function() {
 	console.log("regulation.js#initialize");
-	
+
+    $("div.search").bind("click", function() {
+        $(window).trigger("get-data");
+    });
+
 	// set the action for when another module or the UI raises a "get-data" event
 	$(window).bind("get-data", RegulationModule.getData);
 	
