@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.waterquality.dataprovider;
 
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.Request;

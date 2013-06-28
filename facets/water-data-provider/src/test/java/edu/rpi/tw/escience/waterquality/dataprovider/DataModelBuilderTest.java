@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.waterquality.dataprovider;
 
 import java.net.URI;
 import java.util.ArrayList;

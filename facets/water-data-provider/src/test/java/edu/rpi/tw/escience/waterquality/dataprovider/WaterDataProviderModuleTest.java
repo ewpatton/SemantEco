@@ -1,4 +1,4 @@
-package test;
+package edu.rpi.tw.escience.waterquality.dataprovider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
