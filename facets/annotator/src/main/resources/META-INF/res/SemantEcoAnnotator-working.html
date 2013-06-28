@@ -38,7 +38,6 @@
       border-collapse: collapse;
       border-spacing: 0;
       width: 100%;
-      margin-bottom: 20px;
 	  border: 1px solid #dddddd;
       border-collapse: separate;
       *border-collapse: collapse;
@@ -49,8 +48,6 @@
     }
     table th{
       background: #eae4ff;
-	  line-height: 20px;
-      text-align: left;
       vertical-align: top;
       border-top: 1px solid #dddddd;
 	  border-left: 1px solid #dddddd;
@@ -70,10 +67,6 @@
 
     table tr:nth-child(odd){
       background-color: #f9f9f9;
-    }
-
-    table tr:hover td {
-      background-color: #f5f5f5;
     }
 	
 	.bundledRow { 	}
@@ -469,7 +462,7 @@
 	function createSubtable(text,colIndex) {
 		var theader = '<table>\n';
 		var tbody = '';
-		tbody += '<tr><td id=0,' + colIndex + '>' + text + '</td></tr>\n';
+		tbody += '<tr><td style="border=1px #fff" id=0,' + colIndex + '>' + text + '</td></tr>\n';
 		tbody += '<tr><td class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
 		tbody += '<tr><td class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
@@ -504,7 +497,8 @@
 			$.contextMenu({
 				selector: '.the-context-menu', 
 				callback: function(key, options) {
-					var m = "clicked: " + key;
+					var index = $( "th" ).index( this );
+					var m = "clicked: " + key + ", invoked on col: " + index;
 					window.console && console.log(m) || alert(m); 
 				},
 				items: {
@@ -526,6 +520,7 @@
 	
   
  //csv file parser and table loader
+ // * This does assume that the first row in the CSV file contains the column headers
  function handleFileSelect(){
   if (window.hasTable == 1) return;
   var file = document.getElementById("the_file").files[0];
