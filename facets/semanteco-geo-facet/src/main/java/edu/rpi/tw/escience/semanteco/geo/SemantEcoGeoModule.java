@@ -269,7 +269,9 @@ public class SemantEcoGeoModule implements Module {
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
 		// TODO Auto-generated method stub
-		
+		// Here we include our polygon JS script for our module into the window
+		Resource res = config.getResource("semantgeo-drawPolygons.js");
+		ui.addScript(res);
 	}
 
 }
