@@ -652,47 +652,45 @@
             	
    		                "drop_target" : "#list th",
    		                "drop_finish" : function (data) {
-   		                	$(data.r).css("color","black");
-                         //add the node name to the header, and get the parent node "id"
-						 // p = node id of the datathing from the JS tree
-   		                 var p = data.o.attr("hierarchy_id");
-						// q = text in the datathing from the JS tree,
-						//     essentially, the data type name itself
-   		                 var q = $(data.o).text().split(/\s+/)[1];
-   		                // i = id of the destination cell where the user drops the thing dragged from the JS tree
-   		                 var i = data.r.attr("id");
-   		                 // r = the text of that cell
-   		                 var r = $(data.r).text();
-   		                 // cn = column number
-   		                 var cn = i.split(',')[1];
+							$(data.r).css("color","black");
+							//add the node name to the header, and get the parent node "id"
+							// p = node id of the datathing from the JS tree
+							var p = data.o.attr("hierarchy_id");
+							// q = text in the datathing from the JS tree,
+							//     essentially, the data type name itself
+							var q = $(data.o).text().split(/\s+/)[1];
+							// i = id of the destination cell where the user drops the thing dragged from the JS tree
+							var i = data.r.attr("id");
+							// r = the text of that cell
+							var r = $(data.r).text();
+							// cn = column number
+							var cn = i.split(',')[1];
    		                 
-						 $("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
+							$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
    		                 
-   		            //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+							//  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
    		                 
-   		            //    var args = {};
-   		            //    args[r] = p;
+							//    var args = {};
+							//    args[r] = p;
    		            
-   		            function keySearch(dict,key) {
-   		            	for (var i in dict) if (key in dict[i]) 
-   		            		return dict[i][key];
-   		            	return null;                               		            
-   		            }
+							function keySearch(dict,key) {
+								for (var i in dict) if (key in dict[i]) 
+									return dict[i][key];
+								return null;                               		            
+							}
    		            
-   		            var am = window.a
-   		            var kg = keySearch(am,r);
-   		            var args = {};
-   		            args[r]  = {"RangeClass":p};
+							var am = window.a
+							var kg = keySearch(am,r);
+							var args = {};
+							args[r]  = {"RangeClass":p};
    		           
-   		            if (kg!=null){   		            	
-   		            	kg["RangeClass"] = p;   		            
-   		            }            
-			        else{
-				        am.push(args);
-			        };   		                
-   		                }
-   		           		
-            		
+							if (kg!=null){   		            	
+								kg["RangeClass"] = p;   		            
+							}            
+							else{
+								am.push(args);
+							};   		                
+   		                }// /drop finish
             };
             // This is what actually generates the class tree
 			// * Note that "dnd" is passed in as a parameter from above
@@ -705,8 +703,8 @@
 			//    ontolgy/ontologies(?). 
 			// From the documentation:
 			//   data.o - the object being dragged
-			//   data.r - the drop target
 			// * The drop target will be the node in which the mouse button
+			//   data.r - the drop target
 			//   is released, NOT the node in which the object text will appear!
        		var dnd_prop = {
 	                "drop_target" : "#list th",
