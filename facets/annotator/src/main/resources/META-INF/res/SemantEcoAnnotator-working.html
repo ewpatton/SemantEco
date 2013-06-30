@@ -413,6 +413,56 @@
 		return subtable;
 	}
 	
+	
+	// Accessory function for removing things from arrays
+	// Takes two arguments:
+	//  - the array
+	//  - the item to be removed
+	// And returns the array minus that object.
+	function removeA(arr) {
+		var what, a = arguments, L = a.length, ax;
+		while (L > 1 && arr.length) {
+			what = a[--L];
+			while ((ax= arr.indexOf(what)) !== -1) {
+				arr.splice(ax, 1);
+			}
+		}
+		return arr;
+	}
+	
+	// Accessory function for checking to see if a thing is
+	//    in an array.
+	// Takes two arguments:
+	//  - the array
+	//  - the item to look for
+	// And returns TRUE if the object is there or FALSE if not
+	function existsA( theArray, theThing ) {
+		if ( theArray.indexOf(theThing) === -1 ){
+			return false;
+		}
+		else 
+			return true;
+	}
+	
+	// This array is for keeping track of the column indices of all selected columns.
+	//   It is empty at creation. The callbacks in the column selector function should
+	//   handle adding and removing indices from this array.
+	// Ideally, context menu functions that require knowledge of all selected columns
+	//   will also reference this array.
+	// * Note that lists of columns designated for links_via or cell-based conversion
+	//   are kept separately!
+	var currentlySelected = [];
+	
+	// This array is for keeping track of column indices of those columns designated
+	//   for conversion using links_via. 
+	// It should be empty at creation, and the callback for "toggle-links_via" should
+	//   be the only function that can modify this array.
+	var links_via = [];
+	
+	// ******************************************************************************
+	//                   context menu and its callback functions!
+	// ******************************************************************************
+	
 	// Creates and enables the context menu on the column headers
 	// Each function appears under "items" and should have a NAME and a CALLBACK,
 	//   the latter being to the javascript function for that menu choice.
@@ -429,8 +479,23 @@
 						name: "Designate for Cell-based Conversion"
 					},
 					"toggle-links_via": {
-						name: "Enable/Disable links_via"
-					},
+						name: "Enable/Disable links_via",
+						callback: function() {
+							for (col in currentlySelected) { 
+								// if the column is already there, remove it
+								if ( existsA(links_via,col) ){
+									removeA(links_via, col);
+									console.log("removing col " + col);
+								}
+								// if the column is not there, add it
+								else {
+									links_via.push(col);
+									console.log("adding col " + col);
+								}
+							} // /for	
+							console.log("currently specified for links_via: " + links_via);
+						} // /links_via callback
+					}, // /links_via
 					"bundle": {name: "Create Bundle"},
 					"comment": {name: "Add Comment"},
 					"eg": {name: "Add Canonical Value (eg)"},
@@ -444,6 +509,9 @@
 		});// /context menu function
 	
 	
+	
+	
+	// ******************************************************************************
   
  //csv file parser and table loader
  function handleFileSelect(){
@@ -521,20 +589,27 @@
 
               document.getElementById('list').appendChild(table);
 			
-			// Make the column headers selectable
+			// Make the column headers selectable and updates the currentlySelected
+			//    array accordingly when things are selected or unselected.
 			$(function () {
 			$( ".col-selectable" ).selectable({
 				filter: "th", 
 				selected: function( event, ui ) {
 					$( ".ui-selected", this ).each(function() {
 						var index = $( ".col-selectable th" ).index( this );
+						if( !existsA(currentlySelected,index) ){
+							currentlySelected.push(index);
+						}
 						console.log("selecting col " + index + "....");
+						console.log("currently Selected: " + currentlySelected);
 					});
 				}, // /selected
 				unselected: function( event, ui ) {
 					$( ui.unselected, this ).each(function() {
 						var index = $( ".col-selectable th").index( this );
+						removeA(currentlySelected, index);
 						console.log("unselecting col " + index + "....");
+						console.log("currently Selected: " + currentlySelected);
 					});
 				} // /unselected
 				}); // /selectable
