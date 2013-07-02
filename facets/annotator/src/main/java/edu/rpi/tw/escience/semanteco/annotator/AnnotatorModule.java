@@ -178,6 +178,11 @@ public class AnnotatorModule implements Module {
 			//check for what the ontology request is, and load that only into the model.
 			
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			model.read("https://code.ecoinformatics.org/code/semtools/trunk/dev/oboe-ext/sbclter/sbc.1.0/oboe-sbc.owl");
+			//model.read(is, "http://aquarius.tw.rpi.edu/projects/semantaqua/", "TTL");
+			
+			
+			/*
 			//model = ModelFactory.createOntologyModel();
 
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
@@ -194,6 +199,9 @@ public class AnnotatorModule implements Module {
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			 * 
+			 *
+			 */
 			
 		}
 	}
