@@ -10,8 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -60,7 +58,14 @@ public class CharacteristicsModule implements Module {
 	private static final String TIME_NS = "http://www.w3.org/2006/time#";
 	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 	private static final String CUAHSI_NS = "http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2";
+	private static final String CHARACTERISTIC = "characteristic";
+	private static final String URI_VAR = "uri";
+	private static final String LABEL_VAR = "label";
+	private static final String RDFS_LABEL = RDFS_NS + "label";
+	private static final String RDFS_SUBCLASSOF = RDFS_NS + "subClassOf";
+	private static final String ELEMENT_VAR = "element";
 	private static final String PROP_VAR = "p";
+	private static final String JSON = "application/json";
 
 	private ModuleConfiguration config = null;
 	private static final Logger LOG = Logger
@@ -80,7 +85,6 @@ public class CharacteristicsModule implements Module {
 	@Override
 	public void visit(final OntModel model, final Request request,
 			final Domain domain) {
-		// model.read(CHARACTERISTIC_NS);
 	}
 
 	/**
@@ -95,11 +99,11 @@ public class CharacteristicsModule implements Module {
 		case ROOTS:
 			return getTaxonomySubclass(request, OWL_NS+"Thing");
 		case CHILDREN:
-			return getTaxonomySubclass(request, (String)request.getParam("characteristic"));
+			return getTaxonomySubclass(request, (String)request.getParam(CHARACTERISTIC));
 		case SEARCH:
 			return searchCharacteristics(request);
 		case PATH_TO_NODE:
-			return getPathInTaxonomy(request, (String)request.getParam("uri"));
+			return getPathInTaxonomy(request, (String)request.getParam(URI_VAR));
 		default:
 			return Collections.emptySet();
 		}
@@ -110,12 +114,11 @@ public class CharacteristicsModule implements Module {
 		final Collection<HierarchyEntry> entries = new LinkedList<HierarchyEntry>();
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		// Variables
-		final Variable uri = query.getVariable(VAR_NS + "uri");
-		final Variable label = query.getVariable(VAR_NS + "label");
+		final Variable uri = query.getVariable(VAR_NS + URI_VAR);
+		final Variable label = query.getVariable(VAR_NS + LABEL_VAR);
 		// URIs
-		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS
-				+ "subClassOf");
-		final QueryResource rdfsLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource rdfsSubClassOf = query.getResource(RDFS_SUBCLASSOF);
+		final QueryResource rdfsLabel = query.getResource(RDFS_LABEL);
 		final QueryResource parent = query.getResource(parentCls);
 
 		// build query
@@ -129,13 +132,13 @@ public class CharacteristicsModule implements Module {
 		graph.addPattern(uri, rdfsLabel, label);
 
 		String resultStr = config.getQueryExecutor(request)
-				.accept("application/json").execute(query);
+				.accept(JSON).execute(query);
 		if (resultStr == null) {
 			return entries;
 		}
 		JSONObject results = null;
 		try {
-			results = new JSONObject(resultStr).getJSONObject("results");
+			results = new JSONObject(resultStr).getJSONObject(RESULTS_BLOCK);
 		} catch(JSONException e) {
 			log.error("Unable to parse json results from endpoint.");
 			return entries;
@@ -144,8 +147,8 @@ public class CharacteristicsModule implements Module {
 		URI parentUri = URI.create(parentCls);
 		for (int i = 0; i < bindings.length(); i++) {
 			JSONObject binding = bindings.optJSONObject(i);
-			URI rootUri = URI.create(binding.optJSONObject("uri").optString("value"));
-			String rootLabel = binding.optJSONObject("label").optString("value");
+			URI rootUri = URI.create(value(binding, URI_VAR));
+			String rootLabel = value(binding, LABEL_VAR);
 			entries.add(new HierarchyEntry(rootUri, parentUri, rootLabel));
 		}
 		return entries;
@@ -155,9 +158,9 @@ public class CharacteristicsModule implements Module {
 		final String str = (String)request.getParam("string");
 		final Collection<HierarchyEntry> entries = new LinkedList<HierarchyEntry>();
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
-		final Variable uri = query.createVariable(VAR_NS + "uri");
-		final Variable label = query.createVariable(VAR_NS + "label");
-		final QueryResource rdfsLabel = query.getResource(RDFS_NS + "label");
+		final Variable uri = query.createVariable(VAR_NS + URI_VAR);
+		final Variable label = query.createVariable(VAR_NS + LABEL_VAR);
+		final QueryResource rdfsLabel = query.getResource(RDFS_LABEL);
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(uri);
 		vars.add(label);
@@ -169,18 +172,18 @@ public class CharacteristicsModule implements Module {
 		JSONObject results = null;
 		try {
 			results = new JSONObject(config.getQueryExecutor(request)
-					.accept("application/json").execute(query))
-				.getJSONObject("results");
+					.accept(JSON).execute(query))
+				.getJSONObject(RESULTS_BLOCK);
 		} catch(JSONException e) {
 			LOG.error("Unable to parse json results from endpoint.");
 			return entries;
 		}
-		JSONArray bindings = results.optJSONArray("bindings");
+		JSONArray bindings = results.optJSONArray(BINDINGS);
 		for(int i = 0; i < bindings.length(); i++) {
 			final JSONObject binding = bindings.optJSONObject(i);
 			final HierarchyEntry entry = new HierarchyEntry();
-			entry.setUri(binding.optJSONObject("uri").optString("value"));
-			entry.setLabel(binding.optJSONObject("label").optString("value"));
+			entry.setUri(value(binding, URI_VAR));
+			entry.setLabel(value(binding, LABEL_VAR));
 			entries.add(entry);
 		}
 		return entries;
@@ -190,13 +193,12 @@ public class CharacteristicsModule implements Module {
 			final String node) {
 		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
-		final Variable uri = query.createVariable(VAR_NS + "uri");
-		final Variable label = query.createVariable(VAR_NS + "label");
+		final Variable uri = query.createVariable(VAR_NS + URI_VAR);
+		final Variable label = query.createVariable(VAR_NS + LABEL_VAR);
 		final Variable parent = query.createVariable(VAR_NS + "parent");
 		final QueryResource nodeRes = query.getResource(node);
-		final QueryResource rdfsSubClassOf = query.getResource(RDFS_NS
-				+ "subClassOf");
-		final QueryResource rdfsLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource rdfsSubClassOf = query.getResource(RDFS_SUBCLASSOF);
+		final QueryResource rdfsLabel = query.getResource(RDFS_LABEL);
 		final NamedGraphComponent graph = query.getNamedGraph(CUAHSI_NS);
 
 		graph.addPattern(nodeRes, rdfsSubClassOf, parent, true);
@@ -206,22 +208,16 @@ public class CharacteristicsModule implements Module {
 
 		try {
 			final JSONObject results = new JSONObject(config
-					.getQueryExecutor(request).accept("application/json")
+					.getQueryExecutor(request).accept(JSON)
 					.execute(query));
-			final JSONArray bindings = results.getJSONObject("results")
-					.getJSONArray("bindings");
+			final JSONArray bindings = results.getJSONObject(RESULTS_BLOCK)
+					.getJSONArray(BINDINGS);
 			for (int i = 0; i < bindings.length(); i++) {
 				final JSONObject binding = bindings.getJSONObject(i);
 				final HierarchyEntry entry = new HierarchyEntry();
-				entry.setUri(binding.getJSONObject("uri").getString("value"));
-				entry.setLabel(binding.getJSONObject("label")
-						.getString("value"));
-				if (binding.has("altLabel")) {
-					entry.setAltLabel(binding.getJSONObject("altLabel")
-							.getString("value"));
-				}
-				entry.setParent(URI.create(binding.getJSONObject("parent")
-						.getString("value")));
+				entry.setUri(value(binding, URI_VAR));
+				entry.setLabel(value(binding, LABEL_VAR));
+				entry.setParent(URI.create(value(binding, "parent")));
 				entries.add(entry);
 			}
 		} catch (JSONException e) {
@@ -237,41 +233,30 @@ public class CharacteristicsModule implements Module {
 	 * @param characteristicInArray URI to test for membership in the taxonomy
 	 * @return
 	 */
-	// first check ifg bbbq state is null for chemical
-	// new Query().findGraphComponentsWithPattern(?measurement,
-	// pol:hasCharacteristic, null)
-	// returns a list of graphComponent. should be a singleon list, check on
-	// what it returns when empty
-	// if not empty, graph.addpattern();
 	protected List<String> queryIfTaxonomicCharacteristicCategory(Request request,
 			String characteristicInArray) {
 		final List<String> uris = new LinkedList<String>();
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
-		final NamedGraphComponent graph = query
-				.getNamedGraph("http://was.tw.rpi.edu/all-characteristics-cuahsi-ontology2");
-		// final NamedGraphComponent graph =
-		// query.getNamedGraph("http://was.tw.rpi.edu/ebird-data");
-		final QueryResource subClassOf = query.getResource(RDFS_NS
-				+ "subClassOf");
+		final NamedGraphComponent graph = query.getNamedGraph(CUAHSI_NS);
+		final QueryResource subClassOf = query.getResource(RDFS_SUBCLASSOF);
 		final Variable speciesVariable = query.getVariable(VAR_NS
-				+ "characteristic");
+				+ CHARACTERISTIC);
 		final QueryResource addedCharacteristic = query
 				.getResource(characteristicInArray);
 		graph.addPattern(speciesVariable, subClassOf, addedCharacteristic);
 		String resultStr = config.getQueryExecutor(request)
-				.accept("application/json").execute(query);
+				.accept(JSON).execute(query);
 		LOG.debug("Results: " + resultStr);
 		if (resultStr == null) {
 			return Collections.emptyList();
 		}
 		try {
 			JSONObject results = new JSONObject(resultStr);
-			results = results.getJSONObject("results");
+			results = results.getJSONObject(RESULTS_BLOCK);
 			JSONArray bindings = results.getJSONArray(BINDINGS);
 			for (int j = 0; j < bindings.length(); j++) {
 				JSONObject binding = bindings.getJSONObject(j);
-				String speciesId = binding.getJSONObject("characteristic")
-						.getString("value");
+				String speciesId = value(binding, CHARACTERISTIC);
 				uris.add(speciesId);
 			}
 		} catch (JSONException e) {
@@ -286,17 +271,16 @@ public class CharacteristicsModule implements Module {
 	 */
 	@Override
 	public void visit(final Query query, final Request request) {
-		if (!query.hasVariable(VAR_NS + "element")) {
+		if (!query.hasVariable(VAR_NS + ELEMENT_VAR)) {
 			return;
 		}
-		JSONArray characteristics = (JSONArray)request.getParam("characteristic");
+		JSONArray characteristics = (JSONArray)request.getParam(CHARACTERISTIC);
 		if (characteristics == null) {
 			return;
 		}
-		final Variable element = query.getVariable(QUERY_NS + "element");
+		final Variable element = query.getVariable(QUERY_NS + ELEMENT_VAR);
 		UnionComponent union = query.createUnion();
-		final QueryResource rdfsSubClassOf =
-				query.getResource(RDFS_NS + "subClassOf");
+		final QueryResource rdfsSubClassOf = query.getResource(RDFS_SUBCLASSOF);
 		for(int i=0; i<characteristics.length(); i++) {
 			String characteristic = characteristics.optString(i);
 			List<String> subclasses = 
@@ -347,13 +331,13 @@ public class CharacteristicsModule implements Module {
 	 */
 	@QueryMethod
 	public String queryForSiteMeasurements(Request request) {
-		final String siteUri = (String) request.getParam("uri");
+		final String siteUri = (String) request.getParam(URI_VAR);
 		if (siteUri == null) {
 			return "{\"error\":\"No uri parameter supplied\"}";
 		}
 
 		final String chemicalString = (String) request
-				.getParam("characteristic");
+				.getParam(CHARACTERISTIC);
 		if (chemicalString == null) {
 			return "{\"error\":\"No chemical parameter supplied\"}";
 		}
@@ -365,7 +349,7 @@ public class CharacteristicsModule implements Module {
 		query.setNamespace("xsd", XSD_NS);
 
 		// Variables
-		final Variable element = query.getVariable(VAR_NS + "element");
+		final Variable element = query.getVariable(VAR_NS + ELEMENT_VAR);
 		final Variable permit = query.getVariable(VAR_NS + "permit");
 		final Variable value = query.getVariable(VAR_NS + "value");
 		final Variable unit = query.getVariable(VAR_NS + "unit");
@@ -419,7 +403,6 @@ public class CharacteristicsModule implements Module {
 				+ "someValuesFrom");
 		final QueryResource owlWithRestrictions = query.getResource(OWL_NS
 				+ "withRestrictions");
-		// OptionalComponent optional = query.createOptional();
 		final QueryResource polHasLimitValue = query.getResource(POL_NS
 				+ "hasLimitValue");
 		final QueryResource propPathReverseList = query
@@ -473,7 +456,7 @@ public class CharacteristicsModule implements Module {
 
 		query.addOrderBy(time, SortType.ASC);
 
-		return config.getQueryExecutor(request).accept("application/json")
+		return config.getQueryExecutor(request).accept(JSON)
 				.executeLocalQuery(query);
 	}
 
@@ -493,7 +476,6 @@ public class CharacteristicsModule implements Module {
 	 */
 	@QueryMethod
 	public String getTestsForCharacteristic(final Request request) {
-		final String siteUri = (String) request.getParam("uri");
 		final String characteristicUri = (String) request
 				.getParam("visualizedCharacteristic");
 
@@ -507,65 +489,21 @@ public class CharacteristicsModule implements Module {
 				+ "hasCharacteristic");
 		final QueryResource characteristic = query
 				.getResource(characteristicUri);
-		final QueryResource site = query.getResource(siteUri);
-		final QueryResource hasPermit = query.getResource(POL_NS + "hasPermit");
+		final QueryResource polTestType = query.getResource(POL_NS+"test_type");
 
 		final Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(var.test());
 		query.setVariables(vars);
 		query.setDistinct(true);
 
-		String stateUri = getStateURI(request,
-				(String) request.getParam("state"));
-		List<String> graphs = retrieveStateGraphsForSource(request, stateUri,
-				"http://sparql.tw.rpi.edu/source/epa-gov");
-		if (graphs.size() == 2) {
-			String measuresUri = null;
-			String sitesUri = null;
-			for (int i = 0; i < graphs.size(); i++) {
-				if (graphs.get(i).contains("measurement")) {
-					measuresUri = graphs.get(i);
-				} else if (graphs.get(i).contains("facilities")
-						|| graphs.get(i).contains("foia-")) {
-					sitesUri = graphs.get(i);
-				}
-			}
-			if (measuresUri == null || sitesUri == null) {
-				return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
-			}
+		query.addPattern(var.measurement(), hasCharacteristic, characteristic);
+		query.addPattern(var.measurement(), polTestType, var.test());
+		return queryToJSON(query, request);
+	}
 
-			final Pattern converterPattern = Pattern
-					.compile("(.*)/source/([^/]*)/dataset/([^/]*)/.*");
-			final Matcher matcher = converterPattern.matcher(measuresUri);
-			matcher.find();
-			String propUri = matcher.group(1);
-			propUri += "/source/";
-			propUri += matcher.group(2);
-			propUri += "/dataset/";
-			propUri += matcher.group(3);
-			propUri += "/vocab/enhancement/1/test_type";
-
-			final QueryResource test_typeLocal = query.getResource(propUri);
-			final QueryResource test_type = query.getResource(POL_NS
-					+ "test_type");
-
-			NamedGraphComponent sites = query.getNamedGraph(sitesUri);
-			sites.addPattern(site, hasPermit, var.permit());
-			NamedGraphComponent named = query.getNamedGraph(measuresUri);
-			named.addPattern(var.measurement(), hasCharacteristic, characteristic);
-			named.addPattern(var.measurement(), hasPermit, var.permit());
-			UnionComponent union = query.createUnion();
-			named.addGraphComponent(union);
-			union.getUnionComponent(0).addPattern(var.measurement(), test_type,
-					var.test());
-			union.getUnionComponent(1).addPattern(var.measurement(), test_typeLocal,
-					var.test());
-		} else {
-			return "{\"error\": \"Unable to find a measurements graph for the selected region.\"}";
-		}
-
+	protected String queryToJSON(Query query, Request request) {
 		String results = config.getQueryExecutor(request)
-				.accept("application/json").execute(query);
+				.accept(JSON).executeLocalQuery(query);
 		List<String> testUris = processUriList(results);
 		JSONArray response = new JSONArray();
 		for (String i : testUris) {
@@ -579,7 +517,6 @@ public class CharacteristicsModule implements Module {
 				response.put(i);
 			}
 		}
-
 		return response.toString();
 	}
 
@@ -590,7 +527,6 @@ public class CharacteristicsModule implements Module {
 	public static final String STATE_VAR = "state";
 	public static final String DC_NS = "http://purl.org/dc/terms/";
 	public static final String LOGD_ENDPOINT = "http://logd.tw.rpi.edu/sparql?output=sparqljson";
-	public static final String VALUE = "value";
 	public static final String GRAPH_VAR = "graph";
 	public static final String SEMANTECO_METADATA = "http://sparql.tw.rpi.edu/semanteco/data-source";
 	public static final String SIOC_NS = "http://rdfs.org/sioc/ns#";
@@ -623,10 +559,8 @@ public class CharacteristicsModule implements Module {
 					for (int i = 0; i < bindings.length(); i++) {
 						JSONObject binding = bindings.getJSONObject(i);
 						if (binding.getJSONObject(STATE_VAR) != null
-								&& binding.getJSONObject(STATE_VAR).getString(
-										VALUE) != null) {
-							stateUri = binding.getJSONObject(STATE_VAR)
-									.getString(VALUE);
+								&& value(binding, STATE_VAR) != null) {
+							stateUri = value(binding, STATE_VAR);
 							break;
 						}
 					}
@@ -665,7 +599,7 @@ public class CharacteristicsModule implements Module {
 
 		// execute query
 		String results = config.getQueryExecutor(request)
-				.accept("application/json").execute(query);
+				.accept(JSON).execute(query);
 		graphs.addAll(processUriList(results));
 		return graphs;
 	}
@@ -686,12 +620,12 @@ public class CharacteristicsModule implements Module {
 			JSONObject results = new JSONObject(sparqlJson);
 			JSONArray vars = results.getJSONObject("head").getJSONArray("vars");
 			String var = vars.getString(0);
-			results = results.getJSONObject("results");
-			JSONArray bindings = results.getJSONArray("bindings");
+			results = results.getJSONObject(RESULTS_BLOCK);
+			JSONArray bindings = results.getJSONArray(BINDINGS);
 			for (int i = 0; i < bindings.length(); i++) {
 				try {
 					JSONObject binding = bindings.getJSONObject(i);
-					uris.add(binding.getJSONObject(var).getString("value"));
+					uris.add(value(binding, var));
 				} catch (Exception e) {
 					LOG.warn("Unable to process binding in result", e);
 				}
@@ -713,11 +647,11 @@ public class CharacteristicsModule implements Module {
 	 */
 	@QueryMethod
 	public String getCharacteristicsForSite(final Request request) {
-		if (request.getParam("uri") == null) {
+		if (request.getParam(URI_VAR) == null) {
 			LOG.error("Expected parameter site missing in REST call");
 			return FAILURE;
 		}
-		if (!(request.getParam("uri") instanceof String)) {
+		if (!(request.getParam(URI_VAR) instanceof String)) {
 			LOG.error("Expected a single site as a string");
 			return FAILURE;
 		}
@@ -728,13 +662,13 @@ public class CharacteristicsModule implements Module {
 				+ "hasMeasurement");
 		final QueryResource polHasCharacteristic = query.getResource(POL_NS
 				+ "hasCharacteristic");
-		final QueryResource rdfsLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource rdfsLabel = query.getResource(RDFS_LABEL);
 		final QueryResource site = query.getResource((String) request
-				.getParam("uri"));
+				.getParam(URI_VAR));
 
 		final Variable measure = query.getVariable(VAR_NS + "measure");
-		final Variable element = query.getVariable(VAR_NS + "element");
-		final Variable label = query.getVariable(VAR_NS + "label");
+		final Variable element = query.getVariable(VAR_NS + ELEMENT_VAR);
+		final Variable label = query.getVariable(VAR_NS + LABEL_VAR);
 
 		query.addPattern(site, polHasMeasurement, measure);
 		query.addPattern(measure, polHasCharacteristic, element);
@@ -744,4 +678,7 @@ public class CharacteristicsModule implements Module {
 		return config.getQueryExecutor(request).executeLocalQuery(query);
 	}
 
+	protected String value(JSONObject binding, String var) {
+		return binding.optJSONObject(var).optString("value");
+	}
 }
