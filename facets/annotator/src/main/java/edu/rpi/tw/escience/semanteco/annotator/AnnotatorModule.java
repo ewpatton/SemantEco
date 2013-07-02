@@ -151,15 +151,32 @@ public class AnnotatorModule implements Module {
 
 	public void setModel(OntModel model){
 		AnnotatorModule.model = model;
+		// "SNOMED","NCBI-Taxonomy"
 	}
 	
 	
 	public OntModel getModel(){
 		return AnnotatorModule.model;
 	}
+	
+	@QueryMethod
+	public String listofOntologies(){
+		return null;
+	}
 
 	public void initModel() {
+		
+		//show where we load from URL the ontologies, for example ncbi taxonomy
+		
+		//JSONArray ontologies = (JSONArray) request.getParam("ontologies");
+		//for each item in the JSON Array, check through ontology conditionals
+		
+		
 		if(model == null) {
+			
+			
+			//check for what the ontology request is, and load that only into the model.
+			
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 			//model = ModelFactory.createOntologyModel();
 
@@ -167,16 +184,16 @@ public class AnnotatorModule implements Module {
 
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
 
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
 
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
 			
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
 			
 		}
 	}
@@ -1190,6 +1207,85 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}
 		return items;		
 	}
+	
+	@HierarchicalMethod(parameter = "annotatorObjectProperties")
+	public Collection<HierarchyEntry> queryAnnotatorObjectPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "annotatorAnnotationProperties")
+	public Collection<HierarchyEntry> queryAnnotatorAnnotationPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorAnnotationPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorAnnotationPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+		}
+		/*else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorAnnotationProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorAnnotationPropertyToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "annotatorAnnotationProperties")
+	public Collection<HierarchyEntry> queryAnnotatorDataPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorDataPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorDataPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+			
+		}/* else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorDataProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorDataPropertyToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		return items;		
+	}
+	
+	
+	@HierarchicalMethod(parameter = "annotatorAnnotationProperties")
+	public Collection<HierarchyEntry> queryAnnotatorDataTypeHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorDataTypeHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorDataTypeHMChildren(request, (String) request.getParam("annotatorProperties"));
+		} /*else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorDataType( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorDataTypeToNode( request, (String) request.getParam("node") );
+		}*/
+		return items;		
+	}
+	
+
 
 	protected Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
 		return null;
@@ -1199,9 +1295,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return null;
 	}
 
+		
 	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMRoots(final Request request) {
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
+		
 		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
 		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
 			HierarchyEntry entry = new HierarchyEntry();
@@ -1210,8 +1307,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			System.out.println("label: " + propertyRoot.getLabel(null));
 
 			entry.setUri(propertyRoot.getURI());
-			
-
 			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
 				entry.setLabel(getShortName(propertyRoot.toString()));
 			}
@@ -1223,6 +1318,86 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		System.out.println("return entries: " + entries.toString());
 		return entries;
 	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorAnnotationPropertyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		//there is no top Annotation property?
+		//so we need to get the annotation properties that don't have a super property
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		
+		
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		
+		return entries;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataPropertyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topDataProperty");
+		//see http://www.w3.org/2002/07/owl
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		
+		return entries;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataTypeHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		/*
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		*/
+		return entries;
+	}
+	
+	
+	
 
 	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
@@ -1249,6 +1424,97 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}	
 		return entries;		
 	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorAnnotationPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		//OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
+		OntProperty subProp = model.getAnnotationProperty( classRequiresSubPropertyString );
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		
+		return entries;		
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		//OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );		
+		OntProperty subProp = model.getDatatypeProperty(classRequiresSubPropertyString);
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		
+		return entries;		
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataTypeHMChildren(final Request request, String classRequiresSubPropertyString) {
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		/*
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		*/
+		return entries;		
+	}
+	
+	
 
 	@HierarchicalMethod(parameter = "annotatorClasses")
 	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
