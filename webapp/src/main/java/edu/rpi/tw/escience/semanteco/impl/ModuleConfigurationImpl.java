@@ -36,9 +36,9 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 	 * 
 	 */
 	private static final long serialVersionUID = 3086677327878305603L;
-	private WeakReference<Module> owner = null;
-	private QueryExecutorImpl executor = null;
-	private Logger log = Logger.getLogger(ModuleConfigurationImpl.class);
+	private transient WeakReference<Module> owner = null;
+	private transient QueryExecutorImpl executor = null;
+	private final transient Logger log = Logger.getLogger(ModuleConfigurationImpl.class);
 	private String resourceDir = null;
 	
 	/**
@@ -51,8 +51,12 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 		if(module != null) {
 			owner = new WeakReference<Module>(module);
 		}
+		else {
+			throw new IllegalArgumentException("module should not be null.");
+		}
 		this.resourceDir = resourceDir;
-		this.executor = QueryExecutorImpl.getExecutorForModule(module);
+		this.executor = QueryExecutorImpl.getExecutorForModule(module,
+				ModuleManagerFactory.getInstance().getManager());
 	}
 
 	@Override
@@ -82,19 +86,24 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 
 	@Override
 	public Resource getResource(String path) {
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("getResource");
-		log.debug("Generating resource for '"+path+"' for module '"+owner.get().getName()+"'");
+		log.debug("Generating resource for '"+path+"' for module '"+modName+"'");
 		if(path.endsWith(".css")) {
-			return new StyleResource(owner.get(), resourceDir+path);
+			return new StyleResource(mod, resourceDir+path);
 		}
 		else if(path.endsWith(".js")) {
-			return new ScriptResource(owner.get(), resourceDir+path);
+			return new ScriptResource(mod, resourceDir+path);
 		}
 		else if(path.endsWith(".jsp")) {
-			return new JspResource(owner.get(), resourceDir+path);
+			return new JspResource(mod, resourceDir+path);
 		}
 		else {
-			return new GenericResource(owner.get(), resourceDir+path);
+			return new GenericResource(mod, resourceDir+path);
 		}
 	}
 
@@ -109,10 +118,11 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 
 	@Override
 	public Logger getLogger() {
-		if(owner.get() != null) {
-			return Logger.getLogger(owner.get().getClass());
-		}
-		return null;
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		Class<?> cls = mod.getClass();
+		return Logger.getLogger(cls);
 	}
 
 	@Override

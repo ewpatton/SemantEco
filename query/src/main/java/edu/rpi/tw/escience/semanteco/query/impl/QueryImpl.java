@@ -103,6 +103,15 @@ public class QueryImpl implements Query {
 
 	@Override
 	public void addPattern(QueryResource subject, QueryResource predicate,
+			QueryResource object, boolean b) {
+		assert(subject != null);
+		assert(predicate != null);
+		assert(object != null);
+		addGraphComponent(new GraphPatternImpl(subject, predicate, object, b));
+	}
+
+	@Override
+	public void addPattern(QueryResource subject, QueryResource predicate,
 			String object, XSDDatatype type) {
 		assert(subject != null);
 		assert(predicate != null);

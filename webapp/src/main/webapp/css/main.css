@@ -51,14 +51,10 @@ div.table-wrapper {
 
 div#header {
   min-width: 960px; 
-  background-color: #2a5799;
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
+  /*background-color: #2e16ca; */
+  background-color: #0033CC;
+  width: 100%;
   height: 100px;
-  padding-left: 16pt;
-  padding-right: 16pt;
-  padding-top: 16pt;
   box-shadow: 0px 3px 16px #000;
   -webkit-box-shadow: 0px 3px 16px #000;
   -moz-box-shadow: 0px 3px 16px #000;
@@ -69,10 +65,23 @@ div#header img {
   height: 100%;
 }
 
+div#header div.header-text {
+	height: 100%;
+	line-height: 6em;
+}
+
+div#header div.header-text span {
+	font-family: "Bookman Old Style", Times, serif;
+	font-size: 400%;
+	color: #f5ef90;
+	text-shadow: 0px 4px 8px #000;
+}
+
 table {
   border: 1px solid black;
   margin-bottom: 1em;
   width: 100%;
+  background-color: white;
 }
 
 table th {
@@ -93,16 +102,16 @@ div#content {
   /*background-color: #f2f5ff;*/
   background: white;
   min-width: 960px;
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
   min-height: 100%;
-  height: 110%;
   padding: 16pt;
   padding-bottom: 0px;
   box-shadow: 0px 3px 16px #000;
   -webkit-box-shadow: 0px 3px 16px #000;
   -moz-box-shadow: 0px 3px 16px #000;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
 
 div#display{
@@ -181,6 +190,7 @@ div#spinner {
 	background-color: #fff;
 	opacity: 0.8;
 	text-align: center;
+	z-index: 100000;
 }
 
 div#spinner img {
@@ -428,6 +438,7 @@ div.sidebar {
   float:right;
   width: 18%;
   position: relative;
+  height: 100%;
 }
 
 div#facets {
@@ -505,7 +516,7 @@ div#infowindowcontrol a:hover{
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 100;
+    z-index: 50000;
 }
 
 .lightbox .lb_shadow{
@@ -598,4 +609,98 @@ div#infowindowcontrol a:hover{
 
 .clear{
     clear: both;
+}
+
+div#description_map {
+	width: 100%;
+	height: 100%;
+}
+
+div.specietree>div {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+div.specietree>div div#show_map {
+	position:absolute;
+	top:1.9em;
+	overflow: scroll;
+	background-color: white;
+	padding-right: 1em;
+	width: 100%;
+	max-height: 110%;
+	display: none;
+}
+
+.ui-autocomplete {
+	max-height: 600px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	z-index: 1000 !important;
+}
+
+div.facet .ui-autocomplete-input {
+	width: 90px;
+	margin-right: 1em;
+}
+
+div.hierarchy div.wrapper {
+	height: 100px;
+	width: 100%;
+	overflow: auto;
+	background-color: #ffe;
+	position: relative;
+}
+
+div.hierarchy div.loading {
+	opacity: 0.75;
+	background-color: white;
+	width: 100%;
+	height: 100%;
+	display: none;
+	z-index: 1000 !important;
+	position: absolute;
+	text-align: center;
+}
+
+div.rightcolumn div.hierarchy div.wrapper {
+	height: 400px;
+}
+
+div.button {
+	position: relative;
+	z-index: 2000;
+	display:block;
+	clear:both;
+    font-family: Arial,Helvetica,verdana,sans-serif;
+    text-align: center;
+    border-radius: 3px;
+    cursor: pointer;
+    /*display: block;*/
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 0px;
+    text-decoration: none;
+    text-shadow: 0 -1px 0.3px rgba(0, 0, 0, 0.3);
+    /*vertical-align: middle;*/
+    /*background: #0076ca;*/
+    background: url("../images/grad_bg_sprite.png") 0 -35px repeat-x;
+    border: 1px solid #1B6CDE;
+    color: #FFFFFF;
+    height: 13px;
+    width: 100%;
+    margin-bottom: 5pt;
+}
+
+div.button:hover {
+    background: url("../images/grad_bg_sprite.png") 0 0px repeat-x;
+}
+
+div#facets table.ui-state-highlight {
+    display: block;
+    border: 1px dashed #8686fc;
+    height: 100px;
+    background: white;
+    margin-bottom: 1em;
 }

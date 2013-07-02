@@ -1,12 +1,16 @@
 package test;
 
 import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import edu.rpi.tw.escience.semanteco.ClientRequest;
+import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.request.ClientRequest;
+import edu.rpi.tw.escience.semanteco.test.TestModuleManager;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
 
 import junit.framework.TestCase;
@@ -34,7 +38,7 @@ public class ClientRequestTest extends TestCase {
 	protected static class TestConfiguration extends SemantEcoConfiguration {
 		private static final long serialVersionUID = 1L;
 		public TestConfiguration() {
-			super();
+			super(null);
 			this.setProperty("debug", "true");
 			install(this);
 		}
@@ -44,7 +48,12 @@ public class ClientRequestTest extends TestCase {
 	public void test() {
 		new TestConfiguration();
 		TestWsOutbound ws = new TestWsOutbound();
-		Logger req = new ClientRequest(getClass().getName(), null, ws);
+		Logger req = new ClientRequest(getClass().getName(), null, null,
+				ws, null, new TestModuleManager() {
+			public List<Domain> listDomains() {
+				return new ArrayList<Domain>();
+			}
+		});
 		req.info("Test");
 	}
 	

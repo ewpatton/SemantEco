@@ -36,7 +36,7 @@ public class VariableImpl implements Variable {
 	
 	@Override
 	public String toString() {
-		return "?"+uri.replace(Query.VAR_NS, "");
+		return "?" + getName();
 	}
 	
 	@Override
@@ -70,4 +70,8 @@ public class VariableImpl implements Variable {
 		return result;
 	}
 
+	@Override
+	public String getName() {
+		return uri.replace(Query.VAR_NS, "");
+	}
 }

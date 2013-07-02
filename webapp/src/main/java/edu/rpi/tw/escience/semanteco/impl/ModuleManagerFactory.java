@@ -33,6 +33,7 @@ public class ModuleManagerFactory {
 	 */
 	public void setModulePath(String path) {
 		manager = new ModuleManagerImpl(path);
+		((ModuleManagerImpl) manager).initialize();
 	}
 	
 	protected static void setManagerFactory(ModuleManagerFactory factory) {

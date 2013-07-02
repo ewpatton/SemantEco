@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,12 +43,13 @@ import edu.rpi.tw.escience.semanteco.ProvidesDomain;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.request.DummyRequest;
 
 /**
  * ModuleManagerImpl provides the default implementation of the ModuleManager interface
  * for the SemantEco portal. It is responsible for monitoring the modules directory
  * and installing and configuring new modules or removing deleted modules from the 
- * runtime of the portal as needed.
+ * runtime of the portal as needed. 
  * 
  * @author ewpatton
  *
@@ -80,13 +84,17 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	/**
 	 * Constructs a ModuleManagerImpl that will monitor the specified
 	 * path for new JAR files and remove any modules originating from
-	 * a removed JAR file in that path.
+	 * a removed JAR file in that path. Also, the constructor loads all the
+	 * available jar files into the virtual machine (fileCreated method).
 	 * @param path
 	 */
 	public ModuleManagerImpl(String path) {
 		log.trace("ModuleManagerImpl");
 		this.path = path;
 		fm = new DefaultFileMonitor(this);
+	}
+
+	public void initialize() {
 		try {
 			log.debug("Starting VFS file manager monitor");
 			FileSystemManager manager = VFS.getManager();
@@ -110,7 +118,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 		initializing = false;
 	}
-	
+
 	@Override
 	public Module getModuleByName(String name) {
 		log.trace("getModuleByName");
@@ -127,36 +135,38 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				module.visit(ui, request);
 			}
 			catch(Exception e) {
-				request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+				logException(request.getLogger(), module, e);
 			}
 		}
 	}
 
 	@Override
-	public void buildOntologyModel(OntModel model, Request request) {
+	public void buildOntologyModel(OntModel model, Request request, Domain domain) {
 		log.trace("buildOntologyModel");
 		for(Module module : modules) {
-			if(shouldCallModule(module, request)) {
+			if(shouldCallModule(module, domain)) {
 				try {
-					module.visit((OntModel)model, request);
+					module.visit((OntModel)model, request, domain);
 				}
 				catch(Exception e) {
-					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+					logException(request.getLogger(), module, e);
+					request.getLogger().warn("Stacktrace is: " + Arrays.toString(e.getStackTrace()));
 				}
 			}
 		}
 	}
 
 	@Override
-	public void buildDataModel(Model model, Request request) {
+	public void buildDataModel(Model model, Request request, Domain domain) {
 		log.trace("buildDataModel");
 		for(Module module : modules) {
-			if(shouldCallModule(module, request)) {
+			if(shouldCallModule(module, domain)) {
 				try {
-					module.visit((Model)model, request);
+					module.visit((Model)model, request, domain);
 				}
 				catch(Exception e) {
-					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+					logException(request.getLogger(), module, e);
+					request.getLogger().warn("Stacktrace is: " + Arrays.toString( e.getStackTrace() ));
 				}
 			}
 		}
@@ -188,7 +198,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 					module.visit(query, request);
 				}
 				catch(Exception e) {
-					request.getLogger().warn("Module '"+module.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+					logException(request.getLogger(), module, e);
 				}
 			}
 		}
@@ -201,20 +211,26 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	@Override
-	public final void fileCreated(FileChangeEvent event) {
+	public final void fileCreated(final FileChangeEvent event) {
 		log.trace("fileCreated");
 		log.debug("Observed file created: "+event.getFile().getName().getPath());
 		if(event.getFile().getName().getExtension().equals("jar")) {
 			ModuleClassLoader loader = null;
-			try {
-				loader = new ModuleClassLoader(event.getFile().getName().getPath());
-			}
-			catch(IllegalArgumentException e) {
-				return;
-			}
+			loader = AccessController.doPrivileged(new PrivilegedAction<ModuleClassLoader>() {
+				@Override
+				public ModuleClassLoader run() {
+					try {
+						return new ModuleClassLoader(event.getFile().getName().getPath());
+					}
+					catch(IllegalArgumentException e) {
+						return null;
+					}
+				}
+			});
 			if(loader != null) {
 				log.debug("Generated classloader");
 				classLoaders.put(event.getFile().getName().getPath(), loader);
+				
 				final String resPath = explodeJar(event.getFile().getName().getPath());
 				processLoader(loader, event.getFile().getName().getPath(),
 						resPath);
@@ -222,20 +238,30 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			}
 		}
 	}
-	
+
+	protected final Module instantiateModule(Class<? extends Module> clazz) {
+		try {
+			log.debug("Generating new module instance");
+			return clazz.newInstance();
+		} catch (InstantiationException e) {
+			log.warn(MODULE_ERROR + clazz.getSimpleName(), e);
+		} catch (IllegalAccessException e) {
+			log.warn(MODULE_ERROR + clazz.getSimpleName(), e);
+		}
+		return null;
+	}
+
+	/**
+	 * Instantiates the module classes
+	 * @param loader
+	 * @param jarPath
+	 * @param resPath
+	 */
 	protected final void processLoader(final ModuleClassLoader loader, 
 			final String jarPath, final String resPath) {
 		Set<Class<? extends Module>> newModules = loader.getModules();
 		for(Class<? extends Module> i : newModules) {
-			Module module = null;
-			try {
-				log.debug("Generating new module instance");
-				module = i.newInstance();
-			} catch (InstantiationException e) {
-				log.warn(MODULE_ERROR+i.getSimpleName(), e);
-			} catch (IllegalAccessException e) {
-				log.warn(MODULE_ERROR+i.getSimpleName(), e);
-			}
+			Module module = instantiateModule(i);
 			if(module != null) {
 				InputStream properties = null;
 				JarFile jar = null;
@@ -246,9 +272,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 						properties = jar.getInputStream(entry);
 					}
 				}
-				catch(IOException e) {
-					
-				}
+				catch(IOException e) { }
 				finally {
 					installModule(module, resPath, properties);
 					try {
@@ -271,15 +295,20 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			}
 		}
 	}
-	
+
+	protected final boolean ensureExists(final File dir) {
+		return dir.exists() || dir.mkdirs();
+	}
+
 	protected final String explodeJar(final String path) {
 		log.trace("Exploding jar");
 		JarFile jar = null;
 		try {
 			final String name = path.substring(path.lastIndexOf('/')+1, path.length()-".jar".length());
 			final File resDir = new File(this.path+"/../../resources/"+name+"/");
-			if(!resDir.exists()) {
-				resDir.mkdirs();
+			if(!resDir.exists() && !resDir.mkdirs()) {
+				log.error("Unable to create resource directory for module. Aborting...");
+				return null;
 			}
 			jar = new JarFile(path);
 			Enumeration<JarEntry> entries = jar.entries();
@@ -289,7 +318,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				if(entry.getName().startsWith(RES_DIR) &&
 						!entry.getName().endsWith("/")) {
 					File dest = new File(resDir, entry.getName().substring(RES_DIR.length()));
-					new File(dest.getParent()).mkdirs();
+					if(!ensureExists(new File(dest.getParent()))) {
+						log.error("Unable to create subdirectory for resources. Aborting...");
+						return null;
+					}
 					copy(jar.getInputStream(entry), new FileOutputStream(dest));
 				}
 			}
@@ -358,6 +390,12 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		buildDomain();
 	}
 	
+	/**
+	 * This method replaces out modules in the moduleMap.
+	 * @param module
+	 * @param path
+	 * @param properties
+	 */
 	protected final void installModule(Module module, String path, InputStream properties) {
 		log.debug("Installing module '"+module.getName()+"' version "+module.getMajorVersion()+"."+module.getMinorVersion()+
 				(module.getExtraVersion() != null ? "-"+module.getExtraVersion() : ""));
@@ -444,7 +482,7 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		return new ArrayList<Domain>(knownDomains.values());
 	}
 	
-	protected void buildDomain() {
+	protected final void buildDomain() {
 		log.trace("buildDomain");
 		final Class<? extends ProvidesDomain> providerClass = ProvidesDomain.class;
 		moduleDomainMap = new HashMap<Module, List<Domain>>();
@@ -455,10 +493,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 				ProvidesDomain provider = (ProvidesDomain)m;
 				List<Domain> domains = null;
 				try {
-					domains = provider.getDomains(new DummyRequest());
+					domains = provider.getDomains(new DummyRequest(this));
 				}
 				catch(Exception e) {
-					log.warn("Module '"+m.getName()+"' threw an unexpected exception. Things may work incorrectly during the remainder of this request.", e);
+					logException(log, m, e);
 				}
 				if(domains != null) {
 					moduleDomainMap.put(m, domains);
@@ -466,10 +504,18 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 			}
 		}
 	}
-	
+
+	private boolean shouldCallModule(final Module module, final Domain domain) {
+		List<Domain> domains = moduleDomainMap.get(module);
+		if(domains == null || domains.size() == 0) {
+			return true;
+		}
+		return domains.contains(domain);
+	}
+
 	private boolean shouldCallModule(final Module module, final Request request) {
 		List<Domain> domains = moduleDomainMap.get(module);
-		if(domains == null) {
+		if(domains == null || domains.size() == 0) {
 			return true;
 		}
 		JSONArray arr = (JSONArray)request.getParam("domain");
@@ -491,34 +537,10 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 		}
 		return result;
 	}
-	
-	private static class DummyRequest implements Request {
 
-		@Override
-		public Object getParam(String key) {
-			return null;
-		}
-
-		@Override
-		public Logger getLogger() {
-			return Logger.getLogger(DummyRequest.class);
-		}
-
-		@Override
-		public OntModel getModel() {
-			return null;
-		}
-
-		@Override
-		public Model getDataModel() {
-			return null;
-		}
-
-		@Override
-		public Model getCombinedModel() {
-			return null;
-		}
-		
+	protected final void logException(Logger log, Module module, Exception e) {
+		log.warn("Module '" + module.getName() +
+				"' threw an unexpected exception. Things may work incorrectly" +
+				" during the remainder of this request.", e);
 	}
-
 }

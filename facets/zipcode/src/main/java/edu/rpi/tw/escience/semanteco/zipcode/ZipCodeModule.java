@@ -6,10 +6,12 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.zipcode.ZipCodeLookup.ServerFailedToRespondException;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.Request;
+import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
 
@@ -23,14 +25,16 @@ import edu.rpi.tw.escience.semanteco.query.Query;
  *
  */
 public class ZipCodeModule implements Module {
-	
+
+	private ModuleConfiguration config = null;
+
 	@Override
-	public void visit(Model model, Request request) {
+	public void visit(Model model, Request request, Domain domain) {
 
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 
 	}
 
@@ -41,7 +45,10 @@ public class ZipCodeModule implements Module {
 
 	@Override
 	public void visit(SemantEcoUI ui, Request request) {
-
+		Resource res = config.getResource("zip.js");
+		ui.addScript(res);
+		res = config.getResource("facet.jsp");
+		ui.addFacet(res);
 	}
 
 	@Override
@@ -66,7 +73,7 @@ public class ZipCodeModule implements Module {
 
 	@Override
 	public void setModuleConfiguration(ModuleConfiguration config) {
-		// not needed
+		this.config = config;
 	}
 
 	/**

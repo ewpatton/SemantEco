@@ -29,7 +29,7 @@ import edu.rpi.tw.escience.semanteco.query.Query;
  */
 public class TestQueryExecutor extends MockQueryExecutor {
 
-	final Logger log = Logger.getLogger(TestQueryExecutor.class);
+	private final Logger log = Logger.getLogger(TestQueryExecutor.class);
 	
 	private Collection<String> contentTypes = null;
 	private Model targetModel = null;

@@ -80,14 +80,12 @@ $(window).bind("initialize", function() {
 	/*get the root node by SpeciesDataProviderModule.queryeBirdTaxonomyRoots*/
 	//puts the array of root nodes, which are in the "data" array, into jsonHier
 	//call initial_hiearchy
-					SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
-        	    		  jsonHier=JSON.parse(data);
-        	    		  jsonHier=jsonHier["data"];
-        	    		  initial_hierachy();
-        	    		  
-        	    		          	    		  
-        	       }
-        	       );
+//					SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
+//        	    		  jsonHier=JSON.parse(data);
+//        	    		  jsonHier=jsonHier["data"];
+//        	    		  initial_hierachy();
+//        	       }
+//        	       );
         	});
  
  //var class_hierachy=[["Aves",null],["Accipiter","Aves"],["Acanthis","Aves"],["Aechmophorus","Aves"],["sharpShinnedHawk","Accipiter"],["commonRedpoll","Acanthis"]];
@@ -369,11 +367,12 @@ function ajax_node() {
 }
 
 
-document.onkeydown = keyDown;
+//document.onkeydown = keyDown;
 /**the funciton handle "delete" key
  * this function listened to event every time you use the delete key / backspace in the search box.
  * 
  * */
+ /*
 function keyDown(){
      if(event.keyCode==8){
     	 //temp is the string you entered
@@ -417,7 +416,7 @@ function keyDown(){
      }
      
  }
-
+*/
 /**handle other key except "delete" key*/
 function press(event){
  var e=event.srcElement;
@@ -467,6 +466,7 @@ function choose(str){
 	//clears the show div
 	document.getElementById('show').innerHTML="";
 	//this does not change selection, you still need to hit search, so the method for that is handled in the .jsp file where search_node is called.
+	search_node();
 }
 
 /*find where this node is*/
@@ -482,8 +482,10 @@ function search_node(){
 			}
 			else{
 				var evt = document.createEvent("MouseEvents");  
-	 				evt.initEvent("click", true, true);  
-			  	    document.getElementById(i).childNodes[1].dispatchEvent(evt);  
+				evt.initEvent("click", true, true);
+				var elem = document.getElementById(i);
+				elem.childNodes[1].dispatchEvent(evt);
+				$("#description").animate({scrollTop: $(elem).offset().top+'px'}, 'fast');
 			}
 			//alert(" found !");
 			break;

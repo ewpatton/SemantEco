@@ -24,5 +24,5 @@ public interface DataModelVisitor {
 	 * @param model Data model to be modified by the visitor
 	 * @param params Parameters passed through the RESTful interface by the caller
 	 */
-	void visit(Model model, Request request);
+	void visit(Model model, Request request, Domain domain);
 }

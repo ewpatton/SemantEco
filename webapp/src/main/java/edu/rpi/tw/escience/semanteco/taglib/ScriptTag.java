@@ -29,7 +29,7 @@ public class ScriptTag extends TagSupport {
 	 * 
 	 */
 	private static final long serialVersionUID = -7903606798820268678L;
-	private Logger log = Logger.getLogger(ScriptTag.class);
+	private final transient Logger log = Logger.getLogger(ScriptTag.class);
 	
 	/**
 	 * Default constructor used by the JSP processor to instantiate this class

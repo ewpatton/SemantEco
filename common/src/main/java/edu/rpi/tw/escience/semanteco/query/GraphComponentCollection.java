@@ -22,6 +22,20 @@ public interface GraphComponentCollection extends GraphComponent {
 	void addPattern(QueryResource subject,
 			QueryResource predicate,
 			QueryResource object);
+
+	/**
+	 * Adds a triple pattern to this graph component collection. This
+	 * method should only be used to construct queries against Virtuoso
+	 * where option(transitive) is allowed. Endpoints that support SPARQL
+	 * @param subject Subject of triple
+	 * @param predicate Predicate of triple
+	 * @param object Object of triple
+	 * @param transitive true if option(transitive) should be enabled for this pattern.
+	 */
+	void addPattern(QueryResource subject,
+			QueryResource predicate,
+			QueryResource object,
+			boolean transitive);
 	
 	/**
 	 * Adds a triple pattern to this graph component collection

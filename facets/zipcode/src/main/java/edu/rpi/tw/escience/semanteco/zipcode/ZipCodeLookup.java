@@ -165,13 +165,13 @@ public final class ZipCodeLookup {
 			InputStream o = (InputStream)conn.getContent();
 			InputStreamReader isr = new InputStreamReader(o);
 			br = new BufferedReader(isr);
-			String result="";
+			StringBuilder result=new StringBuilder();
 			String line;
 			while((line=br.readLine())!=null) {
-				result += line;
+				result.append(line);
 			}
 			log.debug("...finished in "+(System.currentTimeMillis()-start)+" ms");
-			JSONObject content = new JSONObject(result);
+			JSONObject content = new JSONObject(result.toString());
 			JSONArray codes = content.getJSONArray("postalcodes");
 			if(codes.length()>0) {
 				content = codes.getJSONObject(0);

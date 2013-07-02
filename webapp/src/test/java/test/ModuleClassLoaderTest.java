@@ -100,10 +100,20 @@ public class ModuleClassLoaderTest extends TestCase {
 		PrintStream ps = new PrintStream(zos);
 		ps.println("Hello world!");
 		zos.closeEntry();
-		zos.putNextEntry(new ZipEntry("test/"));
+		zos.putNextEntry(new ZipEntry("edu/"));
 		zos.closeEntry();
-		zos.putNextEntry(new ZipEntry("test/MockModule.class"));
-		InputStream cls = getClass().getClassLoader().getResourceAsStream("test/MockModule.class");
+		zos.putNextEntry(new ZipEntry("edu/rpi/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/semanteco/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/semanteco/test/"));
+		zos.closeEntry();
+		zos.putNextEntry(new ZipEntry("edu/rpi/tw/escience/semanteco/test/TestModule.class"));
+		InputStream cls = getClass().getClassLoader().getResourceAsStream("edu/rpi/tw/escience/semanteco/test/TestModule.class");
 		final byte[] buffer = new byte[BUFSIZE];
 		int read = 0;
 		while((read = cls.read(buffer)) > 0) {

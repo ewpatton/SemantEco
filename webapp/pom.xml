@@ -6,7 +6,7 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-parent</artifactId>
-    <version>4.0.3-Final</version>
+    <version>4.1-Final</version>
   </parent>
 
   <artifactId>semanteco-webapp</artifactId>
@@ -21,8 +21,8 @@
 
   <repositories>
     <repository>
-      <id>central</id>
-      <url>https://orion.tw.rpi.edu/artifactory/libs-release</url>
+      <id>tetherless</id>
+      <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
   </repositories>
 
@@ -37,6 +37,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.5.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.5.8</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>aterm</groupId>
@@ -58,6 +64,41 @@
 	  <artifactId>jena</artifactId>
 	</exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.owlapi</groupId>
+      <artifactId>owlapi-api</artifactId>
+      <version>3.4</version>
+    </dependency>
+    <dependency>
+      <groupId>csv2rdf4lod</groupId>
+      <artifactId>csv2rdf4lod</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>openrdf-sesame-2.3.1</groupId>
+      <artifactId>openrdf-sesame-2.3.1</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>pml</groupId>
+      <artifactId>pml</artifactId>
+      <version>pml</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.data.digest</groupId>
+      <artifactId>datadigest</artifactId>
+      <version>1.0-20130401.055219-1</version>
+    </dependency>
+    <dependency>
+      <groupId>javacsv</groupId>
+      <artifactId>javacsv</artifactId>
+      <version>javacsv</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.owlapi</groupId>
+      <artifactId>owlapi-apibinding</artifactId>
+      <version>3.4</version>
     </dependency>
     <dependency>
       <groupId>com.clarkparsia.pellet</groupId>
@@ -112,66 +153,78 @@
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-query</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-data-source</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-domain</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-water-data-provider</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-characteristics-facet</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-air-data-provider</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-zipcode</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-data-type</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-regulation</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-industry</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-species-dataprovider</artifactId>
-      <version>4.0.3-Final</version>
+      <version>4.1-Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-annotator</artifactId>
+      <version>4.1-Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-provenance</artifactId>
+      <version>4.1-Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -192,19 +245,27 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.owlapi</groupId>
-      <artifactId>owlapi-api</artifactId>
-      <version>3.4</version>
-    </dependency>
-    <dependency>
       <groupId>com.clarkparsia.pellet</groupId>
       <artifactId>pellet-owlapi</artifactId>
       <version>2.2.2</version>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.owlapi</groupId>
-      <artifactId>owlapi-apibinding</artifactId>
-      <version>3.4</version>
+      <groupId>net.sourceforge.jwebunit</groupId>
+      <artifactId>jwebunit-htmlunit-plugin</artifactId>
+      <version>3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.7R2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-geo-facet</artifactId>
+      <version>4.1-Final</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -266,15 +327,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-data-source</artifactId>
-		  <version>4.0.3-Final</version>
-		  <type>jar</type>
-		  <overWrite>true</overWrite>
-		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
-		</artifactItem>
-		<artifactItem>
-		  <groupId>edu.rpi.tw.escience</groupId>
-		  <artifactId>semanteco-zipcode</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -282,7 +335,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-regulation</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -290,7 +343,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-time</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -298,7 +351,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-data-type</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -306,7 +359,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-domain</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -314,7 +367,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-water-data-provider</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -322,7 +375,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-air-data-provider</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -330,7 +383,7 @@
 		<artifactItem>
 		  <groupId>edu.rpi.tw.escience</groupId>
 		  <artifactId>semanteco-industry</artifactId>
-		  <version>4.0.3-Final</version>
+		  <version>4.1-Final</version>
 		  <type>jar</type>
 		  <overWrite>true</overWrite>
 		  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -338,18 +391,26 @@
 		<artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-characteristics-facet</artifactId>
-                  <version>4.0.3-Final</version>
+                  <version>4.1-Final</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
-		<artifactItem>
+                <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semanteco-species-dataprovider</artifactId>
-                  <version>4.0.3-Final</version>
-                   <destFileName>semanteco-cspecies.jar</destFileName>
+                  <artifactId>semanteco-provenance</artifactId>
+                  <version>4.1-Final</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>edu.rpi.tw.escience</groupId>
+                  <artifactId>semanteco-annotator</artifactId>
+                  <version>4.1-Final</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+		  <destFileName>annotator.jar</destFileName>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
 	      </artifactItems>
@@ -427,7 +488,6 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-	<baseUrl>http://localhost:8080/semanteco/</baseUrl>
 	<debug>true</debug>
 	<triple-store>http://was.tw.rpi.edu/virtuoso/sparql</triple-store>
       </properties>
@@ -449,7 +509,7 @@
 		    <artifactItem>
 		      <groupId>edu.rpi.tw.escience</groupId>
 		      <artifactId>semanteco-debugger</artifactId>
-		      <version>4.0.3-Final</version>
+		      <version>4.1-Final</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
                       <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -460,6 +520,84 @@
 	    </executions>
 	  </plugin>
 	</plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>semanteco</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.5.1</version>
+            <executions>
+              <execution>
+                <id>copy-semanteco-modules</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+		    <artifactItem>
+                      <groupId>edu.rpi.tw.escience</groupId>
+                      <artifactId>semanteco-species-dataprovider</artifactId>
+                      <version>4.1-Final</version>
+                      <destFileName>semanteco-cspecies.jar</destFileName>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                    </artifactItem>
+		    <artifactItem>
+		      <groupId>edu.rpi.tw.escience</groupId>
+		      <artifactId>semanteco-zipcode</artifactId>
+		      <version>4.1-Final</version>
+		      <type>jar</type>
+		      <overWrite>true</overWrite>
+		      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+		    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>darrin</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.5.1</version>
+            <executions>
+              <execution>
+                <id>copy-darrin-module</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>edu.rpi.tw.escience</groupId>
+                      <artifactId>semanteco-geo-facet</artifactId>
+                      <version>4.1-Final</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
     <profile>

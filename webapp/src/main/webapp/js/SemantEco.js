@@ -2,28 +2,25 @@ var SemantEco = {
 	"limit": 5,
 	"action": null,
 	"initialize": function() {
-		$("#zip")[0].onkeypress = function(e) {
-			if(e.charCode == 13) {
-				SemantEco.showAddress();
-				return false;
-			}
-			return true;
-		};
 		SemantEco.configureConsole();
+		// TODO: move to SemantEcoUI
+        $("div.float").scrollFollow({'container':'sidebar','speed':300,
+            'delay':100,'easing':'swing'});
 		SemantEcoUI.configureMap();
 		$(window).trigger("initialize");
 		
 		// set up facets
 		$.bbq.pushState(SemantEcoUI.getFacetParams(),1);
+		$(window).trigger("restored-state.semanteco");
 		SemantEcoUI.populateFacets();
+		$(window).trigger("populated-facets.semanteco");
 		SemantEcoUI.initializeFacets();
+		$(window).trigger("initialized-facets.semanteco");
 		
 		// bind handle state change
 		$(window).bind('hashchange', SemantEco.handleStateChange);
 		SemantEco.configureWebSockets();
-		if($.bbq.getState("zip") != null) {
-			SemantEco.decodeZipCode();
-		}
+		$(window).trigger("initialized.semanteco");
 	},
 	"configureConsole": function() {
 		if(typeof window.console == "undefined") {
@@ -107,25 +104,6 @@ var SemantEco = {
 			}
 		};
 	},
-	"showAddress": function(zip) {
-		zip = zip || $("#zip").val();
-		if(zip == null || zip == "") {
-			return;
-		}
-		if(zip.length != 5) {
-			alert("The input zip code is not valid! Please check and input again.");
-			return;
-		}
-		$.bbq.removeState("uri");
-		SemantEco.action = "decodeZipCode";
-		if($.bbq.getState("zip") == zip) {
-			// handle if the "Go" button is clicked a second time without
-			// the zip code changing
-			SemantEco.getLimitData();
-		}
-		$.bbq.pushState({"zip": zip});
-		return false;
-	},
 	"handleStateChange": function() {
 		var action = SemantEco.action;
 		if(action == null) {
@@ -137,27 +115,6 @@ var SemantEco = {
 		if(typeof SemantEco[action] == "function") {
 			SemantEco[action].call(SemantEco);
 		}
-	},
-	"decodeZipCode": function() {
-		var zip = $.bbq.getState("zip");
-		if(zip == null) {
-			SemantEco.hideSpinner();
-			return;
-		}
-		SemantEco.pagedData = [];
-		SemantEco.curPage = 0;
-		SemantEcoUI.doGeocode(zip);
-		SemantEcoUI.showSpinner();
-		ZipCodeModule.decodeZipCode({}, SemantEco.processZipCode);
-	},
-	"processZipCode": function(response) {
-		var data = JSON.parse(response);
-		console.log(response);
-		SemantEco.action = "getLimitData";
-		$.bbq.pushState({"state":data.result.stateAbbr,
-			"stateCode":data.result.stateCode,
-			"county":data.result.countyCode,
-			"lat":data.result.lat, "lng":data.result.lng});
 	},
 	"getLimitData": function() {
 		SemantEcoUI.showSpinner();
@@ -242,9 +199,6 @@ var SemantEco = {
 	},
 	"showReportSites": function() {
 		SemantEcoUI.hideSpinner();
-	},
-	"triggerUpdate": function() {
-		SemantEco.showAddress($("#zip").val());
 	},
 	"prepareArgs": function(args) {
 		var result = {};

@@ -62,13 +62,17 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 	private static final Logger log = Logger.getLogger(WaterDataProviderModule.class);
 	
 	@Override
-	public void visit(Model model, Request request) {
-		DataModelBuilder builder = new DataModelBuilder(request, config);
-		builder.build(model);
+	public void visit(Model model, Request request, Domain domain) {
+		try {
+			DataModelBuilder builder = new DataModelBuilder(request, config);
+			builder.build(model);
+		} catch(IllegalArgumentException e) {
+			request.getLogger().info("Water Data Provider will not load data due to an exception.", e);
+		}
 	}
 
 	@Override
-	public void visit(OntModel model, Request request) {
+	public void visit(OntModel model, Request request, Domain domain) {
 		model.read(WATER_NS);
 	}
 
@@ -232,6 +236,8 @@ public class WaterDataProviderModule implements Module, ProvidesDomain {
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ma-regulation.owl"), "MA Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ny-regulation.owl"), "NY Regulation");
 		domain.addRegulation(URI.create("http://escience.rpi.edu/ontology/semanteco/2/0/ri-regulation.owl"), "RI Regulation");
+		//domain.addRegulation(URI.create("http://was.tw.rpi.edu/semanteco/regulations/darrin-fresh-water.owl"), "Darrin Fresh Water");
+
 	}
 	
 	/**

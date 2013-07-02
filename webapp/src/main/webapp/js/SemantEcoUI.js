@@ -6,8 +6,8 @@ var SemantEcoUI = {
     //initializing the map the element such as infowindow and content containers in infowindow
     "configureMap": function() {
         var mapOptions = {
-                center: new google.maps.LatLng(37.4419, -122.1419),
-                zoom: 8,
+                center: new google.maps.LatLng(37.6058, -98.8641),
+                zoom: 4,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 zoomControl: true,
                 panControl: true
@@ -145,44 +145,87 @@ var SemantEcoUI = {
                 //this column is for the tree
                 rightcolumngenerater=function(){
                     var rightcolumn=$(document.createElement('div')).addClass("rightcolumn");
-                    var specietree=$(document.createElement('div')).addClass("specietree").html('<div ><table cellpadding="0" cellspacing="0"><tr><td colspan="2"></td></tr><tr><td  ><div id="text_map"  ><textarea name ="search" id="search_info_map" style="overflow:hidden;padding:0 ;width:100px;height:25px;resize: none;"  placeholder="Type message here!" onKeyPress="press1(event)"></textarea></div><td style="width:20%" ><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;top: -10px;"/></td></td>         </tr><tr><td colspan="2" style="border-left:1px   solid   #111111;border-bottom:1px   solid   #111111;border-right:1px   solid   #111111;"><div id="show_map"></div></td></tr><tr><td colspan="2">       <div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="demo" style="width:100%;height:100px;"></div></div></td></tr></table></div>').appendTo(rightcolumn);
+                    var specietree = $("<div></div>").addClass("hierarchy").appendTo(rightcolumn);
+                    SemantEcoUI.HierarchicalFacet.create(specietree, SpeciesDataProviderModule, "queryeBirdTaxonomyHM", "species");
+                    /*
+                    var specietree=$(document.createElement('div')).addClass("specietree").html('<div class="hierarchy_wrapper"><input type="text" name="search" id="search_info_map" style="overflow:hidden;padding:0;resize:none;" placeholder="Type message here!" autocomplete="off" /><input type=button onClick=" search_node1()" value="search" id="append_map" style="position: relative;"/><div id="show_map"></div><div id="description_map" style=" border:1px solid #111111; overFlow: auto;  " ><div id="tree_map" class="jstree" style="width:100%;height:100px;"></div></div></div>').appendTo(rightcolumn);
+                    specietree.keyup(keyUp1);
                     SpeciesDataProviderModule.queryeBirdTaxonomyRoots({}, function (data){
-                        jsonHier=JSON.parse(data);
-                        jsonHier=jsonHier["data"];
+                        jsonHier2=JSON.parse(data);
+                        jsonHier2=jsonHier2["data"];
                         initial_hierachy1();                                     
                            });
-                    
+                    */
                     
                     return rightcolumn;
            
                 };
 
                 //this is the chart generater, it gets raw input, which is "binding"s in the returned data, and turn them into data format can be used by jqplot
-                chartgenerator=function(mesurementData,nearbySpeciesData){
+                chartgenerator=function(measurementData,nearbySpeciesData){
                     var chartdata=[];
+                    /*
                     
                     var chartseries1=[];
                     
                     var limitThreshold=[];
                     var limitThresholdValue="";
-                    var unit=mesurementData[0].unit.value;
-                    //develop use only, for fake data
-                    var year="";
-                    year=parseInt(mesurementData[0].time.value.substring(0,4));
+                    */
+                    var unit=measurementData[0].unit.value || "";
 
-                    //this loop is getting data to generate array of arraies that will be used by jqplot [["2012-01-01",3],["2012-01-01",8]]
-                    for(var i=0;i<mesurementData.length;i++) {
-                        chartseries1.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].value.value*100 )/100]);
-                        if(mesurementData[i].limit){
-                            limitThreshold.push([mesurementData[i].time.value.substring(0,10),Math.round( mesurementData[i].limit.value*100 )/100]);
+                    // aggregate measurements based on URI (e.g. lower and upper
+                    // bound generate two entries per measurement)
+                    var measurements = {};
+                    for(var i=0;i<measurementData.length;i++) {
+                        var uri = measurementData[i].measurement.value;
+                        if(measurements[uri] == undefined) {
+                            measurements[uri] = [];
+                        }
+                        measurements[uri].push(measurementData[i]);
+                    }
+                    var limits = [[], []];
+                    var values = [];
+                    for(var uri in measurements) {
+                        // time will be the same in each entry, so use the first
+                        var time = measurements[uri][0].time.value.substring(0,10);
+                        if(time.length == 8) {
+                            time = time.substr(0,4)+"-"+time.substr(4,2)+"-"+time.substr(6,2);
+                        }
+                        var mLimits = [];
+                        for(var i=0; i<measurements[uri].length; i++) {
+                            mLimits.push(measurements[uri][i].limit.value);
+                        }
+                        mLimits.sort();
+                        for(var i=0;i<mLimits.length;i++) {
+                            limits[i].push([time, Math.round( mLimits[i] * 100 ) / 100]);
+                        }
+                        values.push([time, Math.round( measurements[uri][0].value.value*100 )/100]);
+                    }
+                    /*
+                    for(var i=0;i<measurementData.length;i++) {
+                        var time = measurementData[i].time.value.substring(0,10);
+                        if(time.length == 8) {
+                            time = time.substr(0,4)+"-"+time.substr(4,2)+"-"+time.substr(6,2);
+                        }
+                        chartseries1.push([time,Math.round( measurementData[i].value.value*100 )/100]);
+                        if(measurementData[i].limit){
+                            limitThreshold.push([time,Math.round( measurementData[i].limit.value*100 )/100]);
                         }
                     }
+                    */
                     //push the processed data to the chartdata, which a data array will be used as input for jqplot
-                    chartdata.push(chartseries1);
+                    chartdata.push(values);
                     //if exists limit, then push to chartdata to plot limit as an aditional series
-                    if(limitThreshold.length!=0){
-                        limitThresholdValue=mesurementData[0].limit.value;
+                    /*
+                    if(limitThreshold.length!=0 && measurementData[0].limit != undefined){
+                        limitThresholdValue=measurementData[0].limit.value;
                         chartdata.push(limitThreshold);
+                    }*/
+                    if(limits[0].length > 0) {
+                        chartdata.push(limits[0]);
+                    }
+                    if(limits[1].length > 0) {
+                        chartdata.push(limits[1]);
                     }
 
                     //aggregating species
@@ -190,24 +233,24 @@ var SemantEcoUI = {
                     var speciesnames=[];
                     var speciessobj={};
                     for(var i=0;i<nearbySpeciesData.length;i++){
-                        if(!speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]]){
-                            speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]]=[];
-                            speciesnames.push(nearbySpeciesData[i]["scientific_name"]["value"]);
+                        if(!speciessobj[nearbySpeciesData[i]["commonName"]["value"]]){
+                            speciessobj[nearbySpeciesData[i]["commonName"]["value"]]=[];
+                            speciesnames.push(nearbySpeciesData[i]["commonName"]["value"]);
                         }
-                        speciessobj[nearbySpeciesData[i]["scientific_name"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
+                        speciessobj[nearbySpeciesData[i]["commonName"]["value"]].push([nearbySpeciesData[i].date.value,Math.round( nearbySpeciesData[i].count.value )]);
                     }
-                    console.log(speciessobj);
-                    console.log(speciesnames);
 
+                    var label = $("#selectforcharacteristic option:selected").html();
                     //the series for the characteristic
                     //after preparing the actually data, start to initial the series
                     var series=[];
                     series.push({
-                        label:$("#selectforcharacteristic option:selected").html()
+                        label:label
                         ,yaxis:'yaxis'
                     });
 
                     //the series for the limit for characteristic if limit exists
+                    /*
                     if(limitThreshold.length!=0){
                         series.push({
                             label:$("#selectforcharacteristic option:selected").html()+" Threshold Limit ("+limitThresholdValue+")"
@@ -219,28 +262,28 @@ var SemantEcoUI = {
                             }
                         });
                     }
-                    
-                    if(UITeamUtilities.fakedata){
-                        chartdata.push([[(year+0)+"-04-01",3],[(year+0)+"-05-01",5],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",4],[(year+0)+"-10-01",2],[(year+0)+"-11-01",3]]);
-                        chartdata.push([[(year+0)+"-04-01",5],[(year+0)+"-05-01",4],[(year+0)+"-06-01",6],[(year+0)+"-07-01",7],[(year+0)+"-08-01",5],[(year+0)+"-09-01",6],[(year+0)+"-10-01",5],[(year+0)+"-11-01",3]]);
-                        series.push({
-                            label:"Bubo_virginianus",yaxis:'y2axis'
-                        });
-                        series.push({
-                            label:"Megascops asio",yaxis:'y2axis'
-                        });
-                    }
-                    //based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
-                    else{
-                        for(var i=0;i<speciesnames.length;i++){
-                            chartdata.push(speciessobj[speciesnames[i]]);
+                    */
+                    for(var i=0;i<limits.length;i++) {
+                        if(limits[i].length > 0) {
                             series.push({
-                                    label:speciesnames[i],yaxis:'y2axis'
-                                });
+                                label:label+" Threshold Limit ("+limits[i][0][1]+")"
+                                ,yaxis:'yaxis'
+                                ,showMarker: false
+                                ,highlighter:{
+                                    show:false
+                                    ,bringSeriesToFront:false
+                                }
+                            })
                         }
                     }
-
-                    console.log(chartdata);
+                    
+                    //based on numbers, dinymically put species series into the series object, which will be used when initializing the chart
+                    for(var i=0;i<speciesnames.length;i++){
+                        chartdata.push(speciessobj[speciesnames[i]]);
+                        series.push({
+                                label:speciesnames[i],yaxis:'y2axis'
+                            });
+                    }
 
                     //the code above genrated the actual data and controlling information about series, 
                     //now initializing the chart, feeding relative data gnerated above
@@ -384,8 +427,6 @@ var SemantEcoUI = {
                                 $(".lb_loading").hide();
 
                                 console.log("queryForNearbySpeciesCountsCallback");
-                                console.log("data:"+data2);
-
 
                                 if(data2 && (JSON.parse(data2)).results.bindings.length!=0){
                                     data2=JSON.parse(data2);
@@ -395,50 +436,28 @@ var SemantEcoUI = {
                                 else{
                                     console.log("Empty data from queryForNearbySpeciesCounts");
                                     
-                                    //this part is only for development
-                                    //to getting siblings we need to push this particular species
-                                    if(UITeamUtilities.nearSpecies){
-                                        var tempcounty=$.bbq.getState("county");
-                                        var tempstate=$.bbq.getState("state");
-                                        var tempspecies=$.bbq.getState("species");
-                                        $.bbq.pushState({"county":"019"});
-                                        $.bbq.pushState({"state": "MD"});
-                                        $.bbq.pushState({"species":["http://ebird#Megascops_cooperi"]});
-                                    }
-                                    //
-                                    
                                     //if the the returning species data is empty, then there is another call if check if sibling species data exists
                                     function queryIfSiblingsExistCallback(data){
 
                                         data=JSON.parse(data);
                                         data=data.data;
                                         var species=[];
-                                        var confirmtext="No result for the selected species, would you want to see data for\n";
+                                        var confirmtext="There are no results for the selected species, would you like to see data for: \n";
                                         if(UITeamUtilities.fakedata){
                                             confirmtext="You attempted to plot bird count data for the species \"Bare-legged Owl\", but none is available. There is  however Bird count data on other species of in family “Owl”, including \"Bare-shanked Screech Owl\" and \"Brown-Fish Owl\"";
                                         }
                                         for(var i=0;i<data.length;i++){
                                             species.push(data[i]["sibling"]);
-                                            confirmtext+=data[i]["sibling"]+"\n";
+                                            confirmtext+=data[i]["commonName"]+"\n";
                                         }
                                         console.log("returned sibling species : "+species);
                                         var con=confirm(confirmtext);
                                         if(con){
-                                            console.log("yes I would");
-                                            // $.bbq.pushState({"species":species});
-                                            $.bbq.pushState({"species":["http://ebird#Megascops_asio", "http://ebird#Bubo_virginianus"]});
+                                            $.bbq.pushState({"species":species});
                                             console.log("this is getState after push species to state");
                                             console.log($.bbq.getState("species"));
 
                                             SpeciesDataProviderModule.queryForNearbySpeciesCounts({},queryForNearbySpeciesCountsCallback);
-
-                                            //this part is only for development
-                                            if(UITeamUtilities.nearSpecies){
-                                                $.bbq.pushState({"county":tempcounty});
-                                                $.bbq.pushState({"state": tempstate});
-                                                $.bbq.pushState({"species":tempspecies});
-                                            }
-                                            //
                                             return false;
                                         }
                                         else{
@@ -615,7 +634,10 @@ var SemantEcoUI = {
         var params = {};
         $("div#facets .facet").each(function() {
             var that = $(this);
-            $("input", that).each(function() {
+            if(that.hasClass("unmanaged")) {
+                return;
+            }
+            $("input[name]", that).each(function() {
                 var type = this.getAttribute("type").toLowerCase();
                 var name = this.getAttribute("name");
                 if(type == "checkbox") {
@@ -650,7 +672,7 @@ var SemantEcoUI = {
     "populateFacets": function() {
         var params = $.bbq.getState();
         for(var param in params) {
-            var inputs = $("*[name='"+param+"']");
+            var inputs = $("div.facet:not([class ~= 'unmanaged']) *[name='"+param+"']");
             if(inputs.length > 0) {
                 if(inputs[0].tagName == "INPUT") {
                     var type = inputs[0].type.toLowerCase();
@@ -684,6 +706,9 @@ var SemantEcoUI = {
     "initializeFacets": function() {
         var facets = $("div#facets .facet").each(function() {
             var that = this;
+            if($(that).hasClass("unmanaged")) {
+                return;
+            }
             $("input", this).change(function(e) {
                 var me = $(this);
                 var name = me.attr("name");
@@ -714,6 +739,8 @@ var SemantEcoUI = {
                 $.bbq.pushState(state);
             });
         });
+        $("div#facets").sortable({axis:"y", items: "table", handle:"th",
+            placeholder:"ui-state-highlight"}).find("th").disableSelection();
     },
     "createMarker": function(uri, lat, lng, icon, visible, label) {
         var opts = {"clickable": true,
@@ -761,6 +788,20 @@ var SemantEcoUI = {
     "handleClickedMarker": function() {
         SemantEco.action = null;
         $(window).trigger('show-marker-info');
+    },
+    "focusMap": function() {
+        if(SemantEcoUI.markers.length == 0) {
+            return;
+        }
+        var latlng = SemantEcoUI.markers[0].getPosition();
+        var bounds = new google.maps.LatLngBounds(latlng, latlng);
+        for(var i=1;i<SemantEcoUI.markers.length;i++) {
+            bounds.extend(SemantEcoUI.markers[i].getPosition());
+        }
+        SemantEcoUI.map.fitBounds(bounds);
+        if(SemantEcoUI.map.getZoom() > 15) {
+            SemantEcoUI.map.setZoom(15);
+        }
     },
     "showSpinner": function() {
         $("#spinner").css("display", "block");
@@ -813,50 +854,46 @@ $(document).ready(function(){
     lightbox.init();
 });
 
-
-
-
-
+// ewpatton: hacks to fix Chen's code quickly. must be rewritten to satisfy issue #8
+var class_hierarchy_temp2 = null;
+var class_hierarchy_map2 = null;
 
 function initial_hierachy1(){
-    //alert(class_hierachy);
-    //alert("class hierarchy has"+class_hierachy.length);
-    
+	class_hierarchy_temp2 = new Array();
+	class_hierarchy_map2 = new Array();
     var flag=0;
-    for (var i=0;i<jsonHier.length;i++){
+    for (var i=0;i<jsonHier2.length;i++){
         flag=0;
-        for (var j=0;j<jsonHier.length;j++){
-            temp1=jsonHier[i]["parent"].indexOf("#");
-            if(jsonHier[i]["parent"].substring(temp1+1)==jsonHier[j]["label"]){
-                //alert(jsonHier[i]);
+        for (var j=0;j<jsonHier2.length;j++){
+            temp1=jsonHier2[i]["parent"].indexOf("#");
+            if(jsonHier2[i]["parent"].substring(temp1+1)==jsonHier2[j]["label"]){
                 flag=1;
                 break;
             }
         }
         if(flag==0){
             var flag1=0;
-            for (var k=0;k<class_hierachy_temp.length;k++){
-                if(class_hierachy_temp[k][0]==jsonHier[i]["parent"].substring(temp1+1)){
+            for (var k=0;k<class_hierarchy_temp2.length;k++){
+                if(class_hierarchy_temp2[k][0]==jsonHier2[i]["parent"].substring(temp1+1)){
                     flag1=1;
                     break;
                 }
         
             }
             if(flag1==0){
-                class_hierachy_temp.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
-                class_hierachy_map.push(new Array(jsonHier[i]["parent"].substring(temp1+1),null,null));
-                //jsonHier.remove(i);
+            	class_hierarchy_temp2.push(new Array(jsonHier2[i]["parent"].substring(temp1+1),null,null));
+            	class_hierarchy_map2.push(new Array(jsonHier2[i]["parent"].substring(temp1+1),null,null));
             }
         }
     }
     
-    for (var j=0;j<class_hierachy_temp.length;j++){
-         for (var i=0;i<jsonHier.length;i++){
-                 var temp=jsonHier[i]["parent"].indexOf("#");             
-                if(jsonHier[i]["parent"].substring(temp+1)==class_hierachy_temp[j][0]){
-                    class_hierachy_map.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
+    for (var j=0;j<class_hierarchy_temp2.length;j++){
+         for (var i=0;i<jsonHier2.length;i++){
+                 var temp=jsonHier2[i]["parent"].indexOf("#");             
+                if(jsonHier2[i]["parent"].substring(temp+1)==class_hierarchy_temp2[j][0]){
+                    class_hierarchy_map2.push(new Array(jsonHier2[i]["label"],jsonHier2[i]["parent"].substring(temp+1),jsonHier2[i]["id"]));
                     
-                    //jsonHier.remove(i);
+                    //jsonHier2.remove(i);
                 }
          }
         
@@ -867,12 +904,12 @@ function initial_hierachy1(){
     var temp_div=document.getElementById('tree_map');
     temp_div.innerHTML="";
     
-    for (var i=0;i<class_hierachy_temp.length;i++){
+    for (var i=0;i<class_hierarchy_temp2.length;i++){
         var ul=document.createElement("ul");
         var li=document.createElement("li");
         var a=document.createElement("a");
         a.href="#";
-        var text=document.createTextNode(class_hierachy_temp[i][0]);
+        var text=document.createTextNode(class_hierarchy_temp2[i][0]);
         var temp_root="map"+i;
         li.id=temp_root;
         a.appendChild(text); 
@@ -883,7 +920,7 @@ function initial_hierachy1(){
             //alert("success");
         
         var j;
-        for ( j=class_hierachy_temp.length;j<class_hierachy_map.length;j++){ 
+        for ( j=class_hierarchy_temp2.length;j<class_hierarchy_map2.length;j++){ 
             
             append_node1(j,temp_root);
         }
@@ -915,7 +952,7 @@ function initial_hierachy1(){
                         //alert(class_hierachy[temp_id][0]);
                         //alert(class_hierachy[temp_id][1]);
                         //$.bbq.pushState({"species":class_hierachy[temp_id][2]});
-                        $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierachy_map[temp_id][2]});
+                        $.bbq.pushState({"queryeBirdTaxonomySubClasses":class_hierarchy_map2[temp_id][2]});
                         ajax_node1();
                         getSelectedValue1();
                 })
@@ -935,7 +972,7 @@ function getSelectedValue1() {
     $.each(nodes, function(i, n) { 
          var temp_id=this.id;
          var temp_id1=parseInt(temp_id.substring(3));
-         temp.push(class_hierachy_map[temp_id1][2]);
+         temp.push(class_hierarchy_map2[temp_id1][2]);
          
     }); 
     $.bbq.pushState({"species":temp});
@@ -944,13 +981,13 @@ function getSelectedValue1() {
 function append_node1(current, parent){
    var temp_judge=parent;
    temp_judge=parseInt(temp_judge.substring(3));
-   if(class_hierachy_map[current][1]==class_hierachy_map[temp_judge][0]){
+   if(class_hierarchy_map2[current][1]==class_hierarchy_map2[temp_judge][0]){
         var temp_div=document.getElementById(parent);
         var ul=document.createElement("ul");
         var li=document.createElement("li");
         var a=document.createElement("a");
         a.href="#";
-        var text=document.createTextNode(class_hierachy_map[current][0]);
+        var text=document.createTextNode(class_hierarchy_map2[current][0]);
         var temp_id="map"+current.toString();
         li.id=temp_id;
         a.appendChild(text); 
@@ -969,142 +1006,81 @@ function append_node1(current, parent){
 
 function ajax_node1() {
     SpeciesDataProviderModule.queryeBirdTaxonomySubClasses({}, function(data) {
-        jsonHier = JSON.parse(data);
-        jsonHier = jsonHier["data"];
+        jsonHier2 = JSON.parse(data);
+        jsonHier2 = jsonHier2["data"];
         var flag=0;
         var id=0;
-        if (jsonHier.length == 0) {
+        if (jsonHier2.length == 0) {
             //alert("null");
         } else {
-            for ( var parent = 0; parent < class_hierachy_map.length; parent++) {
-                if (jsonHier[0]["id"] == class_hierachy_map[parent][2]) {
-                    flag = 1;
-                    break;
-                }
-            }
-            if (flag == 1) {
-                //alert("error");
-            } else {
-                //alert("success");
-                for ( var i = 0; i < jsonHier.length; i++) {
-                    for ( var parent = 0; parent < class_hierachy_map.length; parent++) {
-                        var temp=jsonHier[i]["parent"].indexOf("#");
-                        if (jsonHier[i]["parent"].substring(temp+1) == class_hierachy_map[parent][0]) {
-                            id="map"+parent;
-                            var temp_div = document.getElementById(parent);
-                            var ul = document.createElement("ul");
-                            var li = document.createElement("li");
-                            var a = document.createElement("a");
-                            a.href = "#";
-                            var text = document.createTextNode(jsonHier[i]["label"]);
-                            li.id = "map"+class_hierachy_map.length;
-                            a.appendChild(text);
-                            li.appendChild(a);
-                            ul.appendChild(li);
-                            temp_div.appendChild(ul);
-                            // alert("success");
-                            class_hierachy_map.push(new Array(jsonHier[i]["label"],jsonHier[i]["parent"].substring(temp+1),jsonHier[i]["id"]));
-                            break;
-                        }
+            for ( var i = 0; i < jsonHier2.length; i++) {
+                for ( var parent = 0; parent < class_hierarchy_map2.length; parent++) {
+                    if (jsonHier2[i]["parent"] == class_hierarchy_map2[parent][2]) {
+                        id="map"+parent;
+                        var temp_div = document.getElementById("map"+parent);
+                        var ul = document.createElement("ul");
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        a.href = "#";
+                        var text = document.createTextNode(jsonHier2[i]["label"]);
+                        li.id = "map"+class_hierarchy_map2.length;
+                        a.appendChild(text);
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                        temp_div.appendChild(ul);
+                        // alert("success");
+                        class_hierarchy_map2.push(new Array(jsonHier2[i]["label"],jsonHier2[i]["parent"],jsonHier2[i]["id"]));
+                        break;
                     }
                 }
             }
         }
-        var tree = jQuery.jstree._reference("#" + id);
+        var tree = jQuery.jstree._reference("#"+id);
         tree.refresh();
+        document.getElementById(id).firstChild.click();
     });
 }
 
-
-
-
-document.onkeydown = keyDown1;
-
-function keyDown1(){
-    if(event.keyCode==8){
-        var temp =document.getElementById('search_info_map').value;
-    
-       var cprStr=temp;
-        if(cprStr.length!=1&&cprStr.length!=0){             
-            cprStr=cprStr.substring(0,cprStr.length-1);
-    
-           show=[];
-           len=0;
-           for (i in class_hierachy_map){
-                if(cprStr==class_hierachy_map[i][0].substring(0,cprStr.length)){
-                   len=show.push(class_hierachy_map[i][0]);
-               }
-            } 
-        }
-     else{
-    show=[];
-        }
-        //alert("Have "+len+" compatible records");
-      var div1=document.getElementById('show_map');
-        div1.innerHTML="";
-        htmlStr="";
-        for (i in show){
-           htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
-            htmlStr+=show[i];
-          htmlStr+="</a>";
-         htmlStr+="</br>";
-    }
-      div1.innerHTML+=htmlStr;
-         //alert(show);
-    }
-    
-}
-
-
-function press1(event){
-var e=event.srcElement;
-    if(event.keyCode!=13){
-        if(event.keyCode!=8){
-    var realkey = String.fromCharCode(event.keyCode);
-        match1(realkey);
-         return false;
-        }
-        
-    }
-}
-
-function match1(str){
-    //alert(document.getElementById('textarea2').value);
+function keyUp1(){
+    var div1=document.getElementById('show_map');
     var temp =document.getElementById('search_info_map').value;
-    
-    
-    var cprStr=temp+str;
-
-    show=[];
-    len=0;
-    for (i in class_hierachy_map){
-        if(cprStr==class_hierachy_map[i][0].substring(0,cprStr.length)){
-           len=show.push(class_hierachy_map[i][0]);
+    var cprStr=temp;
+    var show = [];
+    if(event.keyCode==8) {
+        if(cprStr.length==0) {
+            $(div1).css("display", "none");
+            return;
+        }
+    }
+    for (i in class_hierarchy_map2) {
+        if(cprStr==class_hierarchy_map2[i][0].substring(0,cprStr.length)) {
+           show.push(class_hierarchy_map2[i][0]);
        }
     } 
-    //alert("Have "+len+" compatible records");
-var div1=document.getElementById('show_map');
+    $(div1).css("display", show.length == 0 ? "none" : "block");
     div1.innerHTML="";
     htmlStr="";
     for (i in show){
-         htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose1(this)\">";
-       htmlStr+=show[i];
+        htmlStr+="<a style=\"cursor: pointer;\" onclick=\"choose(this)\">";
+        htmlStr+=show[i];
         htmlStr+="</a>";
-       htmlStr+="</br>";
+        htmlStr+="</br>";
     }
-div1.innerHTML+=htmlStr;
+    div1.innerHTML+=htmlStr;
 }
+
 function choose1(str){
     var temp=str.childNodes[0].nodeValue;
     document.getElementById('search_info_map').value=temp;
     document.getElementById('show_map').innerHTML="";
+    search_node1();
 }
 
 function search_node1(){
      var temp =document.getElementById('search_info_map').value;
      var flag=0;
-     for (var i=0;i<class_hierachy_map.length;i++){
-         if(temp==class_hierachy_map[i][0]){
+     for (var i=0;i<class_hierarchy_map2.length;i++){
+         if(temp==class_hierarchy_map2[i][0]){
             flag=1;
             var temp_id="map"+i;
             if(document.all){
@@ -1125,6 +1101,7 @@ function search_node1(){
      }
      document.getElementById('search_info_map').value="";
      document.getElementById('show_map').innerHTML="";
+     $("#show_map").css("display", "none");
 }
 
 

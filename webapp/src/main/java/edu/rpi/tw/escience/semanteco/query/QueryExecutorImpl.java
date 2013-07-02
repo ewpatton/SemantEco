@@ -12,24 +12,28 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 
-import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
+import edu.rpi.tw.escience.semanteco.Domain;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.QueryExecutor;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.Query;
+
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeAsk;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeDescribe;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeConstruct;
+import static edu.rpi.tw.escience.semanteco.util.DomainQueryUtils.executeSelect;
 
 /**
  * QueryExecutorImpl provides the default implementation used by
@@ -42,13 +46,20 @@ import edu.rpi.tw.escience.semanteco.query.Query;
  *
  */
 public class QueryExecutorImpl implements QueryExecutor, Cloneable {
-	
-	protected String endpoint = null;
-	protected WeakReference<Module> owner = null;
-	protected Logger log = Logger.getLogger(QueryExecutorImpl.class);
-	protected List<String> acceptTypes = new LinkedList<String>();
+
+	private static final String AUGMENTATION = "Query augmentation";
+	private static final String LOCAL_QUERY = "Local query";
+	private static final String REMOTE_QUERY = "Remote query";
+	private static final String ENC_RDFXML = "RDF/XML";
+	private static final String ENC_TURTLE = "TTL";
+	private static final String ENC_N3 = "N3";
+	private String endpoint = null;
+	private WeakReference<Module> owner = null;
+	private Logger log = Logger.getLogger(QueryExecutorImpl.class);
+	private List<String> acceptTypes = new LinkedList<String>();
 	private static final int BUFSIZE = 1024;
-	protected Request request = null;
+	private Request request = null;
+	private ModuleManager manager = null;
 	
 	/**
 	 * Creates a new QueryExecutorImpl for the specified module that
@@ -56,11 +67,14 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	 * @param owner
 	 * @param tripleStore
 	 */
-	public QueryExecutorImpl(Module owner, String tripleStore) {
+	public QueryExecutorImpl(Module owner, String tripleStore, ModuleManager manager) {
 		if(owner != null) {
 			this.owner = new WeakReference<Module>(owner);
+		} else {
+			throw new IllegalArgumentException("Attempting to create QueryExecutorImpl without an owner.");
 		}
 		endpoint = tripleStore;
+		this.manager = manager;
 	}
 	
 	/**
@@ -74,6 +88,11 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		this.log = other.log;
 		this.acceptTypes = new LinkedList<String>(other.acceptTypes);
 		this.request = other.request;
+		this.manager = other.manager;
+	}
+
+	protected void logPerformance(String context, long start) {
+		log.info(context + " took " + (System.currentTimeMillis() - start) + " ms");
 	}
 
 	@Override
@@ -95,7 +114,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			queryString += "?";
 		}
 		try {
-			queryString += "query="+URLEncoder.encode(query.toString(), "UTF-8");
+			queryString += "query="+URLEncoder.encode(query.toString(),
+					SemantEcoConfiguration.get().getEncoding());
 		}
 		catch (UnsupportedEncodingException e) {
 			log.error("Unable to construct query URI", e);
@@ -122,12 +142,17 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public String execute(String endpoint, Query query) {
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("execute");
-		log.info("Module '"+owner.get().getName()+"' executing query");
+		log.info("Module '"+modName+"' executing query");
 		log.debug("Letting modules visit query before execution");
 		long start = System.currentTimeMillis();
-		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
-		log.debug("Time to augment: "+(System.currentTimeMillis()-start)+" ms");
+		manager.augmentQuery(query, request, mod);
+		logPerformance(AUGMENTATION, start);
 		log.debug("Endpoint: "+endpoint);
 		log.debug("Query: "+query.toString().replaceAll("\n", "\n    "));
 		List<String> mimeTypes = new ArrayList<String>(acceptTypes);
@@ -154,8 +179,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			}
 			is.close();
 			conn.disconnect();
-			log.info("Query execution took "+(System.currentTimeMillis()-start)+" ms");
-			return baos.toString();
+			logPerformance(REMOTE_QUERY, start);
+			return baos.toString(SemantEcoConfiguration.get().getEncoding());
 		} catch (MalformedURLException e) {
 			log.error("Invalid query URL", e);
 		} catch (IOException e) {
@@ -166,11 +191,16 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 
 	@Override
 	public QueryExecutor execute(String endpoint, Query query, Model model) {
+		assert(owner!=null);
+		final Module mod = owner.get();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
 		log.trace("execute");
-		log.debug("Module '"+owner.get().getName()+"' executing remote query");
+		log.debug("Module '"+modName+"' executing remote query");
 		long start = System.currentTimeMillis();
-		ModuleManagerFactory.getInstance().getManager().augmentQuery(query, request, owner.get());
-		log.debug("Augmenting query took "+(System.currentTimeMillis()-start)+" ms");
+		manager.augmentQuery(query, request, mod);
+		logPerformance(AUGMENTATION, start);
 		log.debug("Endpoint: "+endpoint);
 		log.debug("Query: "+query);
 		String queryUri = endpoint;
@@ -181,7 +211,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			queryUri += "?query=";
 		}
 		try {
-			queryUri += URLEncoder.encode(query.toString(), "UTF-8");
+			queryUri += URLEncoder.encode(query.toString(),
+					SemantEcoConfiguration.get().getEncoding());
 			URL url = java.net.URI.create(queryUri).toURL();
 			URLConnection conn = url.openConnection();
 			List<String> mimeTypes = new ArrayList<String>(acceptTypes);
@@ -193,12 +224,12 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 			start = System.currentTimeMillis();
 			conn.connect();
 			String responseType = conn.getContentType();
-			String type = "RDF/XML";
+			String type = ENC_RDFXML;
 			if(responseType.startsWith("text/turtle")) {
-				type = "TTL";
+				type = ENC_TURTLE;
 			}
 			else if(responseType.startsWith("text/n3")) {
-				type = "N3";
+				type = ENC_N3;
 			}
 			InputStream is = conn.getInputStream();
 			model.read(is, endpoint, type);
@@ -209,7 +240,7 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		} catch (IOException e) {
 			log.warn("Unable to communicate with server", e);
 		}
-		log.debug("Query completed in "+(System.currentTimeMillis()-start)+" ms");
+		logPerformance(REMOTE_QUERY, start);
 		return this;
 	}
 	
@@ -218,8 +249,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	 * @param module
 	 * @return
 	 */
-	public static QueryExecutorImpl getExecutorForModule(Module module) {
-		return new QueryExecutorImpl(module, SemantEcoConfiguration.get().getTripleStore());
+	public static QueryExecutorImpl getExecutorForModule(Module module, ModuleManager manager) {
+		return new QueryExecutorImpl(module, SemantEcoConfiguration.get().getTripleStore(), manager);
 	}
 
 	@Override
@@ -229,9 +260,8 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		QueryExecutorImpl copy = new QueryExecutorImpl(owner.get(), endpoint);
+		QueryExecutorImpl copy = (QueryExecutorImpl) super.clone();
 		copy.acceptTypes = new ArrayList<String>(acceptTypes);
-		copy.log = this.log;
 		return copy;
 	}
 
@@ -250,60 +280,121 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		}
 	}
 
-	@Override
-	public String executeLocalQuery(Query query) {
-		log.trace("executeLocalQuery");
-		Model model = request.getCombinedModel();
-		if(System.getProperty("edu.rpi.tw.escience.writemodel", "false").equals("true")) {
+	protected boolean shouldSaveModel() {
+		return System.getProperty("edu.rpi.tw.escience.writemodel", "false")
+				.equals("true");
+	}
+
+	protected void saveModels(List<Model> models) {
+		String tmpDir = System.getProperty("java.io.tmpdir");
+		int i=0;
+		for(Model m : models) {
+			FileOutputStream fos = null;
 			try {
-				FileOutputStream fos = new FileOutputStream(System.getProperty("java.io.tmpdir")+"/model.rdf");
-				model.write(fos);
-				fos.close();
-			}
-			catch(Exception e) {
+				fos = new FileOutputStream(tmpDir+"/model"+i+".rdf");
+				m.write(fos);
+			} catch(Exception e) {
 				// do nothing
+			} finally {
+				try {
+					if( fos != null ) {
+						fos.close();
+					}
+				} catch(IOException e) {
+					log.warn("Unable to close input stream, proceeding as if closed.", e);
+					fos = null;
+				}
 			}
+			i++;
 		}
-		log.debug("Module '"+owner.get().getName()+"' executing local query");
-		ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
-		mgr.augmentQuery(query, request, owner.get());
-		log.debug("Query: "+query.toString());
+	}
+
+	protected boolean augmentQuery(final Query query) {
+		try {
+			assert(owner != null);
+			Module mod = owner.get();
+			assert(mod != null);
+			long start = System.currentTimeMillis();
+			manager.augmentQuery(query, request, mod);
+			logPerformance(AUGMENTATION, start);
+			log.debug("Query: "+query.toString());
+			return true;
+		} catch(Exception e) {
+			log.warn("Unexpected exception when augmenting query.", e);
+			return false;
+		}
+	}
+
+	protected String doLocalQuery(final Query query, final List<Model> models) {
+		log.trace("executeLocalQuery");
+		if(shouldSaveModel()) {
+			saveModels(models);
+		}
+
+		final Module mod = getOwner();
+		assert(mod!=null);
+		final String modName = mod.getName();
+		assert(modName != null);
+		log.debug("Module '"+modName+"' executing local query");
+
+		augmentQuery(query);
+		
 		Model resultModel = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		long start = System.currentTimeMillis();
-		QueryExecution qe = QueryExecutionFactory.create(query.toString(), model);
+		boolean parallel = SemantEcoConfiguration.get().isParallel();
 		try {
 			switch(query.getType()) {
 			case SELECT:
-				ResultSet results = qe.execSelect();
+				ResultSet results = executeSelect(query, models, parallel);
 				ResultSetFormatter.outputAsJSON(baos, results);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
+				logPerformance(LOCAL_QUERY, start);
+				break;
 			case DESCRIBE:
-				resultModel = qe.execDescribe();
+				resultModel = executeDescribe(query, models, parallel);
 				resultModel.write(baos);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
+				logPerformance(LOCAL_QUERY, start);
+				break;
 			case CONSTRUCT:
-				resultModel = qe.execConstruct();
+				resultModel = executeConstruct(query, models, parallel);
 				resultModel.write(baos);
-				log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-				return baos.toString("UTF-8");
+				logPerformance(LOCAL_QUERY, start);
+				break;
 			case ASK:
-				if(qe.execAsk()) {
-					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-					return "{\"result\":true}";
-				}
-				else {
-					log.debug("Local query took "+(System.currentTimeMillis()-start)+" ms");
-					return "{\"result\":false}";
-				}
+				boolean result = executeAsk(query, models, parallel);
+				logPerformance(LOCAL_QUERY, start);
+				ResultSetFormatter.out(baos, result);
+				break;
 			}
 		}
 		catch(Exception e) {
 			log.warn("Unable to execute query due to exception", e);
+			return null;
 		}
-		return null;
+		try {
+			return baos.toString(SemantEcoConfiguration.get().getEncoding());
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Executes a local query on a model other than the default.
+	 * @param query Query to execute on the model
+	 * @param model Jena Model containing content to query
+	 */
+	public String executeLocalQuery(Query query, Model model) {
+		return doLocalQuery(query, Arrays.asList(model));
+	}
+
+	@Override
+	public String executeLocalQuery(Query query) {
+		final List<Model> models = new ArrayList<Model>();
+		final List<Domain> activeDomains = request.listActiveDomains();
+		for(Domain i : activeDomains) {
+			models.add(request.getCombinedModel(i));
+		}
+		return doLocalQuery(query, models);
 	}
 	
 	/**
@@ -316,4 +407,20 @@ public class QueryExecutorImpl implements QueryExecutor, Cloneable {
 		this.log = request.getLogger();
 	}
 
+	/**
+	 * Gets the original client request used to generate this query executor
+	 * @return
+	 */
+	public Request getRequest() {
+		return this.request;
+	}
+
+	/**
+	 * Gets the owner module of this query executor implementation.
+	 * @return
+	 */
+	public Module getOwner() {
+		assert(owner != null);
+		return owner.get();
+	}
 }

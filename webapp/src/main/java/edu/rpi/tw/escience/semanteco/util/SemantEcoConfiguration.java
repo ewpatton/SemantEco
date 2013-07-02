@@ -25,14 +25,29 @@ public class SemantEcoConfiguration extends Properties {
 	private static SemantEcoConfiguration config = null;
 	private static Logger log = Logger.getLogger(SemantEcoConfiguration.class);
 	
-	private static boolean debugging = false;
-	
+	private boolean debugging = false;
+	private String basePath = null;
+	private boolean parallel = false;
+	private String encoding = "UTF-8";
+
+	/**
+	 * Constructs a new configuration object given the servlet context.
+	 * @param context
+	 */
+	protected SemantEcoConfiguration(ServletContext context) {
+		if( context == null ) {
+			basePath = "";
+		} else {
+			basePath = context.getRealPath("/");
+		}
+	}
+
 	/**
 	 * Configures the object from the provided servlet context
 	 * @param context
 	 */
 	public static void configure(ServletContext context) {
-		config = new SemantEcoConfiguration();
+		config = new SemantEcoConfiguration(context);
 		try {
 			InputStream is = context.getResourceAsStream(PROPERTIES);
 			if(is == null) {
@@ -71,13 +86,42 @@ public class SemantEcoConfiguration extends Properties {
 	 * @return
 	 */
 	public String getTripleStore() {
-		return config.getProperty("triple-store", "http://sparql.tw.rpi.edu/virtuoso/sparql");
+		return config.getProperty("triple-store",
+				"http://sparql.tw.rpi.edu/virtuoso/sparql");
 	}
 	
-	protected final static void install(SemantEcoConfiguration config) {
+	protected static final void install(SemantEcoConfiguration config) {
 		SemantEcoConfiguration.config = config;
 		if(config.getProperty("debug", "false").equals("true")) {
-			debugging = true;
+			config.debugging = true;
 		}
+		if(config.getProperty("parallel", "false").equals("true")) {
+			config.parallel = true;
+		}
+		config.encoding = config.getProperty("encoding", "UTF-8");
+	}
+
+	/**
+	 * Gets the base path to where SemantEco lives on disk.
+	 * @return
+	 */
+	public String getBasePath() {
+		return basePath;
+	}
+
+	public boolean isParallel() {
+		return parallel;
+	}
+
+	protected void setDebug(boolean debug) {
+		debugging = debug;
+	}
+
+	/**
+	 * Gets the text encoding for SemantEco, defaults to UTF-8
+	 * @return
+	 */
+	public String getEncoding() {
+		return encoding;
 	}
 }
