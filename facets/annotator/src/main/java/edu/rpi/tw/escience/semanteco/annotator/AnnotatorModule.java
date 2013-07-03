@@ -161,10 +161,21 @@ public class AnnotatorModule implements Module {
 	
 	@QueryMethod
 	public String listofOntologies(){
+		
+		//wgs
+		//semanteco ontologies
+		//
+		//prefix sd: http://www.w3.org/ns/sparql-service-description#
+		//prefix void: http://rdfs.org/ns/void#
+		//	prefix prov: http://www.w3.org/ns/prov#
+		
+	// "dcterms", "semanteco
+		
 		return null;
 	}
 
 	public void initModel() {
+		String ontology = "";
 		
 		//show where we load from URL the ontologies, for example ncbi taxonomy
 		
@@ -178,8 +189,29 @@ public class AnnotatorModule implements Module {
 			//check for what the ontology request is, and load that only into the model.
 			
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			model.read("https://code.ecoinformatics.org/code/semtools/trunk/dev/oboe-ext/sbclter/sbc.1.0/oboe-sbc.owl");
-			//model.read(is, "http://aquarius.tw.rpi.edu/projects/semantaqua/", "TTL");
+			
+			try{
+				//model.read(is, "http://aquarius.tw.rpi.edu/projects/semantaqua/", "TTL");
+			/* works */
+				//model.read("https://code.ecoinformatics.org/code/semtools/trunk/dev/oboe-ext/sbclter/sbc.1.0/oboe-sbc.owl");
+				//model.read("http://purl.org/dc/terms/");			
+				model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
+				//dcat //void
+				
+				//pellet error.
+				
+
+			}
+			catch(Exception e)
+			{
+				//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+
+			}
+			
+			/*
+			if(ontology.equals("dcterms")){			
+			model.read("http://purl.org/dc/terms/");
+			}*/
 			
 			
 			/*
