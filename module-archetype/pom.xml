@@ -2,9 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>edu.rpi.tw.escience</groupId>
+  <parent>
+    <groupId>edu.rpi.tw.escience</groupId>
+    <artifactId>semanteco-parent</artifactId>
+    <version>4.2-SNAPSHOT</version>
+  </parent>
+
   <artifactId>semanteco-facet-archetype</artifactId>
-  <version>4.2-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
 
   <name>semanteco-facet-archetype</name>
@@ -28,18 +32,18 @@
     </pluginManagement>
   </build>
 
-  <distributionManagement>
+  <repositories>
     <repository>
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release-local</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
-    <snapshotRepository>
+    <repository>
       <id>tetherless-snapshots</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-snapshot-local</url>
       <releases><enabled>false</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
-    </snapshotRepository>
-  </distributionManagement>
+    </repository>
+  </repositories>
 </project>
