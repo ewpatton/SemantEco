@@ -33,3 +33,4 @@ pom.xml.old
 webapp/test
 
 *.swp
+.refresh-prizms-installation
