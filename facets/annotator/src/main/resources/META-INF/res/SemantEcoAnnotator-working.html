@@ -88,6 +88,8 @@
     .col-selectable .ui-selecting { background: #FECA40; }
 	.col-selectable .ui-selected { background: #F39814; }
 	
+	.selected-col { background: #F39814 !important; }
+	
 	.ui-widget-content {
 		border: 1px solid #aaaaaa;
 		background: #fff;
@@ -110,12 +112,21 @@
 		font-weight: bold;
 		color: white;
 	}
+	
+	div.hierarchy div.wrapper {
+		height: 100%;
+	}
     
-    .context-menu-list {
+	.ontology-selector {
+		font-weight:bold;
+		text-decoration:underline;
+	}
+	
+    .context-menu-list	{
 		margin:0; 
 		padding:0;
 		min-width: 120px;
-		max-width: 250px;
+		max-width: 350px;
 		display: inline-block;
 		position: absolute;
 		list-style-type: none;
@@ -131,6 +142,17 @@
 		margin: 10px 10px 10px 0; 
 	}
 	
+	.ui-tooltip, .ui-tooltip-content {
+		margin:0; 
+		padding:0;
+		min-width: 200px;
+		max-width: 300px;
+		display: inline-block;
+		position: absolute;
+		list-style-type: none;
+		border: 1px solid #DDD;
+		background: #EEE;
+	}
 	
 	</style>
 	
@@ -170,10 +192,16 @@
 	$(document).ready(function() {
 		$(window).trigger("initialize");
 		});
+		
 */
 	</script>
 	
 	<script>
+	// Tooltip function
+	$(function() {
+		$( document ).tooltip();
+	});	
+
 	// This is the jsTree for DATA TYPES
 	// To help clarify plugins:
 	//   "dnd" means "drag-and-drop"
@@ -400,7 +428,33 @@
     }
   }
   
-    // Accessory function to generatee the subtables for each column header in the CSV file.
+  	// A context menu for selecting ontologies for the Class Hierarchy.
+	// Eventually, we'll want to populate this from some listing of all the ontologies we have?
+	// Right now, for sake of simplicity and testing, this is hard-coded and has no callbacks 
+	//    written....
+	$(function (){
+			$.contextMenu({
+				selector: '.ontology-selector', 
+				// This is the default callback, which will be used for any functions
+				//    that do not have their own callbacks specified. It echoes the 
+				//    key of the selection to the console.
+				callback: function(key, options) {
+					var m = "clicked: " + key;
+					console.log(m);
+				},
+				items: {
+					"semantEcoWater": {name: "SemantEco-Water", type: 'checkbox'},
+					"prov": {name: "PROV", type: 'checkbox'},
+					"wgs": {name: "WGS", type: 'checkbox'},
+					"void": {name: "VOID", type: 'checkbox'},
+				}// /items
+			}); // /context menu
+			
+		});// /ontology-selector
+  
+  
+    // Accessory function to generate the subtables for each column header in the CSV file.
+	//    The handleFileSelect function below that generates the table calls this repeatedly.
 	// Every subtable will be the same, (except for the ID's of the cells)
 	//    with 3 rows in 1 column. These are the DEFAULT subtables; ones for
 	//    IMPLICIT or EXPLICIT BUNDLES will be different (and in other functions) 
@@ -640,6 +694,17 @@
               var rows = file.target.result.split(/[\r\n|\n]+/);
               var table = document.createElement('table');
 			  
+			// We have seen some examples of CSV files where there are extraneous trailing columns at the end
+			//    of the file. (eg: data,data,data,,,,,,,,,,) This variable will be used to count and then
+			//    remove them in order to improve the table rendering and hopefully save some time.
+			// * This assumes that the empty column headers to be removed are all at the end of the first row!
+			// These are counted up as the column header row does its thing, and this value is output in console.log()
+			//    once it knows how many extra rows there are, for error checking and so forth.
+			  var extraColumns = 0;
+			  
+		// Generate column groups
+			  var group = document.createElement('colgroup');
+			  var oneCol;
 		// Create subtabled column headers
 			  var thr = document.createElement('tr');
 			  $(thr).attr("class", 'col-selectable');
@@ -655,6 +720,14 @@
 			  $(atr).attr("style", 'display:none');
 			  var th,btd,atd;
 			  for (var j = 0; j < numcols; j++){ // i == 0 because this is only concerned with the column headers
+				if ( !tharr[j] ){ // if we have extra columns trailing at the end,
+					extraColumns++;
+				}
+				else{ 
+				// colgroup
+					oneCol = document.createElement('col');
+					$(oneCol).attr("id", "colgroup,"+j);
+					group.appendChild(oneCol);
 				// column header
                     th = document.createElement('th');
 					$(th).attr("class", "ui-widget-content the-context-menu");
@@ -675,10 +748,14 @@
 					$(atd).attr("id", 'annotationRow,'+j);
 					$(atd).attr("class", 'annotationRow');
 					atr.appendChild(atd);
+				}
 			  }//
+			  table.appendChild(group);
 			  table.appendChild(thr);
 			  table.appendChild(btr);
 			  table.appendChild(atr);
+			  numcols = numcols-extraColumns;
+			  console.log("removed " + extraColumns + " extra blank columns");
 			  // Once the header row with subtables has been created,
               //   continue and create the rest of the table. 
 			  // This is actually data from the CSV file!
@@ -686,7 +763,7 @@
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
 				var td;
-                for (var j = 0; j < arr.length; j++){
+                for (var j = 0; j < numcols; j++){
                     td = document.createElement('td');
                     $(td).attr("id", i+','+j);
                   if( link_reg.test(arr[j]) ){ // if the thing from the CSV file is a link
@@ -716,6 +793,7 @@
 						if( !existsA(currentlySelected,index) ){
 							currentlySelected.push(index);
 						}
+						//$("colgroup,"+index).addClass("selected-col");
 						console.log("selecting col " + index + "....");
 						console.log("currently Selected: " + currentlySelected);
 					});
@@ -724,6 +802,7 @@
 					$( ui.unselected, this ).each(function() {
 						var index = $( ".col-selectable th").index( this );
 						removeA(currentlySelected, index);
+						//$("colgroup,"+index).removeClass("selected-col");
 						console.log("unselecting col " + index + "....");
 						console.log("currently Selected: " + currentlySelected);
 					});
@@ -774,7 +853,7 @@
         </div>
         </td>
         <td>
-         Class Heirarchy
+         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</p>
           <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
 		   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
 		   </div>
@@ -944,7 +1023,7 @@
 			SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 
 			
-			// not sure what this is??? 
+			// not sure what this is??? toString for ... something.
         	function toString(obj, level) {
 				if(typeof(level)==='undefined') level = 0;
 					var ret = "";
