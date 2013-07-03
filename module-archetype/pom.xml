@@ -28,18 +28,18 @@
     </pluginManagement>
   </build>
 
-  <distributionManagement>
+  <repositories>
     <repository>
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release-local</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
-    <snapshotRepository>
+    <repository>
       <id>tetherless-snapshots</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-snapshot-local</url>
       <releases><enabled>false</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
-    </snapshotRepository>
-  </distributionManagement>
+    </repository>
+  </repositories>
 </project>
