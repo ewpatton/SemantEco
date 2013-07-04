@@ -233,4 +233,5 @@ function DrawPolygonButton(buttonDiv, map) {
             buttonUI.appendChild(buttonText);
         }
     });
+}
 
