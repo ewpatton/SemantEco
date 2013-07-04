@@ -174,7 +174,7 @@ public class AnnotatorModule implements Module {
 		j.put("prov");
 		j.put("void");
 		j.put("semanteco-water");
-		return null;
+		return j.toString();
 	}
 
 	public void initModel() {
