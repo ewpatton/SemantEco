@@ -72,5 +72,6 @@
   </profiles>
   <modules>
     <module>semanteco-darrin</module>
+    <module>semanteco-health</module>
   </modules>
 </project>
