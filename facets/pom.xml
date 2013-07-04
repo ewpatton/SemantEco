@@ -70,4 +70,7 @@
       <id>parent-only</id>
     </profile>
   </profiles>
+  <modules>
+    <module>semanteco-darrin</module>
+  </modules>
 </project>

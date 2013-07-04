@@ -267,6 +267,11 @@
       <version>4.2-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+ <dependency>
+      <groupId>edu.rpi.tw.escience</groupId>
+      <artifactId>semanteco-darrin</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -411,6 +416,14 @@
                   <type>jar</type>
                   <overWrite>true</overWrite>
 		  <destFileName>annotator.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                </artifactItem>
+ <artifactItem>
+                  <groupId>edu.rpi.tw.escience</groupId>
+                  <artifactId>semanteco-darrin</artifactId>
+                  <version>1.0-SNAPSHOT</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
 	      </artifactItems>
