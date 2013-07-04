@@ -160,8 +160,8 @@ public class AnnotatorModule implements Module {
 	}
 	
 	@QueryMethod
-	public String listofOntologies(){
-		
+	public String getListofOntologies(){
+		JSONArray j = new JSONArray();
 		//wgs
 		//semanteco ontologies
 		//
@@ -170,7 +170,10 @@ public class AnnotatorModule implements Module {
 		//	prefix prov: http://www.w3.org/ns/prov#
 		
 	// "dcterms", "semanteco
-		
+		j.put("dcterms");
+		j.put("prov");
+		j.put("void");
+		j.put("semanteco-water");
 		return null;
 	}
 
