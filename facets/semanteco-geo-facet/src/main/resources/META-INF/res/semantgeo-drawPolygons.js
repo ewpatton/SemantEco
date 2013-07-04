@@ -186,3 +186,51 @@ function startDrawingPolygon(){
     addPolygonDrawListeners(aPolyline);
 }
 
+//Button Code by Irene Khan
+//Draw polygon button        
+var drawPolygonButtonDiv = document.createElement('div');
+var drawPolygonButton = new DrawPolygonButton(drawPolygonButtonDiv, SemantEcoUI.map);
+drawPolygonButtonDiv.index = 1;
+SemantEcoUI.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(drawPolygonButtonDiv);
+
+function DrawPolygonButton(buttonDiv, map) {
+    var drawMode = false;
+    
+    //CSS for div, border, and content
+    buttonDiv.style.padding = '5px';
+    buttonDiv.style.width = '100px';
+    var buttonUI = document.createElement('div');
+    buttonUI.style.borderRadius = '10px';
+    buttonUI.style.backgroundColor = 'white';
+    buttonUI.style.borderStyle = 'solid';
+    buttonUI.style.borderWidth = '2px';
+    buttonUI.style.cursor = 'pointer';
+    buttonUI.style.textAlign = 'center';
+    buttonUI.title = 'Click to draw a polygon';
+    buttonDiv.appendChild(buttonUI);
+    var buttonText = document.createElement('div');
+    buttonText.style.fontFamily = 'Arial,sans-serif';
+    buttonText.style.fontSize = '12px';
+    buttonText.style.padding = '4px';
+
+    buttonText.innerHTML = '<b>Draw&nbsp;Polygon</b>';
+    buttonUI.appendChild(buttonText);
+
+    //Click event listener - on click, call startDrawingPolygon()
+    google.maps.event.addDomListener(buttonUI, 'click', function() {
+        if ( !drawMode ) {
+            drawMode = true;
+            startDrawingPolygon()
+            buttonUI.style.backgroundColor = 'lightgray';
+            buttonText.innerHTML = '<b>Stop&nbsp;Drawing</b>';
+            buttonUI.appendChild(buttonText);
+        } else {
+            buttonUI.style.backgroundColor = 'white';
+            removePolygonDrawListeners();
+            aPolyline.setMap(null);
+            drawMode = false;
+            buttonText.innerHTML = '<b>Draw&nbsp;Polygon</b>';
+            buttonUI.appendChild(buttonText);
+        }
+    });
+
