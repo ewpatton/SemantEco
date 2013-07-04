@@ -160,7 +160,7 @@ public class AnnotatorModule implements Module {
 	}
 	
 	@QueryMethod
-	public String getListofOntologies(){
+	public String getListofOntologies(final Request request){
 		JSONArray j = new JSONArray();
 		//wgs
 		//semanteco ontologies
