@@ -34,9 +34,12 @@
 		border-collapse: collapse;
 	}
 	
-	.bundledRow { 	}
-	.annotationRow {	
-		font-size:5px;
+	.bundled-row { 
+	}
+	.annotation-row {	
+		font-size:8px;
+		margin:0; 
+		padding:0;
 	}
 	
 	.links_via-on {
@@ -44,7 +47,14 @@
 	}
     
 	.cellBased-on {
-		outline: 2px solid #00dd00;
+		border: 2px solid #00dd00;
+	}
+	
+	.links_via-on .cellBased-on {
+		border-top: 2px inset #0000dd;
+		border-left: 2px inset #0000dd;
+		border-bottom: 2px outset #00dd00;
+		border-right: 2px outset #00dd00;
 	}
 	
     .col-selectable .ui-selecting { background: #FECA40; }
@@ -115,6 +125,11 @@
 		border: 1px solid #DDD;
 		background: #EEE;
 	}
+	
+	.hide-while-empty {
+		display:none;
+	}
+		
 	
 	</style>
 	
@@ -555,7 +570,8 @@
 								}
 								// if the column is not there, add it
 								else {
-									$(toggle).attr("class","cellBased-on");
+									$(toggle).addClass("cellBased-on");
+									//$(toggle).attr("class","cellBased-on");
 									cellBased.push(index);
 									console.log("adding col " + index);
 								}
@@ -572,7 +588,8 @@
 									}
 									// if the column is not there, add it
 									else {
-										$(toggle).attr("class","cellBased-on");
+										$(toggle).addClass("cellBased-on");
+										//$(toggle).attr("class","cellBased-on");
 										cellBased.push(currentlySelected[i]);
 										console.log("adding col " + currentlySelected[i]);
 									}
@@ -603,7 +620,8 @@
 								}
 								// if the column is not there, add it
 								else {
-									$(toggle).attr("class","links_via-on");
+									$(toggle).addClass("links_via-on");
+									//$(toggle).attr("class","links_via-on");
 									links_via.push(index);
 									console.log("adding col " + index);
 								}
@@ -620,7 +638,8 @@
 									}
 									// if the column is not there, add it
 									else {
-										$(toggle).attr("class","links_via-on");
+										$(toggle).addClass("links_via-on");
+										//$(toggle).attr("class","links_via-on");
 										links_via.push(currentlySelected[i]);
 										console.log("adding col " + currentlySelected[i]);
 									}
@@ -632,7 +651,35 @@
 					
 					"bundle": {name: "Create Bundle"},
 					
-					"comment": {name: "Add Comment"},
+					"comment": {
+						// Adds a comment to the Annotation Row
+						// * when finished, this should pop up a lightbox to solicit user input
+						//   including the type of comment (radio selector?) as well as the
+						//   comment text itself.
+						// If there is already a comment/the row is already showing, then just add it.
+						// Otherwise, show the row, then add the comment to the column on which the context
+						//    menu was called.
+						// * NOTE that if multiple columns are selected, it will only add the comment to the 
+						//   single column on which the menu is invoked!
+						name: "Add Comment",
+						callback: function(){
+							var cRow = document.getElementById("annotations");
+							var index = $("th").index(this);
+							var cType = "rdfs:comment"; // in the end, these two fields 
+							var cText = "testComment"; //  shouldn't be hard-coded....
+							// if the row is hidden (ie, this is the first comment added), show the row
+							if (cRow.classList.contains("hide-while-empty") ) {
+								$(cRow).removeClass("hide-while-empty");
+							}
+							var workingCol = document.getElementById("annotationRow,"+index);
+							var workingTable = workingCol.getElementsByTagName('TABLE')[0];
+							var addedRow = workingTable.insertRow(-1);
+							var typeCell = addedRow.insertCell(0);
+							var textCell = addedRow.insertCell(1);
+							typeCell.innerHTML = cType;
+							textCell.innerHTML = cText;
+						}// /callback function
+					},// /addComment
 					
 					"eg": {name: "Add Canonical Value (eg)"},
 					
@@ -682,12 +729,15 @@
 		// Create row for bundled properties
 		// * This is empty at table generation, and hidden by default
 			  var btr = document.createElement('tr');
-			  $(btr).attr("style", 'display:none'); 
+			  $(btr).attr("class", 'hide-while-empty');
 		// Create row for annotations (and additional triples
 		// * This row is also empty and hidden at table generation
+		// * This row includes empty tables at creation for adding to later.
 			  var atr = document.createElement('tr');
-			  $(atr).attr("style", 'display:none');
-			  var th,btd,atd;
+			  $(atr).attr("class", 'annotation-row hide-while-empty');
+			  $(atr).attr("id", 'annotations');
+			  //$(atr).attr("style", 'display:none');
+			  var th,btd,atd,annTable;
 			  for (var j = 0; j < numcols; j++){ // i == 0 because this is only concerned with the column headers
 				if ( !tharr[j] ){ // if we have extra columns trailing at the end,
 					extraColumns++;
@@ -715,7 +765,9 @@
 				// annotation row
 					atd = document.createElement('td');
 					$(atd).attr("id", 'annotationRow,'+j);
-					$(atd).attr("class", 'annotationRow');
+					//$(atd).attr("class", 'annotationRow');
+					annTable = document.createElement('table')
+					atd.appendChild(annTable);
 					atr.appendChild(atd);
 				}
 			  }//
@@ -884,14 +936,14 @@
 			//    hard-coded and then passed into the tree when it is rendered below.
 			// From the documentation:
 			//   data.o - the object being dragged
-			//   data.r - the drop target
+			//   data.r - the drop target(node)
 			// * The drop target will be the node in which the mouse button
 			//   is released, NOT the node in which the object text will appear!
             var dnd = {
             	
    		                "drop_target" : "#list th",
    		                "drop_finish" : function (data) {
-							$(data.r).css("color","black");
+							$(data.r).find(".droppable-class").css("color","black");
 							//add the node name to the header, and get the parent node "id"
 							// p = node id of the datathing from the JS tree
 							var p = data.o.attr("hierarchy_id");
@@ -1015,11 +1067,8 @@
 		$(div).addClass("jstree-default");
 		$(div).bind("select_node.jstree", function (NODE, REF_NODE) {
         var a = $.jstree._focused().get_selected();
-      //alert(a);
         var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
-      //alert(lookup);
         var axioms_contents = lookup[a.attr("hierarchy_id")].rawData.axioms;
-      //alert(axioms_contents);
         $("#ClassBox").html("<pre>"+toString(axioms_contents,0)+"</pre>");
       });
     });
