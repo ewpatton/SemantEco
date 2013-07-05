@@ -186,12 +186,16 @@ function startDrawingPolygon(){
     addPolygonDrawListeners(aPolyline);
 }
 
-//Button Code by Irene Khan
-//Draw polygon button        
-var drawPolygonButtonDiv = document.createElement('div');
-var drawPolygonButton = new DrawPolygonButton(drawPolygonButtonDiv, SemantEcoUI.map);
-drawPolygonButtonDiv.index = 1;
-SemantEcoUI.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(drawPolygonButtonDiv);
+
+// Brendan Edit:  Wait for the dom to load 
+$(window).bind('initialize', function() {
+    //Button Code by Irene Khan
+    //Draw polygon button        
+    var drawPolygonButtonDiv = document.createElement('div');
+    var drawPolygonButton = new DrawPolygonButton(drawPolygonButtonDiv, SemantEcoUI.map);
+    drawPolygonButtonDiv.index = 1;
+    SemantEcoUI.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(drawPolygonButtonDiv);
+});
 
 function DrawPolygonButton(buttonDiv, map) {
     var drawMode = false;
