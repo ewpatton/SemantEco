@@ -20,6 +20,7 @@ public class HierarchyEntry implements Serializable {
 	private static final long serialVersionUID = -28764795460121436L;
 	private static final String URI_FIELD = "uri";
 	private static final String LABEL_FIELD = "label";
+	private static final String COMMENT_FIELD = "comment";
 	private static final String PARENT_FIELD = "parent";
 	private static final String AXIOMS_FIELD = "axioms";
 	private static final String ALTLABEL_FIELD = "altLabel";
@@ -68,6 +69,14 @@ public class HierarchyEntry implements Serializable {
 	public void setAxioms(final Map<String, Set<String>> axioms) {
 		this.axioms = axioms;
 		this.contents.put(AXIOMS_FIELD, new JSONObject(axioms));
+	}
+	
+	/**
+	 * Sets the collection of OWL axioms describing this entry
+	 * @param axioms
+	 */
+	public void setComment(String comment) {
+		this.contents.put(COMMENT_FIELD, comment);
 	}
 
 	/**
@@ -123,6 +132,14 @@ public class HierarchyEntry implements Serializable {
 	 */
 	public String getAltLabel() {
 		return (String)this.contents.get(ALTLABEL_FIELD);
+	}
+	
+	/**
+	 * Gets the comment for this entry
+	 * @return
+	 */
+	public String getComment() {
+		return (String)this.contents.get(COMMENT_FIELD);
 	}
 
 	/**

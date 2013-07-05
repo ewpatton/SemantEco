@@ -77,6 +77,7 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 
 /*
  * treat enhancements atomically
@@ -1289,7 +1290,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;		
 	}
 	
-	@HierarchicalMethod(parameter = "annotatorAnnotationProperties")
+	@HierarchicalMethod(parameter = "annotatorDataProperties")
 	public Collection<HierarchyEntry> queryAnnotatorDataPropertyHM(final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 
@@ -1310,7 +1311,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 	
 	
-	@HierarchicalMethod(parameter = "annotatorAnnotationProperties")
+	@HierarchicalMethod(parameter = "annotatorDatatypeProperties")
 	public Collection<HierarchyEntry> queryAnnotatorDataTypeHM(final Request request, final HierarchyVerb action) {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 
@@ -1598,7 +1599,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;
 	}
 
+	//protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
+
 
 		//this.initModel();
 
@@ -1610,6 +1613,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		final Variable id = query.getVariable(VAR_NS+ "child");
 		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable comment = query.getVariable(VAR_NS+ "comment");
 		final Variable parent = query.getVariable(VAR_NS+ "parent");		
 
 		final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
@@ -1621,6 +1625,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
 		final Variable site = query.getVariable(VAR_NS+"site");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource hasComment = query.getResource(RDFS_NS + "comment");
+
 
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(id);
@@ -1632,13 +1638,25 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		query.addPattern(id, subClassOf, parent);
 		query.addPattern(id, subClassOf, Entity);
 		query.addPattern(id, hasLabel, label);
+		
+		//add an optional here
+        final OptionalComponent optional = query.createOptional();
+        query.addPattern(id, comment, comment);
+		
+		
 		//construct.addPattern(site, subClassOf, PollutedThing);
-		//return executeLocalQuery(query, model);
+        //String results = config.getQueryExecutor(request).accept("application/json").execute(query);
+		String results  = executeLocalQuery(query, model);
 		String responseStr = FAILURE;
 		//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);	
 		//Set master = new HashSet();		//model.
 		//Set<OntClass> classes = new HashSet<OntClass>();		//model.
 		//Set<String> labels = new HashSet<String>();		//model.
+		
+		//iterate over results now
+		System.out.println("result: " + results.toString());
+		
+		
 
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
@@ -2077,6 +2095,34 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 //
 //		return null;
 //	}
+	
+	//need to embed the comment in the json array that is being sent back at each level
+	
+	@QueryMethod
+	public String getAnnotationForClass(final Request request){
+		String OntClass = (String) request.getParam("class");
+		HashSet<String> annotations = new HashSet<String> ();
+		String comment = "";
+		//get annotations with annotation property comment
+		OntClass c = model.getOntClass(OntClass);
+		
+		for(StmtIterator statementsIter = c.listProperties(null) ; statementsIter.hasNext() ;){
+			Statement statement = statementsIter.next();		
+			if(statement.getPredicate().canAs(OntProperty.class)){
+				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			
+
+				if(o.isAnnotationProperty()){
+					System.out.println("is an annotation Property");
+					if(o.getURI().toString().equals("http://www.w3.org/2000/01/rdf-schema#comment")){
+					request.getLogger().debug("is a common anno property");
+					//annotations.add(statement.toString());}
+					comment = statement.toString();
+					}				
+			    }
+		    }
+		}	
+		return comment;
+	}
 
 	//@QueryMethod
 	public Map<String, Set<String>> getAxiomsForClass(final Request request, OntClass clazz){
@@ -2121,9 +2167,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		for(StmtIterator statementsIter = c.listProperties(null) ; statementsIter.hasNext() ;){
 			Statement statement = statementsIter.next();			
 			//need to also check if it is a subClassOf, EquivalentClass, DisjointWith, DisjointUnionOf 
-
-			
-			
+		
 			if(statement.getPredicate().canAs(OntProperty.class)){
 				//check what type of statements these are.
 				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			
