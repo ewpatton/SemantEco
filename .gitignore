@@ -31,3 +31,7 @@ facets/annotator/src/main/java/jssecacerts
 
 pom.xml.old
 webapp/test
+
+*.swp
+
+facets/semanteco-geo-facet/src/main/java/edu/rpi/tw/escience/semanteco/geo/SemantEcoGeoModule.java
