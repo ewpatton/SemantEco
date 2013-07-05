@@ -9,11 +9,10 @@
     <link rel="stylesheet" type="text/css" href="../../js/jstree/themes/default/style.css" />
    
 	<style>
-	
     body{
-      font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
-      color: #404040;
-      background: #F8F8F8;
+		font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
+		color: #404040;
+		background: #F8F8F8;
     }
     #wrap {
       float:left;
@@ -30,47 +29,10 @@
       border-radius: 2px;
       padding: 10px;
     }
-    
 	
-	table {
-      max-width: 100%;
-      background-color: #fff;
-      border-collapse: collapse;
-      border-spacing: 0;
-      width: 100%;
-      margin-bottom: 20px;
-	  border: 1px solid #dddddd;
-      border-collapse: separate;
-      *border-collapse: collapse;
-      border-left: 0;
-      -webkit-border-radius: 4px;
-         -moz-border-radius: 4px;
-              border-radius: 4px;
-    }
-    table th{
-      background: #eae4ff;
-	  line-height: 20px;
-      text-align: left;
-      vertical-align: top;
-      border-top: 1px solid #dddddd;
-	  border-left: 1px solid #dddddd;
-    }
-    table td {
-      padding: 8px;
-      line-height: 20px;
-      text-align: left;
-      vertical-align: top;
-      border-top: 1px solid #dddddd;
-	  border-left: 1px solid #dddddd;
-    }
-	
-    table tr:first-child {
-      font-weight: bold;
-    }
-
-    table tr:nth-child(odd){
-      background-color: #f9f9f9;
-    }
+	th {
+		border-collapse: collapse;
+	}
 	
 	.bundledRow { 	}
 	.annotationRow {	
@@ -82,7 +44,7 @@
 	}
     
 	.cellBased-on {
-		border: 2px solid #00dd00;
+		outline: 2px solid #00dd00;
 	}
 	
     .col-selectable .ui-selecting { background: #FECA40; }
@@ -198,6 +160,7 @@
 	
 	<script>
 	// Tooltip function
+	// This just enables the mouseover tooltips.
 	$(function() {
 		$( document ).tooltip();
 	});	
@@ -287,10 +250,10 @@
             
 				$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
                 
-           //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+			// window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
                 
-           //    var args = {};
-           //    args[r] = p;
+			// var args = {};
+			// args[r] = p;
            
 				function keySearch(dict,key) {
 					for (var i in dict) if (key in dict[i]) 
@@ -326,7 +289,8 @@
     });// /jsTree
 });// /jsTree function
 	
-		
+		// ** NOT CURRENTLY IN USE ** 
+		// ( drag-and-drop is currently handled via a jsTree plugin, NOT jQuery UI )
 		// Responsible for draggable and droppable functions for classes
 		//   and properties. They are separate from each other, to assist
 		//   with target highlighting.
@@ -481,10 +445,15 @@
 	//    is the resource representing the bundle, with the default option for "implicit"
 	//  - Ideally, selecting a column for the resource should copy the column header of the
 	//    original column. 
+	//  Input parameters are:
+	//    - text, for the name of the column (might be from the explicit column if given?)
+	//    - colIndex, for where to stick this (might need a span, too?)
+	//    - bundleNo, to keep track of bundles
 	//    * How do we keep that up to date???
-	function createBundleSubtable(text,colIndex) {
-		var theader = '<table>\n';
+	function createBundleSubtable(text,colIndex,bundleNo) {
+		var theader = '<table id=bundle,' + bundleNo + '>\n';
 		var tbody = '';
+		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
 		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
@@ -853,7 +822,7 @@
         </div>
         </td>
         <td>
-         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</p>
+         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</span>
           <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
 		   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
 		   </div>
