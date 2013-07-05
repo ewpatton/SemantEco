@@ -681,7 +681,34 @@
 						}// /callback function
 					},// /addComment
 					
-					"eg": {name: "Add Canonical Value (eg)"},
+					"eg": {
+						name: "Add Canonical Value (eg)",
+						// Like addComment, this allows a user to add a canonical value
+						//    using our conversion:eg. As the above, "egText" should eventually
+						//    be user-specified.
+						// Canonical Values hang out in the annotation row along with comments and
+						//    other annotations.
+						// * NOTE that, like the above, thsi will only add an eg to the column on which
+						//   the context menu was invoked, even if multiple columns are selected!
+						callback: function(){
+							var egRow = document.getElementById("annotations");
+							var index = $("th").index(this);
+							var egType = "conversion:eg"; // in the end, these two fields 
+							var egText = "test_eg"; //  shouldn't be hard-coded....
+							// if the row is hidden (ie, this is the first comment added), show the row
+							if (egRow.classList.contains("hide-while-empty") ) {
+								$(egRow).removeClass("hide-while-empty");
+							}
+							var workingCol = document.getElementById("annotationRow,"+index);
+							var workingTable = workingCol.getElementsByTagName('TABLE')[0];
+							var addedRow = workingTable.insertRow(-1);
+							var typeCell = addedRow.insertCell(0);
+							var textCell = addedRow.insertCell(1);
+							typeCell.innerHTML = egType;
+							textCell.innerHTML = egText;
+						}// /callback function
+					
+					},// /eg
 					
 					"new-triple": {name: "Forge New Triple"},
 					
