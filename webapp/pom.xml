@@ -425,7 +425,7 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semanteco-darrin</artifactId>
+                  <artifactId>semanteco-health</artifactId>
                   <version>1.0-SNAPSHOT</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
@@ -433,8 +433,8 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
-                  <artifactId>semanteco-health</artifactId>
-                  <version>1.0-SNAPSHOT</version>
+                  <artifactId>semanteco-geo-facet</artifactId>
+                  <version>4.2-SNAPSHOT</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
@@ -612,8 +612,8 @@
                   <artifactItems>
                     <artifactItem>
                       <groupId>edu.rpi.tw.escience</groupId>
-                      <artifactId>semanteco-geo-facet</artifactId>
-                      <version>4.2-SNAPSHOT</version>
+                      <artifactId>semanteco-darrin</artifactId>
+                      <version>1.0-SNAPSHOT</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
                       <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
