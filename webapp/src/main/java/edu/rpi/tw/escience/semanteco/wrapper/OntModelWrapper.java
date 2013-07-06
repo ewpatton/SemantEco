@@ -495,7 +495,12 @@ public class OntModelWrapper implements OntModel {
 
 	@Override
 	public Model read(String arg0) {
-		log.debug("Module "+requestor.get().getName()+" loads document "+arg0);
+		if(requestor != null) {
+			Module module = requestor.get();
+			if(module != null) {
+				log.debug("Module " + module.getName() + " loads document " + arg0);
+			}
+		}
 		return m.read(arg0);
 	}
 

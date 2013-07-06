@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -24,7 +26,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import edu.rpi.tw.escience.semanteco.i18n.Messages;
-import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.util.JSONUtils;
 import edu.rpi.tw.escience.semanteco.util.SemantEcoConfiguration;
 import edu.rpi.tw.escience.semanteco.wrapper.LoggerWrapper;
@@ -51,6 +52,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	private Map<Domain, ModelCache> models = new HashMap<Domain, ModelCache>();
 	private URL original = null;
 	private List<Domain> activeDomains = new ArrayList<Domain>();
+	private ModuleManager manager = null;
 
 	private static final class ModelCache {
 		private OntModel model = null;
@@ -82,7 +84,8 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	 * information is sent
 	 */
 	public ClientRequest(String name, Map<String, String[]> params,
-			URL original, WsOutbound channel, WsOutbound provenance) {
+			URL original, WsOutbound channel, WsOutbound provenance,
+			ModuleManager manager) {
 		super(name);
 		this.params = new HashMap<String, String>();
 		if(params != null) {
@@ -120,9 +123,10 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		this.log = Logger.getLogger(name);
 		this.original = original;
 		this.provenanceLog = provenance;
+		this.manager = manager;
 		setLogger(log);
 		List<String> domainUris = JSONUtils.toList((JSONArray) getParam("domain"));
-		List<Domain> allDomains = ModuleManagerFactory.getInstance().getManager().listDomains();
+		List<Domain> allDomains = this.manager.listDomains();
 		for(Domain d : allDomains) {
 			if(domainUris.contains(d.getUri().toString())) {
 				activeDomains.add(d);
@@ -184,10 +188,8 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		}
 		String msg = message.toString();
 		String err = (t != null ? t.toString() : "");
-		if(t != null) {
-			if(t.getCause() != null) {
-				err += " due to "+t.getCause().toString();
-			}
+		if(t != null && t.getCause() != null) {
+			err += " due to "+t.getCause().toString();
 		}
 		msg = msg.replaceAll("\n", Matcher.quoteReplacement("\\n"))
 				.replaceAll("\"", Matcher.quoteReplacement("\\\""));
@@ -254,9 +256,8 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	public OntModel getModel(Domain domain) {
 		ensureModelCacheForDomain(domain);
 		if(models.get(domain).model == null) {
-			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 			models.get(domain).model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			mgr.buildOntologyModel(models.get(domain).model, this, domain);
+			manager.buildOntologyModel(models.get(domain).model, this, domain);
 		}
 		return models.get(domain).model;
 	}
@@ -264,9 +265,8 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	@Override
 	public Model getDataModel(Domain domain) {
 		if(models.get(domain).dataModel == null) {
-			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 			models.get(domain).dataModel = ModelFactory.createDefaultModel();
-			mgr.buildDataModel(models.get(domain).dataModel, this, domain);
+			manager.buildDataModel(models.get(domain).dataModel, this, domain);
 		}
 		return models.get(domain).dataModel;
 	}
@@ -275,9 +275,8 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	public Model getCombinedModel(Domain domain) {
 		ensureModelCacheForDomain(domain);
 		if(!models.get(domain).combined) {
-			final ModuleManager mgr = ModuleManagerFactory.getInstance().getManager();
 			getModel(domain);
-			mgr.buildDataModel(models.get(domain).model, this, domain);
+			manager.buildDataModel(models.get(domain).model, this, domain);
 			models.get(domain).combined = true;
 		}
 		return models.get(domain).model;
@@ -306,7 +305,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		} catch(IOException e) {
 			log.warn(Messages.PROVENANCE_CONNECTION_LOST, e);
 			try {
-				provenanceLog.close(200, null);
+				provenanceLog.close(HttpServletResponse.SC_OK, null);
 			} catch(IOException e1) {
 				log.warn(Messages.PROVENANCE_CONNECTION_NOCLOSE);
 			} finally {

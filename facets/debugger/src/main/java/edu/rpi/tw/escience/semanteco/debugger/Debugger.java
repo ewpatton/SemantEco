@@ -123,10 +123,10 @@ public class Debugger implements Module {
 			ResultSetFormatter.outputAsJSON(buffer, rs);
 		}
 		else if(query.isConstructType()) {
-			executeConstruct(queryStr, models, false).write(buffer);
+			executeConstruct(queryStr, models, false).write(buffer, "TTL");
 		}
 		else if(query.isDescribeType()) {
-			executeDescribe(queryStr, models, false).write(buffer);
+			executeDescribe(queryStr, models, false).write(buffer, "TTL");
 		}
 		else if(query.isAskType()) {
 			boolean bool = executeAsk(queryStr, models, false);

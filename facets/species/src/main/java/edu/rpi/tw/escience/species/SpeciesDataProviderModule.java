@@ -2042,7 +2042,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 	}
 
 	protected void addDataSourcesFish(final Domain domain, final Request request) {
-		domain.addSource(URI.create("http://sbcFish#"), "SBC Fish");
+		domain.addSource(URI.create("http://sbcFish#"), "Santa Barbara County LTER");
 	}
 
 	/**

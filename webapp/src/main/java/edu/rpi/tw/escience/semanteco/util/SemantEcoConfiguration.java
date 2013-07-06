@@ -25,9 +25,10 @@ public class SemantEcoConfiguration extends Properties {
 	private static SemantEcoConfiguration config = null;
 	private static Logger log = Logger.getLogger(SemantEcoConfiguration.class);
 	
-	private static boolean debugging = false;
-	private static String basePath = null;
-	private static boolean parallel = false;
+	private boolean debugging = false;
+	private String basePath = null;
+	private boolean parallel = false;
+	private String encoding = "UTF-8";
 
 	/**
 	 * Constructs a new configuration object given the servlet context.
@@ -89,14 +90,15 @@ public class SemantEcoConfiguration extends Properties {
 				"http://sparql.tw.rpi.edu/virtuoso/sparql");
 	}
 	
-	protected final static void install(SemantEcoConfiguration config) {
+	protected static final void install(SemantEcoConfiguration config) {
 		SemantEcoConfiguration.config = config;
 		if(config.getProperty("debug", "false").equals("true")) {
-			debugging = true;
+			config.debugging = true;
 		}
 		if(config.getProperty("parallel", "false").equals("true")) {
-			parallel = true;
+			config.parallel = true;
 		}
+		config.encoding = config.getProperty("encoding", "UTF-8");
 	}
 
 	/**
@@ -113,5 +115,13 @@ public class SemantEcoConfiguration extends Properties {
 
 	protected void setDebug(boolean debug) {
 		debugging = debug;
+	}
+
+	/**
+	 * Gets the text encoding for SemantEco, defaults to UTF-8
+	 * @return
+	 */
+	public String getEncoding() {
+		return encoding;
 	}
 }

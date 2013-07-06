@@ -77,6 +77,7 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 
 /*
  * treat enhancements atomically
@@ -151,32 +152,92 @@ public class AnnotatorModule implements Module {
 
 	public void setModel(OntModel model){
 		AnnotatorModule.model = model;
+		// "SNOMED","NCBI-Taxonomy"
 	}
 	
 	
 	public OntModel getModel(){
 		return AnnotatorModule.model;
 	}
+	
+	@QueryMethod
+	public String getListofOntologies(final Request request){
+		JSONArray j = new JSONArray();
+		//wgs
+		//semanteco ontologies
+		//
+		//prefix sd: http://www.w3.org/ns/sparql-service-description#
+		//prefix void: http://rdfs.org/ns/void#
+		//	prefix prov: http://www.w3.org/ns/prov#
+		
+	// "dcterms", "semanteco
+		j.put("dcterms");
+		j.put("prov");
+		j.put("void");
+		j.put("semanteco-water");
+		return j.toString();
+	}
 
 	public void initModel() {
+		String ontology = "";
+		
+		//show where we load from URL the ontologies, for example ncbi taxonomy
+		
+		//JSONArray ontologies = (JSONArray) request.getParam("ontologies");
+		//for each item in the JSON Array, check through ontology conditionals
+		
+		
 		if(model == null) {
+			
+			
+			//check for what the ontology request is, and load that only into the model.
+			
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			
+			try{
+				//model.read(is, "http://aquarius.tw.rpi.edu/projects/semantaqua/", "TTL");
+			/* works */
+				//model.read("https://code.ecoinformatics.org/code/semtools/trunk/dev/oboe-ext/sbclter/sbc.1.0/oboe-sbc.owl");
+				//model.read("http://purl.org/dc/terms/");			
+				model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
+				//dcat //void
+				
+				//pellet error.
+				
+
+			}
+			catch(Exception e)
+			{
+				//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+
+			}
+			
+			/*
+			if(ontology.equals("dcterms")){			
+			model.read("http://purl.org/dc/terms/");
+			}*/
+			
+			
+			/*
 			//model = ModelFactory.createOntologyModel();
 
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
 
 			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
 
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
 
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
 			
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
-			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			 * 
+			 *
+			 */
 			
 		}
 	}
@@ -1190,6 +1251,85 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}
 		return items;		
 	}
+	
+	@HierarchicalMethod(parameter = "annotatorObjectProperties")
+	public Collection<HierarchyEntry> queryAnnotatorObjectPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "annotatorAnnotationProperties")
+	public Collection<HierarchyEntry> queryAnnotatorAnnotationPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorAnnotationPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorAnnotationPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+		}
+		/*else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorAnnotationProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorAnnotationPropertyToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "annotatorDataProperties")
+	public Collection<HierarchyEntry> queryAnnotatorDataPropertyHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorDataPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorDataPropertyHMChildren(request, (String) request.getParam("annotatorProperties"));
+			
+		}/* else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorDataProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorDataPropertyToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		return items;		
+	}
+	
+	
+	@HierarchicalMethod(parameter = "annotatorDatatypeProperties")
+	public Collection<HierarchyEntry> queryAnnotatorDataTypeHM(final Request request, final HierarchyVerb action) {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		this.initModel();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnotatorDataTypeHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnotatorDataTypeHMChildren(request, (String) request.getParam("annotatorProperties"));
+		} /*else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorDataType( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorDataTypeToNode( request, (String) request.getParam("node") );
+		}*/
+		return items;		
+	}
+	
+
 
 	protected Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
 		return null;
@@ -1199,9 +1339,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return null;
 	}
 
+		
 	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMRoots(final Request request) {
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
+		
 		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
 		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
 			HierarchyEntry entry = new HierarchyEntry();
@@ -1210,8 +1351,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			System.out.println("label: " + propertyRoot.getLabel(null));
 
 			entry.setUri(propertyRoot.getURI());
-			
-
 			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
 				entry.setLabel(getShortName(propertyRoot.toString()));
 			}
@@ -1223,6 +1362,86 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		System.out.println("return entries: " + entries.toString());
 		return entries;
 	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorAnnotationPropertyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		//there is no top Annotation property?
+		//so we need to get the annotation properties that don't have a super property
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		
+		
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		
+		return entries;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataPropertyHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topDataProperty");
+		//see http://www.w3.org/2002/07/owl
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		
+		return entries;
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataTypeHMRoots(final Request request) {
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		/*
+		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty propertyRoot = i.next();	
+			System.out.println("root: " + propertyRoot.toString());
+			System.out.println("label: " + propertyRoot.getLabel(null));
+
+			entry.setUri(propertyRoot.getURI());
+			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
+				entry.setLabel(getShortName(propertyRoot.toString()));
+			}
+			else{
+				entry.setLabel(propertyRoot.getLabel(null));
+			}     
+			entries.add(entry);
+		}	
+		System.out.println("return entries: " + entries.toString());
+		*/
+		return entries;
+	}
+	
+	
+	
 
 	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
@@ -1249,6 +1468,97 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}	
 		return entries;		
 	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorAnnotationPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		//OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
+		OntProperty subProp = model.getAnnotationProperty( classRequiresSubPropertyString );
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		
+		return entries;		
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataPropertyHMChildren(final Request request, String classRequiresSubPropertyString) {
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		//OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );		
+		OntProperty subProp = model.getDatatypeProperty(classRequiresSubPropertyString);
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		
+		return entries;		
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnotatorDataTypeHMChildren(final Request request, String classRequiresSubPropertyString) {
+		
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		/*
+		if(classRequiresSubPropertyString  == null){
+			return null;
+		}
+
+		OntProperty subProp = model.getOntProperty( classRequiresSubPropertyString );
+
+		for (Iterator<? extends OntProperty> i = subProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
+			HierarchyEntry entry = new HierarchyEntry();
+			OntProperty subProperty = i.next();
+
+			entry.setUri(subProperty.getURI());
+			if(subProperty.getLabel(null) == "" || subProperty.getLabel(null) == null){
+				//table.put(subClass.toString(), getShortName(subClass.toString()));
+				entry.setLabel(getShortName(subProperty.toString()));
+			}
+			else{
+				entry.setLabel(subProperty.getLabel(null));
+			}
+			entry.setParent(URI.create(subProp.getURI()));
+			entries.add(entry);
+		}	
+		*/
+		return entries;		
+	}
+	
+	
 
 	@HierarchicalMethod(parameter = "annotatorClasses")
 	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
@@ -1289,7 +1599,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;
 	}
 
+	//protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
+
 
 		//this.initModel();
 
@@ -1301,6 +1613,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		final Variable id = query.getVariable(VAR_NS+ "child");
 		final Variable label = query.getVariable(VAR_NS+ "label");
+		final Variable comment = query.getVariable(VAR_NS+ "comment");
 		final Variable parent = query.getVariable(VAR_NS+ "parent");		
 
 		final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
@@ -1312,6 +1625,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
 		final Variable site = query.getVariable(VAR_NS+"site");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource hasComment = query.getResource(RDFS_NS + "comment");
+
 
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(id);
@@ -1323,13 +1638,25 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		query.addPattern(id, subClassOf, parent);
 		query.addPattern(id, subClassOf, Entity);
 		query.addPattern(id, hasLabel, label);
+		
+		//add an optional here
+        final OptionalComponent optional = query.createOptional();
+        query.addPattern(id, comment, comment);
+		
+		
 		//construct.addPattern(site, subClassOf, PollutedThing);
-		//return executeLocalQuery(query, model);
+        //String results = config.getQueryExecutor(request).accept("application/json").execute(query);
+		String results  = executeLocalQuery(query, model);
 		String responseStr = FAILURE;
 		//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);	
 		//Set master = new HashSet();		//model.
 		//Set<OntClass> classes = new HashSet<OntClass>();		//model.
 		//Set<String> labels = new HashSet<String>();		//model.
+		
+		//iterate over results now
+		System.out.println("result: " + results.toString());
+		
+		
 
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
@@ -1768,6 +2095,34 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 //
 //		return null;
 //	}
+	
+	//need to embed the comment in the json array that is being sent back at each level
+	
+	@QueryMethod
+	public String getAnnotationForClass(final Request request){
+		String OntClass = (String) request.getParam("class");
+		HashSet<String> annotations = new HashSet<String> ();
+		String comment = "";
+		//get annotations with annotation property comment
+		OntClass c = model.getOntClass(OntClass);
+		
+		for(StmtIterator statementsIter = c.listProperties(null) ; statementsIter.hasNext() ;){
+			Statement statement = statementsIter.next();		
+			if(statement.getPredicate().canAs(OntProperty.class)){
+				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			
+
+				if(o.isAnnotationProperty()){
+					System.out.println("is an annotation Property");
+					if(o.getURI().toString().equals("http://www.w3.org/2000/01/rdf-schema#comment")){
+					request.getLogger().debug("is a common anno property");
+					//annotations.add(statement.toString());}
+					comment = statement.toString();
+					}				
+			    }
+		    }
+		}	
+		return comment;
+	}
 
 	//@QueryMethod
 	public Map<String, Set<String>> getAxiomsForClass(final Request request, OntClass clazz){
@@ -1812,9 +2167,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		for(StmtIterator statementsIter = c.listProperties(null) ; statementsIter.hasNext() ;){
 			Statement statement = statementsIter.next();			
 			//need to also check if it is a subClassOf, EquivalentClass, DisjointWith, DisjointUnionOf 
-
-			
-			
+		
 			if(statement.getPredicate().canAs(OntProperty.class)){
 				//check what type of statements these are.
 				OntProperty o = (OntProperty) statement.getPredicate().as(OntProperty.class);			

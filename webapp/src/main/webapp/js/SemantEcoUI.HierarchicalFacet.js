@@ -30,15 +30,9 @@ SemantEcoUI.HierarchicalFacet = {};
     var cancelClick = function(e, d) { e.preventDefault(); };
 
     var clickHandler = function(e, d) {
+        updateState.call(this, e, d);
         var jqdiv = $(this);
         var li = d.rslt.obj;
-        var param = jqdiv.data("hierarchy.param");
-        var items = _.map(jqdiv.jstree("get_selected"), function(d) {
-                return $(d).attr("hierarchy_id");
-            });
-        var args = {};
-        args[param] = items;
-        $.bbq.pushState(args);
         var uri = li.attr("hierarchy_id");
         var module = jqdiv.data("hierarchy.module");
         var query_method = jqdiv.data("hierarchy.query_method");
@@ -47,6 +41,19 @@ SemantEcoUI.HierarchicalFacet = {};
         } else {
             jqdiv.jstree("open_node", li);
         }
+    };
+
+    var updateState = function(e, d) {
+        var jqdiv = $(this);
+        var li = d.rslt.obj;
+        var param = jqdiv.data("hierarchy.param");
+        console.log(jqdiv.jstree("get_selected"));
+        var items = _.map(jqdiv.jstree("get_selected"), function(d) {
+                return $(d).attr("hierarchy_id");
+            });
+        var args = {};
+        args[param] = items;
+        $.bbq.pushState(args);
     };
 
     /**
@@ -116,9 +123,9 @@ SemantEcoUI.HierarchicalFacet = {};
                 "ui": { "select_multiple_modifier" : $.client.os == 'Mac' ? "meta" : "ctrl" }
             };
         args = jQuery.extend(true, args, jstreeArgs);
-        jqdiv.jstree(args).bind("select_node.jstree",
-                clickHandler
-                ).delegate("a", "click", cancelClick);
+        jqdiv.jstree(args).bind("select_node.jstree", clickHandler)
+                .bind("deselect_node.jstree", updateState)
+                .delegate("a", "click", cancelClick);
         var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
         if ( state != undefined && state.length != undefined && state.length > 0 ) {
             reopenSelections(jqdiv, state);

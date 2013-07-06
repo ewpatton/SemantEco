@@ -26,7 +26,7 @@ public class StyleTag extends TagSupport {
 	 * 
 	 */
 	private static final long serialVersionUID = 8985229537765004099L;
-	private Logger log = Logger.getLogger(StyleTag.class);
+	private final transient Logger log = Logger.getLogger(StyleTag.class);
 
 	public StyleTag() {
 		

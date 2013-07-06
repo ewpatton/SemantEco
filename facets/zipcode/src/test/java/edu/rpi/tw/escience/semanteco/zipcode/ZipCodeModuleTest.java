@@ -8,9 +8,10 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.zipcode.ZipCodeModule;
-import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.test.TestModuleConfiguration;
 import edu.rpi.tw.escience.semanteco.test.TestRequest;
+import edu.rpi.tw.escience.semanteco.test.TestUI;
 
 import junit.framework.TestCase;
 
@@ -40,10 +41,12 @@ public class ZipCodeModuleTest extends TestCase {
 	@Test
 	public void testVisits() {
 		ZipCodeModule module = new ZipCodeModule();
+		TestModuleConfiguration config = new TestModuleConfiguration();
+		module.setModuleConfiguration(config);
 		module.visit((Model)null, null, null);
 		module.visit((OntModel)null, null, null);
 		module.visit((Query)null, null);
-		module.visit((SemantEcoUI)null, null);
+		module.visit(new TestUI(), null);
 	}
 	
 	@Test

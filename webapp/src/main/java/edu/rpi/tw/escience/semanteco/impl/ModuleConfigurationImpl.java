@@ -36,9 +36,9 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 	 * 
 	 */
 	private static final long serialVersionUID = 3086677327878305603L;
-	private WeakReference<Module> owner = null;
-	private QueryExecutorImpl executor = null;
-	private Logger log = Logger.getLogger(ModuleConfigurationImpl.class);
+	private transient WeakReference<Module> owner = null;
+	private transient QueryExecutorImpl executor = null;
+	private final transient Logger log = Logger.getLogger(ModuleConfigurationImpl.class);
 	private String resourceDir = null;
 	
 	/**
@@ -55,7 +55,8 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 			throw new IllegalArgumentException("module should not be null.");
 		}
 		this.resourceDir = resourceDir;
-		this.executor = QueryExecutorImpl.getExecutorForModule(module);
+		this.executor = QueryExecutorImpl.getExecutorForModule(module,
+				ModuleManagerFactory.getInstance().getManager());
 	}
 
 	@Override
@@ -121,10 +122,7 @@ public class ModuleConfigurationImpl extends ModuleConfiguration {
 		final Module mod = owner.get();
 		assert(mod!=null);
 		Class<?> cls = mod.getClass();
-		if(cls != null) {
-			return Logger.getLogger(cls);
-		}
-		return null;
+		return Logger.getLogger(cls);
 	}
 
 	@Override

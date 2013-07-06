@@ -10,8 +10,8 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.ModuleManager;
 import edu.rpi.tw.escience.semanteco.Request;
-import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 
 /**
  * An implementatino of the Request interface used to simulate a client request
@@ -22,10 +22,20 @@ import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
  */
 public class DummyRequest implements Request {
 
+	private ModuleManager manager;
+
+	/**
+	 * Constructor to take a reference to the active module manager.
+	 * @param manager
+	 */
+	public DummyRequest(ModuleManager manager) {
+		this.manager = manager;
+	}
+
 	@Override
 	public Object getParam(String key) {
-		if("available-domains".equals(key)) {
-			return ModuleManagerFactory.getInstance().getManager().listDomains();
+		if("available-domains".equals(key) && manager != null) {
+			return manager.listDomains();
 		}
 		return new JSONArray();
 	}

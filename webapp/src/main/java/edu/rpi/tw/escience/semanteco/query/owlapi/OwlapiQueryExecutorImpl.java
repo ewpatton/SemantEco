@@ -3,6 +3,7 @@ package edu.rpi.tw.escience.semanteco.query.owlapi;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -20,6 +21,7 @@ import edu.rpi.tw.escience.semanteco.impl.ModuleManagerFactory;
 import edu.rpi.tw.escience.semanteco.query.QueryExecutorImpl;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleManager;
+import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.query.Query;
 
 /**
@@ -29,7 +31,9 @@ import edu.rpi.tw.escience.semanteco.query.Query;
  * @author ewpatton
  *
  */
-public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
+public class OwlapiQueryExecutorImpl extends QueryExecutorImpl implements Cloneable {
+
+	private final Logger log = Logger.getLogger(OwlapiQueryExecutorImpl.class);
 
 	/**
 	 * Constructs a new OwlapiQueryExecutorImpl owned by the specified
@@ -38,8 +42,8 @@ public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 	 * @param tripleStore Default triple store; can be overridden using
 	 * calls to execute(String, \.\.\.) methods."
 	 */
-	public OwlapiQueryExecutorImpl(Module owner, String tripleStore) {
-		super(owner, tripleStore);
+	public OwlapiQueryExecutorImpl(Module owner, String tripleStore, ModuleManager manager) {
+		super(owner, tripleStore, manager);
 	}
 	
 	/**
@@ -49,23 +53,20 @@ public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 	 */
 	protected OwlapiQueryExecutorImpl(final OwlapiQueryExecutorImpl other) {
 		super(other);
-		this.log = other.log;
-		this.request = other.request;
 	}
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		OwlapiQueryExecutorImpl copy = new OwlapiQueryExecutorImpl(this);
-		return copy;
+		return super.clone();
 	}
 	
 	@Override
 	public String executeLocalQuery(Query query) {
-		assert(owner!=null);
-		final Module mod = owner.get();
+		final Module mod = getOwner();
 		assert(mod!=null);
 		final String modName = mod.getName();
 		assert(modName != null);
+		final Request request = getRequest();
 		log.trace("executeLocalQuery");
 		// TODO fix this to act per domain
 		Model model = request.getCombinedModel(null);
@@ -90,9 +91,9 @@ public class OwlapiQueryExecutorImpl extends QueryExecutorImpl {
 		PelletReasoner reasoner = PelletReasonerFactory.getInstance().createReasoner(ontology);
 		// TODO process query object here
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
-		OWLClass PollutedSites = dataFactory.getOWLClass(IRI.create("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedSite"));	
+		OWLClass pollutedSites = dataFactory.getOWLClass(IRI.create("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedSite"));
 		reasoner.precomputeInferences(InferenceType.CLASS_ASSERTIONS);
-		reasoner.getInstances(PollutedSites, false);
+		reasoner.getInstances(pollutedSites, false);
 		return null;
 	}
 

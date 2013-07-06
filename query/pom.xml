@@ -6,7 +6,7 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-parent</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>semanteco-query</artifactId>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-common</artifactId>
-      <version>4.1-SNAPSHOT</version>
+      <version>4.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

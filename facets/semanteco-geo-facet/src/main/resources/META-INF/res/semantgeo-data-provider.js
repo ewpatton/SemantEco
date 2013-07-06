@@ -1,3 +1,4 @@
+/*
 $(window).bind("initialize", function() {
 	var icons = [];
 	icons[0] = [];
@@ -44,3 +45,4 @@ $(window).bind("initialize", function() {
 		return icons[facility][polluted];
 	});
 });
+*/
