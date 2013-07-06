@@ -1,5 +1,0 @@
-
-{ "head": { "link": [], "vars": ["graph"] },
-  "results": { "distinct": false, "ordered": true, "bindings": [
-    { "graph": { "type": "uri", "value": "http://sparql.tw.rpi.edu/source/usgs-gov/dataset/nwis-sites-ri/version/2011-Mar-20" }},
-    { "graph": { "type": "uri", "value": "http://sparql.tw.rpi.edu/source/usgs-gov/dataset/nwis-measurements-ri/version/2011-Mar-20" }} ] } }

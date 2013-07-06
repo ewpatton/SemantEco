@@ -1,4 +1,0 @@
-
-{ "head": { "link": [], "vars": ["state"] },
-  "results": { "distinct": false, "ordered": true, "bindings": [
-    { "state": { "type": "uri", "value": "http://logd.tw.rpi.edu/id/us/state/Rhode_Island" }} ] } }
