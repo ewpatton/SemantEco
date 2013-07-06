@@ -4,6 +4,7 @@
 .project
 target
 .DS_Store
+.settings
 *~
 webapp/.DS_Store
 
