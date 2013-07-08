@@ -35,8 +35,13 @@
 	}
 	
 	.bundled-row { 
+		font-weight: bold;
+		text-align:center;
+		margin:0; 
+		padding:0;
 	}
-	.annotation-row {	
+	.annotation-row {
+		text-align:center;	
 		font-size:8px;
 		margin:0; 
 		padding:0;
@@ -260,9 +265,6 @@
 				// cn = column number
                 var cn = i.split(',')[1];
 				
-				console.log("data.r: " + data.r);
-				console.log("data.o: " + data.o);
-            
 				$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
                 
 			// window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
@@ -454,18 +456,37 @@
 		return subtable;
 	}// /createSubtable
 	
+	
+	// Working a new way to generate the column headers....
+	/*
+	function createSubtable(text, colIndex) { 
+		var theTable = document.createElement('table');
+		var nameRow = document.createElement('tr');
+		var theName = document.createElement('td');
+		
+		var propRow = document.createElement('tr');
+		var theProp = document.createElement('td');
+		$(theProp).attr("class", "droppableProp");
+		$(theProp).attr("id", "propertyRow,"+colIndex);
+		
+		var classRow = document.createElement('tr');
+		var theClass = document.createElement('td');
+		$(theClass).attr("class", "droppableClass");
+		$(theClass).attr("id", "classRow,"+colIndex);
+	}// /createSubtable */
+	
+	
 	// ** IN PROGRESS **
 	// This should act as the above, except to create a subtable for describing a bundle
 	//  - One row should be a dropdown menu that allows the user to select which column
 	//    is the resource representing the bundle, with the default option for "implicit"
 	//  - Ideally, selecting a column for the resource should copy the column header of the
 	//    original column. 
-	//  Input parameters are:
-	//    - text, for the name of the column (might be from the explicit column if given?)
-	//    - colIndex, for where to stick this (might need a span, too?)
-	//    - bundleNo, to keep track of bundles
-	//    * How do we keep that up to date???
-	function createBundleSubtable(text,colIndex,bundleNo) {
+	// Takes two arguments: 
+	//    - startIndex, the index of the first column in the bundle
+	//    - bundleSpan, the number of columns the bundle spans
+	// * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
+	function createBundleSubtable(startIndex, bundleSpan) {
 		var theader = '<table id=bundle,' + bundleNo + '>\n';
 		var tbody = '';
 		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
@@ -507,6 +528,27 @@
 			return true;
 	}
 	
+	// Accessory function for creating a bundle 
+	// Takes three arguments:
+	//  - id: a unique static ID for the bundle, different from
+	//    its index in the bundles array.
+	//  - columns: the array of column indices of the columns to
+	//    be placed in the bundle.
+	//  - resource: the index of the column that describes the
+	//    bundle, IF it is EXPLICIT. A value of -1 indicates the
+	//    bundle is IMPLICIT; this is the default set here at 
+	//    creation.
+	function bundle( id, columns ) {
+		this.bundleID = id;
+		this.bundleCols = columns;
+		this.bundleResource = -1;
+	}
+	
+	// Keeps track of the ID's of the bundles, hopefully for use
+	//    in the future to show off all bundles at once.
+	var bID = 0;
+	
+	
 	// This array is for keeping track of the column indices of all selected columns.
 	//   It is empty at creation. The callbacks in the column selector function should
 	//   handle adding and removing indices from this array.
@@ -526,6 +568,12 @@
 	//    are kept in an array, as well, which is empty at creation. The callback for
 	//    "toggle-cell-based" adds to and removes from this array;
 	var cellBased = [];
+	
+	// This arrayis for keeping track of bundles. Unlike the above, this array will 
+	//    contain OBJECTS, with each one describing one bundle. The bundle objects are
+	//    defined in the bundle function above; details about each part of the bundle
+	//    are elaborated upon there.
+	var bundles = [];
 	
 	// ******************************************************************************
 	//                   context menu and its callback functions!
@@ -649,7 +697,37 @@
 						} // /links_via callback
 					}, // /links_via
 					
-					"bundle": {name: "Create Bundle"},
+					"bundle": {
+						name: "Create Bundle",
+						callback: function(){
+							// make the bundle, and push it to the array of bundles: 
+							var newBundle = new bundle( bID,currentlySelected );
+							bID++;
+							bundles.push(newBundle);
+							console.log("created bundle #" + newBundle.bundleID + ", which contains columns " + newBundle.bundleCols);
+							// if the bundle row is hidden (ie, this is the first bundle created), show the row
+							var bRow = document.getElementById("bundles");
+							if (bRow.classList.contains("hide-while-empty") ) {
+								$(bRow).removeClass("hide-while-empty");
+							}
+							// spanSize keeps track of how wide the bundle column header should be in the top row,
+							//    in other words, it is a count of how many columns are bundled.
+							var spanSize = 0;
+							// gets the first column of the span, for creating the bundle column header
+							var bStart = currentlySelected.sort()[0]
+							for (i in currentlySelected) {
+								//console.log("bundling column " + currentlySelected[i]);
+								var top = document.getElementById("0,"+currentlySelected[i]);
+								var bottom = document.getElementById("bundledRow,"+currentlySelected[i]);
+								var toMove = top.removeChild(top.childNodes[0]);
+								bottom.appendChild(toMove);
+								spanSize++;
+							}// /for
+							console.log("bundle starts at col " + bStart + " and spans " + spanSize + " columns");
+							
+							
+						}// /callback
+					}, // /bundle
 					
 					"comment": {
 						// Adds a comment to the Annotation Row
@@ -757,6 +835,7 @@
 		// * This is empty at table generation, and hidden by default
 			  var btr = document.createElement('tr');
 			  $(btr).attr("class", 'hide-while-empty');
+			  $(btr).attr("id", 'bundles');
 		// Create row for annotations (and additional triples
 		// * This row is also empty and hidden at table generation
 		// * This row includes empty tables at creation for adding to later.
@@ -787,7 +866,7 @@
 				// bundled column row
 					btd = document.createElement('td');
 					$(btd).attr("id", 'bundledRow,'+j);
-					$(btd).attr("class", 'bundledRow');
+					$(btd).attr("class", 'bundled-row');
 					btr.appendChild(btd);
 				// annotation row
 					atd = document.createElement('td');
