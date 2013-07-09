@@ -18,6 +18,16 @@
   </properties>
 
   <dependencies>
+
+
+	 <dependency>
+	<groupId>rpi</groupId>
+    <artifactId>OWLHelper</artifactId>
+<!--    <version>i1.0-SNAPSHOT</version> -->
+    <version>1.0-20130709.030736-1</version>
+    </dependency>
+
+
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-common</artifactId>
@@ -105,6 +115,10 @@
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
+<repository>
+   <id>phillord</id>
+    <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
+</repository>
   </repositories>
   <build>
     <plugins>
