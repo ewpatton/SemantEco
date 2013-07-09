@@ -192,10 +192,11 @@ public class AnnotatorModule implements Module {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 			
-			/*
+			
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+			model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
+			/*
 			//model = ModelFactory.createOntologyModel();
 
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
@@ -1342,6 +1343,62 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}
 		return items;
 	}
+	
+	@HierarchicalMethod(parameter = "annotatorClasses")
+	public Collection<HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		this.initModel(request);
+
+		if(action == HierarchyVerb.ROOTS) {
+			//			HierarchyEntry entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird1"));
+			//			entry.setLabel("bird1");
+			//			entry.setAltLabel("birdicus uno");
+			//			items.add(entry);
+			//			entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird2"));
+			//			entry.setLabel("bird2");
+			//			entry.setAltLabel("birdicus dos");
+			//			items.add(entry);
+			return  queryClassHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
+			//				HierarchyEntry entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird3"));
+			//				entry.setLabel("bird3");
+			//				entry.setAltLabel("birdicus tres");
+			//				items.add(entry);
+			//				entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird4"));
+			//				entry.setLabel("bird4");
+			//				entry.setAltLabel("birdicus quatro");
+			//				items.add(entry);
+			//			}
+			return  queryClassHMChildren(request, (String) request.getParam("annotatorClasses"));
+		} 
+		/*
+		else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorClass( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorClassToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		
+		return items;
+	}
+	
+	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) {
+		
+		
+		
+		return null;
+		
+	}
+	
+	protected Collection<HierarchyEntry> queryClassHMChildren(final Request request, String classes) {
+		return null;
+		
+	}
 
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 
@@ -1402,9 +1459,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//call a method that given the class, returns a hashSet with all the axioms.		
 			//I think I will put into HierarchyEntry object a HashTable<String,HashSet<String>> where 
 			//e.g. "annotation" is a key and we have a set of strings that represent annotations... what do you think
-
-
-
 
 			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
 				entry.setLabel(getShortName(hierarchyRoot.toString()));
