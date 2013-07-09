@@ -78,6 +78,8 @@ import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 
+import rpi.AnnotatorTester;
+
 /*
  * treat enhancements atomically
  * 
@@ -141,7 +143,9 @@ public class AnnotatorModule implements Module {
 	private String sourceName;
 	private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
 	private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
-	private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";     
+	private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";  
+	AnnotatorTester annotatorTester = null;
+
 
 	
 	public void setDataSetName(String dataSetName){this.dataSetName = dataSetName;}
@@ -159,7 +163,34 @@ public class AnnotatorModule implements Module {
 	}
 
 	public void initModel() {
-		if(model == null) {
+		
+		
+		
+		
+	//	if(model == null) {
+			
+			try {
+				if(annotatorTester == null){
+					annotatorTester = new AnnotatorTester();
+					System.out.println("chebi test");
+					System.out.println("chebi test2");
+					System.out.println(annotatorTester.getChildClasses("http://purl.obolibrary.org/obo/CHEBI_50906").toString());
+
+					
+					
+					
+				}
+				
+				
+				
+
+			} catch (OWLOntologyCreationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
+			/*
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 			//model = ModelFactory.createOntologyModel();
 
@@ -177,8 +208,9 @@ public class AnnotatorModule implements Module {
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			*/
 			
-		}
+	//	}
 	}
 
 	/**
