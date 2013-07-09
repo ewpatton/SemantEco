@@ -24,17 +24,6 @@
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
-
-
-    <repository>
-      <id>tetherless2</id>
-      <url>http://orion.tw.rpi.edu/artifactory/ext-snapshot-local</url>
-    </repository>
-
-<repository>
-   <id>phillord</id>
-    <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
-</repository>
   </repositories>
 
   <dependencies>
