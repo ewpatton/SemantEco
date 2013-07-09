@@ -162,7 +162,7 @@ public class AnnotatorModule implements Module {
 		return AnnotatorModule.model;
 	}
 
-	public void initModel() {
+	public void initModel(Request request) throws JSONException {
 		
 		
 		
@@ -170,8 +170,12 @@ public class AnnotatorModule implements Module {
 	//	if(model == null) {
 			
 			try {
-				if(annotatorTester == null){
-					annotatorTester = new AnnotatorTester();
+			//	if(annotatorTester == null){
+					
+					//JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies");
+					JSONArray listOfOntologies  = new JSONArray();
+					listOfOntologies.put("chebi");
+					annotatorTester = new AnnotatorTester(listOfOntologies);
 					System.out.println("chebi test");
 					System.out.println("chebi test2");
 					System.out.println(annotatorTester.getChildClasses("http://purl.obolibrary.org/obo/CHEBI_50906").toString());
@@ -179,7 +183,7 @@ public class AnnotatorModule implements Module {
 					
 					
 					
-				}
+			//	}
 				
 				
 				
@@ -211,6 +215,24 @@ public class AnnotatorModule implements Module {
 			*/
 			
 	//	}
+	}
+	
+	@QueryMethod
+	public String getListofOntologies(final Request request){
+		JSONArray j = new JSONArray();
+		//wgs
+		//semanteco ontologies
+		//
+		//prefix sd: http://www.w3.org/ns/sparql-service-description#
+		//prefix void: http://rdfs.org/ns/void#
+		//	prefix prov: http://www.w3.org/ns/prov#
+
+	// "dcterms", "semanteco
+		j.put("dcterms");
+		j.put("prov");
+		j.put("void");
+		j.put("semanteco-water");
+		return j.toString();
 	}
 
 	/**
@@ -1206,10 +1228,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 
 	@HierarchicalMethod(parameter = "annotatorProperties")
-	public Collection<HierarchyEntry> queryAnnotatorPropertyHM(final Request request, final HierarchyVerb action) {
+	public Collection<HierarchyEntry> queryAnnotatorPropertyHM(final Request request, final HierarchyVerb action) throws JSONException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 
-		this.initModel();
+		this.initModel(request);
 
 		if(action == HierarchyVerb.ROOTS) {
 			return  queryAnnotatorPropertyHMRoots(request);
@@ -1283,9 +1305,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 
 	@HierarchicalMethod(parameter = "annotatorClasses")
-	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
+	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) throws JSONException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
-		this.initModel();
+		this.initModel(request);
 
 		if(action == HierarchyVerb.ROOTS) {
 			//			HierarchyEntry entry = new HierarchyEntry();
@@ -1446,7 +1468,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	@QueryMethod
 	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
 		// initialize the model if it doesn't already exist...
-		initModel();	
+		initModel(request);	
 		//setModel(model);
 		//model.
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));	
@@ -1576,7 +1598,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			return null;
 		}
 
-		initModel();
+		initModel(request);
 
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -1703,7 +1725,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//OntModel model = null;
 		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-		initModel();
+		initModel(request);
 
 
 		//load certain ontologies
@@ -2015,7 +2037,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-		initModel();
+		initModel(request);
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));			
