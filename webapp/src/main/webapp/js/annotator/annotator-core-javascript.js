@@ -1,10 +1,5 @@
 // Brendan Ashby core re-edit
 
-// Tooltip function
-// This just enables the mouseover tooltips.
-$(function() {
-	$( document ).tooltip();
-});	
 
 // This is the jsTree for DATA TYPES
 // To help clarify plugins:
@@ -68,7 +63,7 @@ $("#DataTypeTree").jstree({
 // * The drop target will be the node in which the mouse button
 //   is released, NOT the node in which the object text will appear!
 "dnd" : {
-    "drop_target" : "#list td",
+    "drop_target" : "#inputFileTable td",
     "drop_finish" : function (data) {
        	$(data.r).css("color","black");
     //add the node name to the header, and get the parent node "id"
@@ -176,7 +171,7 @@ $(function() {
 //   is released, NOT the node in which the object text will appear!
 var dnd = {
 	
-                "drop_target" : "#list th",
+                "drop_target" : "#inputFileTable th",
                 "drop_finish" : function (data) {
 				$(data.r).find(".droppable-class").css("color","black");
 				//add the node name to the header, and get the parent node "id"
@@ -221,7 +216,7 @@ var dnd = {
 // This is what actually generates the class tree
 // * Note that "dnd" is passed in as a parameter from above
 //   to specify the drag-and-drop functionality.
-SemantEcoUI.HierarchicalFacet.create($("#ClassTree"), AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
+//SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
 
 // drag and drop PROPERTIES
 // As above, these are the parameters to enable this function for the 
@@ -233,7 +228,7 @@ SemantEcoUI.HierarchicalFacet.create($("#ClassTree"), AnnotatorModule, "queryAnn
 //   data.r - the drop target
 //   is released, NOT the node in which the object text will appear!
 	var dnd_prop = {
-        "drop_target" : "#list th",
+        "drop_target" : "#inputFileTable th",
         "drop_finish" : function (data) {
         	$(data.r).css("color","black");
      //add the node name to the header, and get the parent node "id"
@@ -276,7 +271,7 @@ SemantEcoUI.HierarchicalFacet.create($("#ClassTree"), AnnotatorModule, "queryAnn
 
 // Actually creates the hierarchical facet with the above variable
 //    passed as parameters for the drag-and-drop functionality.
-SemantEcoUI.HierarchicalFacet.create($("#PropertyTree"), AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+//SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 
 
 // not sure what this is??? toString for ... something.
@@ -311,15 +306,16 @@ $("#ClassBox").html("<pre>"+toString(axioms_contents,0)+"</pre>");
 
 // New Script Block
 function fileInfo(e){
-var file = e.target.files[0];
-window.file_name = file.name;
-if (file.name.split(".")[1].toUpperCase() != "CSV"){
-  alert('Invalid csv file !');
-  e.target.parentNode.reset();
-  return;
-}else{
-  document.getElementById('file_info').innerHTML = "<p>File Name: "+file.name + " | "+file.size+" Bytes.</p>";
-}
+	var file = e.target.files[0];
+	window.file_name = file.name;
+	if (file.name.split(".")[1].toUpperCase() != "CSV") {
+		alert('Invalid csv file !');
+		e.target.parentNode.reset();
+		return;
+	} 
+	else {
+		document.getElementById('file_info').innerHTML = "<p>File Name: "+file.name + " | "+file.size+" Bytes.</p>";
+	}
 }
 
 	// A context menu for selecting ontologies for the Class Hierarchy.
@@ -720,7 +716,7 @@ $(function (){
 // This is what actually renders the table in the #list div!
 function handleFileSelect(){
 if (window.hasTable == 1) return;
-var file = document.getElementById("the_file").files[0];
+var file = $("#the_file")[0].files[0];
 var reader = new FileReader();
 var link_reg = /(http:\/\/|https:\/\/)/i;
 reader.onload = function(file) {
@@ -799,7 +795,11 @@ reader.onload = function(file) {
 		  // Once the header row with subtables has been created,
           //   continue and create the rest of the table. 
 		  // This is actually data from the CSV file!
-		  for (var i = 1; i < rows.length; i++){
+		  var rowIterCap = 10;
+		  if (rowIterCap > rows.length) {
+		  	rowIterCap = rows.length;
+		  }
+		  for (var i = 1; i < rowIterCap; i++){
             var tr = document.createElement('tr');
             var arr = rows[i].split(',');
 			var td;
@@ -820,7 +820,11 @@ reader.onload = function(file) {
             table.appendChild(tr);
           }// /for rows
 
-          document.getElementById('list').appendChild(table);
+          // Insert table, hide loading
+          $("#fileTableLoading").hide()
+          $("#inputMetadataModal").show()
+          $("#inputFileTable").append(table);
+
 		
 		// Make the column headers selectable and updates the currentlySelected
 		//    array accordingly when things are selected or unselected.
@@ -857,21 +861,35 @@ reader.onload = function(file) {
           window.a = [];
         // window.a.push({"annotationMappings":[{"initialization":"0"}]});
         // send the csv file to the server
-          AnnotatorModule.readCsvFileForInitialConversion({"csvFile":window.file_contents},
-        		  function(d) { console.log(d); });
+          //AnnotatorModule.readCsvFileForInitialConversion({"csvFile":window.file_contents},
+          //	  function(d) { console.log(d); });
       };// /reader.onload
 reader.readAsText(file);
-document.getElementById('data_info_form').style.visibility='visible';
 }// /handleFileSelect
 
-//document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
-//document.getElementById('the_file').addEventListener('change', fileInfo, false);
+document.getElementById('the_file').addEventListener('change', fileInfo, false);
 
 
-// this function is the callback for the COMMIT ENHANCEMENT button
+// Document Load Calls
 $(document).ready(function() {
+	// Button Click Listeners - Bind them!
+	$('#importFileButton').click(function() {
+		$("#fileSelect").hide();
+		$("#fileTableLoading").show();
+		handleFileSelect();
+	});
+
     $('#commit_enhancement').click(function() {
     	$.bbq.pushState({"FileName": window.file_name,"Source":$("#source_info").val(),"DataSet":$("#dataset_info").val(),"annotationMappings": window.a});
-    	AnnotatorModule.queryForEnhancing({},
-    			function(d) { console.log(d); });
-})});
+    	AnnotatorModule.queryForEnhancing({}, function(d) { console.log(d); });
+    });
+
+    // Link Click Listener - Bind to it
+    $('#skipMetadata').click(function() {
+    	$("#inputMetadataModal").hide();
+    	$("#inputFileTable").show();
+    });
+
+    // Build mouseover tooltips
+    $( document ).tooltip();
+});

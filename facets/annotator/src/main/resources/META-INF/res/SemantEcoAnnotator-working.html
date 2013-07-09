@@ -12,19 +12,25 @@
 	   	<link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
 	</head>
 	<body>
+		<div id="banner"></div>
+		<div id="inputFileTable">
+			<input type="submit", id="commitEnhancementsButton" value="Commit Enhancements"/>
+		</div>
 		<div id="bodyBlock_outer" class="outer">
-			<div id="banner"></div>
 			<div id="bodyBlock_middle" class="middle">
 				<div id="fileSelect">
 					<h1>To get started, first select a CSV file to import.</h1>
-					<input type="file" id="the_file" required="required" accept=".csv"/>
+					<input type="file" id="the_file" accept=".csv"/>
 					<input type="submit" id="importFileButton" value="Import"/>
 					<div id="file_info"></div>
 				</div>
+				<div id="fileTableLoading">
+					<p>Loading your data into a table. Please Wait...</p>
+				</div>
 				<div id="inputMetadataModal">
-					<p>Tell me a little about the data you imported.</p>
+					<p>Tell me a little about the data you imported</p>
 					<div id="fileSourceWrapper">
-						<p>So, who gave you this data? Rather, who created this data?
+						<p>So, who gave you this data? Rather, who created this data?</p>
 						<select name="fileSourceSelect">
 							<option value="">Nothing Selected</option>
 							<option value="org1">Tetherless World</option>
@@ -34,7 +40,7 @@
 						<input type="text" name="fileSourceAddCustom" placeholder="Add a custom source" onsubmit="dropdownAdd(this);">
 					</div>
 					<div id="fileDatasetWrapper">
-						<p>What is the name of the dataset this data is from?
+						<p>What is the name of the dataset this data is from?</p>
 						<select name="fileDatasetSelect">
 							<option value="">Nothing Selected</option>
 							<option value="ds1">Example Dataset Alpha</option>
@@ -47,55 +53,42 @@
 						<p>What version of your data is this file? If you are unsure simply use today's date.</p>
 						<input type="text" id="fileVersionInput" placeholder="e.g. mm-dd-yyyy">
 					</div>
+					<p>You may <a href="#" id="skipMetadata">skip</a> this step for now.</p>
 				</div>
-				<div id="list">
-					<input type="submit", id="commitEnhancementsButton" value="Commit Enhancements"/>
-				</div>
-				<div id="treeWidgetDialogs">
-					<table cellpadding="0"; cellspacing="0">
-						<tr>
-							<td>
-								<p>Description</p>
-								<div id="description_classTree">
-									<div id="ClassBox"></div>
-								</div>
-							</td>
-							<td>
-								<span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</span>
-								<div id="description_class" class="facet">
-									<div id="ClassTree" class="hierarchy"></div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<p>Description</p>
-								<div id="description_PropertyTree">
-									<div id="PropBox"> </div>
-								</div>
-							</td>
-							<td>
-								<p>Object Property Hieararchy</p>
-								<div id="description_prop" class="facet">
-									<div id="PropertyTree" class="hierarchy"></div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<p>Description</p>
-								<div id="description_DataTypeTree">
-									<div id="DataTypeBox"></div>
-								</div>
-							</td>
-							<td>
-								<p>Data Property Hierarchy</p>
-								<div id="description2">
-									<div id="DataTypeTree" class="demo2"></div>
-								</div>
-							</td>
-						</tr>
-					</table>
+				<div id="treeWidgets">
+					<div id="treeWidgetOntology">
+						<p>Description</p>
+						<div id="description_classTree">
+							<div id="ClassBox"></div>
+						</div>
+				
+						<span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</span>
+						<div id="description_class" class="facet">
+							<div id="ClassTree" class="hierarchy"></div>
+						</div>
+					</div>
+					<div id="treeWidgetProperies">
+						<p>Description</p>
+						<div id="description_PropertyTree">
+							<div id="PropBox"> </div>
+						</div>
+				
+						<p>Object Property Hieararchy</p>
+						<div id="description_prop" class="facet">
+							<div id="PropertyTree" class="hierarchy"></div>
+						</div>
+					</div>
+					<div id="treeWidgetDataTypes">
+						<p>Description</p>
+						<div id="description_DataTypeTree">
+							<div id="DataTypeBox"></div>
+						</div>
+					
+						<p>Data Property Hierarchy</p>
+						<div id="description2">
+							<div id="DataTypeTree" class="demo2"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
