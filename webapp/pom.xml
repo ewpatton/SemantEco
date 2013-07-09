@@ -24,9 +24,21 @@
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
+
+ <repository>
+      <id>tetherless2</id>
+      <url>http://orion.tw.rpi.edu/artifactory/ext-snapshot-local</url>
+    </repository>
   </repositories>
 
   <dependencies>
+
+ <dependency>
+<groupId>rpi</groupId>
+    <artifactId>OWLHelper</artifactId>
+    <version>1.0-20130706.054142-1</version>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-core</artifactId>

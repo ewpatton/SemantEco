@@ -26,6 +26,13 @@
     </dependency>
 
 
+ <dependency>
+<groupId>rpi</groupId>
+    <artifactId>OWLHelper</artifactId>
+    <version>1.0-20130706.054142-1</version>
+    </dependency>
+
+>>>>>>> Stashed changes
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-common</artifactId>
