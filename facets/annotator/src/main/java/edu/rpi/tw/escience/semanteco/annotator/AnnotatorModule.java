@@ -163,7 +163,7 @@ public class AnnotatorModule implements Module {
 		return AnnotatorModule.model;
 	}
 	
-	public void initModel() {
+	public void initModel(Request request) {
 		String ontology = "";
 
 		//show where we load from URL the ontologies, for example ncbi taxonomy
@@ -227,8 +227,8 @@ public class AnnotatorModule implements Module {
 		}
 	}
 
-	/*
-	public void initModel(Request request) throws JSONException {
+	
+////	public void initModel(Request request) throws JSONException {
 		
 		
 		
@@ -239,8 +239,8 @@ public class AnnotatorModule implements Module {
 			//	if(annotatorTester == null){
 					
 					//JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies");
-					JSONArray listOfOntologies  = new JSONArray();
-					listOfOntologies.put("chebi");
+					///JSONArray listOfOntologies  = new JSONArray();
+					///listOfOntologies.put("chebi");
 					//annotatorTester = new AnnotatorTester(listOfOntologies);
 					//System.out.println("chebi test");
 					//System.out.println("chebi test2");
@@ -262,8 +262,8 @@ public class AnnotatorModule implements Module {
 		//	}
 			
 			
-			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
-			model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
+	////		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+	////		model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
 			/*
 			//model = ModelFactory.createOntologyModel();
 
@@ -284,8 +284,8 @@ public class AnnotatorModule implements Module {
 			*/
 			
 	//	}
-	}
-	*/
+////	}
+	
 	
 	@QueryMethod
 	public String getListofOntologies(final Request request){
@@ -1413,72 +1413,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;
 	}
 	
-	@HierarchicalMethod(parameter = "annotatorClasses")
-	public Collection<rpi.HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException {
-		List<rpi.HierarchyEntry> items = new ArrayList<rpi.HierarchyEntry>();
-		this.initModel(request);
-
-		if(action == HierarchyVerb.ROOTS) {
-			//			HierarchyEntry entry = new HierarchyEntry();
-			//			entry.setUri(URI.create("http://example.com/bird1"));
-			//			entry.setLabel("bird1");
-			//			entry.setAltLabel("birdicus uno");
-			//			items.add(entry);
-			//			entry = new HierarchyEntry();
-			//			entry.setUri(URI.create("http://example.com/bird2"));
-			//			entry.setLabel("bird2");
-			//			entry.setAltLabel("birdicus dos");
-			//			items.add(entry);
-			return  queryClassHMRoots(request);
-		} else if ( action == HierarchyVerb.CHILDREN ) {
-			//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
-			//				HierarchyEntry entry = new HierarchyEntry();
-			//				entry.setUri(URI.create("http://example.com/bird3"));
-			//				entry.setLabel("bird3");
-			//				entry.setAltLabel("birdicus tres");
-			//				items.add(entry);
-			//				entry = new HierarchyEntry();
-			//				entry.setUri(URI.create("http://example.com/bird4"));
-			//				entry.setLabel("bird4");
-			//				entry.setAltLabel("birdicus quatro");
-			//				items.add(entry);
-			//			}
-			return  queryClassHMChildren(request, (String) request.getParam("annotatorClasses"));
-		} 
-		/*
-		else if ( action == HierarchyVerb.SEARCH ) {
-			return searchAnnotatorClass( request, (String) request.getParam("string") );
-		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
-			return annotatorClassToNode( request, (String) request.getParam("node") );
-		}
-		*/
-		
-		return items;
-	}
-	
-	protected Collection<rpi.HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException {
-		AnnotatorTester ann = new AnnotatorTester();
-		System.out.println("queryClassHMRoots");
-
-		//String thing = "http://www.w3.org/2002/07/owl#Thing";
-		System.out.println("for root:");
-		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
-		
-		return entries;
-		
-	}
-	
-	protected Collection<rpi.HierarchyEntry> queryClassHMChildren(final Request request, String classes) throws OWLOntologyCreationException, JSONException {
-		AnnotatorTester ann = new AnnotatorTester();
-		System.out.println("queryClassHMChildren");
-
-		//String thing = "http://www.w3.org/2002/07/owl#Thing";
-		System.out.println("for non-root:");
-		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses(classes);
-		
-		return entries;		
-	}
-
 	//protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 		protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 
@@ -1573,6 +1507,74 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			return entries;
 			//return jsonWrapper(table, OWL.Thing.getURI().toString());	
 		}
+	
+	@HierarchicalMethod(parameter = "annotatorClasses")
+	public Collection<rpi.HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException {
+		List<rpi.HierarchyEntry> items = new ArrayList<rpi.HierarchyEntry>();
+		this.initModel(request);
+
+		if(action == HierarchyVerb.ROOTS) {
+			//			HierarchyEntry entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird1"));
+			//			entry.setLabel("bird1");
+			//			entry.setAltLabel("birdicus uno");
+			//			items.add(entry);
+			//			entry = new HierarchyEntry();
+			//			entry.setUri(URI.create("http://example.com/bird2"));
+			//			entry.setLabel("bird2");
+			//			entry.setAltLabel("birdicus dos");
+			//			items.add(entry);
+			return  queryClassHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
+			//				HierarchyEntry entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird3"));
+			//				entry.setLabel("bird3");
+			//				entry.setAltLabel("birdicus tres");
+			//				items.add(entry);
+			//				entry = new HierarchyEntry();
+			//				entry.setUri(URI.create("http://example.com/bird4"));
+			//				entry.setLabel("bird4");
+			//				entry.setAltLabel("birdicus quatro");
+			//				items.add(entry);
+			//			}
+			return  queryClassHMChildren(request, (String) request.getParam("annotatorClasses"));
+		} 
+		/*
+		else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorClass( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorClassToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		
+		return items;
+	}
+	
+	protected Collection<rpi.HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException {
+		AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryClassHMRoots");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for root:");
+		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		
+		return entries;
+		
+	}
+	
+	protected Collection<rpi.HierarchyEntry> queryClassHMChildren(final Request request, String classes) throws OWLOntologyCreationException, JSONException {
+		AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryClassHMChildren");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for non-root:");
+		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses(classes);
+		
+		return entries;		
+	}
+
+	
 	
 	/*
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
