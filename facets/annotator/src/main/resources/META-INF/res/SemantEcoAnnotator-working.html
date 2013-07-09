@@ -8,8 +8,8 @@
     <link rel="stylesheet" type="text/css" href="../../css/main.css" />
     <link rel="stylesheet" type="text/css" href="../../js/jstree/themes/default/style.css" />
 
-    <link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.standalone.css" />
-    <link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.themeroller.css" />
+    <!--<link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.standalone.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.themeroller.css" />-->
    
 	<style>
     body{
@@ -137,8 +137,14 @@
 	.hide-while-empty {
 		display:none;
 	}
-		
-	
+
+	.ellipses {
+    	width: 100px;
+    	white-space: nowrap;
+    	overflow: hidden;
+    	text-overflow: ellipsis;  // IE 6+, FF 7+, Op 11+, Saf 1.3+, Chr 1+      
+    	-o-text-overflow: ellipsis;  // for Opera 9 &amp; 10;
+	}
 	</style>
 	
 	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
@@ -453,7 +459,7 @@
 	function createSubtable(text,colIndex) {
 		var theader = '<table>\n';
 		var tbody = '';
-		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
+		tbody += '<tr><td id=nameRow,' + colIndex + '><p title=\"' + text + '\" class="ellipses">' + text + '</p></td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
@@ -901,7 +907,11 @@
 			  // Once the header row with subtables has been created,
               //   continue and create the rest of the table. 
 			  // This is actually data from the CSV file!
-			  for (var i = 1; i < rows.length; i++){
+			  var maxRows = 20;
+			  if (maxRows > rows.length) {
+			  	maxRows = rows.length;
+			  }
+			  for (var i = 1; i < maxRows; i++){
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
 				var td;
@@ -969,20 +979,48 @@
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
  document.getElementById('the_file').addEventListener('change', fileInfo, false);
 
+// this function is the callback for the COMMIT ENHANCEMENT button
+$(document).ready(function() {
+    $('#commit_enhancement').click(function() {
+    	$.bbq.pushState({"FileName": window.file_name,"Source":$("#source_info").val(),"DataSet":$("#dataset_info").val(),"annotationMappings": window.a});
+    	AnnotatorModule.queryForEnhancing({}, function(d) { console.log(d); });
+	});
 
-	// this function is the callback for the COMMIT ENHANCEMENT button
-	$(document).ready(function() {
-        $('#commit_enhancement').click(function() {
-        	$.bbq.pushState({"FileName": window.file_name,"Source":$("#source_info").val(),"DataSet":$("#dataset_info").val(),"annotationMappings": window.a});
-        	AnnotatorModule.queryForEnhancing({},
-        			function(d) { console.log(d); });
-    })});
+    // Test the getListofOntologies() call
+	AnnotatorModule.getListofOntologies({}, function(d) { 
+		d = $.parseJSON(d);
+		console.log(d);
+		if (d.length > 0) {
+			var dropDown = $("<select></select>").attr("id", "checkboxDropDownOntologies").attr("name", "testCheckboxDropDown").attr("multiple", "multiple");
+			for (var i = 0; i < d.length; i++) {
+				console.log(d[i]);
+				dropDown.append("<option>" + d[i] + "</option>");
+			}
+
+			// Push our dropdown to the DOM
+			$("#theFacets").prepend(dropDown);
+			// Turn it into what we want!
+			$("#checkboxDropDownOntologies").dropdownchecklist({ emptyText: "Select an Ontology ...", width: 250,
+    			onComplete: function(selector) {
+        			var values = "";
+				    for( i=0; i < selector.options.length; i++ ) {
+				        if (selector.options[i].selected && (selector.options[i].value != "")) {
+				            if ( values != "" ) values += ";";
+				            values += selector.options[i].value;
+            			}
+        			}
+	  				$.bbq.pushState({"listOfOntologies": values.split(";")});
+    			}
+        	});
+		}
+    });
+});
 </script>
 
 </div>
 
 <div style="margin-left:70%; width:30%;">
-<div>
+<div id="theFacets">
 
  <table cellpadding="0"; cellspacing="0">
 
@@ -1107,7 +1145,7 @@
             // This is what actually generates the class tree
 			// * Note that "dnd" is passed in as a parameter from above
 			//   to specify the drag-and-drop functionality.
-            SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
+            //SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
 
 			// drag and drop PROPERTIES
 			// As above, these are the parameters to enable this function for the 
@@ -1162,7 +1200,7 @@
 			
 			// Actually creates the hierarchical facet with the above variable
 			//    passed as parameters for the drag-and-drop functionality.
-			SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+			//SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 
 			
 			// not sure what this is??? toString for ... something.
