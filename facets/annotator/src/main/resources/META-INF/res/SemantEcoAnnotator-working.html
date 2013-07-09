@@ -486,13 +486,15 @@
 	//    - startIndex, the index of the first column in the bundle
 	//    - bundleSpan, the number of columns the bundle spans
 	// * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
-	function createBundleSubtable(startIndex, bundleSpan) {
-		var theader = '<table id=bundle,' + bundleNo + '>\n';
+	// TO DO: generate the dropdown menu! Probably in another function!
+	function createBundleSubtable(theBundle) {
+		var id = theBundle.bundleID;
+		var theader = '<table id=bundle,' + id + '>\n';
 		var tbody = '';
-		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
-		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
+		tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option><option value="col">explicit</option></select></form></td></tr>\n';
+		tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[propertyRow]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
 		return subtable;
@@ -714,7 +716,7 @@
 							//    in other words, it is a count of how many columns are bundled.
 							var spanSize = 0;
 							// gets the first column of the span, for creating the bundle column header
-							var bStart = currentlySelected.sort()[0]
+							var bStart = currentlySelected.sort()[0];
 							for (i in currentlySelected) {
 								//console.log("bundling column " + currentlySelected[i]);
 								var top = document.getElementById("0,"+currentlySelected[i]);
@@ -722,9 +724,17 @@
 								var toMove = top.removeChild(top.childNodes[0]);
 								bottom.appendChild(toMove);
 								spanSize++;
+								if ( currentlySelected[i] != bStart ){
+									$(top).addClass("hide-while-empty");
+								}
 							}// /for
 							console.log("bundle starts at col " + bStart + " and spans " + spanSize + " columns");
-							
+							var newHeader = document.getElementById("0,"+bStart);
+							$(newHeader).attr("colspan",spanSize);
+							var temp = document.createElement('div');
+							var stContent = createBundleSubtable(newBundle);
+							temp.innerHTML = stContent;
+							newHeader.appendChild(temp);
 							
 						}// /callback
 					}, // /bundle
