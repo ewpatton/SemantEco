@@ -34,13 +34,3 @@ pom.xml.old
 webapp/test
 
 *.swp
-
-dep-tree
-
-dep-tree.txt
-
-mvn-debug-output.txt
-
-output
-
-facets/annotator/src/main/java/edu/rpi/tw/escience/semanteco/annotator/AnnotatorModule.java
