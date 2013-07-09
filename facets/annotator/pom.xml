@@ -18,10 +18,19 @@
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>rpi</groupId>
+      <artifactId>OWLHelper</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-common</artifactId>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
