@@ -1347,8 +1347,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 	
 	@HierarchicalMethod(parameter = "annotatorClasses")
-	public Collection<HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException {
-		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+	public Collection<rpi.HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException {
+		List<rpi.HierarchyEntry> items = new ArrayList<rpi.HierarchyEntry>();
 		this.initModel(request);
 
 		if(action == HierarchyVerb.ROOTS) {
@@ -1389,17 +1389,27 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;
 	}
 	
-	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) {
+	protected Collection<rpi.HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException {
+		AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryClassHMRoots");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for root:");
+		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		
-		
-		
-		return null;
+		return entries;
 		
 	}
 	
-	protected Collection<HierarchyEntry> queryClassHMChildren(final Request request, String classes) {
-		return null;
+	protected Collection<rpi.HierarchyEntry> queryClassHMChildren(final Request request, String classes) throws OWLOntologyCreationException, JSONException {
+		AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryClassHMChildren");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for non-root:");
+		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses(classes);
 		
+		return entries;		
 	}
 
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
