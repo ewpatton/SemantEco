@@ -175,10 +175,10 @@ public class AnnotatorModule implements Module {
 					//JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies");
 					JSONArray listOfOntologies  = new JSONArray();
 					listOfOntologies.put("chebi");
-					annotatorTester = new AnnotatorTester(listOfOntologies);
-					System.out.println("chebi test");
-					System.out.println("chebi test2");
-					System.out.println(annotatorTester.getChildClasses("http://purl.obolibrary.org/obo/CHEBI_50906").toString());
+					//annotatorTester = new AnnotatorTester(listOfOntologies);
+					//System.out.println("chebi test");
+					//System.out.println("chebi test2");
+				//	System.out.println(annotatorTester.getChildClasses("http://purl.obolibrary.org/obo/CHEBI_50906").toString());
 
 					
 					
