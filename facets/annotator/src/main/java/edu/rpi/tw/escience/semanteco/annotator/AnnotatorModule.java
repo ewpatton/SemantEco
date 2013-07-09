@@ -169,7 +169,7 @@ public class AnnotatorModule implements Module {
 		
 	//	if(model == null) {
 			
-			try {
+		//	try {
 			//	if(annotatorTester == null){
 					
 					//JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies");
@@ -188,10 +188,12 @@ public class AnnotatorModule implements Module {
 				
 				
 
-			} catch (OWLOntologyCreationException e) {
+		//	} 
+			
+		//	catch (OWLOntologyCreationException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		//		e.printStackTrace();
+		//	}
 			
 			
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
