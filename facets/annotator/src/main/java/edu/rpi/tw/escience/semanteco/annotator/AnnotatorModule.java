@@ -170,10 +170,10 @@ public class AnnotatorModule implements Module {
 
 			if (request.getParam("listOfOntologies") != null){
 				JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies") ;
-				annotatorTester = new AnnotatorTester(listOfOntologies);	
+				this.annotatorTester = new AnnotatorTester(listOfOntologies);	
 			}
 			else{
-				annotatorTester = new AnnotatorTester();
+				this.annotatorTester = new AnnotatorTester();
 			}
 			
 			return "done";
@@ -306,8 +306,8 @@ public class AnnotatorModule implements Module {
 	
 	
 	@QueryMethod
-	public String getListofOntologies(final Request request){
-		JSONArray j = new JSONArray();
+	public String getListofOntologies(final Request request) throws JSONException{
+		//JSONArray j = new JSONArray();
 		//wgs
 		//semanteco ontologies
 		//
@@ -316,11 +316,12 @@ public class AnnotatorModule implements Module {
 		//	prefix prov: http://www.w3.org/ns/prov#
 
 	// "dcterms", "semanteco
-		j.put("dcterms");
-		j.put("prov");
-		j.put("void");
+		//j.put("dcterms");
+		//j.put("prov");
+		//j.put("void");
 		//j.put("semanteco-water");
-		return j.toString();
+		return annotatorTester.getListOfOntologies().toString();
+		//in the future allow a client to indicate what to load, maybe...
 	}
 
 	/**
@@ -1862,7 +1863,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//return jsonWrapper(table, OWL.Thing.getURI().toString());	
 		}
 	
-	@HierarchicalMethod(parameter = "annotatorClasses")
+	@HierarchicalMethod(parameter = "classes")
 	public Collection<HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 		//this.initModel(request);
