@@ -1069,6 +1069,11 @@ $(document).ready(function() {
             			}
         			}
 	  				$.bbq.pushState({"listOfOntologies": values.split(";")});
+					// Re-query facets
+					$("#ClassTree").empty();
+					$("#PropertyTree").empty();
+	  				SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
+	  				SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
     			}
         	});
 		}
@@ -1084,64 +1089,60 @@ $(document).ready(function() {
  <table cellpadding="0"; cellspacing="0">
 
 	  <tr>
-        <td>
-        Description
-        <div id="description_classTree" style="  border:1px solid #111111; overFlow: auto; " >
-        <div id="ClassBox" style="width:100px;height:200px;">
-        </div>
-        </div>
-        </td>
-        <td>
-         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</span>
-          <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
-		   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
-		   </div>
-          </div>
-		</td>
+	        <td>
+		         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</span>
+		          <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
+				   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
+				   </div>
+		          </div>
+			</td>
       </tr>
-      
       <tr>
-       <td>
-       Description
-        <div id="description_PropertyTree" style="  border:1px solid #111111; overFlow: auto; " >
-        <div id="PropBox" style="width:100px;height:200px;"> 
-        </div>
-        </div>
+      	<td>
+	        Description
+	        <div id="description_classTree" style="  border:1px solid #111111; overFlow: auto; " >
+	        <div id="ClassBox" style="width:100px;height:30px;">
+	        </div>
+	        </div>
         </td>
-
+      </tr>
+      <tr>
           <td>
-           Object Property Hieararchy        
-           <div id="description_prop" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
-			</div>
-
-			</div>
+	           Object Property Hieararchy        
+	           <div id="description_prop" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
+				<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
+				</div>
+				</div>
 		  </td>
       </tr>
-     
+      <tr>
+	      	<td>
+		       Description
+		        <div id="description_PropertyTree" style="  border:1px solid #111111; overFlow: auto; " >
+		        <div id="PropBox" style="width:100px;height:30px;"> 
+		        </div>
+		        </div>
+	        </td>
+      </tr>
      <tr>
-        <td>
-        Description
-        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-        <div id="DataTypeBox" style="width:100px;height:200px;">
-        null
-        </div>
-        </div>
-        </td>
-        
-          <td>
-           Data Property Hierarchy       
-           <div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
+     	<td>
+          	Data Property Hierarchy       
+          	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
 			<div id="DataTypeTree" class="demo2" style="width:120%;height:200px;">
-
 			</div>
-
 			</div>
-		  </td>
+		</td>
+	</tr>
+	<tr>
+		<td>
+	        Description
+	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
+	        <div id="DataTypeBox" style="width:100px;height:30px;">
+	        </div>
+	        </div>
+        </td>
      </tr>
-	
     </table>
-
 </div>
 </div>
 <div style="clear:both"></div>
@@ -1204,7 +1205,8 @@ $(document).ready(function() {
             // This is what actually generates the class tree
 			// * Note that "dnd" is passed in as a parameter from above
 			//   to specify the drag-and-drop functionality.
-            //SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
+            //SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryAnnotatorClassHM", null, {"plugins": ["dnd"], "dnd": dnd});     
+			SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
 
 			// drag and drop PROPERTIES
 			// As above, these are the parameters to enable this function for the 
@@ -1259,7 +1261,7 @@ $(document).ready(function() {
 			
 			// Actually creates the hierarchical facet with the above variable
 			//    passed as parameters for the drag-and-drop functionality.
-			//SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+			SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 
 			
 			// not sure what this is??? toString for ... something.
@@ -1282,14 +1284,16 @@ $(document).ready(function() {
             }// /toString
 
 		$(window).bind("rendered_tree.semanteco", function(e, div) {
-		$(div).addClass("jstree-default");
-		$(div).bind("select_node.jstree", function (NODE, REF_NODE) {
-        var a = $.jstree._focused().get_selected();
-        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
-        var axioms_contents = lookup[a.attr("hierarchy_id")].rawData.axioms;
-        $("#ClassBox").html("<pre>"+toString(axioms_contents,0)+"</pre>");
-      });
-    });
+			$(div).addClass("jstree-default");
+			$(div).bind("select_node.jstree", function (NODE, REF_NODE) {
+		        var a = $.jstree._focused().get_selected();
+		        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
+		        var comments = lookup[a.attr("hierarchy_id")].rawData.comment;
+		        console.log(a);
+		        console.log(comments)
+		        $("#ClassBox").html("<pre>"+toString(comments,0)+"</pre>");
+	      	});
+    	});
 </script>
         		
 
