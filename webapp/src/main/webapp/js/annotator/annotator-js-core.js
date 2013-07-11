@@ -221,8 +221,8 @@
 		var theader = '<table class="marginOverride">\n';
 		var tbody = '';
 		tbody += '<tr><td id=nameRow,' + colIndex + '><p title=\"' + text + '\" class="ellipses marginOverride">' + text + '</p></td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[property]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[class]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
 		return subtable;
@@ -277,8 +277,8 @@
 		});
 		tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
 		tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[classRow]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[property]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[class]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
 		return subtable;
@@ -835,11 +835,11 @@ $(document).ready(function() {
 					AnnotatorModule.initOWLModel({}, function(d) { 
 						// Robin code for drag and drop archived: {"plugins": ["dnd"], "dnd": dnd_prop}
 						console.log(d);
-						SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes");
-	  					SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes");	
+						SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {"plugins": ["dnd"], "dnd": dnd_prop});
+	  					SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+	  					SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+	  					SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+	  					SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {"plugins": ["dnd"], "dnd": dnd_prop});	
 					});
     			}
         	});
