@@ -35,7 +35,7 @@
       padding: 10px;
     }
 	
-	th {
+	.fileTable th {
 		border-collapse: collapse;
 	}
 	
@@ -153,7 +153,7 @@
 	}
 
 	/* Re adding old css stuff back */
-	table {
+	.fileTable table {
       max-width: 100%;
       background-color: #fff;
       border-collapse: collapse;
@@ -168,8 +168,7 @@
          -moz-border-radius: 4px;
               border-radius: 4px;
     }
-
-	table th{
+	.fileTable table th{
       background: #eae4ff;
 	  line-height: 20px;
       text-align: left;
@@ -177,7 +176,7 @@
       border-top: 1px solid #dddddd;
 	  border-left: 1px solid #dddddd;
     }
-    table td {
+    .fileTable table td {
       padding: 8px;
       line-height: 20px;
       text-align: left;
@@ -186,11 +185,11 @@
 	  border-left: 1px solid #dddddd;
     }
 	
-    table tr:first-child {
+    .fileTable table tr:first-child {
       font-weight: bold;
     }
 
-    table tr:nth-child(odd){
+    .fileTable table tr:nth-child(odd){
       background-color: #f9f9f9;
     }
 
@@ -456,7 +455,7 @@
 
 <div style="float:left;width:70%;">
 
-  <div id="list" style="overflow:scroll; height:350px; margin-right:6px;"></div>
+  <div id="list" class="fileTable" style="overflow:scroll; height:350px; margin-right:6px;"></div>
 
   <script type="text/javascript">
 
@@ -1102,7 +1101,7 @@ $(document).ready(function() {
 			}
 
 			// Push our dropdown to the DOM
-			$("#theFacets").prepend(dropDown);
+			$("#ontology-dropdown").prepend(dropDown);
 			// Turn it into what we want!
 			$("#checkboxDropDownOntologies").dropdownchecklist({ emptyText: "Select an Ontology ...", width: 250,
     			onComplete: function(selector) {
@@ -1140,104 +1139,142 @@ $(document).ready(function() {
 
 </div>
 
-<div style="margin-left:70%; width:30%;">
-<div id="theFacets">
+<div style="margin-left:71%; margin-right:1%">
+	<div id="theFacets">
+		<!-- dropdown div, filled by plugin -->
+		<div id="ontology-dropdown"></div>
+		<!-- classes table -->
+	 	<table id="classes-module" border="1px solid black">
+			<tbody>
+				<tr>
+					<th>Classes</th>
+				</tr>
+				<tr>
+					<td>
+						<div id="ClassesFacet" class="facet">
+							<div id="ClassTree" class="hierarchy"></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="border: 1px solid black;">Description</th>
+				</tr>
+				<tr>
+					<td>	
+						<div id="ClassesDescription" class="description">
+							<div id="ClassBox" style="width:100%;height:20px;"></div>
+						</div>
+					</td>
+				</tr>	
+			</tbody>
+		</table>
 
- <table cellpadding="0"; cellspacing="0">
+		<!-- Object properties table -->
+	 	<table id="object-properties-module" border="1px solid black">
+			<tbody>
+				<tr>
+					<th>Object Properties</th>
+				</tr>
+				<tr>
+					<td>
+						<div id="objectPropertiesFacet" class="facet">
+							<div id="PropertyTree" class="hierarchy"></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="border: 1px solid black;">Description</th>
+				</tr>
+				<tr>
+					<td>	
+						<div id="objectPropertiesDescription" class="description">
+							<div id="PropBox" style="width:100%;height:20px;"></div>
+						</div>
+					</td>
+				</tr>	
+			</tbody>
+		</table>
 
-	  <tr>
-	        <td>
-		         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Classes</span>
-		          <div id="description_class" class="facet" style="  border:1px solid #111111; overflow: auto; " >
-				   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
-				   </div>
-		          </div>
-			</td>
-      </tr>
-      <tr>
-      	<td>
-	        Description
-	        <div id="description_classTree" style="  border:1px solid #111111; overflow: auto; " >
-	        <div id="ClassBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-      </tr>
-      <tr>
-          <td>
-	           Object Properties
-	           <div id="description_prop" class="facet" style="  border:1px solid #111111; overflow: auto; " >
-				<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
-				</div>
-				</div>
-		  </td>
-      </tr>
-      <tr>
-	      	<td>
-		       Description
-		        <div id="description_PropertyTree" style="  border:1px solid #111111; overFlow: auto; " >
-		        <div id="PropBox" style="width:100px;height:30px;"> 
-		        </div>
-		        </div>
-	        </td>
-      </tr>
-     <tr>
-     	<td>
-          	Data Properties
-          	<div id="description2" style="  border:1px solid #111111; overflow: auto; " >
-			<div id="dataPropertiesTree" class="hierarchy" style="width:100%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="dataPropertiesBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-     </tr>
-      <tr>
-     	<td>
-          	Annotation Properties     
-          	<div id="description2" style="  border:1px solid #111111; overflow: auto; " >
-			<div id="annotationPropertiesTree" class="hierarchy" style="width:100%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="annotationPropertiesBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-     </tr>
-      <tr>
-     	<td>
-          	Datatypes 
-          	<div id="description2" style="  border:1px solid #111111; overflow: auto; " >
-			<div id="DataTypeTree" class="hierarchy" style="width:100%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="DataTypeBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-     </tr>
-    </table>
+		<!-- Data properties table -->
+	 	<table id="data-properties-module" border="1px solid black">
+			<tbody>
+				<tr>
+					<th>Data Properties</th>
+				</tr>
+				<tr>
+					<td>
+						<div id="dataPropertiesFacet" class="facet">
+							<div id="dataPropertiesTree" class="hierarchy"></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="border: 1px solid black;">Description</th>
+				</tr>
+				<tr>
+					<td>	
+						<div id="dataPropertiesDescription" class="description">
+							<div id="dataPropertiesBox" style="width:100%;height:20px;"></div>
+						</div>
+					</td>
+				</tr>	
+			</tbody>
+		</table>
+
+		<!-- Annotation properties table -->
+	 	<table id="annotation-properties-module" border="1px solid black">
+			<tbody>
+				<tr>
+					<th>Annotation Properties</th>
+				</tr>
+				<tr>
+					<td>
+						<div id="annotationPropertiesFacet" class="facet">
+							<div id="annotationPropertiesTree" class="hierarchy"></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="border: 1px solid black;">Description</th>
+				</tr>
+				<tr>
+					<td>	
+						<div id="annotationPropertiesDescription" class="description">
+							<div id="annotationPropertiesBox" style="width:100%;height:20px;"></div>
+						</div>
+					</td>
+				</tr>	
+			</tbody>
+		</table>
+
+		<!-- Data types table -->
+	 	<table id="data-types-module" border="1px solid black">
+			<tbody>
+				<tr>
+					<th>Datatypes</th>
+				</tr>
+				<tr>
+					<td>
+						<div id="datatypesFacet" class="facet">
+							<div id="DataTypeTree" class="hierarchy"></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="border: 1px solid black;">Description</th>
+				</tr>
+				<tr>
+					<td>	
+						<div id="datatypesDescription" class="description">
+							<div id="DataTypeBox" style="width:100%;height:20px;"></div>
+						</div>
+					</td>
+				</tr>	
+			</tbody>
+		</table>
+	</div>
 </div>
-</div>
+
 <div style="clear:both"></div>
 
 <script>
