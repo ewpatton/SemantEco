@@ -1959,7 +1959,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 				entry.setComment(((String)annot.get("comment")));			
 			}
 			
-			entry.setHasChild(this.annotatorTester.hasClassChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasChildren(binding));
 			entries.add(entry);
 			
 		}
@@ -1993,7 +1993,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			entry.setHasChild(this.annotatorTester.hasClassChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasChildren(binding));
 			entries.add(entry);
 		}
 
