@@ -126,6 +126,16 @@
 		border: 1px solid #DDD;
 		background: #EEE;
    	}
+
+   	.context-menu-item {
+   		padding-top: 5px;
+   		padding-bottom: 5px;
+   	}
+
+   	.context-menu-item:hover{
+   		background-color: whitesmoke;
+   		cursor: pointer;
+   	}
 	
 	.draggable-prop, .draggable-class { 
 		width: 90px;
