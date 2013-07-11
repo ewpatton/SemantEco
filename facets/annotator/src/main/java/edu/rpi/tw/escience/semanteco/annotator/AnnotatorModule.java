@@ -1895,7 +1895,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//				entry.setAltLabel("birdicus quatro");
 			//				items.add(entry);
 			//			}
-			return  queryClassHMChildren(request, (String) request.getParam("annotatorClasses"));
+			return  queryClassHMChildren(request, (String) request.getParam("classes"));
 		} 
 		/*
 		else if ( action == HierarchyVerb.SEARCH ) {
