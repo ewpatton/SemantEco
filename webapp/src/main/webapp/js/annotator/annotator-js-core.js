@@ -746,7 +746,7 @@
               }// /for rows
 
               // Push to DOM and reveal to user
-              $('#list').append(table).removeClass("hidden");
+              $('#list').removeClass("hidden").append(table);
 			
 			// Make the column headers selectable and updates the currentlySelected
 			//    array accordingly when things are selected or unselected.
@@ -814,7 +814,7 @@ $(document).ready(function() {
 			// Push our dropdown to the DOM
 			$("#ontology-dropdown").prepend(dropDown);
 			// Turn it into what we want!
-			$("#checkboxDropDownOntologies").dropdownchecklist({ emptyText: "Select an Ontology ...", width: 200,
+			$("#checkboxDropDownOntologies").dropdownchecklist({ emptyText: "Select an Ontology ...", width: 230,
     			onComplete: function(selector) {
         			var values = "";
 				    for( i=0; i < selector.options.length; i++ ) {
