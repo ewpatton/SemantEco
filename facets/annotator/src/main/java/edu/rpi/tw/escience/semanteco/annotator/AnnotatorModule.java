@@ -1481,7 +1481,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			String binding = (String)  classes.get(i);
 			entry.setUri(binding);
 	
-			/*
+		
 			JSONObject annot = this.annotatorTester.getAnnotationsForProperty(binding.toString());
 			System.out.println("class: " + binding.toString() + " has annotations: " + annot);		
 			if(annot.has("label")  && !annot.get("label").equals("")){
@@ -1490,23 +1490,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}	
-			*/
-			
-			if (binding.contains("#")){
-				//split on the #
-				String[] temp = binding .split("#");
-				binding  = temp[0];
-				System.out.println("datatype label is: " + binding );
-			}
 		
-			else{
-				String[] temp2 = binding .split("/");
-				binding = temp2[temp2.length-1];
-				System.out.println("datatype label is: " + binding );
-			}	
 			
-			entry.setComment(binding);			
-
+			
 			
 			
 			entries.add(entry);
@@ -1630,6 +1616,24 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			
 			//if(annot.has("comment") && !annot.get("comment").equals("")){
 			//	entry.setComment(((String)annot.get("comment")));			
+			
+			
+			
+			if (binding.contains("#")){
+				//split on the #
+				String[] temp = binding .split("#");
+				binding  = temp[0];
+				System.out.println("datatype label is: " + binding );
+			}
+		
+			else{
+				String[] temp2 = binding .split("/");
+				binding = temp2[temp2.length-1];
+				System.out.println("datatype label is: " + binding );
+			}	
+			
+			entry.setComment(binding);			
+
 			
 			
 			entries.add(entry);
