@@ -355,6 +355,7 @@ SemantEcoUI.HierarchicalFacet = {};
         div.data("hierarchy.query_method", qmethod);
         div.data("hierarchy.param", param);
         module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
+            console.log("LOG JSON ON CREATE:" + d)
             d = JSON.parse(d);
             processRoots(div, d, jstreeArgs);
         });
