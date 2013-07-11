@@ -1,0 +1,177 @@
+/* Bren code organization fix */
+
+	body {
+		background: white;
+	}
+
+	/* Re adding old css stuff back */
+	.fileTable table {
+      max-width: 100%;
+      background-color: #fff;
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      margin-bottom: 0px;
+	  border: 1px solid #dddddd;
+      border-collapse: separate;
+      *border-collapse: collapse;
+      border-left: 0;
+      -webkit-border-radius: 4px;
+         -moz-border-radius: 4px;
+              border-radius: 4px;
+    }
+	.fileTable table th:not(.column-header){
+      border-top: 1px solid #dddddd;
+	  border-left: 1px solid #dddddd;
+    }
+    .fileTable table td:not(.cellBased-on):not(.links_via-on) {
+      border-top: 1px solid #dddddd;
+	  border-left: 1px solid #dddddd;
+    }
+	
+    .fileTable table tr:first-child {
+      font-weight: bold;
+    }
+
+    .fileTable table tr:nth-child(odd){
+      background-color: #f9f9f9;
+    }
+    .fileTable th {
+		border-collapse: collapse;
+	}
+
+    #fileDialogWrapper {
+      width: 100%;
+      border-radius: 4px;
+      text-align: center;
+	  padding-top: 5px;
+	  margin-bottom: 15px;
+      -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    }
+    form {
+      background: #CCC;
+      text-align: center;
+    }
+	
+	.bundled-row { 
+		font-weight: bold;
+		text-align:center;
+		margin:0; 
+		padding:0;
+	}
+	.annotation-row {
+		text-align:center;	
+		font-size:8px;
+		margin:0; 
+		padding:0;
+	}
+	
+	.links_via-on {
+		border: 2px solid #0000dd;
+	}
+    
+	.cellBased-on {
+		border: 2px solid #00dd00;
+	}
+	
+	.links_via-on .cellBased-on {
+		border-top: 2px inset #0000dd;
+		border-left: 2px inset #0000dd;
+		border-bottom: 2px outset #00dd00;
+		border-right: 2px outset #00dd00;
+	}
+	
+    .col-selectable .ui-selecting { background: #FECA40; }
+	.col-selectable .ui-selected { background: #F39814; }
+	
+	.selected-col { background: #F39814 !important; }
+	
+	.ui-widget-content {
+		border: 1px solid #aaaaaa;
+		background: #fff;
+		color: #222222;
+	}
+		
+	.ui-state-highlight,
+	.ui-widget-content .ui-state-highlight,
+	.ui-widget-header .ui-state-highlight {
+		background: #80ea69;
+		color: black;
+	}
+	.ui-state-hover,
+	.ui-widget-content .ui-state-hover,
+	.ui-widget-header .ui-state-hover,
+	.ui-state-focus,
+	.ui-widget-content .ui-state-focus,
+	.ui-widget-header .ui-state-focus {
+		background: #fb3f51;
+		font-weight: bold;
+		color: white;
+	}
+	
+	div.hierarchy div.wrapper {
+		height: 100%;
+	}
+    
+	.ontology-selector {
+		font-weight:bold;
+		text-decoration:underline;
+	}
+	
+    .context-menu-list	{
+		margin:0; 
+		padding:0;
+		min-width: 120px;
+		max-width: 350px;
+		display: inline-block;
+		position: absolute;
+		list-style-type: none;
+		border: 1px solid #DDD;
+		background: #EEE;
+   	}
+	
+	.draggable-prop, .draggable-class { 
+		width: 90px;
+		height: 15px;
+		padding: 0.5em;
+		float: left;
+		margin: 10px 10px 10px 0; 
+	}
+	
+	.ui-tooltip, .ui-tooltip-content {
+		margin:0; 
+		padding:0;
+		min-width: 200px;
+		max-width: 300px;
+		display: inline-block;
+		position: absolute;
+		list-style-type: none;
+		border: 1px solid #DDD;
+		background: #EEE;
+	}
+	
+	.hide-while-empty {
+		display:none;
+	}
+
+	.hidden {
+		display: none;
+	}
+
+	.ellipses {
+    	width: 100px;
+    	white-space: nowrap;
+    	overflow: hidden;
+    	text-overflow: ellipsis;  // IE 6+, FF 7+, Op 11+, Saf 1.3+, Chr 1+      
+    	-o-text-overflow: ellipsis;  // for Opera 9 &amp; 10;
+	}
+
+    .marginOverride {
+    	margin-bottom: 0px;
+    }
+
+    #ontology-dropdown {
+    	margin-bottom: 10px;
+		text-align: center;
+    }
