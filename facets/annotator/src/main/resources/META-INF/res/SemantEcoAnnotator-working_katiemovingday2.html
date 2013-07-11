@@ -140,10 +140,6 @@
 		display:none;
 	}
 
-	.hidden {
-		display: none;
-	}
-
 	.ellipses {
     	width: 100px;
     	white-space: nowrap;
@@ -554,19 +550,7 @@
 		var id = theBundle.bundleID;
 		var theader = '<table id=bundle,' + id + '>\n';
 		var tbody = '';
-		// Brendan Edit: generate options based off of available headers
-		// I realize this is a nightmare jquery statement, but I had to traverse the DOM somehow...
-		var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".ui-selected").filter(function() { 
-			return !($($(this).children()[0].children[0].children[0].children[0].children[0]).hasClass("cellBased-on")); 
-		});
-		// remove selected from possible dropdown
-		var generatedOptions = "";
-		validHeadersToBundle.each(function( index ) {
-			// Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
-			//if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
-			generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).attr("title") + ")</option>"
-		});
-		tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
+		tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option><option value="col">explicit</option></select></form></td></tr>\n';
 		tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[propertyRow]</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[classRow]</td></tr>\n';
@@ -797,8 +781,6 @@
 								var top = document.getElementById("0,"+currentlySelected[i]);
 								var bottom = document.getElementById("bundledRow,"+currentlySelected[i]);
 								var toMove = top.removeChild(top.childNodes[0]);
-								// Brendan edit: column headers moving down to bundles need to be labeled as so
-								$(toMove).removeClass("column-header").addClass("bundled-column-header");
 								bottom.appendChild(toMove);
 								spanSize++;
 								if ( currentlySelected[i] != bStart ){
@@ -808,8 +790,6 @@
 							console.log("bundle starts at col " + bStart + " and spans " + spanSize + " columns");
 							var newHeader = document.getElementById("0,"+bStart);
 							$(newHeader).attr("colspan",spanSize);
-							// Brendan edit: mark this new bundle as a valid column header
-							$(newHeader).addClass("column-header");
 							var temp = document.createElement('div');
 							var stContent = createBundleSubtable(newBundle);
 							temp.innerHTML = stContent;
@@ -848,31 +828,6 @@
 						}// /callback function
 					},// /addComment
 					
-					"edit Domain Template": {
-						// Adds a comment to the Annotation Row
-						// * when finished, this should pop up a lightbox to solicit user input
-						//   including the type of comment (radio selector?) as well as the
-						//   comment text itself.
-						// If there is already a comment/the row is already showing, then just add it.
-						// Otherwise, show the row, then add the comment to the column on which the context
-						//    menu was called.
-						// * NOTE that if multiple columns are selected, it will only add the comment to the 
-						//   single column on which the menu is invoked!
-						name: "Edit Domain Template",
-						callback: function(){
-							 // Show modal
-							$("#domainTemplateModal" ).dialog({
-								modal: true,
-							    width: 800,
-							    buttons: {
-							    	Ok: function() {
-							        	$( this ).dialog( "close" );
-							        }
-							    }
-							});	
-						}
-					},
-
 					"eg": {
 						name: "Add Canonical Value (eg)",
 						// Like addComment, this allows a user to add a canonical value
@@ -980,7 +935,7 @@
 					group.appendChild(oneCol);
 				// column header
                     th = document.createElement('th');
-					$(th).attr("class", "ui-widget-content the-context-menu column-header not-bundled");
+					$(th).attr("class", "ui-widget-content the-context-menu");
                     // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
                     $(th).attr("id", '0,'+j);
 					var temp = document.createElement('div');
@@ -1117,17 +1072,8 @@ $(document).ready(function() {
 					// Re-query facets
 					$("#ClassTree").empty();
 					$("#PropertyTree").empty();
-
-					// Call patrice's new silly init call thingy
-					AnnotatorModule.initOWLModel({}, function(d) { 
-						// Robin code for drag and drop archived: {"plugins": ["dnd"], "dnd": dnd_prop}
-						console.log(d);
-						SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes");
-	  					SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjectPropertyHM", "objProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#annotatorPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes");	
-					});
+	  				SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
+	  				SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
     			}
         	});
 		}
@@ -1144,7 +1090,7 @@ $(document).ready(function() {
 
 	  <tr>
 	        <td>
-		         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Classes</span>
+		         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Class Hierarchy</span>
 		          <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
 				   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
 				   </div>
@@ -1162,7 +1108,7 @@ $(document).ready(function() {
       </tr>
       <tr>
           <td>
-	           Object Properties
+	           Object Property Hieararchy        
 	           <div id="description_prop" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
 				<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
 				</div>
@@ -1180,43 +1126,7 @@ $(document).ready(function() {
       </tr>
      <tr>
      	<td>
-          	Data Properties
-          	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="dataPropertiesTree" class="demo2" style="width:120%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="dataPropertiesBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-     </tr>
-      <tr>
-     	<td>
-          	Annotation Properties     
-          	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="annotationPropertiesTree" class="demo2" style="width:120%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="annotationPropertiesBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-     </tr>
-      <tr>
-     	<td>
-          	Datatypes 
+          	Data Property Hierarchy       
           	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
 			<div id="DataTypeTree" class="demo2" style="width:120%;height:200px;">
 			</div>
@@ -1296,7 +1206,7 @@ $(document).ready(function() {
 			// * Note that "dnd" is passed in as a parameter from above
 			//   to specify the drag-and-drop functionality.
             //SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryAnnotatorClassHM", null, {"plugins": ["dnd"], "dnd": dnd});     
-			//SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
+			SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
 
 			// drag and drop PROPERTIES
 			// As above, these are the parameters to enable this function for the 
@@ -1351,7 +1261,7 @@ $(document).ready(function() {
 			
 			// Actually creates the hierarchical facet with the above variable
 			//    passed as parameters for the drag-and-drop functionality.
-			//SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+			SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 
 			
 			// not sure what this is??? toString for ... something.
@@ -1385,12 +1295,6 @@ $(document).ready(function() {
 	      	});
     	});
 </script>
-
-	<!-- Brendan Edit, creating a modal to edit the Domain Template -->
-	<div id="domainTemplateModal" class="hidden">
-		<p>What would you like the Domain Template to be?</p>
-		<input type="text" placeholder="e.g. Measurement" id="domainTemplateInput" />
-	</div>
         		
 
 </body>
