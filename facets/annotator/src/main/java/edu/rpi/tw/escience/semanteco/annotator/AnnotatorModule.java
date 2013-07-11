@@ -1958,7 +1958,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
+			
+			entry.setHasChild(this.annotatorTester.hasClassChildren(binding));
 			entries.add(entry);
+			
 		}
 		//JSONArray classes = ann.getOnlyChildOWLClasses("root");		
 		return entries;
@@ -1990,6 +1993,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
+			entry.setHasChild(this.annotatorTester.hasClassChildren(binding));
 			entries.add(entry);
 		}
 
