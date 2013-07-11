@@ -7,17 +7,13 @@
    	<link rel="stylesheet" type="text/css" href="../../css/reset.css" />
     <link rel="stylesheet" type="text/css" href="../../css/main.css" />
     <link rel="stylesheet" type="text/css" href="../../js/jstree/themes/default/style.css" />
-
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-
-    <!--<link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.standalone.css" />
-    <link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.themeroller.css" />-->
    
 	<style>
+	
     body{
-		font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
-		color: #404040;
-		background: #F8F8F8;
+      font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
+      color: #404040;
+      background: #F8F8F8;
     }
     #wrap {
       float:left;
@@ -34,125 +30,8 @@
       border-radius: 2px;
       padding: 10px;
     }
-	
-	th {
-		border-collapse: collapse;
-	}
-	
-	.bundled-row { 
-		font-weight: bold;
-		text-align:center;
-		margin:0; 
-		padding:0;
-	}
-	.annotation-row {
-		text-align:center;	
-		font-size:8px;
-		margin:0; 
-		padding:0;
-	}
-	
-	.links_via-on {
-		border: 2px solid #0000dd;
-	}
     
-	.cellBased-on {
-		border: 2px solid #00dd00;
-	}
 	
-	.links_via-on .cellBased-on {
-		border-top: 2px inset #0000dd;
-		border-left: 2px inset #0000dd;
-		border-bottom: 2px outset #00dd00;
-		border-right: 2px outset #00dd00;
-	}
-	
-    .col-selectable .ui-selecting { background: #FECA40; }
-	.col-selectable .ui-selected { background: #F39814; }
-	
-	.selected-col { background: #F39814 !important; }
-	
-	.ui-widget-content {
-		border: 1px solid #aaaaaa;
-		background: #fff;
-		color: #222222;
-	}
-		
-	.ui-state-highlight,
-	.ui-widget-content .ui-state-highlight,
-	.ui-widget-header .ui-state-highlight {
-		background: #80ea69;
-		color: black;
-	}
-	.ui-state-hover,
-	.ui-widget-content .ui-state-hover,
-	.ui-widget-header .ui-state-hover,
-	.ui-state-focus,
-	.ui-widget-content .ui-state-focus,
-	.ui-widget-header .ui-state-focus {
-		background: #fb3f51;
-		font-weight: bold;
-		color: white;
-	}
-	
-	div.hierarchy div.wrapper {
-		height: 100%;
-	}
-    
-	.ontology-selector {
-		font-weight:bold;
-		text-decoration:underline;
-	}
-	
-    .context-menu-list	{
-		margin:0; 
-		padding:0;
-		min-width: 120px;
-		max-width: 350px;
-		display: inline-block;
-		position: absolute;
-		list-style-type: none;
-		border: 1px solid #DDD;
-		background: #EEE;
-   	}
-	
-	.draggable-prop, .draggable-class { 
-		width: 90px;
-		height: 15px;
-		padding: 0.5em;
-		float: left;
-		margin: 10px 10px 10px 0; 
-	}
-	
-	.ui-tooltip, .ui-tooltip-content {
-		margin:0; 
-		padding:0;
-		min-width: 200px;
-		max-width: 300px;
-		display: inline-block;
-		position: absolute;
-		list-style-type: none;
-		border: 1px solid #DDD;
-		background: #EEE;
-	}
-	
-	.hide-while-empty {
-		display:none;
-	}
-
-	.hidden {
-		display: none;
-	}
-
-	.ellipses {
-    	width: 100px;
-    	white-space: nowrap;
-    	overflow: hidden;
-    	text-overflow: ellipsis;  // IE 6+, FF 7+, Op 11+, Saf 1.3+, Chr 1+      
-    	-o-text-overflow: ellipsis;  // for Opera 9 &amp; 10;
-	}
-
-	/* Re adding old css stuff back */
 	table {
       max-width: 100%;
       background-color: #fff;
@@ -168,8 +47,7 @@
          -moz-border-radius: 4px;
               border-radius: 4px;
     }
-
-	table th{
+    table th{
       background: #eae4ff;
 	  line-height: 20px;
       text-align: left;
@@ -193,18 +71,75 @@
     table tr:nth-child(odd){
       background-color: #f9f9f9;
     }
-
-    .marginOverride {
-    	margin-bottom: 0px;
-    }
+	
+	.bundledRow { 	}
+	.annotationRow {	
+		font-size:5px;
+	}
+	
+	.links_via-on {
+		border: 2px solid #0000dd;
+	}
+    
+	.cellBased-on {
+		border: 2px solid #00dd00;
+	}
+	
+    .col-selectable .ui-selecting { background: #FECA40; }
+	.col-selectable .ui-selected { background: #F39814; }
+	
+	.ui-widget-content {
+		border: 1px solid #aaaaaa;
+		background: #fff;
+		color: #222222;
+	}
+		
+	.ui-state-highlight,
+	.ui-widget-content .ui-state-highlight,
+	.ui-widget-header .ui-state-highlight {
+		background: #80ea69;
+		color: black;
+	}
+	.ui-state-hover,
+	.ui-widget-content .ui-state-hover,
+	.ui-widget-header .ui-state-hover,
+	.ui-state-focus,
+	.ui-widget-content .ui-state-focus,
+	.ui-widget-header .ui-state-focus {
+		background: #fb3f51;
+		font-weight: bold;
+		color: white;
+	}
+    
+    .context-menu-list {
+		margin:0; 
+		padding:0;
+		min-width: 120px;
+		max-width: 250px;
+		display: inline-block;
+		position: absolute;
+		list-style-type: none;
+		border: 1px solid #DDD;
+		background: #EEE;
+   	}
+	
+	.draggable-prop, .draggable-class { 
+		width: 90px;
+		height: 15px;
+		padding: 0.5em;
+		float: left;
+		margin: 10px 10px 10px 0; 
+	}
+	
+	
 	</style>
 	
 	<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
-	<!--<script type="text/javascript" src="js/jquery.csvToTable.js"></script> -->
-	<!--<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script> -->
+	<script type="text/javascript" src="js/jquery.csvToTable.js"></script>
+	<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="../../js/jstree/jquery.jstree.js"></script>
 	<!-- <script type="text/javascript" src="_docs/syntax/!script.js"></script> -->
-	<!--<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script> -->
+<!--	<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script> -->
     <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
     
     <script type="text/javascript" src="../../js/jquery.ba-bbq-1.2.1.js"></script>
@@ -228,26 +163,17 @@
 	<script src="http://lacuna.ithiltari.com/vault/jquery.contextMenu.js"></script>
 	<script src="http://lacuna.ithiltari.com/vault/jquery.ui.position.js"></script>
     
-	<script type="text/javascript" src="../../js/ui.dropdownchecklist.js"></script>
-    
-    <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
+     <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
 	 
 	<script type="text/javascript" class="source below">
 /*	
 	$(document).ready(function() {
 		$(window).trigger("initialize");
 		});
-		
 */
 	</script>
 	
 	<script>
-	// Tooltip function
-	// This just enables the mouseover tooltips.
-	$(function() {
-		$( document ).tooltip();
-	});	
-
 	// This is the jsTree for DATA TYPES
 	// To help clarify plugins:
 	//   "dnd" means "drag-and-drop"
@@ -328,12 +254,15 @@
 				// cn = column number
                 var cn = i.split(',')[1];
 				
+				console.log("data.r: " + data.r);
+				console.log("data.o: " + data.o);
+            
 				$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
                 
-			// window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+           //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
                 
-			// var args = {};
-			// args[r] = p;
+           //    var args = {};
+           //    args[r] = p;
            
 				function keySearch(dict,key) {
 					for (var i in dict) if (key in dict[i]) 
@@ -369,8 +298,7 @@
     });// /jsTree
 });// /jsTree function
 	
-		// ** NOT CURRENTLY IN USE ** 
-		// ( drag-and-drop is currently handled via a jsTree plugin, NOT jQuery UI )
+		
 		// Responsible for draggable and droppable functions for classes
 		//   and properties. They are separate from each other, to assist
 		//   with target highlighting.
@@ -472,33 +400,7 @@
     }
   }
   
-  	// A context menu for selecting ontologies for the Class Hierarchy.
-	// Eventually, we'll want to populate this from some listing of all the ontologies we have?
-	// Right now, for sake of simplicity and testing, this is hard-coded and has no callbacks 
-	//    written....
-	$(function (){
-			$.contextMenu({
-				selector: '.ontology-selector', 
-				// This is the default callback, which will be used for any functions
-				//    that do not have their own callbacks specified. It echoes the 
-				//    key of the selection to the console.
-				callback: function(key, options) {
-					var m = "clicked: " + key;
-					console.log(m);
-				},
-				items: {
-					"semantEcoWater": {name: "SemantEco-Water", type: 'checkbox'},
-					"prov": {name: "PROV", type: 'checkbox'},
-					"wgs": {name: "WGS", type: 'checkbox'},
-					"void": {name: "VOID", type: 'checkbox'},
-				}// /items
-			}); // /context menu
-			
-		});// /ontology-selector
-  
-  
-    // Accessory function to generate the subtables for each column header in the CSV file.
-	//    The handleFileSelect function below that generates the table calls this repeatedly.
+    // Accessory function to generatee the subtables for each column header in the CSV file.
 	// Every subtable will be the same, (except for the ID's of the cells)
 	//    with 3 rows in 1 column. These are the DEFAULT subtables; ones for
 	//    IMPLICIT or EXPLICIT BUNDLES will be different (and in other functions) 
@@ -509,9 +411,9 @@
 	//	   as "nameRow,"+colIndex, "propertyRow,"+colIndex, and "classRow,"+colIndex
 	//	   these last two rows are classed as droppable targets.
 	function createSubtable(text,colIndex) {
-		var theader = '<table class="marginOverride">\n';
+		var theader = '<table>\n';
 		var tbody = '';
-		tbody += '<tr><td id=nameRow,' + colIndex + '><p title=\"' + text + '\" class="ellipses marginOverride">' + text + '</p></td></tr>\n';
+		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
 		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
@@ -519,57 +421,19 @@
 		return subtable;
 	}// /createSubtable
 	
-	
-	// Working a new way to generate the column headers....
-	/*
-	function createSubtable(text, colIndex) { 
-		var theTable = document.createElement('table');
-		var nameRow = document.createElement('tr');
-		var theName = document.createElement('td');
-		
-		var propRow = document.createElement('tr');
-		var theProp = document.createElement('td');
-		$(theProp).attr("class", "droppableProp");
-		$(theProp).attr("id", "propertyRow,"+colIndex);
-		
-		var classRow = document.createElement('tr');
-		var theClass = document.createElement('td');
-		$(theClass).attr("class", "droppableClass");
-		$(theClass).attr("id", "classRow,"+colIndex);
-	}// /createSubtable */
-	
-	
 	// ** IN PROGRESS **
 	// This should act as the above, except to create a subtable for describing a bundle
 	//  - One row should be a dropdown menu that allows the user to select which column
 	//    is the resource representing the bundle, with the default option for "implicit"
 	//  - Ideally, selecting a column for the resource should copy the column header of the
 	//    original column. 
-	// Takes two arguments: 
-	//    - startIndex, the index of the first column in the bundle
-	//    - bundleSpan, the number of columns the bundle spans
-	// * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
-	// TO DO: generate the dropdown menu! Probably in another function!
-	function createBundleSubtable(theBundle) {
-		var id = theBundle.bundleID;
-		var theader = '<table id=bundle,' + id + '>\n';
+	//    * How do we keep that up to date???
+	function createBundleSubtable(text,colIndex) {
+		var theader = '<table>\n';
 		var tbody = '';
-		// Brendan Edit: generate options based off of available headers
-		// I realize this is a nightmare jquery statement, but I had to traverse the DOM somehow...
-		var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".ui-selected").filter(function() { 
-			return !($($(this).children()[0].children[0].children[0].children[0].children[0]).hasClass("cellBased-on")); 
-		});
-		// remove selected from possible dropdown
-		var generatedOptions = "";
-		validHeadersToBundle.each(function( index ) {
-			// Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
-			//if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
-			generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).attr("title") + ")</option>"
-		});
-		tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
-		tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[propertyRow]</td></tr>\n';
-		tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[classRow]</td></tr>\n';
+		tbody += '<tr><td id=nameRow,' + colIndex + '>' + text + '</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[propertyRow]</td></tr>\n';
+		tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[classRow]</td></tr>\n';
 		var tfooter = '</table>';
 		var subtable = theader + tbody + tfooter;
 		return subtable;
@@ -605,27 +469,6 @@
 			return true;
 	}
 	
-	// Accessory function for creating a bundle 
-	// Takes three arguments:
-	//  - id: a unique static ID for the bundle, different from
-	//    its index in the bundles array.
-	//  - columns: the array of column indices of the columns to
-	//    be placed in the bundle.
-	//  - resource: the index of the column that describes the
-	//    bundle, IF it is EXPLICIT. A value of -1 indicates the
-	//    bundle is IMPLICIT; this is the default set here at 
-	//    creation.
-	function bundle( id, columns ) {
-		this.bundleID = id;
-		this.bundleCols = columns;
-		this.bundleResource = -1;
-	}
-	
-	// Keeps track of the ID's of the bundles, hopefully for use
-	//    in the future to show off all bundles at once.
-	var bID = 0;
-	
-	
 	// This array is for keeping track of the column indices of all selected columns.
 	//   It is empty at creation. The callbacks in the column selector function should
 	//   handle adding and removing indices from this array.
@@ -645,12 +488,6 @@
 	//    are kept in an array, as well, which is empty at creation. The callback for
 	//    "toggle-cell-based" adds to and removes from this array;
 	var cellBased = [];
-	
-	// This arrayis for keeping track of bundles. Unlike the above, this array will 
-	//    contain OBJECTS, with each one describing one bundle. The bundle objects are
-	//    defined in the bundle function above; details about each part of the bundle
-	//    are elaborated upon there.
-	var bundles = [];
 	
 	// ******************************************************************************
 	//                   context menu and its callback functions!
@@ -695,8 +532,7 @@
 								}
 								// if the column is not there, add it
 								else {
-									$(toggle).addClass("cellBased-on");
-									//$(toggle).attr("class","cellBased-on");
+									$(toggle).attr("class","cellBased-on");
 									cellBased.push(index);
 									console.log("adding col " + index);
 								}
@@ -713,8 +549,7 @@
 									}
 									// if the column is not there, add it
 									else {
-										$(toggle).addClass("cellBased-on");
-										//$(toggle).attr("class","cellBased-on");
+										$(toggle).attr("class","cellBased-on");
 										cellBased.push(currentlySelected[i]);
 										console.log("adding col " + currentlySelected[i]);
 									}
@@ -745,8 +580,7 @@
 								}
 								// if the column is not there, add it
 								else {
-									$(toggle).addClass("links_via-on");
-									//$(toggle).attr("class","links_via-on");
+									$(toggle).attr("class","links_via-on");
 									links_via.push(index);
 									console.log("adding col " + index);
 								}
@@ -763,8 +597,7 @@
 									}
 									// if the column is not there, add it
 									else {
-										$(toggle).addClass("links_via-on");
-										//$(toggle).attr("class","links_via-on");
+										$(toggle).attr("class","links_via-on");
 										links_via.push(currentlySelected[i]);
 										console.log("adding col " + currentlySelected[i]);
 									}
@@ -774,133 +607,11 @@
 						} // /links_via callback
 					}, // /links_via
 					
-					"bundle": {
-						name: "Create Bundle",
-						callback: function(){
-							// make the bundle, and push it to the array of bundles: 
-							var newBundle = new bundle( bID,currentlySelected );
-							bID++;
-							bundles.push(newBundle);
-							console.log("created bundle #" + newBundle.bundleID + ", which contains columns " + newBundle.bundleCols);
-							// if the bundle row is hidden (ie, this is the first bundle created), show the row
-							var bRow = document.getElementById("bundles");
-							if (bRow.classList.contains("hide-while-empty") ) {
-								$(bRow).removeClass("hide-while-empty");
-							}
-							// spanSize keeps track of how wide the bundle column header should be in the top row,
-							//    in other words, it is a count of how many columns are bundled.
-							var spanSize = 0;
-							// gets the first column of the span, for creating the bundle column header
-							var bStart = currentlySelected.sort()[0];
-							for (i in currentlySelected) {
-								//console.log("bundling column " + currentlySelected[i]);
-								var top = document.getElementById("0,"+currentlySelected[i]);
-								var bottom = document.getElementById("bundledRow,"+currentlySelected[i]);
-								var toMove = top.removeChild(top.childNodes[0]);
-								// Brendan edit: column headers moving down to bundles need to be labeled as so
-								$(toMove).removeClass("column-header").addClass("bundled-column-header");
-								bottom.appendChild(toMove);
-								spanSize++;
-								if ( currentlySelected[i] != bStart ){
-									$(top).addClass("hide-while-empty");
-								}
-							}// /for
-							console.log("bundle starts at col " + bStart + " and spans " + spanSize + " columns");
-							var newHeader = document.getElementById("0,"+bStart);
-							$(newHeader).attr("colspan",spanSize);
-							// Brendan edit: mark this new bundle as a valid column header
-							$(newHeader).addClass("column-header");
-							var temp = document.createElement('div');
-							var stContent = createBundleSubtable(newBundle);
-							temp.innerHTML = stContent;
-							newHeader.appendChild(temp);
-							
-						}// /callback
-					}, // /bundle
+					"bundle": {name: "Create Bundle"},
 					
-					"comment": {
-						// Adds a comment to the Annotation Row
-						// * when finished, this should pop up a lightbox to solicit user input
-						//   including the type of comment (radio selector?) as well as the
-						//   comment text itself.
-						// If there is already a comment/the row is already showing, then just add it.
-						// Otherwise, show the row, then add the comment to the column on which the context
-						//    menu was called.
-						// * NOTE that if multiple columns are selected, it will only add the comment to the 
-						//   single column on which the menu is invoked!
-						name: "Add Comment",
-						callback: function(){
-							var cRow = document.getElementById("annotations");
-							var index = $("th").index(this);
-							var cType = "rdfs:comment"; // in the end, these two fields 
-							var cText = "testComment"; //  shouldn't be hard-coded....
-							// if the row is hidden (ie, this is the first comment added), show the row
-							if (cRow.classList.contains("hide-while-empty") ) {
-								$(cRow).removeClass("hide-while-empty");
-							}
-							var workingCol = document.getElementById("annotationRow,"+index);
-							var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-							var addedRow = workingTable.insertRow(-1);
-							var typeCell = addedRow.insertCell(0);
-							var textCell = addedRow.insertCell(1);
-							typeCell.innerHTML = cType;
-							textCell.innerHTML = cText;
-						}// /callback function
-					},// /addComment
+					"comment": {name: "Add Comment"},
 					
-					"edit Domain Template": {
-						// Adds a comment to the Annotation Row
-						// * when finished, this should pop up a lightbox to solicit user input
-						//   including the type of comment (radio selector?) as well as the
-						//   comment text itself.
-						// If there is already a comment/the row is already showing, then just add it.
-						// Otherwise, show the row, then add the comment to the column on which the context
-						//    menu was called.
-						// * NOTE that if multiple columns are selected, it will only add the comment to the 
-						//   single column on which the menu is invoked!
-						name: "Edit Domain Template",
-						callback: function(){
-							 // Show modal
-							$("#domainTemplateModal" ).dialog({
-								modal: true,
-							    width: 800,
-							    buttons: {
-							    	Ok: function() {
-							        	$( this ).dialog( "close" );
-							        }
-							    }
-							});	
-						}
-					},
-
-					"eg": {
-						name: "Add Canonical Value (eg)",
-						// Like addComment, this allows a user to add a canonical value
-						//    using our conversion:eg. As the above, "egText" should eventually
-						//    be user-specified.
-						// Canonical Values hang out in the annotation row along with comments and
-						//    other annotations.
-						// * NOTE that, like the above, thsi will only add an eg to the column on which
-						//   the context menu was invoked, even if multiple columns are selected!
-						callback: function(){
-							var egRow = document.getElementById("annotations");
-							var index = $("th").index(this);
-							var egType = "conversion:eg"; // in the end, these two fields 
-							var egText = "test_eg"; //  shouldn't be hard-coded....
-							// if the row is hidden (ie, this is the first comment added), show the row
-							if (egRow.classList.contains("hide-while-empty") ) {
-								$(egRow).removeClass("hide-while-empty");
-							}
-							var workingCol = document.getElementById("annotationRow,"+index);
-							var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-							var addedRow = workingTable.insertRow(-1);
-							var typeCell = addedRow.insertCell(0);
-							var textCell = addedRow.insertCell(1);
-							typeCell.innerHTML = egType;
-							textCell.innerHTML = egText;
-						}// /callback function
-					
-					},// /eg
+					"eg": {name: "Add Canonical Value (eg)"},
 					
 					"new-triple": {name: "Forge New Triple"},
 					
@@ -924,33 +635,11 @@
   var file = document.getElementById("the_file").files[0];
   var reader = new FileReader();
   var link_reg = /(http:\/\/|https:\/\/)/i;
-
-  // Show modal
-  $("#data_info_form" ).dialog({
-      modal: true,
-      width: 800,
-      buttons: {
-        Ok: function() {
-          $( this ).dialog( "close" );
-        }
-      }
-    });
   reader.onload = function(file) {
               var content = file.target.result;
               var rows = file.target.result.split(/[\r\n|\n]+/);
               var table = document.createElement('table');
 			  
-			// We have seen some examples of CSV files where there are extraneous trailing columns at the end
-			//    of the file. (eg: data,data,data,,,,,,,,,,) This variable will be used to count and then
-			//    remove them in order to improve the table rendering and hopefully save some time.
-			// * This assumes that the empty column headers to be removed are all at the end of the first row!
-			// These are counted up as the column header row does its thing, and this value is output in console.log()
-			//    once it knows how many extra rows there are, for error checking and so forth.
-			  var extraColumns = 0;
-			  
-		// Generate column groups
-			  var group = document.createElement('colgroup');
-			  var oneCol;
 		// Create subtabled column headers
 			  var thr = document.createElement('tr');
 			  $(thr).attr("class", 'col-selectable');
@@ -959,28 +648,16 @@
 		// Create row for bundled properties
 		// * This is empty at table generation, and hidden by default
 			  var btr = document.createElement('tr');
-			  $(btr).attr("class", 'hide-while-empty');
-			  $(btr).attr("id", 'bundles');
+			  $(btr).attr("style", 'display:none'); 
 		// Create row for annotations (and additional triples
 		// * This row is also empty and hidden at table generation
-		// * This row includes empty tables at creation for adding to later.
 			  var atr = document.createElement('tr');
-			  $(atr).attr("class", 'annotation-row hide-while-empty');
-			  $(atr).attr("id", 'annotations');
-			  //$(atr).attr("style", 'display:none');
-			  var th,btd,atd,annTable;
+			  $(atr).attr("style", 'display:none');
+			  var th,btd,atd;
 			  for (var j = 0; j < numcols; j++){ // i == 0 because this is only concerned with the column headers
-				if ( !tharr[j] ){ // if we have extra columns trailing at the end,
-					extraColumns++;
-				}
-				else{ 
-				// colgroup
-					oneCol = document.createElement('col');
-					$(oneCol).attr("id", "colgroup,"+j);
-					group.appendChild(oneCol);
 				// column header
                     th = document.createElement('th');
-					$(th).attr("class", "ui-widget-content the-context-menu column-header not-bundled");
+					$(th).attr("class", "ui-widget-content the-context-menu");
                     // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
                     $(th).attr("id", '0,'+j);
 					var temp = document.createElement('div');
@@ -991,35 +668,25 @@
 				// bundled column row
 					btd = document.createElement('td');
 					$(btd).attr("id", 'bundledRow,'+j);
-					$(btd).attr("class", 'bundled-row');
+					$(btd).attr("class", 'bundledRow');
 					btr.appendChild(btd);
 				// annotation row
 					atd = document.createElement('td');
 					$(atd).attr("id", 'annotationRow,'+j);
-					//$(atd).attr("class", 'annotationRow');
-					annTable = document.createElement('table')
-					atd.appendChild(annTable);
+					$(atd).attr("class", 'annotationRow');
 					atr.appendChild(atd);
-				}
 			  }//
-			  table.appendChild(group);
 			  table.appendChild(thr);
 			  table.appendChild(btr);
 			  table.appendChild(atr);
-			  numcols = numcols-extraColumns;
-			  console.log("removed " + extraColumns + " extra blank columns");
 			  // Once the header row with subtables has been created,
               //   continue and create the rest of the table. 
 			  // This is actually data from the CSV file!
-			  var maxRows = 20;
-			  if (maxRows > rows.length) {
-			  	maxRows = rows.length;
-			  }
-			  for (var i = 1; i < maxRows; i++){
+			  for (var i = 1; i < rows.length; i++){
                 var tr = document.createElement('tr');
                 var arr = rows[i].split(',');
 				var td;
-                for (var j = 0; j < numcols; j++){
+                for (var j = 0; j < arr.length; j++){
                     td = document.createElement('td');
                     $(td).attr("id", i+','+j);
                   if( link_reg.test(arr[j]) ){ // if the thing from the CSV file is a link
@@ -1049,7 +716,6 @@
 						if( !existsA(currentlySelected,index) ){
 							currentlySelected.push(index);
 						}
-						//$("colgroup,"+index).addClass("selected-col");
 						console.log("selecting col " + index + "....");
 						console.log("currently Selected: " + currentlySelected);
 					});
@@ -1058,7 +724,6 @@
 					$( ui.unselected, this ).each(function() {
 						var index = $( ".col-selectable th").index( this );
 						removeA(currentlySelected, index);
-						//$("colgroup,"+index).removeClass("selected-col");
 						console.log("unselecting col " + index + "....");
 						console.log("currently Selected: " + currentlySelected);
 					});
@@ -1083,156 +748,82 @@
  document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
  document.getElementById('the_file').addEventListener('change', fileInfo, false);
 
-// this function is the callback for the COMMIT ENHANCEMENT button
-$(document).ready(function() {
-    $('#commit_enhancement').click(function() {
-    	$.bbq.pushState({"FileName": window.file_name,"Source":$("#source_info").val(),"DataSet":$("#dataset_info").val(),"annotationMappings": window.a});
-    	AnnotatorModule.queryForEnhancing({}, function(d) { console.log(d); });
-	});
 
-    // Test the getListofOntologies() call
-	AnnotatorModule.getListofOntologies({}, function(d) { 
-		d = $.parseJSON(d);
-		console.log(d);
-		if (d.length > 0) {
-			var dropDown = $("<select></select>").attr("id", "checkboxDropDownOntologies").attr("name", "testCheckboxDropDown").attr("multiple", "multiple");
-			for (var i = 0; i < d.length; i++) {
-				console.log(d[i]);
-				dropDown.append("<option>" + d[i] + "</option>");
-			}
-
-			// Push our dropdown to the DOM
-			$("#theFacets").prepend(dropDown);
-			// Turn it into what we want!
-			$("#checkboxDropDownOntologies").dropdownchecklist({ emptyText: "Select an Ontology ...", width: 250,
-    			onComplete: function(selector) {
-        			var values = "";
-				    for( i=0; i < selector.options.length; i++ ) {
-				        if (selector.options[i].selected && (selector.options[i].value != "")) {
-				            if ( values != "" ) values += ";";
-				            values += selector.options[i].value;
-            			}
-        			}
-	  				$.bbq.pushState({"listOfOntologies": values.split(";")});
-					// Re-query facets
-					$("#ClassTree").empty();
-					$("#PropertyTree").empty();
-
-					// Call patrice's new silly init call thingy
-					AnnotatorModule.initOWLModel({}, function(d) { 
-						// Robin code for drag and drop archived: {"plugins": ["dnd"], "dnd": dnd_prop}
-						console.log(d);
-						SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes");
-	  					SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjectPropertyHM", "objProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#annotatorPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes");	
-					});
-    			}
-        	});
-		}
-    });
-});
+	// this function is the callback for the COMMIT ENHANCEMENT button
+	$(document).ready(function() {
+        $('#commit_enhancement').click(function() {
+        	$.bbq.pushState({"FileName": window.file_name,"Source":$("#source_info").val(),"DataSet":$("#dataset_info").val(),"annotationMappings": window.a});
+        	AnnotatorModule.queryForEnhancing({},
+        			function(d) { console.log(d); });
+    })});
 </script>
 
 </div>
 
 <div style="margin-left:70%; width:30%;">
-<div id="theFacets">
+<div>
 
  <table cellpadding="0"; cellspacing="0">
 
 	  <tr>
-	        <td>
-		         <span class="ontology-selector" title="Right click to add/remove ontologies from this list">Classes</span>
-		          <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
-				   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
-				   </div>
-		          </div>
-			</td>
-      </tr>
-      <tr>
-      	<td>
-	        Description
-	        <div id="description_classTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="ClassBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
+        <td>
+        Description
+        <div id="description_classTree" style="  border:1px solid #111111; overFlow: auto; " >
+        <div id="ClassBox" style="width:100px;height:200px;">
+        </div>
+        </div>
         </td>
+        <td>
+         ClassTree
+          <div id="description_class" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
+		   <div id="ClassTree" class="hierarchy" style="width:100%;height:200px;">
+		   </div>
+          </div>
+		</td>
       </tr>
+      
       <tr>
+       <td>
+       Description
+        <div id="description_PropertyTree" style="  border:1px solid #111111; overFlow: auto; " >
+        <div id="PropBox" style="width:100px;height:200px;"> 
+        </div>
+        </div>
+        </td>
+
           <td>
-	           Object Properties
-	           <div id="description_prop" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
-				<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
-				</div>
-				</div>
+           PropertyTree        
+           <div id="description_prop" class="facet" style="  border:1px solid #111111; overFlow: auto; " >
+			<div id="PropertyTree" class="hierarchy" style="width:100%;height:200px;">
+			</div>
+
+			</div>
 		  </td>
       </tr>
-      <tr>
-	      	<td>
-		       Description
-		        <div id="description_PropertyTree" style="  border:1px solid #111111; overFlow: auto; " >
-		        <div id="PropBox" style="width:100px;height:30px;"> 
-		        </div>
-		        </div>
-	        </td>
-      </tr>
+     
      <tr>
-     	<td>
-          	Data Properties
-          	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="dataPropertiesTree" class="demo2" style="width:120%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="dataPropertiesBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
+        <td>
+        Description
+        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
+        <div id="DataTypeBox" style="width:100px;height:200px;">
+        null
+        </div>
+        </div>
         </td>
-     </tr>
-      <tr>
-     	<td>
-          	Annotation Properties     
-          	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
-			<div id="annotationPropertiesTree" class="demo2" style="width:120%;height:200px;">
-			</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="annotationPropertiesBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
-     </tr>
-      <tr>
-     	<td>
-          	Datatypes 
-          	<div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
+        
+          <td>
+           DataTypeTree       
+           <div id="description2" style="  border:1px solid #111111; overFlow: auto; " >
 			<div id="DataTypeTree" class="demo2" style="width:120%;height:200px;">
+
 			</div>
+
 			</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-	        Description
-	        <div id="description_DataTypeTree" style="  border:1px solid #111111; overFlow: auto; " >
-	        <div id="DataTypeBox" style="width:100px;height:30px;">
-	        </div>
-	        </div>
-        </td>
+		  </td>
      </tr>
+	
     </table>
+
 </div>
 </div>
 <div style="clear:both"></div>
@@ -1245,14 +836,14 @@ $(document).ready(function() {
 			//    hard-coded and then passed into the tree when it is rendered below.
 			// From the documentation:
 			//   data.o - the object being dragged
-			//   data.r - the drop target(node)
+			//   data.r - the drop target
 			// * The drop target will be the node in which the mouse button
 			//   is released, NOT the node in which the object text will appear!
             var dnd = {
             	
    		                "drop_target" : "#list th",
    		                "drop_finish" : function (data) {
-							$(data.r).find(".droppable-class").css("color","black");
+							$(data.r).css("color","black");
 							//add the node name to the header, and get the parent node "id"
 							// p = node id of the datathing from the JS tree
 							var p = data.o.attr("hierarchy_id");
@@ -1295,8 +886,7 @@ $(document).ready(function() {
             // This is what actually generates the class tree
 			// * Note that "dnd" is passed in as a parameter from above
 			//   to specify the drag-and-drop functionality.
-            //SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryAnnotatorClassHM", null, {"plugins": ["dnd"], "dnd": dnd});     
-			//SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
+            SemantEcoUI.HierarchicalFacet.create($("div#ClassTree")[0], AnnotatorModule, "queryAnnotatorClassHM", "annotatorClasses", {"plugins": ["dnd"], "dnd": dnd});     
 
 			// drag and drop PROPERTIES
 			// As above, these are the parameters to enable this function for the 
@@ -1351,10 +941,10 @@ $(document).ready(function() {
 			
 			// Actually creates the hierarchical facet with the above variable
 			//    passed as parameters for the drag-and-drop functionality.
-			//SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
+			SemantEcoUI.HierarchicalFacet.create($("div#PropertyTree")[0], AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
 
 			
-			// not sure what this is??? toString for ... something.
+			// not sure what this is??? 
         	function toString(obj, level) {
 				if(typeof(level)==='undefined') level = 0;
 					var ret = "";
@@ -1374,23 +964,18 @@ $(document).ready(function() {
             }// /toString
 
 		$(window).bind("rendered_tree.semanteco", function(e, div) {
-			$(div).addClass("jstree-default");
-			$(div).bind("select_node.jstree", function (NODE, REF_NODE) {
-		        var a = $.jstree._focused().get_selected();
-		        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
-		        var comments = lookup[a.attr("hierarchy_id")].rawData.comment;
-		        console.log(a);
-		        console.log(comments)
-		        $("#ClassBox").html("<pre>"+toString(comments,0)+"</pre>");
-	      	});
-    	});
+		$(div).addClass("jstree-default");
+		$(div).bind("select_node.jstree", function (NODE, REF_NODE) {
+        var a = $.jstree._focused().get_selected();
+      //alert(a);
+        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
+      //alert(lookup);
+        var axioms_contents = lookup[a.attr("hierarchy_id")].rawData.axioms;
+      //alert(axioms_contents);
+        $("#ClassBox").html("<pre>"+toString(axioms_contents,0)+"</pre>");
+      });
+    });
 </script>
-
-	<!-- Brendan Edit, creating a modal to edit the Domain Template -->
-	<div id="domainTemplateModal" class="hidden">
-		<p>What would you like the Domain Template to be?</p>
-		<input type="text" placeholder="e.g. Measurement" id="domainTemplateInput" />
-	</div>
         		
 
 </body>
