@@ -1117,15 +1117,18 @@ $(document).ready(function() {
 					// Re-query facets
 					$("#ClassTree").empty();
 					$("#PropertyTree").empty();
+					$("#dataPropertiesTree").empty();
+					$("#annotationPropertiesTree").empty();
+					$("#DataTypeTree").empty();
 
 					// Call patrice's new silly init call thingy
 					AnnotatorModule.initOWLModel({}, function(d) { 
 						// Robin code for drag and drop archived: {"plugins": ["dnd"], "dnd": dnd_prop}
 						console.log(d);
 						SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes");
-	  					SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjectPropertyHM", "objProperties");
+	  					SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties");
 	  					SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties");
-	  					SemantEcoUI.HierarchicalFacet.create("#annotatorPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties");
+	  					SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties");
 	  					SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes");	
 					});
     			}
