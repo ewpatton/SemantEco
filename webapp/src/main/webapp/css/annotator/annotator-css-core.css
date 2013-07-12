@@ -4,6 +4,14 @@
 		background: white;
 	}
 
+	div#header {
+		background-color: rgba(0, 33, 204, 0.61);
+		padding-top: 5px;
+		padding-bottom: 5px;
+		text-align: left;
+		height: 50px;
+	}
+
 	/* Re adding old css stuff back */
 	.fileTable table {
       max-width: 100%;
@@ -180,4 +188,16 @@
     #ontology-dropdown {
     	margin-bottom: 10px;
 		text-align: center;
+    }
+
+    input[type='button'], input[type='submit'] {
+    	width: auto;
+    }
+
+    #header ul li {
+    	float: left;
+    }
+
+    img#header-image {
+    	float: left;
     }

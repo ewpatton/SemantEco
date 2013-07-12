@@ -1,174 +1,4 @@
 // Brendan Edit: Move the scripts to a core file
-//higher js cut
-// Tooltip function
-// This just enables the mouseover tooltips.
-$(function () {
-    $(document).tooltip();
-});
-
-// This is the jsTree for DATA TYPES
-// To help clarify plugins:
-//   "dnd" means "drag-and-drop"
-//   "crrm" means "create, rename, remove and move" [nodes]
-// They all have documentation on the jsTree main page
-
-/*
-	$(function() {
-    $("#DataTypeTree").jstree({
-    	
-    	"themes" : {
-				 "theme" : "apple",
-				 "dots"  : true,
-				 "icons" : true,
-	 	         "url": "../../js/jstree/themes/apple/style.css"
-			},// /themes
-    	
-        "json_data": {
-            "data": [
-                {
-                    "attr": { "id": "" },
-                    "data": "[ Data Types ]",
-                    "state": "open",
-                    "children": [
-                        {
-                            "data": "xsd:string",
-                            "attr": { "id": "1_datatype" }
-                        },
-                        {
-                            "data": "xsd:boolean",
-                            "attr": { "id": "2_datatype" }
-                        },
-                        {
-                            "data": "xsd:decimal",
-                            "attr": { "id": "3_datatype" }
-                        },
-                        {
-                            "data": "xsd:float",
-                            "attr": { "id": "4_datatype" }
-                        },
-                        {
-                            "data": "xsd:double",
-                            "attr": { "id": "5_datatype" }
-                        },
-                        {
-                            "data": "xsd:integer",
-                            "attr": { "id": "6_datatype" }
-                        },
-                        {
-                            "data": "xsd:anyURI",
-                            "attr": { "id": "7_datatype" }
-                        }
-                    ]
-                }
-            ]
-        }, // /json_data
-        
-		// drag and drop for DATA TYPES 
-		// From the documentation:
-		//   data.o - the object being dragged
-		//   data.r - the drop target
-		// * The drop target will be the node in which the mouse button
-		//   is released, NOT the node in which the object text will appear!
-        "dnd" : {
-            "drop_target" : "#list td",
-            "drop_finish" : function (data) {
-               	$(data.r).css("color","black");
-            //add the node name to the header, and get the parent node "id"
-				// p = node id of the datathing from the JS tree
-                var p = data.o.attr("id");
-				// q = text in the datathing from the JS tree,
-				//     essentially, the data type name itself
-                var q = $(data.o).text();
-				
-				// i = id of the destination cell where the user drops the thing dragged from the JS tree
-                var i = data.r.attr("id");
-				// r = the text of that cell
-                var r = $(data.r).text();
-				
-				// cn = column number
-                var cn = i.split(',')[1];
-				
-				$("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
-                
-			// window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
-                
-			// var args = {};
-			// args[r] = p;
-           
-				function keySearch(dict,key) {
-					for (var i in dict) if (key in dict[i]) 
-						return dict[i][key];
-					return null;                               		            
-				}
-			// These are for the row-adding function, if there is no propertyRow or classRow
-			// * This is currently not in use (???)
-				var am = window.a
-				var kg = keySearch(am,r);
-				var args = {};
-				args[r]  = {"DataType":p};
-          
-				if (kg!=null){   		            	
-					kg["DataType"] = p;   		            
-				}            
-				else{
-					am.push(args);
-				};
-            }// /dropfinish function
-        }, // /dnd
-        
-        "crrm" : {
-            "move" : {
-                "check_move" : function (data) {
-                    if(data.r.attr("id") == "") {
-                        
-                    }
-                }
-            }
-        },
-        "plugins": ["themes", "json_data", "ui", "dnd", "crrm"]
-	    });// /jsTree
-	});// /jsTree function
-	*/
-// ** NOT CURRENTLY IN USE ** 
-// ( drag-and-drop is currently handled via a jsTree plugin, NOT jQuery UI )
-// Responsible for draggable and droppable functions for classes
-//   and properties. They are separate from each other, to assist
-//   with target highlighting.
-$(function () {
-    // Draggable and Droppable for PROPERTIES
-    $(".draggable-prop").draggable(
-        /*{helper: function( event ) {
-					return $( "<div style=\"color:#aaa\">property!</div>");
-				}// /helper
-			}*/
-    ); // /draggable-prop
-    $(".droppable-prop").droppable({
-        accept: ".draggable-prop",
-        activeClass: "ui-state-hover",
-        drop: function (event, ui) {
-            $(this)
-                .addClass("ui-state-highlight");
-        } // /drop
-    }); // /droppable-prop
-
-    // Draggable and Droppable for CLASSES
-    $(".draggable-class").draggable(
-        /*{helper: function( event ) {
-					return $( "<div style=\"color:#aaa\">class!</div>");
-				}// /helper
-			}*/
-    ); // /draggable-class
-    $(".droppable-class").droppable({
-        accept: ".draggable-class",
-        activeClass: "ui-state-hover",
-        drop: function (event, ui) {
-            $(this)
-                .addClass("ui-state-highlight");
-        } // /drop function
-    }); // /droppable-class
-}); // /all draggable and droppable functions
-
-// mid js cut
 
 function fileInfo(e) {
     var file = e.target.files[0];
@@ -234,7 +64,7 @@ $(function () {
 function createSubtable(text, colIndex) {
     var theader = '<table class="marginOverride">\n';
     var tbody = '';
-    tbody += '<tr><td id=nameRow,' + colIndex + '><p title=\"' + text + '\" class="ellipses marginOverride">' + text + '</p></td></tr>\n';
+    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[property]</td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[class]</td></tr>\n';
     var tfooter = '</table>';
@@ -288,7 +118,7 @@ function createBundleSubtable(theBundle) {
     validHeadersToBundle.each(function (index) {
         // Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
         //if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
-        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).attr("title") + ")</option>"
+        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).text() + ")</option>"
     });
     tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
@@ -505,6 +335,7 @@ $(function () {
             "bundle": {
                 name: "Create Bundle",
                 callback: function () {
+                	console.log(currentlySelected);
                     // make the bundle, and push it to the array of bundles: 
                     var newBundle = new bundle(bID, currentlySelected);
                     bID++;
@@ -515,20 +346,65 @@ $(function () {
                     if (bRow.classList.contains("hide-while-empty")) {
                         $(bRow).removeClass("hide-while-empty");
                     }
+
                     // spanSize keeps track of how wide the bundle column header should be in the top row,
                     //    in other words, it is a count of how many columns are bundled.
                     var spanSize = 0;
                     // gets the first column of the span, for creating the bundle column header
                     var bStart = currentlySelected.sort()[0];
                     for (i in currentlySelected) {
+                    	// Brendan Edit: check for already moved items
+                    	var allBundled = $("td.bundled-row").filter(function(index) { return $(this).children().length > 0; });
+                    
+	                    // Build a list of all possible IDs selected via colspan
+	                    var selectedCell = $("th#0\\," + currentlySelected[i]);
+	                    var idArray = Array();
+	                    for (var j = 0; j < selectedCell.attr("colspan"); j++) {
+	                    	idArray.push(bStart + j);
+	                    }
+	                    // Look at all bundles, if their id matches any selected ids, we need to move them down
+	                    allBundled.each(function (index) {
+	                    	if ($.inArray(parseInt($(this).attr("id").split(",")[1], 10), idArray) != -1 ) {
+	                    		// Move down!
+	                    		if (!$("#bundles-extended").is(":visible")) {
+	                    			// Brendan edit: expose a extended-bundles row (yuck)
+	                    			$("#bundles-extended").removeClass("hide-while-empty");
+	                    		}
+	                    		$($(this).children()[0]).appendTo("td#bundledRow-extended\\," + $(this).attr("id").split(",")[1]);
+	                    		console.log("Moved down to extended:" + $(this).attr("id"));
+	                    	}
+	                    });
+
                         //console.log("bundling column " + currentlySelected[i]);
                         var top = document.getElementById("0," + currentlySelected[i]);
+                        console.log(top);
                         var bottom = document.getElementById("bundledRow," + currentlySelected[i]);
-                        var toMove = top.removeChild(top.childNodes[0]);
+                        console.log(bottom);
+
+                        // Dont try to move what was already moved (happens if we select a hidden column somehow)
+                        if (top.childNodes.length > 0) {
+                        	var toMove = top.removeChild(top.childNodes[0]);
+                        	console.log(toMove);
+                    	}
+                        
+
+                        // Pass down the colspan to children
+                        if ($(top).attr("colspan") != undefined) {
+                        	$(bottom).attr("colspan", $(top).attr("colspan"));
+                        }
+						
                         // Brendan edit: column headers moving down to bundles need to be labeled as so
                         $(toMove).removeClass("column-header").addClass("bundled-column-header");
+
                         bottom.appendChild(toMove);
-                        spanSize++;
+                        // Hand spansize of the item, dont assume is it one
+                        if (selectedCell.attr("colspan") != undefined) {
+                        	spanSize += parseInt(selectedCell.attr("colspan"), 10);
+                        }
+                        else {
+                        	spanSize++;
+                        }
+                        console.log(currentlySelected[i], bStart);
                         if (currentlySelected[i] != bStart) {
                             $(top).addClass("hide-while-empty");
                         }
@@ -542,7 +418,6 @@ $(function () {
                     var stContent = createBundleSubtable(newBundle);
                     temp.innerHTML = stContent;
                     newHeader.appendChild(temp);
-
                 } // /callback
             }, // /bundle
 
@@ -723,6 +598,11 @@ function handleFileSelect(event) {
         var btr = document.createElement('tr');
         $(btr).attr("class", 'hide-while-empty');
         $(btr).attr("id", 'bundles');
+        // Create row for extended bundled properties
+        // * This is empty at table generation, and hidden by default
+        var btrx = document.createElement('tr');
+        $(btrx).attr("class", 'hide-while-empty');
+        $(btrx).attr("id", 'bundles-extended');
         // Create row for annotations (and additional triples
         // * This row is also empty and hidden at table generation
         // * This row includes empty tables at creation for adding to later.
@@ -754,6 +634,11 @@ function handleFileSelect(event) {
                 $(btd).attr("id", 'bundledRow,' + j);
                 $(btd).attr("class", 'bundled-row');
                 btr.appendChild(btd);
+                // bundled column row
+                btdx = document.createElement('td');
+                $(btdx).attr("id", 'bundledRow-extended,' + j);
+                $(btdx).attr("class", 'bundled-row-extended');
+                btrx.appendChild(btdx);
                 // annotation row
                 atd = document.createElement('td');
                 $(atd).attr("id", 'annotationRow,' + j);
@@ -766,6 +651,7 @@ function handleFileSelect(event) {
         table.appendChild(group);
         table.appendChild(thr);
         table.appendChild(btr);
+        table.appendChild(btrx);
         table.appendChild(atr);
         numcols = numcols - extraColumns;
         console.log("removed " + extraColumns + " extra blank columns");
@@ -845,11 +731,109 @@ function handleFileSelect(event) {
     $('#data_info_form').removeClass("hidden");
 } // /handleFileSelect
 
-document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
-document.getElementById('the_file').addEventListener('change', fileInfo, false);
 
-// this function is the callback for the COMMIT ENHANCEMENT button
+// Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
+var dnd_classes = {
+    "drop_target": "#list th, #list th tr, #list th tr td, #list th tr td p",
+    "drop_finish": function (data) {
+        var targetID;
+        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
+            targetID = data.r.attr("id").split(",")[1];
+        } else {
+            // get the header of this element
+            var parentHeader = data.r.parents("th:eq(0)");
+            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
+               targetID = parentHeader.attr("id").split(",")[1];
+            }
+        }
+        // Set the value now that we have done some validation (some...)
+        $("[id='classRow," + targetID + "']").empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + $.trim($(data.o).text()) + "</p>");
+    }
+};
+
+// Arguments for Drag and Drop for property facets ( this applies to the jstree library. see: jstree.com)
+var dnd_properties = {
+    "drop_target": "#list th, #list th tr, #list th tr td, #list th tr td p",
+    "drop_finish": function (data) {
+        var targetID;
+        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
+            targetID = data.r.attr("id").split(",")[1];
+        } else {
+            // get the header of this element
+            var parentHeader = data.r.parents("th:eq(0)");
+            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
+               targetID = parentHeader.attr("id").split(",")[1];
+            }
+        }
+        // Set the value now that we have done some validation (some...)
+        $("[id='propertyRow," + targetID + "']").empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + $.trim($(data.o).text()) + "</p>");
+    }
+};
+
+
+// Extract a string from the jsTree (this is silly, re-write code so this is not needed)
+function toString(obj, level) {
+    if (typeof (level) === 'undefined') level = 0;
+    var ret = "";
+    if (typeof obj == "object") {
+        ret += "\n";
+        // for (var j = 0; j < level; ++j) ret += " ";
+        // ret += "\u007B\n"; // left curly brace
+        for (i in obj)
+            if (!$.isEmptyObject(obj[i])) {
+                for (var j = 0; j < level; ++j) ret += " ";
+                ret += toString(i) + ": " + toString(obj[i], level + 2) + "\n" + "\n";
+            }
+    } else {
+        ret += obj;
+    }
+    return ret;
+}
+
+//  Extracting comments, putting them in the comment box for a facet jsTree
+$(window).bind("rendered_tree.semanteco", function (e, div) {
+    $(div).addClass("jstree-default");
+    $(div).bind("select_node.jstree", function (NODE, REF_NODE) {
+        var a = $.jstree._focused().get_selected();
+        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
+        var comments = lookup[a.attr("hierarchy_id")].rawData.comment;
+        console.log(a);
+        console.log(comments)
+        $("#ClassBox").html("<pre>" + toString(comments, 0) + "</pre>");
+    });
+});
+
+// =====================================================================
+// ====================== On Document Ready Calls ======================
+// =====================================================================
 $(document).ready(function () {
+
+    // Check on mouseenter if ellipses are being used, qtip if they are (works on dynamicly created qtips)
+    $('body').on('mouseenter' ,'.ellipses', function(e) {
+        if (this.offsetWidth < this.scrollWidth) {
+            $(this).qtip({
+                content: {
+                    text: $(this).text()
+                },
+                overwrite: false, // Don't overwrite tooltips already bound
+                show: {
+                    event: e.type, // Use the same event type as above
+                    ready: true // Show immediately - important!
+                },
+                position: {
+                    my: 'bottom center',  // Position my top left...
+                    at: 'top center', // at the bottom right of...
+                    target: $(this) // my target
+                }
+            });
+        } else {
+            if (this.offsetWidth >= this.scrollWidth) {
+                $(this).qtip('hide'); 
+            }
+        }
+    });
+
+    // Bind various click and form event listeners once the DOM is good to go
     $('#commit_enhancement').click(function () {
         $.bbq.pushState({
             "FileName": window.file_name,
@@ -862,14 +846,38 @@ $(document).ready(function () {
         });
     });
 
-    // Test the getListofOntologies() call
+    // TODO: rewrite these in jquery syntax
+    //document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
+    document.getElementById('the_file').addEventListener('change', fileInfo, false);
+
+    // Import File button shows modal for import
+    $('#menu-import-file').click(function () {
+        $("#fileDialogWrapper").dialog({
+            modal: true,
+            width: 800,
+            buttons: {
+                Import: function () {
+                    handleFileSelect();
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+    // Enable sortable facets
+    $("div#facets").sortable({
+        axis: "y",
+        items: "table",
+        handle: "th",
+        placeholder: "ui-state-highlight"
+    }).find("th").disableSelection();
+
+    // getListofOntologies() call, builds the dropdown and then fills the facets
     AnnotatorModule.getListofOntologies({}, function (d) {
         d = $.parseJSON(d);
-        console.log(d);
         if (d.length > 0) {
             var dropDown = $("<select></select>").attr("id", "checkboxDropDownOntologies").attr("name", "testCheckboxDropDown").attr("multiple", "multiple");
             for (var i = 0; i < d.length; i++) {
-                console.log(d[i]);
                 dropDown.append("<option>" + d[i] + "</option>");
             }
 
@@ -897,67 +905,223 @@ $(document).ready(function () {
                     $("#annotationPropertiesTree").empty();
                     $("#DataTypeTree").empty();
 
-                    // Call patrice's new silly init call thingy
+                    // Call patrice's new silly init call thingy ( :D )
                     AnnotatorModule.initOWLModel({}, function (d) {
-                        // Robin code for drag and drop archived: {"plugins": ["dnd"], "dnd": dnd_prop}
-                        console.log(d);
                         SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
-                            "plugins": ["dnd"],
-                            "dnd": dnd_prop
+                            "dnd": dnd_classes,
+                            "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
-                            "plugins": ["dnd"],
-                            "dnd": dnd_prop
+                            "dnd": dnd_properties,
+                            "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
-                            "plugins": ["dnd"],
-                            "dnd": dnd_prop
+                            "dnd": dnd_properties,
+                            "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
-                            "plugins": ["dnd"],
-                            "dnd": dnd_prop
+                            "dnd": dnd_properties,
+                            "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
-                            "plugins": ["dnd"],
-                            "dnd": dnd_prop
+                            "dnd": dnd_classes,
+                            "plugins": ["dnd"]
                         });
                     });
                 }
             });
         }
     });
-
-    // make facets sortable
-    $("div#facets").sortable({
-        axis: "y",
-        items: "table",
-        handle: "th",
-        placeholder: "ui-state-highlight"
-    }).find("th").disableSelection();
 });
 
-// lower js cut
+// ==========================================
+// = HERE LIES THE CODE ARCHIVE / GRAVEYARD =
+// =           TRESSPASSERS BEWARE          =
+// ==========================================
 
-// drag and drop CLASSES
-// These are the parameters for this function for the hierarchical facet
-//    tree for the classes in the imported ontology(s). This variable is 
-//    hard-coded and then passed into the tree when it is rendered below.
-// From the documentation:
-//   data.o - the object being dragged
-//   data.r - the drop target(node)
-// * The drop target will be the node in which the mouse button
-//   is released, NOT the node in which the object text will appear!
+
+
+// Tooltip function
+// This just enables the mouseover tooltips.
+//$(function () {
+//    $(document).tooltip();
+//});
+
+// This is the jsTree for DATA TYPES
+// To help clarify plugins:
+//   "dnd" means "drag-and-drop"
+//   "crrm" means "create, rename, remove and move" [nodes]
+// They all have documentation on the jsTree main page
+
+/*
+    $(function() {
+    $("#DataTypeTree").jstree({
+        
+        "themes" : {
+                 "theme" : "apple",
+                 "dots"  : true,
+                 "icons" : true,
+                 "url": "../../js/jstree/themes/apple/style.css"
+            },// /themes
+        
+        "json_data": {
+            "data": [
+                {
+                    "attr": { "id": "" },
+                    "data": "[ Data Types ]",
+                    "state": "open",
+                    "children": [
+                        {
+                            "data": "xsd:string",
+                            "attr": { "id": "1_datatype" }
+                        },
+                        {
+                            "data": "xsd:boolean",
+                            "attr": { "id": "2_datatype" }
+                        },
+                        {
+                            "data": "xsd:decimal",
+                            "attr": { "id": "3_datatype" }
+                        },
+                        {
+                            "data": "xsd:float",
+                            "attr": { "id": "4_datatype" }
+                        },
+                        {
+                            "data": "xsd:double",
+                            "attr": { "id": "5_datatype" }
+                        },
+                        {
+                            "data": "xsd:integer",
+                            "attr": { "id": "6_datatype" }
+                        },
+                        {
+                            "data": "xsd:anyURI",
+                            "attr": { "id": "7_datatype" }
+                        }
+                    ]
+                }
+            ]
+        }, // /json_data
+        
+        // drag and drop for DATA TYPES 
+        // From the documentation:
+        //   data.o - the object being dragged
+        //   data.r - the drop target
+        // * The drop target will be the node in which the mouse button
+        //   is released, NOT the node in which the object text will appear!
+        "dnd" : {
+            "drop_target" : "#list td",
+            "drop_finish" : function (data) {
+                $(data.r).css("color","black");
+            //add the node name to the header, and get the parent node "id"
+                // p = node id of the datathing from the JS tree
+                var p = data.o.attr("id");
+                // q = text in the datathing from the JS tree,
+                //     essentially, the data type name itself
+                var q = $(data.o).text();
+                
+                // i = id of the destination cell where the user drops the thing dragged from the JS tree
+                var i = data.r.attr("id");
+                // r = the text of that cell
+                var r = $(data.r).text();
+                
+                // cn = column number
+                var cn = i.split(',')[1];
+                
+                $("[id='classRow,"+cn+"']").text(q.replace(/^\s+|\s+$/g,''));
+                
+            // window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
+                
+            // var args = {};
+            // args[r] = p;
+           
+                function keySearch(dict,key) {
+                    for (var i in dict) if (key in dict[i]) 
+                        return dict[i][key];
+                    return null;                                                
+                }
+            // These are for the row-adding function, if there is no propertyRow or classRow
+            // * This is currently not in use (???)
+                var am = window.a
+                var kg = keySearch(am,r);
+                var args = {};
+                args[r]  = {"DataType":p};
+          
+                if (kg!=null){                          
+                    kg["DataType"] = p;                     
+                }            
+                else{
+                    am.push(args);
+                };
+            }// /dropfinish function
+        }, // /dnd
+        
+        "crrm" : {
+            "move" : {
+                "check_move" : function (data) {
+                    if(data.r.attr("id") == "") {
+                        
+                    }
+                }
+            }
+        },
+        "plugins": ["themes", "json_data", "ui", "dnd", "crrm"]
+        });// /jsTree
+    });// /jsTree function
+    */
+// ** NOT CURRENTLY IN USE ** 
+// ( drag-and-drop is currently handled via a jsTree plugin, NOT jQuery UI )
+// Responsible for draggable and droppable functions for classes
+//   and properties. They are separate from each other, to assist
+//   with target highlighting.
+/*
+$(function () {
+    // Draggable and Droppable for PROPERTIES
+    $(".draggable-prop").draggable(
+        {helper: function( event ) {
+                    return $( "<div style=\"color:#aaa\">property!</div>");
+                }// /helper
+            }
+    ); // /draggable-prop
+    $(".droppable-prop").droppable({
+        accept: ".draggable-prop",
+        activeClass: "ui-state-hover",
+        drop: function (event, ui) {
+            $(this)
+                .addClass("ui-state-highlight");
+        } // /drop
+    }); // /droppable-prop
+
+    // Draggable and Droppable for CLASSES
+    $(".draggable-class").draggable(
+        {helper: function( event ) {
+                    return $( "<div style=\"color:#aaa\">class!</div>");
+                }// /helper
+            }
+    ); // /draggable-class
+    $(".droppable-class").droppable({
+        accept: ".draggable-class",
+        activeClass: "ui-state-hover",
+        drop: function (event, ui) {
+            $(this)
+                .addClass("ui-state-highlight");
+        } // /drop function
+    }); // /droppable-class
+}); // /all draggable and droppable functions
+
+// archive of robins old drag and drop code for js tree
 var dnd = {
 
     "drop_target": "#list th",
     "drop_finish": function (data) {
-        $(data.r).find(".droppable-class").css("color", "black");
+        console.log("Drag: Finished | " + data);
         //add the node name to the header, and get the parent node "id"
         // p = node id of the datathing from the JS tree
         var p = data.o.attr("hierarchy_id");
         // q = text in the datathing from the JS tree,
         //     essentially, the data type name itself
-        var q = $(data.o).text().split(/\s+/)[1];
+        var q = $(data.o).text();
         // i = id of the destination cell where the user drops the thing dragged from the JS tree
         var i = data.r.attr("id");
         // r = the text of that cell
@@ -965,7 +1129,8 @@ var dnd = {
         // cn = column number
         var cn = i.split(',')[1];
 
-        $("[id='classRow," + cn + "']").text(q.replace(/^\s+|\s+$/g, ''));
+        $("[id='classRow," + cn + "']").empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + $.trim(q) + "</p>");
+        //$("[id='classRow," + cn + "']").text(q.replace(/^\s+|\s+$/g, ''));
 
         //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
 
@@ -993,98 +1158,5 @@ var dnd = {
         };
     } // /drop finish
 };
-// This is what actually generates the class tree
-// * Note that "dnd" is passed in as a parameter from above
-//   to specify the drag-and-drop functionality.
-//SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryAnnotatorClassHM", null, {"plugins": ["dnd"], "dnd": dnd});     
-//SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "annotatorClasses");
 
-// drag and drop PROPERTIES
-// As above, these are the parameters to enable this function for the 
-//    hierarchical facet containing the properties from the imported 
-//    ontolgy/ontologies(?). 
-// From the documentation:
-//   data.o - the object being dragged
-// * The drop target will be the node in which the mouse button
-//   data.r - the drop target
-//   is released, NOT the node in which the object text will appear!
-var dnd_prop = {
-    "drop_target": "#list th",
-    "drop_finish": function (data) {
-        $(data.r).css("color", "black");
-        //add the node name to the header, and get the parent node "id"
-        // p = node id of the datathing from the JS tree
-        var p = data.o.attr("hierarchy_id");
-        // q = text in the datathing from the JS tree,
-        //     essentially, the data type name itself
-        var q = $(data.o).text().split(/\s+/)[1];
-        // i = id of the destination cell where the user drops the thing dragged from the JS tree
-        var i = data.r.attr("id");
-        // r = the text of that cell
-        var r = $(data.r).text();
-        // cn = column number
-        var cn = i.split(',')[1];
-
-        $("[id='propertyRow," + cn + "']").text(q.replace(/^\s+|\s+$/g, ''));
-
-        //  window.annotationMappings = {"RangeClass":[{"classname":"url"}], "Property":[{"propertyname": "url"}]};
-
-        function keySearch(dict, key) {
-            for (var i in dict)
-                if (key in dict[i])
-                    return dict[i][key];
-            return null;
-        } // /keySearch
-
-        // these may no longer be in use?
-        var am = window.a;
-        var kg = keySearch(am, r);
-        var args = {};
-        args[r] = {
-            "Property": p
-        };
-
-        if (kg != null) {
-            kg["Property"] = p;
-        } else {
-            am.push(args);
-        };
-    } // /dropfinish
-}; // /dnd_prop
-
-// Actually creates the hierarchical facet with the above variable
-//    passed as parameters for the drag-and-drop functionality.
-//SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryAnnotatorPropertyHM", "annotatorProperties", {"plugins": ["dnd"], "dnd": dnd_prop});
-
-
-// not sure what this is??? toString for ... something.
-
-function toString(obj, level) {
-    if (typeof (level) === 'undefined') level = 0;
-    var ret = "";
-    if (typeof obj == "object") {
-        ret += "\n";
-        // for (var j = 0; j < level; ++j) ret += " ";
-        // ret += "\u007B\n"; // left curly brace
-        for (i in obj)
-            if (!$.isEmptyObject(obj[i])) {
-                for (var j = 0; j < level; ++j) ret += " ";
-                ret += toString(i) + ": " + toString(obj[i], level + 2) + "\n" + "\n";
-            }
-    } else {
-        ret += obj;
-    }
-    return ret;
-} // /toString
-
-$(window).bind("rendered_tree.semanteco", function (e, div) {
-    $(div).addClass("jstree-default");
-    $(div).bind("select_node.jstree", function (NODE, REF_NODE) {
-        var a = $.jstree._focused().get_selected();
-        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
-        var comments = lookup[a.attr("hierarchy_id")].rawData.comment;
-        console.log(a);
-        console.log(comments)
-        $("#ClassBox").html("<pre>" + toString(comments, 0) + "</pre>");
-    });
-});
+*/

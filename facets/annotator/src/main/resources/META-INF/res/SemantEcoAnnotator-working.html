@@ -16,23 +16,29 @@
 	    <link rel="stylesheet" type="text/css" href="../../css/dropdownchecklist/ui.dropdownchecklist.themeroller.css" />
 	    <link rel="stylesheet" type="text/css" href="../../js/jqplot/jquery.jqplot.min.css" />
 	    <link rel="stylesheet" type="text/css" href="../../css/annotator/annotator-css-core.css" />
+	    <link rel="stylesheet" type="text/css" href="//qtip2.com/v/stable/jquery.qtip.min.css" />
 	</head>
 	<body>
 		<div id="header">
 			<div class="header-text">
-				<img src="patrice_banner4.jpg" alt="SemantAnnotator" />
+				<img id="header-image" src="banner_bea_edit_01.png" alt="SemantAnnotator" />
+				<div id="header-menu">
+					<ul>
+						<li><input id="menu-import-file" type="button" value="Import File" class="button-width-override" /></li>
+						<li><input id="menu-commit-enhancement" type="button" value="Commit Enhancements" class="button-width-override" /></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 		<div id="content" style="min-height: 0%; padding-top:0px; margin-top: 25px;">
 			<div id="display">
-				<div id="fileDialogWrapper">
+				<div id="fileDialogWrapper" class="hidden">
 					<p>To begin, select a CSV file to import</p>
 					<form id="the_form" onSubmit="return false">
 						<input type="file" id="the_file" accept=".csv" />
-						<input type="submit" id="initial_button" value="Import" class="btn" />
+						<!-- <input type="submit" id="initial_button" value="Import" class="btn" /> -->
 					</form>
 					<div id="file_info"></div>
-					<input type="button" id="final_button" value="Commit Enhancement" class="btn" style="width:auto;"/>
 				</div>
 				<div id="data_info_form" class="hidden">
 					<table>
@@ -280,5 +286,8 @@
 		<script src="http://lacuna.ithiltari.com/vault/jquery.ui.position.js"></script>
 		<script type="text/javascript" src="../../js/ui.dropdownchecklist.js"></script>
 		<script type="text/javascript" src="../../js/annotator/annotator-js-core.js"></script>
+		<!-- use the available cdn for our qtip2 library -->
+		<script type="text/javascript" src="//qtip2.com/v/stable/jquery.qtip.min.js"></script> 
+		
 	</body>
 </html>
