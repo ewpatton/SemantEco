@@ -170,7 +170,7 @@ public class AnnotatorModule implements Module {
 
 			if (request.getParam("listOfOntologies") != null){
 				JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies") ;
-				this.annotatorTester = new AnnotatorTester(listOfOntologies);	
+				this.annotatorTester = new AnnotatorTester(listOfOntologies, false);	
 			}
 			else{
 				this.annotatorTester = new AnnotatorTester();
@@ -1252,10 +1252,45 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 
 
-	public String getShortName(String inName)
+	public String getShortName(String binding)
 	{
-		int pAt = inName.indexOf("#");
-		return (inName.substring(pAt+1));
+		//int pAt = inName.indexOf("#");
+		//return (inName.substring(pAt+1));	
+		 CharSequence pound = "#";
+			System.out.println("bindings: " + binding);
+			if (binding.contains(pound)){
+				//split on the #
+				String[] temp = binding .split("#");
+				String newLabel  = temp[temp.length-1];
+				System.out.println("after split: " + temp.toString());
+				System.out.println("temp 0: " + newLabel.toString() );
+				System.out.println("1datatype label is: " + newLabel);
+				//entry.setLabel(newLabel);		
+				return newLabel;
+			}
+		
+			else if(binding.contains("/")){
+				String[] temp2 = binding .split("/");
+				System.out.println("temp2: " + temp2.toString());
+				System.out.println("position: " + temp2.length);
+				System.out.println("temp2 concat: " +temp2[temp2.length-1] );
+
+				String newLabel = temp2[temp2.length-1];
+				System.out.println("2datatype label is: " + newLabel );
+				//entry.setLabel(newLabel);		
+				return newLabel;
+
+			}	
+			else{
+				//entry.setLabel(binding);	
+				return binding;
+
+			}
+			
+		
+		
+		
+		
 	}
 
 	public String jsonWrapper(Hashtable<String, String> table, String parent) throws JSONException{
@@ -1432,7 +1467,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			}
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
-			}		
+			}	
+			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
+
 			entries.add(entry);
 		}
 		
@@ -1494,7 +1531,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			
 			
 			
-			
+			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
 			entries.add(entry);
 		}
 		return entries;
@@ -1523,9 +1560,15 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label")  && !annot.get("label").equals("")){
 				entry.setLabel((String)annot.get("label"));					
 			}
+			else{
+				entry.setLabel(getShortName(binding));
+			}
+			
+			
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}		
+			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
 			entries.add(entry);
 		}
 		return entries;
@@ -1557,7 +1600,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			
+			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
+
 			entries.add(entry);
 		}return entries;
 		
@@ -1588,7 +1632,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			
+			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
 			entries.add(entry);
 		}return entries;
 		
@@ -1617,25 +1661,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//if(annot.has("comment") && !annot.get("comment").equals("")){
 			//	entry.setComment(((String)annot.get("comment")));			
 			
+			System.out.println("bindings*************");
 			
-			
-			if (binding.contains("#")){
-				//split on the #
-				String[] temp = binding .split("#");
-				binding  = temp[0];
-				System.out.println("datatype label is: " + binding );
-			}
-		
-			else{
-				String[] temp2 = binding .split("/");
-				binding = temp2[temp2.length-1];
-				System.out.println("datatype label is: " + binding );
-			}	
-			
-			entry.setComment(binding);			
-
-			
-			
+			entry.setLabel(getShortName(binding));
 			entries.add(entry);
 		}return entries;
 		
@@ -1692,11 +1720,14 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label") && !annot.get("label").equals("")){
 			entry.setLabel((String)annot.get("label"));	
 			}
+			else{
+				entry.setLabel(getShortName(binding));
+			}
 			
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			
+			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
 			entries.add(entry);
 		}return entries;
 		
@@ -1955,6 +1986,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label") && !annot.get("label").equals("") ){
 			entry.setLabel((String)annot.get("label"));		
 			}
+			else{
+				entry.setLabel(getShortName(binding));
+			}
+			
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
@@ -1990,6 +2025,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label") && !annot.get("label").equals("")){
 			entry.setLabel((String)annot.get("label"));		
 			}
+			else{
+				entry.setLabel(getShortName(binding));
+			}
+			
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
