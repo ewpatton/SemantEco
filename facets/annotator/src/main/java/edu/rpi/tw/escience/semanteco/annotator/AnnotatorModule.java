@@ -143,9 +143,13 @@ public class AnnotatorModule implements Module {
 	private PrintWriter enhancementFileWriter = null;
 	private String dataSetName;
 	private String sourceName;
-	private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
-	private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
-	private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";  
+	String workingDir = System.getProperty("user.dir");
+	private String csvFileLocation= workingDir + "/csvFile.csv";
+	private String outputRdfFileLocation=workingDir + "output.ttl";
+	private String paramsFile = workingDir + "sample-enhancement.ttl";  
+	//private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
+	//private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
+	//private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";  
 	AnnotatorTester annotatorTester = null;
 
 
@@ -350,6 +354,16 @@ public class AnnotatorModule implements Module {
 
 	@QueryMethod
 	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
+		
+		//example implicit bundle:
+		/*
+		 * :a_sample_bundle
+		 
+		   a conversion:ImplicitBundle;
+		   conversion:property_name oboe:ofEntity; # Can also be a URI, e.g. dcterms:title.
+		   conversion:name_template "[/sd]waterSample[r]";
+		   conversion:type_name <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#WaterSample> .
+		   */
 
 		System.out.println("source is : " +request.getParam("sourceName"));
 		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
