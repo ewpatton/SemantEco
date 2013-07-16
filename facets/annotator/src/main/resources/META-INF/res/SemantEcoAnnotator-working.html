@@ -32,62 +32,6 @@
 		</div>
 		<div id="content" style="min-height: 0%; padding-top:0px; margin-top: 25px;">
 			<div id="display">
-				<div id="fileDialogWrapper" class="hidden">
-					<p>To begin, select a CSV file to import</p>
-					<form id="the_form" onSubmit="return false">
-						<input type="file" id="the_file" accept=".csv" />
-						<!-- <input type="submit" id="initial_button" value="Import" class="btn" /> -->
-					</form>
-					<div id="file_info"></div>
-				</div>
-				<div id="data_info_form" class="hidden">
-					<table>
-						<tr>
-							<td colspan="3">
-								<p>Please provide the following pieces of information about your data:</p>
-								<span id="tentative-uri">(it may take a moment to render your data table)</span>
-							</td>
-						</tr>
-						<tr>
-							<td style="width:33%">
-								<div id="source_box">
-									<em>Data Source</em>
-									<form>
-										<select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
-											<option value="">--Select source--</option>
-											<option value="org1">Organization 1</option>
-											<option value="org2">University 2</option>
-											<option value="org3">Agency 3</option>
-										</select>OR
-										<input type="text" name="source_add_new" placeholder="add a new source" onsubmit="dropdownAdd(this);">
-									</form>
-								</div>
-							</td>
-							<td style="width:33%">
-								<div id="dataset_box">
-									<em>Data Set Name</em>
-									<form>
-										<select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
-											<option value="">--Select Dataset Name--</option>
-											<option value="ds1">dataset 1</option>
-											<option value="ds2">dataset 2</option>
-											<option value="ds3">dataset 3</option>
-										</select>OR
-										<input type="text" name="name_add_new" placeholder="add a new dataset" onsubmit="dropdownAdd(this);">
-									</form>
-								</div>
-							</td>
-							<td style="width:33%">
-								<div id="version_box">
-									<em>Version Information</em>
-									<form>
-										<input type="text" id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Version, eg. today's date">
-									</form>
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
 				<div id="list" class="fileTable hidden" style="overflow: auto; border: 1px solid black"></div>
 			</div>
 			<div id="sidebar" class="sidebar">
@@ -229,6 +173,67 @@
 		</div>
 		<div style="clear:both"></div>
 
+
+		<!-- All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) -->
+		<!-- File to Import Prompt (what file are we working with?) -->
+		<div id="fileDialogWrapper" class="hidden">
+			<p>To begin, select a CSV file to import</p>
+			<form id="the_form" onSubmit="return false">
+				<input type="file" id="the_file" accept=".csv" />
+			</form>
+			<div id="file_info"></div>
+		</div>
+
+		<!-- File Metadata Input Form (Modal) -->
+		<div id="data_info_form" class="hidden">
+			<table>
+				<tr>
+					<td colspan="3">
+						<p>Please provide the following pieces of information about your data:</p>
+						<span id="tentative-uri">(it may take a moment to render your data table)</span>
+					</td>
+				</tr>
+				<tr>
+					<td style="width:33%">
+						<div id="source_box">
+							<em>Data Source</em>
+							<form>
+								<select name="source_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Who provided/created this data?">
+									<option value="">--Select source--</option>
+									<option value="org1">Organization 1</option>
+									<option value="org2">University 2</option>
+									<option value="org3">Agency 3</option>
+								</select>OR
+								<input type="text" name="source_add_new" placeholder="add a new source" onsubmit="dropdownAdd(this);">
+							</form>
+						</div>
+					</td>
+					<td style="width:33%">
+						<div id="dataset_box">
+							<em>Data Set Name</em>
+							<form>
+								<select name="dataset_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="What is the name of this dataset?">
+									<option value="">--Select Dataset Name--</option>
+									<option value="ds1">dataset 1</option>
+									<option value="ds2">dataset 2</option>
+									<option value="ds3">dataset 3</option>
+								</select>OR
+								<input type="text" name="name_add_new" placeholder="add a new dataset" onsubmit="dropdownAdd(this);">
+							</form>
+						</div>
+					</td>
+					<td style="width:33%">
+						<div id="version_box">
+							<em>Version Information</em>
+							<form>
+								<input type="text" id="version_info" style=" overflow:hidden;padding:0 ;width:100%;height:100%;border:1;" placeholder="Version, eg. today's date">
+							</form>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
 		<!-- Brendan Edit, creating a modal to edit the Domain Template -->
 		<div id="domainTemplateModal" class="hidden">
 			<p>What would you like the Domain Template to be?</p>
@@ -256,14 +261,12 @@
 			<input type="text" id="canonicalModalInput" placeHolder="e.g. Alabama is a state" />
 		</div>
 
-	    <!-- Load Javascript libraries -->	
-		<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
-		<!--<script type="text/javascript" src="js/jquery.csvToTable.js"></script> -->
-		<!--<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script> -->
-		<script type="text/javascript" src="../../js/jstree/jquery.jstree.js"></script>
-		<!-- <script type="text/javascript" src="_docs/syntax/!script.js"></script> -->
-		<!--<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script> -->
-	    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+	    <!-- Load Javascript libraries -->
+	    <!-- Local JS Libraries -->
+	    <!-- Load Core JQuery Libraries First -->
+	    <script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
+	    <script type="text/javascript" src="//code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+	    <script type="text/javascript" src="../../js/jstree/jquery.jstree.js"></script>
 	    <script type="text/javascript" src="../../js/jquery.ba-bbq-1.2.1.js"></script>
 	    <script type="text/javascript" src="../../js/jquery.cookie.js"></script>
 	    <script type="text/javascript" src="../../js/modernizr-2.0.js"></script>
@@ -277,17 +280,19 @@
 	    <script type="text/javascript" src="../../js/SemantEcoUI.js"></script>
 	    <script type="text/javascript" src="../../js/SemantEcoUI.HierarchicalFacet.js"></script>
 	    <script type="text/javascript" src="../../js/config.js"></script>
-	    <script type="text/javascript" src="../../js/modules/AnnotatorModule.js"></script>
 	    <script type="text/javascript" src="../../js/jqplot/jquery.jqplot.min.js"></script>
 	    <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.highlighter.js"></script>
 	    <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.cursor.min.js"></script>
 	    <script type="text/javascript" src="../../js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+	    <script type="text/javascript" src="../../js/ui.dropdownchecklist.js"></script>
+	    <!-- External JS Libraries -->
+		<script type="text/javascript" src="//qtip2.com/v/stable/jquery.qtip.min.js"></script>
+	    <!-- Katie's Code -->
 		<script src="http://lacuna.ithiltari.com/vault/jquery.contextMenu.js"></script>
 		<script src="http://lacuna.ithiltari.com/vault/jquery.ui.position.js"></script>
-		<script type="text/javascript" src="../../js/ui.dropdownchecklist.js"></script>
+		<!-- Annotator Core Code -->
+		<script type="text/javascript" src="../../js/modules/AnnotatorModule.js"></script>
+		<script type="text/javascript" src="../../js/annotator/annotator-js-file-io.js"></script>
 		<script type="text/javascript" src="../../js/annotator/annotator-js-core.js"></script>
-		<!-- use the available cdn for our qtip2 library -->
-		<script type="text/javascript" src="//qtip2.com/v/stable/jquery.qtip.min.js"></script> 
-		
 	</body>
 </html>

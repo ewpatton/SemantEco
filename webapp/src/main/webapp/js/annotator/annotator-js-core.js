@@ -1,188 +1,8 @@
-// Brendan Edit: Move the scripts to a core file
-
-function fileInfo(e) {
-    var file = e.target.files[0];
-    window.file_name = file.name;
-    if (file.name.split(".")[1].toUpperCase() != "CSV") {
-        alert('Invalid csv file !');
-        e.target.parentNode.reset();
-        return;
-    } else {
-        document.getElementById('file_info').innerHTML = "<p>File Name: " + file.name + " | " + file.size + " Bytes.</p>";
-    }
-}
-
-// A context menu for selecting ontologies for the Class Hierarchy.
-// Eventually, we'll want to populate this from some listing of all the ontologies we have?
-// Right now, for sake of simplicity and testing, this is hard-coded and has no callbacks 
-//    written....
-$(function () {
-    $.contextMenu({
-        selector: '.ontology-selector',
-        // This is the default callback, which will be used for any functions
-        //    that do not have their own callbacks specified. It echoes the 
-        //    key of the selection to the console.
-        callback: function (key, options) {
-            var m = "clicked: " + key;
-            console.log(m);
-        },
-        items: {
-            "semantEcoWater": {
-                name: "SemantEco-Water",
-                type: 'checkbox'
-            },
-            "prov": {
-                name: "PROV",
-                type: 'checkbox'
-            },
-            "wgs": {
-                name: "WGS",
-                type: 'checkbox'
-            },
-            "void": {
-                name: "VOID",
-                type: 'checkbox'
-            },
-        } // /items
-    }); // /context menu
-
-}); // /ontology-selector
-
-
-// Accessory function to generate the subtables for each column header in the CSV file.
-//    The handleFileSelect function below that generates the table calls this repeatedly.
-// Every subtable will be the same, (except for the ID's of the cells)
-//    with 3 rows in 1 column. These are the DEFAULT subtables; ones for
-//    IMPLICIT or EXPLICIT BUNDLES will be different (and in other functions) 
-// Input parameters are:
-// - text: presumably the header for the column from the original CSV file,
-//	   to be placed in the first row of the column.
-// - colIndex: the position of that cell in the table. Subrows are identified
-//	   as "nameRow,"+colIndex, "propertyRow,"+colIndex, and "classRow,"+colIndex
-//	   these last two rows are classed as droppable targets.
-
-function createSubtable(text, colIndex) {
-    var theader = '<table class="marginOverride">\n';
-    var tbody = '';
-    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[property]</td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[class]</td></tr>\n';
-    var tfooter = '</table>';
-    var subtable = theader + tbody + tfooter;
-    return subtable;
-} // /createSubtable
-
-
-// Working a new way to generate the column headers....
-/*
-	function createSubtable(text, colIndex) { 
-		var theTable = document.createElement('table');
-		var nameRow = document.createElement('tr');
-		var theName = document.createElement('td');
-		
-		var propRow = document.createElement('tr');
-		var theProp = document.createElement('td');
-		$(theProp).attr("class", "droppableProp");
-		$(theProp).attr("id", "propertyRow,"+colIndex);
-		
-		var classRow = document.createElement('tr');
-		var theClass = document.createElement('td');
-		$(theClass).attr("class", "droppableClass");
-		$(theClass).attr("id", "classRow,"+colIndex);
-	}// /createSubtable */
-
-
-// ** IN PROGRESS **
-// This should act as the above, except to create a subtable for describing a bundle
-//  - One row should be a dropdown menu that allows the user to select which column
-//    is the resource representing the bundle, with the default option for "implicit"
-//  - Ideally, selecting a column for the resource should copy the column header of the
-//    original column. 
-// Takes two arguments: 
-//    - startIndex, the index of the first column in the bundle
-//    - bundleSpan, the number of columns the bundle spans
-// * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
-// TO DO: generate the dropdown menu! Probably in another function!
-
-function createBundleSubtable(theBundle) {
-    var id = theBundle.bundleID;
-    var theader = '<table id=bundle,' + id + '>\n';
-    var tbody = '';
-    // Brendan Edit: generate options based off of available headers
-    // I realize this is a nightmare jquery statement, but I had to traverse the DOM somehow...
-    var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".ui-selected").filter(function () {
-        return !($($(this).children()[0].children[0].children[0].children[0].children[0]).hasClass("cellBased-on"));
-    });
-    // remove selected from possible dropdown
-    var generatedOptions = "";
-    validHeadersToBundle.each(function (index) {
-        // Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
-        //if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
-        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).text() + ")</option>"
-    });
-    tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
-    tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[property]</td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[class]</td></tr>\n';
-    var tfooter = '</table>';
-    var subtable = theader + tbody + tfooter;
-    return subtable;
-}
-
-// Accessory function for removing things from arrays
-// Takes two arguments:
-//  - the array
-//  - the item to be removed
-// And returns the array minus that object.
-
-function removeA(arr) {
-    var what, a = arguments,
-        L = a.length,
-        ax;
-    while (L > 1 && arr.length) {
-        what = a[--L];
-        while ((ax = arr.indexOf(what)) !== -1) {
-            arr.splice(ax, 1);
-        }
-    }
-    return arr;
-}
-
-// Accessory function for checking to see if a thing is
-//    in an array.
-// Takes two arguments:
-//  - the array
-//  - the item to look for
-// And returns TRUE if the object is there or FALSE if not
-
-function existsA(theArray, theThing) {
-    if (theArray.indexOf(theThing) === -1) {
-        return false;
-    } else
-        return true;
-}
-
-// Accessory function for creating a bundle 
-// Takes three arguments:
-//  - id: a unique static ID for the bundle, different from
-//    its index in the bundles array.
-//  - columns: the array of column indices of the columns to
-//    be placed in the bundle.
-//  - resource: the index of the column that describes the
-//    bundle, IF it is EXPLICIT. A value of -1 indicates the
-//    bundle is IMPLICIT; this is the default set here at 
-//    creation.
-
-function bundle(id, columns) {
-    this.bundleID = id;
-    this.bundleCols = columns;
-    this.bundleResource = -1;
-}
+// Brendan Edit: Organize all the code
 
 // Keeps track of the ID's of the bundles, hopefully for use
 //    in the future to show off all bundles at once.
 var bID = 0;
-
 
 // This array is for keeping track of the column indices of all selected columns.
 //   It is empty at creation. The callbacks in the column selector function should
@@ -209,6 +29,63 @@ var cellBased = [];
 //    defined in the bundle function above; details about each part of the bundle
 //    are elaborated upon there.
 var bundles = [];
+
+// Generate the subtables for each column header in the CSV file.
+//    The handleFileSelect function below that generates the table calls this repeatedly.
+// Every subtable will be the same, (except for the ID's of the cells)
+//    with 3 rows in 1 column. These are the DEFAULT subtables; ones for
+//    IMPLICIT or EXPLICIT BUNDLES will be different (and in other functions) 
+// Input parameters are:
+// - text: presumably the header for the column from the original CSV file,
+//	   to be placed in the first row of the column.
+// - colIndex: the position of that cell in the table. Subrows are identified
+//	   as "nameRow,"+colIndex, "propertyRow,"+colIndex, and "classRow,"+colIndex
+//	   these last two rows are classed as droppable targets.
+function createSubtable(text, colIndex) {
+    var theader = '<table class="marginOverride">\n';
+    var tbody = '';
+    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[property]</td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[class]</td></tr>\n';
+    var tfooter = '</table>';
+    var subtable = theader + tbody + tfooter;
+    return subtable;
+}
+
+// This creates a subtable for describing a bundle
+//  - One row is a dropdown menu that allows the user to select which column
+//    is the resource representing the bundle, with the default option for "implicit"
+//  - Ideally, selecting a column for the resource should copy the column header of the
+//    original column. 
+// Takes two arguments: 
+//    - startIndex, the index of the first column in the bundle
+//    - bundleSpan, the number of columns the bundle spans
+// * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
+// TO DO: generate the dropdown menu! Probably in another function!
+function createBundleSubtable(theBundle) {
+    var id = theBundle.bundleID;
+    var theader = '<table id=bundle,' + id + '>\n';
+    var tbody = '';
+    // Brendan Edit: generate options based off of available headers
+    // I realize this is a nightmare jquery statement, but I had to traverse the DOM somehow...
+    var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".ui-selected").filter(function () {
+        return !($($(this).children()[0].children[0].children[0].children[0].children[0]).hasClass("cellBased-on"));
+    });
+    // remove selected from possible dropdown
+    var generatedOptions = "";
+    validHeadersToBundle.each(function (index) {
+        // Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
+        //if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
+        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).text() + ")</option>"
+    });
+    tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
+    tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[property]</td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[class]</td></tr>\n';
+    var tfooter = '</table>';
+    var subtable = theader + tbody + tfooter;
+    return subtable;
+}
 
 // ******************************************************************************
 //                   context menu and its callback functions!
@@ -336,90 +213,46 @@ $(function () {
                 name: "Create Bundle",
                 callback: function () {
                 	console.log(currentlySelected);
-                    // make the bundle, and push it to the array of bundles: 
+
+                    // First, let's get a reference to all DOM items that were selected
+                    var selectedHeaders = [];
+                    $.each(currentlySelected, function(index, value) {
+                        selectedHeaders.push($("th#0\\," + value));
+                    });
+
+                    // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
+                    $.each(selectedHeaders, function(index, value) { 
+                        var selectedID = value.attr("id").split(",")[1];
+                        if ($("#bundledRow\\," + selectedID).children().length > 0) {
+                            // Brendan edit: expose the extended-bundles row (yuck)
+                            if (!$("#bundles-extended").is(":visible")) {
+                                $("#bundles-extended").removeClass("hide-while-empty");
+                            }
+                            // Move the item down
+                            $("#bundledRow\\," + selectedID).children(":first").appendTo("td#bundledRow-extended\\," + selectedID);
+                        }
+                    });
+
+                    // Next, let's make the bundle, and push it to the local array of bundles (kaite code)
                     var newBundle = new bundle(bID, currentlySelected);
                     bID++;
                     bundles.push(newBundle);
                     console.log("created bundle #" + newBundle.bundleID + ", which contains columns " + newBundle.bundleCols);
-                    // if the bundle row is hidden (ie, this is the first bundle created), show the row
-                    var bRow = document.getElementById("bundles");
-                    if (bRow.classList.contains("hide-while-empty")) {
-                        $(bRow).removeClass("hide-while-empty");
-                    }
-
-                    // spanSize keeps track of how wide the bundle column header should be in the top row,
-                    //    in other words, it is a count of how many columns are bundled.
-                    var spanSize = 0;
-                    // gets the first column of the span, for creating the bundle column header
-                    var bStart = currentlySelected.sort()[0];
-                    for (i in currentlySelected) {
-                    	// Brendan Edit: check for already moved items
-                    	var allBundled = $("td.bundled-row").filter(function(index) { return $(this).children().length > 0; });
                     
-	                    // Build a list of all possible IDs selected via colspan
-	                    var selectedCell = $("th#0\\," + currentlySelected[i]);
-	                    var idArray = Array();
-	                    for (var j = 0; j < selectedCell.attr("colspan"); j++) {
-	                    	idArray.push(bStart + j);
-	                    }
-	                    // Look at all bundles, if their id matches any selected ids, we need to move them down
-	                    allBundled.each(function (index) {
-	                    	if ($.inArray(parseInt($(this).attr("id").split(",")[1], 10), idArray) != -1 ) {
-	                    		// Move down!
-	                    		if (!$("#bundles-extended").is(":visible")) {
-	                    			// Brendan edit: expose a extended-bundles row (yuck)
-	                    			$("#bundles-extended").removeClass("hide-while-empty");
-	                    		}
-	                    		$($(this).children()[0]).appendTo("td#bundledRow-extended\\," + $(this).attr("id").split(",")[1]);
-	                    		console.log("Moved down to extended:" + $(this).attr("id"));
-	                    	}
-	                    });
-
-                        //console.log("bundling column " + currentlySelected[i]);
-                        var top = document.getElementById("0," + currentlySelected[i]);
-                        console.log(top);
-                        var bottom = document.getElementById("bundledRow," + currentlySelected[i]);
-                        console.log(bottom);
-
-                        // Dont try to move what was already moved (happens if we select a hidden column somehow)
-                        if (top.childNodes.length > 0) {
-                        	var toMove = top.removeChild(top.childNodes[0]);
-                        	console.log(toMove);
-                    	}
-                        
-
-                        // Pass down the colspan to children
-                        if ($(top).attr("colspan") != undefined) {
-                        	$(bottom).attr("colspan", $(top).attr("colspan"));
+                    // Now we can push down the items being bundled, and insert a new header table where the old one was
+                    $.each(selectedHeaders, function(index, value) { 
+                        var selectedID = value.attr("id").split(",")[1];
+                        //Expose the bundles row
+                        if (!$("#bundles").is(":visible")) {
+                            $("#bundles").removeClass("hide-while-empty");
                         }
-						
-                        // Brendan edit: column headers moving down to bundles need to be labeled as so
-                        $(toMove).removeClass("column-header").addClass("bundled-column-header");
-
-                        bottom.appendChild(toMove);
-                        // Hand spansize of the item, dont assume is it one
-                        if (selectedCell.attr("colspan") != undefined) {
-                        	spanSize += parseInt(selectedCell.attr("colspan"), 10);
-                        }
-                        else {
-                        	spanSize++;
-                        }
-                        console.log(currentlySelected[i], bStart);
-                        if (currentlySelected[i] != bStart) {
-                            $(top).addClass("hide-while-empty");
-                        }
-                    } // /for
-                    console.log("bundle starts at col " + bStart + " and spans " + spanSize + " columns");
-                    var newHeader = document.getElementById("0," + bStart);
-                    $(newHeader).attr("colspan", spanSize);
-                    // Brendan edit: mark this new bundle as a valid column header
-                    $(newHeader).addClass("column-header");
-                    var temp = document.createElement('div');
-                    var stContent = createBundleSubtable(newBundle);
-                    temp.innerHTML = stContent;
-                    newHeader.appendChild(temp);
-                } // /callback
-            }, // /bundle
+                        // Move the item down
+                        value.children(":first").appendTo("td#bundledRow\\," + selectedID);
+                        // Insert new header table
+                        value.append("<div>" + createBundleSubtable(newBundle) + "</div>");
+                    });
+                }
+            },
 
             "comment": {
                 // Adds a comment to the Annotation Row
@@ -546,191 +379,6 @@ $(function () {
     }); // /context menu
 }); // /context menu function
 
-// ******************************************************************************
-
-//csv file parser and table loader
-// This is what actually renders the table in the #list div!
-
-function handleFileSelect(event) {
-    if (window.hasTable == 1) return;
-    var file = document.getElementById("the_file").files[0];
-    var reader = new FileReader();
-    var link_reg = /(http:\/\/|https:\/\/)/i;
-
-    // Show modal
-    $("#data_info_form").dialog({
-        modal: true,
-        width: 800,
-        buttons: {
-            Ok: function () {
-                $(this).dialog("close");
-            }
-        }
-    });
-
-    // Read the file in!
-    reader.readAsText(file);
-
-    // Called when the file is loaded in fully
-    reader.onload = function (file) {
-        var content = file.target.result;
-        var rows = file.target.result.split(/[\r\n|\n]+/);
-        var table = document.createElement('table');
-
-        // We have seen some examples of CSV files where there are extraneous trailing columns at the end
-        //    of the file. (eg: data,data,data,,,,,,,,,,) This variable will be used to count and then
-        //    remove them in order to improve the table rendering and hopefully save some time.
-        // * This assumes that the empty column headers to be removed are all at the end of the first row!
-        // These are counted up as the column header row does its thing, and this value is output in console.log()
-        //    once it knows how many extra rows there are, for error checking and so forth.
-        var extraColumns = 0;
-
-        // Generate column groups
-        var group = document.createElement('colgroup');
-        var oneCol;
-        // Create subtabled column headers
-        var thr = document.createElement('tr');
-        $(thr).attr("class", 'col-selectable');
-        var tharr = rows[0].split(',');
-        var numcols = tharr.length;
-        // Create row for bundled properties
-        // * This is empty at table generation, and hidden by default
-        var btr = document.createElement('tr');
-        $(btr).attr("class", 'hide-while-empty');
-        $(btr).attr("id", 'bundles');
-        // Create row for extended bundled properties
-        // * This is empty at table generation, and hidden by default
-        var btrx = document.createElement('tr');
-        $(btrx).attr("class", 'hide-while-empty');
-        $(btrx).attr("id", 'bundles-extended');
-        // Create row for annotations (and additional triples
-        // * This row is also empty and hidden at table generation
-        // * This row includes empty tables at creation for adding to later.
-        var atr = document.createElement('tr');
-        $(atr).attr("class", 'annotation-row hide-while-empty');
-        $(atr).attr("id", 'annotations');
-        //$(atr).attr("style", 'display:none');
-        var th, btd, atd, annTable;
-        for (var j = 0; j < numcols; j++) { // i == 0 because this is only concerned with the column headers
-            if (!tharr[j]) { // if we have extra columns trailing at the end,
-                extraColumns++;
-            } else {
-                // colgroup
-                oneCol = document.createElement('col');
-                $(oneCol).attr("id", "colgroup," + j);
-                group.appendChild(oneCol);
-                // column header
-                th = document.createElement('th');
-                $(th).attr("class", "ui-widget-content the-context-menu column-header not-bundled");
-                // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
-                $(th).attr("id", '0,' + j);
-                var temp = document.createElement('div');
-                var stContent = createSubtable(tharr[j], j);
-                temp.innerHTML = stContent;
-                th.appendChild(temp);
-                thr.appendChild(th);
-                // bundled column row
-                btd = document.createElement('td');
-                $(btd).attr("id", 'bundledRow,' + j);
-                $(btd).attr("class", 'bundled-row');
-                btr.appendChild(btd);
-                // bundled column row
-                btdx = document.createElement('td');
-                $(btdx).attr("id", 'bundledRow-extended,' + j);
-                $(btdx).attr("class", 'bundled-row-extended');
-                btrx.appendChild(btdx);
-                // annotation row
-                atd = document.createElement('td');
-                $(atd).attr("id", 'annotationRow,' + j);
-                //$(atd).attr("class", 'annotationRow');
-                annTable = document.createElement('table')
-                atd.appendChild(annTable);
-                atr.appendChild(atd);
-            }
-        } //
-        table.appendChild(group);
-        table.appendChild(thr);
-        table.appendChild(btr);
-        table.appendChild(btrx);
-        table.appendChild(atr);
-        numcols = numcols - extraColumns;
-        console.log("removed " + extraColumns + " extra blank columns");
-        // Once the header row with subtables has been created,
-        //   continue and create the rest of the table. 
-        // This is actually data from the CSV file!
-        var maxRows = 20;
-        if (maxRows > rows.length) {
-            maxRows = rows.length;
-        }
-        for (var i = 1; i < maxRows; i++) {
-            var tr = document.createElement('tr');
-            var arr = rows[i].split(',');
-            var td;
-            for (var j = 0; j < numcols; j++) {
-                td = document.createElement('td');
-                $(td).attr("id", i + ',' + j);
-                if (link_reg.test(arr[j])) { // if the thing from the CSV file is a link
-                    var a = document.createElement('a');
-                    a.href = arr[j];
-                    a.target = "_blank";
-                    a.innerHTML = arr[j];
-                    td.appendChild(a);
-                } else { // the thing is not a link
-                    td.innerHTML = arr[j];
-                }
-                tr.appendChild(td);
-            } // /for each column in a row
-            table.appendChild(tr);
-        } // /for rows
-
-        // Push to DOM and reveal to user
-        $('#list').append(table).removeClass("hidden");
-
-        // Make the column headers selectable and updates the currentlySelected
-        //    array accordingly when things are selected or unselected.
-        $(function () {
-            $(".col-selectable").selectable({
-                filter: "th",
-                selected: function (event, ui) {
-                    $(".ui-selected", this).each(function () {
-                        var index = $(".col-selectable th").index(this);
-                        if (!existsA(currentlySelected, index)) {
-                            currentlySelected.push(index);
-                        }
-                        //$("colgroup,"+index).addClass("selected-col");
-                        console.log("selecting col " + index + "....");
-                        console.log("currently Selected: " + currentlySelected);
-                    });
-                }, // /selected
-                unselected: function (event, ui) {
-                    $(ui.unselected, this).each(function () {
-                        var index = $(".col-selectable th").index(this);
-                        removeA(currentlySelected, index);
-                        //$("colgroup,"+index).removeClass("selected-col");
-                        console.log("unselecting col " + index + "....");
-                        console.log("currently Selected: " + currentlySelected);
-                    });
-                } // /unselected
-            }); // /selectable
-        }); // /select function
-
-        window.file_contents = file.target.result;
-        window.column_numbers = rows[0].split(',').length;
-        window.hasTable = 1;
-        // annotationMappings initialization  
-        window.a = [];
-        // window.a.push({"annotationMappings":[{"initialization":"0"}]});
-        // send the csv file to the server
-        AnnotatorModule.readCsvFileForInitialConversion({
-                "csvFile": window.file_contents
-            },
-            function (d) {
-                console.log(d);
-            });
-    }; // /reader.onload
-    $('#data_info_form').removeClass("hidden");
-} // /handleFileSelect
-
 
 // Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
 var dnd_classes = {
@@ -806,6 +454,7 @@ $(window).bind("rendered_tree.semanteco", function (e, div) {
 // =====================================================================
 // ====================== On Document Ready Calls ======================
 // =====================================================================
+
 $(document).ready(function () {
 
     // Check on mouseenter if ellipses are being used, qtip if they are (works on dynamicly created qtips)
@@ -934,10 +583,80 @@ $(document).ready(function () {
     });
 });
 
+// =====================================================================
+// ====================== ACCESSORY / MISC. FUNCTIONS ==================
+// =====================================================================
+
+// Accessory function for removing things from arrays
+// Takes two arguments:
+//  - the array
+//  - the item to be removed
+// And returns the array minus that object.
+function removeA(arr) {
+    var what, a = arguments,
+        L = a.length,
+        ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax = arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
+}
+
+// Accessory function for checking to see if a thing is
+//    in an array.
+// Takes two arguments:
+//  - the array
+//  - the item to look for
+// And returns TRUE if the object is there or FALSE if not
+function existsA(theArray, theThing) {
+    if (theArray.indexOf(theThing) === -1) {
+        return false;
+    } else
+        return true;
+}
+
+// Accessory function for creating a bundle 
+// Takes three arguments:
+//  - id: a unique static ID for the bundle, different from
+//    its index in the bundles array.
+//  - columns: the array of column indices of the columns to
+//    be placed in the bundle.
+//  - resource: the index of the column that describes the
+//    bundle, IF it is EXPLICIT. A value of -1 indicates the
+//    bundle is IMPLICIT; this is the default set here at 
+//    creation.
+function bundle(id, columns) {
+    this.bundleID = id;
+    this.bundleCols = columns;
+    this.bundleResource = -1;
+}
+
 // ==========================================
 // = HERE LIES THE CODE ARCHIVE / GRAVEYARD =
 // =           TRESSPASSERS BEWARE          =
 // ==========================================
+
+
+// Working a new way to generate the column headers....
+/*
+    function createSubtable(text, colIndex) { 
+        var theTable = document.createElement('table');
+        var nameRow = document.createElement('tr');
+        var theName = document.createElement('td');
+        
+        var propRow = document.createElement('tr');
+        var theProp = document.createElement('td');
+        $(theProp).attr("class", "droppableProp");
+        $(theProp).attr("id", "propertyRow,"+colIndex);
+        
+        var classRow = document.createElement('tr');
+        var theClass = document.createElement('td');
+        $(theClass).attr("class", "droppableClass");
+        $(theClass).attr("id", "classRow,"+colIndex);
+    }// /createSubtable */
 
 
 
@@ -1158,5 +877,43 @@ var dnd = {
         };
     } // /drop finish
 };
+
+
+// A context menu for selecting ontologies for the Class Hierarchy.
+// Eventually, we'll want to populate this from some listing of all the ontologies we have?
+// Right now, for sake of simplicity and testing, this is hard-coded and has no callbacks 
+//    written....
+$(function () {
+    $.contextMenu({
+        selector: '.ontology-selector',
+        // This is the default callback, which will be used for any functions
+        //    that do not have their own callbacks specified. It echoes the 
+        //    key of the selection to the console.
+        callback: function (key, options) {
+            var m = "clicked: " + key;
+            console.log(m);
+        },
+        items: {
+            "semantEcoWater": {
+                name: "SemantEco-Water",
+                type: 'checkbox'
+            },
+            "prov": {
+                name: "PROV",
+                type: 'checkbox'
+            },
+            "wgs": {
+                name: "WGS",
+                type: 'checkbox'
+            },
+            "void": {
+                name: "VOID",
+                type: 'checkbox'
+            },
+        } // /items
+    }); // /context menu
+
+}); // /ontology-selector
+
 
 */
