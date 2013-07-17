@@ -111,7 +111,8 @@ public class SemantEcoGeoModule implements Module, ProvidesDomain {
           + "hasCountyCode");
       final QueryResource stateAbbrev = query.getResource(POL_NS
           + "hasStateCode");
-
+      
+//query.addFilter(cond)
       // <http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#ofEntity>
       // <http://purl.org/twc/semantgeo/source/aeap_nys/dataset/dfw_lake_samples/aeap-nyserda-chem-94-12-v9-web/typed/watersample/9446846>
       // ;

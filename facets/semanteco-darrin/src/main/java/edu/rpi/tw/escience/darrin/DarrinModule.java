@@ -102,6 +102,8 @@ public class DarrinModule implements Module {
 		   Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>(); // 
 		   final Query query =   config.getQueryFactory().newQuery(Type.SELECT);
 		    Set<Variable> vars = new LinkedHashSet<Variable>();
+		    
+	
 
 	   
 	   final Variable id = query.getVariable(VAR_NS + "child");

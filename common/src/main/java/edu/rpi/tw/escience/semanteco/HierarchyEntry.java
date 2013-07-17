@@ -84,7 +84,7 @@ public class HierarchyEntry implements Serializable {
 	 * Sets the collection of OWL axioms describing this entry
 	 * @param axioms
 	 */
-	public void setHasChild(boolean hasChild) {
+	public void setHasChild(String hasChild) {
 		this.contents.put(HASCHILD_FIELD, hasChild);
 	}
 
