@@ -45,8 +45,8 @@ function createSubtable(text, colIndex) {
     var theader = '<table class="marginOverride">\n';
     var tbody = '';
     tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '>[property]</td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '>[class]</td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride">[property]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride">[class]</p></td></tr>\n';
     var tfooter = '</table>';
     var subtable = theader + tbody + tfooter;
     return subtable;
@@ -76,7 +76,7 @@ function createBundleSubtable(theBundle) {
     validHeadersToBundle.each(function (index) {
         // Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
         //if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
-        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + $($(this).children()[0].children[0].children[0].children[0].children[0].children[0]).text() + ")</option>"
+        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + "TODO" + ")</option>"
     });
     tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
@@ -214,11 +214,20 @@ $(function () {
                 callback: function () {
                 	console.log(currentlySelected);
 
+                    // Maintain if the selection has a gap or not
+                    var gap = false;
+
                     // First, let's get a reference to all DOM items that were selected
                     var selectedHeaders = [];
                     $.each(currentlySelected, function(index, value) {
+                        // Detect selection gaps
+                        if( index != 0 && Math.abs(value - currentlySelected[index - 1]) != 1 ) {
+                            gap = true;
+                        }
                         selectedHeaders.push($("th#0\\," + value));
                     });
+
+                    console.log("GAP:", gap);
 
                     // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
                     $.each(selectedHeaders, function(index, value) { 
@@ -250,6 +259,8 @@ $(function () {
                         value.children(":first").appendTo("td#bundledRow\\," + selectedID);
                         // Insert new header table
                         value.append("<div>" + createBundleSubtable(newBundle) + "</div>");
+                        // TODO: handle gaps and colspan here
+                        // TODO: Disable the forms here .attr("disabled", "disabled");
                     });
                 }
             },
@@ -441,13 +452,16 @@ function toString(obj, level) {
 //  Extracting comments, putting them in the comment box for a facet jsTree
 $(window).bind("rendered_tree.semanteco", function (e, div) {
     $(div).addClass("jstree-default");
-    $(div).bind("select_node.jstree", function (NODE, REF_NODE) {
+    $(div).delegate("a", "click", function (event, data) {
+        event.preventDefault();
+
+        // TODO: this needs looked at badly.
         var a = $.jstree._focused().get_selected();
-        var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
-        var comments = lookup[a.attr("hierarchy_id")].rawData.comment;
-        console.log(a);
-        console.log(comments)
-        $("#ClassBox").html("<pre>" + toString(comments, 0) + "</pre>");
+        if (a.length > 0) {
+            var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
+            var comments = lookup[a.attr("hierarchy_id")].rawData.comment;
+            $("#ClassBox").html("<p class=\"ellipses marginOverride\">" + toString(comments, 0) + "</p>");
+        }   
     });
 });
 
