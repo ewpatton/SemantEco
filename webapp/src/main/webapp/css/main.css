@@ -704,3 +704,8 @@ div#facets table.ui-state-highlight {
     background: white;
     margin-bottom: 1em;
 }
+
+.ui-tooltip p {
+    padding: 0;
+    margin: 0;
+}

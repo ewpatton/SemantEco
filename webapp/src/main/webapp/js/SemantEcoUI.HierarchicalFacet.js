@@ -56,6 +56,19 @@ SemantEcoUI.HierarchicalFacet = {};
         $.bbq.pushState(args);
     };
 
+    var defaultTooltip = function(entry, callback) {
+        var content = '<p class="title">'+entry.prefLabel;
+        if(entry["altLabel"] != undefined &&
+                entry.altLabel != entry.prefLabel) {
+            content += ' (<span>'+entry.altLabel+'</span>)';
+        }
+        content += '</p>';
+        if(entry["comment"] != undefined) {
+            content += '<p class="description">'+entry.comment+'</p>';
+        }
+        return content;
+    };
+
     /**
      * Generates HTML elements for a given entry.
      * @returns A jQuery-wrapped &lt;li&gt; element
@@ -126,6 +139,7 @@ SemantEcoUI.HierarchicalFacet = {};
         jqdiv.jstree(args).bind("select_node.jstree", clickHandler)
                 .bind("deselect_node.jstree", updateState)
                 .delegate("a", "click", cancelClick);
+        SemantEcoUI.HierarchicalFacet.setTooltip(jqdiv, defaultTooltip);
         var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
         if ( state != undefined && state.length != undefined && state.length > 0 ) {
             reopenSelections(jqdiv, state);
@@ -360,12 +374,43 @@ SemantEcoUI.HierarchicalFacet = {};
             processRoots(div, d, jstreeArgs);
         });
     };
-    
-    SemantEcoUI.HierarchicalFacet.entryForElement = function(div, e) {
-        div = $(div);
-        var li = e.rslt.obj;
-        var id = li.attr("hierarchy_id");
-        return div.data("hierarchy.lookup")[id];
+
+    /**
+     * Accepts an &lt;li&gt; element, an entry in a JS Tree, and returns the
+     * appropriate hierarchical entry for the element.
+     */
+    SemantEcoUI.HierarchicalFacet.entryForElement = function(e) {
+        var elem = $(e);
+        var parent = e.parentsUntil("div.hierarchy", "div.jstree");
+        var id = elem.attr("hierarchy_id");
+        return parent.data("hierarchy.lookup")[id];
     };
-    
+
+    /**
+     * Sets the tooltip function for a hierarchical facet. The function
+     * will be called with the hierarchical entry for the moused-over element
+     * and a jQueryUI callback function (for use with AJAX). Synchronous
+     * computations should simply return the string containing the content
+     * for the tooltip.
+     * @param div &lt;div&gt; element containing the jstree or a jQuery selector
+     * that identifies the div containing the tree, e.g.
+     * "div#SampleModule div.hierarchy div.jstree".
+     * @param func A function for generating the tooltip content from the
+     * hierarchy entry.
+     */
+    SemantEcoUI.HierarchicalFacet.setTooltip = function(div, func) {
+        div = $(div);
+        if(typeof func === "function") {
+            var x = func;
+            func = function(callback) {
+                // this is the <a> element for the jstree entry, parent() will
+                // be the <li> element, which has the hierarchy_id attribute
+                return x.call(div, SemantEcoUI.HierarchicalFacet.
+                        entryForElement($(this).parent()), callback);
+            };
+        } else if(typeof func !== "string") {
+            throw "Need a function or string for tooltip.";
+        }
+        div.tooltip({"items":"a", "content":func});
+    };
 })(SemantEcoUI.HierarchicalFacet);
