@@ -380,6 +380,9 @@ public class SemantEcoServlet extends WebSocketServlet {
 				result = (String) m.invoke(module, logger);
 			} else if(m.isAnnotationPresent(HierarchicalMethod.class)) {
 				result = invokeHierarchyMethod(response, logger, module, m);
+				if(result != null) {
+					response.setHeader("Content-Type", "application/json");
+				}
 			} else {
 				response.sendError(HttpServletResponse.SC_FORBIDDEN,
 						Messages.MODULE_INVALID);

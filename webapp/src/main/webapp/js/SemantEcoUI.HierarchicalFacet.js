@@ -232,7 +232,9 @@ SemantEcoUI.HierarchicalFacet = {};
         args[jqdiv.data("hierarchy.param")] = node.attr("hierarchy_id");
         module[qmethod](HierarchyVerb.CHILDREN,
                 args, function(d) {
-            d = JSON.parse(d);
+            if(typeof d === "string") {
+                d = JSON.parse(d);
+            }
             processChildren(jqdiv, node, d);
         });
     };
@@ -290,7 +292,9 @@ SemantEcoUI.HierarchicalFacet = {};
         var qmethod = jqdiv.data("hierarchy.query_method");
         module[qmethod](HierarchyVerb.PATH_TO_NODE, {"uri": item},
             function(d) {
-                d = JSON.parse(d);
+                if(typeof d === "string") {
+                    d = JSON.parse(d);
+                }
                 if( !d.success ) {
                     jqdiv.parent().find(".loading").css("display", "none");
                     console.log( d.error );
@@ -378,8 +382,9 @@ SemantEcoUI.HierarchicalFacet = {};
         div.data("hierarchy.query_method", qmethod);
         div.data("hierarchy.param", param);
         module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
-            console.log("LOG JSON ON CREATE:" + d)
-            d = JSON.parse(d);
+            if(typeof d === "string") {
+                d = JSON.parse(d);
+            }
             processRoots(div, d, jstreeArgs);
         });
     };
