@@ -1482,7 +1482,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}	
-			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding).equals("true"));
 
 			entries.add(entry);
 		}
@@ -1545,7 +1545,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			
 			
 			
-			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding).equals("true"));
 			entries.add(entry);
 		}
 		return entries;
@@ -1582,7 +1582,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}		
-			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding).equals("true"));
 			entries.add(entry);
 		}
 		return entries;
@@ -1614,7 +1614,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding).equals("true"));
 
 			entries.add(entry);
 		}return entries;
@@ -1646,7 +1646,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding).equals("true"));
 			entries.add(entry);
 		}return entries;
 		
@@ -1741,7 +1741,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding).equals("true"));
 			entries.add(entry);
 		}return entries;
 		
@@ -2008,7 +2008,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 				entry.setComment(((String)annot.get("comment")));			
 			}
 			
-			entry.setHasChild(this.annotatorTester.hasChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasChildren(binding).equals("true"));
 			entries.add(entry);
 			
 		}
@@ -2046,7 +2046,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
-			entry.setHasChild(this.annotatorTester.hasChildren(binding));
+			entry.setHasChild(this.annotatorTester.hasChildren(binding).equals("true"));
 			entries.add(entry);
 		}
 

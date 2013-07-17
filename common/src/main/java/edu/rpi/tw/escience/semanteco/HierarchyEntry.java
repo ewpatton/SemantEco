@@ -35,7 +35,6 @@ public class HierarchyEntry implements Serializable {
 	public HierarchyEntry() {
 		this.contents = new HashMap<String, Object>();
 		this.axioms = new HashMap<String, Set<String>>();
-		
 	}
 
 	/**
@@ -73,7 +72,7 @@ public class HierarchyEntry implements Serializable {
 	}
 	
 	/**
-	 * Sets the collection of OWL axioms describing this entry
+	 * Sets the comment describing this entry
 	 * @param axioms
 	 */
 	public void setComment(String comment) {
@@ -81,10 +80,13 @@ public class HierarchyEntry implements Serializable {
 	}
 	
 	/**
-	 * Sets the collection of OWL axioms describing this entry
+	 * Sets whether the entry has children so that the client can render the
+	 * entry appropriately (e\.g\. leaf nodes cannot be opened). Furthermore,
+	 * if this is not set the client will assume true and attempt to make
+	 * a callback to obtain children.
 	 * @param axioms
 	 */
-	public void setHasChild(String hasChild) {
+	public void setHasChild(Boolean hasChild) {
 		this.contents.put(HASCHILD_FIELD, hasChild);
 	}
 
@@ -152,11 +154,11 @@ public class HierarchyEntry implements Serializable {
 	}
 	
 	/**
-	 * Gets the comment for this entry
+	 * Gets whether this entry has children
 	 * @return
 	 */
-	public String getHasChild() {
-		return (String)this.contents.get(HASCHILD_FIELD);
+	public Boolean getHasChild() {
+		return (Boolean)this.contents.get(HASCHILD_FIELD);
 	}
 
 	/**

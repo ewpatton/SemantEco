@@ -74,14 +74,23 @@ SemantEcoUI.HierarchicalFacet = {};
      * @returns A jQuery-wrapped &lt;li&gt; element
      */
     var generateElement = function(jqdiv, parent, entry) {
-        var li = jqdiv.jstree("create_node", parent, "last", {data: entry.prefLabel});
-        li.removeClass("jstree-leaf").addClass("jstree-closed");
+        var hasChild = entry.rawData["hasChild"] === undefined ? true :
+            entry.rawData.hasChild;
+        var opts = hasChild ? {"state":"closed"} : {};
+        opts["data"] = entry.prefLabel;
+        var li = jqdiv.jstree("create_node", parent, "last", opts);
         li.attr("hierarchy_id", entry.id);
         return li;
     };
 
     var generateRootElement = function(entry) {
-        var li = $("<li class=\"jstree-closed\" />");
+        var hasChildren = true;
+        if(entry.rawData["hasChild"] !== undefined) {
+            hasChildren = entry.rawData.hasChild;
+        }
+        var style = hasChildren ? "jstree-closed" : "jstree-leaf";
+        var li = $('<li />');
+        li.addClass(style);
         li.append("<a href=\"#\" />");
         $("a", li).text(entry.prefLabel);
         li.attr("hierarchy_id", entry.id);
