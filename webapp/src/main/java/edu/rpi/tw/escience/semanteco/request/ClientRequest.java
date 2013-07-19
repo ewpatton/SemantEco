@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -186,35 +185,29 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		if(clientLog == null) {
 			return;
 		}
-		String msg = message.toString();
-		String err = (t != null ? t.toString() : "");
-		if(t != null && t.getCause() != null) {
-			err += " due to "+t.getCause().toString();
+		JSONObject clientMsg = new JSONObject();
+		try {
+			clientMsg.put("level", priority.toString());
+			clientMsg.put("message", message.toString());
+			if ( t != null ) {
+				String err = t.toString();
+				if ( t.getCause() != null ) {
+					err += " due to "+t.getCause().toString();
+				}
+				clientMsg.put("error", err);
+			}
+		} catch(JSONException e) {
+			log.warn("Unexpected JSONException", e);
+			return;
 		}
-		msg = msg.replaceAll("\n", Matcher.quoteReplacement("\\n"))
-				.replaceAll("\"", Matcher.quoteReplacement("\\\""));
-		err = err.replaceAll("\n", Matcher.quoteReplacement("\\n"))
-				.replaceAll("\"", Matcher.quoteReplacement("\\\""));
 		if(SemantEcoConfiguration.get().isDebug()) {
 			if(priority.isGreaterOrEqual(Level.DEBUG)) {
-				String response = "{\"level\":\""+priority+"\"," +
-						"\"message\":\""+msg+"\"";
-				if(t != null) {
-					response += ",\"error\":\""+err+"\"";
-				}
-				response += "}";
-				sendToClient(response);
+				sendToClient(clientMsg.toString());
 			}
 		}
 		else {
 			if(priority.isGreaterOrEqual(Level.INFO)) {
-				String response = "{\"level\":\""+priority+"\"," +
-						"\"message\":\""+msg+"\"";
-				if(t != null) {
-					response += ",\"error\":\""+err+"\"";
-				}
-				response += "}";
-				sendToClient(response);
+				sendToClient(clientMsg.toString());
 			}
 		}
 	}
