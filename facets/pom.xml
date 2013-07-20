@@ -73,5 +73,6 @@
   <modules>
     <module>semanteco-darrin</module>
     <module>semanteco-health</module>
+    <module>semanteco-squirrel-facet</module>
   </modules>
 </project>
