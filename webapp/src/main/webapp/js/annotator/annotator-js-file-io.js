@@ -54,8 +54,9 @@ function handleFileSelect(event) {
         var group = document.createElement('colgroup');
         var oneCol;
         // Create subtabled column headers
-        var thr = document.createElement('tr');
-        $(thr).attr("class", 'col-selectable');
+        var thr = document.createElement('tr'); // [RDFa]: prefixes can live in this element? Then we 
+        $(thr).attr("class", 'col-selectable'); // can select this and use the children to get all the
+		$(thr).attr("id", 'col-headers');		// property and class RDFa?
         var tharr = rows[0].split(',');
         var numcols = tharr.length;
         // Create row for bundled properties
@@ -194,4 +195,5 @@ function handleFileSelect(event) {
             });
     }; // /reader.onload
     $('#data_info_form').removeClass("hidden");
+	d3.ns.qualify("rdfa", "http://www.w3.org/ns/rdfa.html");
 } // /handleFileSelect

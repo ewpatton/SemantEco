@@ -406,7 +406,12 @@ var dnd_classes = {
             }
         }
         // Set the value now that we have done some validation (some...)
-        $("[id='classRow," + targetID + "']").empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + $.trim($(data.o).text()) + "</p>");
+		// [RDFa]: also sets the RDFa to the text in the node
+		//  * still need URI/prefix for whatever ontology the node comes from.
+        var fullID = "[id='classRow," + targetID + "']";
+		var theClass = $.trim($(data.o).text());
+		$(fullID).empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + theClass + "</p>");
+		d3.select(fullID).attr("rdfa:typeof", theClass);
     }
 };
 
@@ -425,7 +430,12 @@ var dnd_properties = {
             }
         }
         // Set the value now that we have done some validation (some...)
-        $("[id='propertyRow," + targetID + "']").empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + $.trim($(data.o).text()) + "</p>");
+		// [RDFa]: also sets the RDFa to the text in the node
+		//  * still need URI/prefix for whatever ontology the node comes from.
+		var fullID = "[id='propertyRow," + targetID + "']";
+		var theProp = $.trim($(data.o).text());
+		$(fullID).empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + theProp + "</p>");
+		d3.select(fullID).attr("rdfa:property", theProp);
     }
 };
 
@@ -551,7 +561,7 @@ $(document).ready(function () {
                 emptyText: "Select an Ontology ...",
                 width: 230,
                 onComplete: function (selector) {
-                    var values = "";
+                    var values = ""; // [RDFa]: can use this for prefixes?
                     for (i = 0; i < selector.options.length; i++) {
                         if (selector.options[i].selected && (selector.options[i].value != "")) {
                             if (values != "") values += ";";
