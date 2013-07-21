@@ -36,7 +36,22 @@ function queryForEnhancing(){
 
 function generateParmsFileFromHeaders(){
 	//	Prefixes
-	//	* Definitely need ov, qb
+	//	For time's sake right now, HARD CODE ALL THE THINGS:
+	var prefixes = "@prefix rdf:\t<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n";
+	prefixes += "@prefix rdfs:\t<http://www.w3.org/2000/01/rdf-schema#> .\n";
+	prefixes += "@prefix xsd:\t<http://www.w3.org/2001/XMLSchema#> .\n";
+	prefixes += "@prefix skos:\t<http://www.w3.org/2004/02/skos/core#> .\n";
+	prefixes += "@prefix geonames:\t<http://www.geonames.org/ontology#> .\n";
+	prefixes += "@prefix prov:\t<http://www.w3.org/ns/prov#> .\n";
+	prefixes += "@prefix qb:\t<http://purl.org/linked-data/cube#> .\n";
+	prefixes += "@prefix dcterms:\t<http://purl.org/dc/terms/> .\n";
+	prefixes += "@prefix foaf:\t<http://xmlns.com/foaf/0.1/> .\n";
+	prefixes += "@prefix ov:\t<http://open.vocab.org/terms/> .\n";
+	prefixes += "@prefix sweet:\t<http://sweet.jpl.nasa.gov/2.1/> .\n";
+	prefixes += "@prefix void:\t<http://rdfs.org/ns/void#> .\n";
+	prefixes += "@prefix conversion:\t<http://purl.org/twc/vocab/conversion/> .\n";
+	
+	//	Bundles go here?
 	
 	//	Package-level data from the html:
 	//		"source_info"/"source_add_new"
@@ -86,13 +101,16 @@ function generateParmsFileFromHeaders(){
 	else 
 		alert("Version field left blank!");
 	
-	console.log(baseURI + source + dataset + version);
+	var packageLevelParams = "a conversion:LayerDataset, void:Dataset;\n\n" + baseURI + source + dataset + version + "conversion:enhancement_identifier \"1\"";
+	console.log(prefixes);
+	console.log(packageLevelParams);
 	
 	
-	
+	d3.selectAll
 	// a loop goes here
 	// call queryForPropertyToEnhance
 	// call queryFor HeaderToEnhance
+	
 }// /generateParmsFileFromHeaders
 
 function queryForPropertyToEnhance(){
