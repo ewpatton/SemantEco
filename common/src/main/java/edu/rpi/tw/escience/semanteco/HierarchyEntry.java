@@ -86,7 +86,7 @@ public class HierarchyEntry implements Serializable {
 	 * a callback to obtain children.
 	 * @param axioms
 	 */
-	public void setHasChild(Boolean hasChild) {
+	public void setHasChild(String hasChild) {
 		this.contents.put(HASCHILD_FIELD, hasChild);
 	}
 
