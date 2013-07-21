@@ -163,6 +163,21 @@ function handleFileSelect(event) {
                         if (!existsA(currentlySelected, index)) {
                             currentlySelected.push(index);
                         }
+
+                        $.each(bundles, function(idx, bundle) {
+                            if ($.inArray(index, bundle) != -1) {
+                                // Okay, found the bundle tied to this item, see if any of the other items in the bundle are selected or not, select the ones that are not
+                                $.each(bundle, function(idx, item) {
+                                    if ($.inArray(item, currentlySelected) == -1) {
+                                        $("th#0\\," + item + ".column-header").addClass("ui-selected");
+                                        currentlySelected.push(item);
+                                    }
+                                });
+                                // Break out
+                                return false;
+                            }
+                        });
+
                         //$("colgroup,"+index).addClass("selected-col");
                         console.log("selecting col " + index + "....");
                         console.log("currently Selected: " + currentlySelected);

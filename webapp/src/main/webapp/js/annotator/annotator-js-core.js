@@ -78,9 +78,9 @@ function createBundleSubtable(theBundle) {
         generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + "TODO" + ")</option>"
     });
     tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
-    tbody += '<tr><td id=bundleName,' + id + '>[name template]</td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '>[property]</td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '>[class]</td></tr>\n';
+    tbody += '<tr><td id=bundleName,' + id + '><p class="ellipses marginOverride">[name template]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '><p class="ellipses marginOverride">[property]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '><p class="ellipses marginOverride">[class]</p></td></tr>\n';
     var tfooter = '</table>';
     var subtable = theader + tbody + tfooter;
     return subtable;
@@ -231,6 +231,10 @@ $(function () {
 
                     console.log("Groups:", headerGroupings);
 
+                    // Let's log these groupings for this bundle into our local bundles object\
+                    // Use slice to pass by value and not reference
+                    bundles.push(currentlySelected.slice(0));
+
                     // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
                     // we will also build the new headers and insert them in this loop
                     $.each(headerGroupings, function(index, group) { 
@@ -266,14 +270,10 @@ $(function () {
                             // Now, move the item down
                             item.children(":first").appendTo("td#bundledRow\\," + selectedID);
 
-                            // Next, let's make the bundle, and push it to the local array of bundles (katie code)
-                            var newBundle = new bundle(bID, group, colspan);
-                            bID++;
-                            bundles.push(newBundle);
-                            console.log("created bundle #" + newBundle.bundleID + ", which contains columns " + newBundle.bundleCols);
-
                             // Insert new header table, colspan if first in group, else hide
                             if (index == 0) {
+                                var newBundle = new bundle(bID, group, colspan);
+                                bID++;
                                 item.append("<div>" + createBundleSubtable(newBundle) + "</div>").attr("colspan", colspan);                                
                             } else {
                                 item.addClass("hidden");                               
