@@ -429,8 +429,9 @@ var dnd_classes = {
 		//  * still need URI/prefix for whatever ontology the node comes from.
         var fullID = "[id='classRow," + targetID + "']";
 		var theClass = $.trim($(data.o).text());
+		var uri = $(data.o).attr("hierarchy_id");
 		$(fullID).empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + theClass + "</p>");
-		d3.select(fullID).attr("rdfa:typeof", theClass);
+		d3.select(fullID).attr("rdfa:typeof", uri);
     }
 };
 
@@ -453,8 +454,9 @@ var dnd_properties = {
 		//  * still need URI/prefix for whatever ontology the node comes from.
 		var fullID = "[id='propertyRow," + targetID + "']";
 		var theProp = $.trim($(data.o).text());
+		var uri = $(data.o).attr("hierarchy_id");
 		$(fullID).empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + theProp + "</p>");
-		d3.select(fullID).attr("rdfa:property", theProp);
+		d3.select(fullID).attr("rdfa:property", uri);
     }
 };
 
@@ -484,7 +486,7 @@ $(window).bind("rendered_tree.semanteco", function (e, div) {
     $(div).delegate("a", "click", function (event, data) {
         event.preventDefault();
 
-        // TODO: this needs looked at badly.
+        // TODO: this needs to be looked at badly.
         var a = $.jstree._focused().get_selected();
         if (a.length > 0) {
             var lookup = $("#ClassTree div.jstree").data("hierarchy.lookup");
@@ -526,16 +528,18 @@ $(document).ready(function () {
     });
 
     // Bind various click and form event listeners once the DOM is good to go
+	// This is a WORK IN PROGRES and doesn't do what it did before right now.
     $('#commit_enhancement').click(function () {
-        $.bbq.pushState({
+        /*$.bbq.pushState({
             "FileName": window.file_name,
             "Source": $("#source_info").val(),
             "DataSet": $("#dataset_info").val(),
             "annotationMappings": window.a
-        });
-        AnnotatorModule.queryForEnhancing({}, function (d) {
+        });*/
+        /*AnnotatorModule.queryForEnhancing({}, function (d) {
             console.log(d);
-        });
+        });*/
+		generateParmsFileFromHeaders();
     });
 
     // TODO: rewrite these in jquery syntax
