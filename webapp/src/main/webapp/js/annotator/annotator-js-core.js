@@ -67,9 +67,8 @@ function createBundleSubtable(theBundle) {
     var theader = '<table id=bundle,' + id + '>\n';
     var tbody = '';
     // Brendan Edit: generate options based off of available headers
-    // I realize this is a nightmare jquery statement, but I had to traverse the DOM somehow...
-    var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".ui-selected").filter(function () {
-        return !($($(this).children()[0].children[0].children[0].children[0].children[0]).hasClass("cellBased-on"));
+    var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".hidden").not(".ui-selected").filter(function () {
+        return !($(this).find('p').hasClass("cellBased-on"));
     });
     // remove selected from possible dropdown
     var generatedOptions = "";
@@ -214,53 +213,73 @@ $(function () {
                 callback: function () {
                 	console.log(currentlySelected);
 
-                    // Maintain if the selection has a gap or not
-                    var gap = false;
-
                     // First, let's get a reference to all DOM items that were selected
-                    var selectedHeaders = [];
+                    var headerGroupings = [];
+                    var aGroup = [];
                     $.each(currentlySelected, function(index, value) {
-                        // Detect selection gaps
-                        if( index != 0 && Math.abs(value - currentlySelected[index - 1]) != 1 ) {
-                            gap = true;
+                        aGroup.push($("th#0\\," + value));
+                        // Detect selection gaps, so we can selectivly colspan
+                        if( index != currentlySelected.length - 1 ) {
+                            if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
+                                headerGroupings.push(aGroup);
+                                aGroup = [];
+                            }
+                        } else if (index == currentlySelected.length - 1) {
+                            headerGroupings.push(aGroup);
                         }
-                        selectedHeaders.push($("th#0\\," + value));
                     });
 
-                    console.log("GAP:", gap);
+                    console.log("Groups:", headerGroupings);
 
                     // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
-                    $.each(selectedHeaders, function(index, value) { 
-                        var selectedID = value.attr("id").split(",")[1];
-                        if ($("#bundledRow\\," + selectedID).children().length > 0) {
-                            // Brendan edit: expose the extended-bundles row (yuck)
-                            if (!$("#bundles-extended").is(":visible")) {
-                                $("#bundles-extended").removeClass("hide-while-empty");
+                    // we will also build the new headers and insert them in this loop
+                    $.each(headerGroupings, function(index, group) { 
+                        $.each(group, function(index, item) { 
+                            var colspan = group.length
+                            var selectedID = item.attr("id").split(",")[1];
+                            if ($("#bundledRow\\," + selectedID).children().length > 0) {
+                                // Expose the extended-bundles row (yuck)
+                                if (!$("#bundles-extended").is(":visible")) {
+                                    $("#bundles-extended").removeClass("hide-while-empty");
+                                }
+                                // Move the item down
+                                $("#bundledRow\\," + selectedID).children(":first").appendTo("td#bundledRow-extended\\," + selectedID);
                             }
-                            // Move the item down
-                            $("#bundledRow\\," + selectedID).children(":first").appendTo("td#bundledRow-extended\\," + selectedID);
-                        }
-                    });
 
-                    // Next, let's make the bundle, and push it to the local array of bundles (kaite code)
-                    var newBundle = new bundle(bID, currentlySelected);
-                    bID++;
-                    bundles.push(newBundle);
-                    console.log("created bundle #" + newBundle.bundleID + ", which contains columns " + newBundle.bundleCols);
-                    
-                    // Now we can push down the items being bundled, and insert a new header table where the old one was
-                    $.each(selectedHeaders, function(index, value) { 
-                        var selectedID = value.attr("id").split(",")[1];
-                        //Expose the bundles row
-                        if (!$("#bundles").is(":visible")) {
-                            $("#bundles").removeClass("hide-while-empty");
-                        }
-                        // Move the item down
-                        value.children(":first").appendTo("td#bundledRow\\," + selectedID);
-                        // Insert new header table
-                        value.append("<div>" + createBundleSubtable(newBundle) + "</div>");
-                        // TODO: handle gaps and colspan here
-                        // TODO: Disable the forms here .attr("disabled", "disabled");
+                            //Expose the bundles row
+                            if (!$("#bundles").is(":visible")) {
+                                $("#bundles").removeClass("hide-while-empty");
+                            }
+
+                            // Before we move the item down, handle colspan
+                            var itemColspan = item.attr('colspan');
+                            if (typeof itemColspan !== 'undefined' && itemColspan !== false) {
+                                // has a colspan so set colspan for dest
+                                $("td#bundledRow\\," + selectedID).attr("colspan", itemColspan);
+
+                            }
+                            // Before we move the item down, handle hidden cells
+                            if (item.hasClass("hidden")) {
+                                $("td#bundledRow\\," + selectedID).addClass("hidden");
+                            }
+
+                            // Now, move the item down
+                            item.children(":first").appendTo("td#bundledRow\\," + selectedID);
+
+                            // Next, let's make the bundle, and push it to the local array of bundles (katie code)
+                            var newBundle = new bundle(bID, group, colspan);
+                            bID++;
+                            bundles.push(newBundle);
+                            console.log("created bundle #" + newBundle.bundleID + ", which contains columns " + newBundle.bundleCols);
+
+                            // Insert new header table, colspan if first in group, else hide
+                            if (index == 0) {
+                                item.append("<div>" + createBundleSubtable(newBundle) + "</div>").attr("colspan", colspan);                                
+                            } else {
+                                item.addClass("hidden");                               
+                            }
+                            // TODO: Disable the forms here .attr("disabled", "disabled");
+                        });
                     });
                 }
             },
@@ -652,10 +671,11 @@ function existsA(theArray, theThing) {
 //    bundle, IF it is EXPLICIT. A value of -1 indicates the
 //    bundle is IMPLICIT; this is the default set here at 
 //    creation.
-function bundle(id, columns) {
+function bundle(id, columns, colspan) {
     this.bundleID = id;
     this.bundleCols = columns;
     this.bundleResource = -1;
+    this.colspan = colspan;
 }
 
 // ==========================================
