@@ -44,15 +44,9 @@ var bundles = [];
 function createSubtable(text, colIndex) {
     var theader = '<table class="headerTable marginOverride">\n';
     var tbody = '';
-<<<<<<< Updated upstream
     tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride" property="ov:csvHeader conversion:label">' + text + '</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride">[property]</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride">[class]</p></td></tr>\n';
-=======
-    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride class-label">[class]</p></td></tr>\n';
->>>>>>> Stashed changes
     var tfooter = '</table>';
     var subtable = theader + tbody + tfooter;
     return subtable;
@@ -84,7 +78,6 @@ function createBundleSubtable() {
 
         var itemLabel = "Unknown";
         var type = $.trim($(this).find("td:eq(0)").attr("id").split(",")[0]);
-        console.log(type, type == "nameRow", "nameRow");
         if (type == "nameRow") {
             itemLabel = $(this).find("p:eq(0)").text();
         } else if ( type == "bundleResource" ) { 
@@ -364,7 +357,7 @@ $(function () {
                         name: "Add Comment",
                         callback: function () {
 							var index = $("th").index(this);
-                        	 $("#commentModal").dialog({
+                        	$("#commentModal").dialog({
                                 modal: true,
                                 width: 800,
                                 draggable: false,
@@ -494,20 +487,25 @@ $(function () {
 
 // Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
 var dnd_classes = {
-    "drop_target": ".column-header",
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended",
     "drop_finish": function (data) {
         console.log(data, data.r, data.r.find("p.class-label:eq(0)"), data.o.find('a.jstree-clicked'));
         if (data.r.is("p.class-label")) {
             var target = data.r;
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") ) {
+            var target = data.r.find("p.class-label:eq(0)");
         } else {
-            var target = data.r.closest("table").find("p.class-label:eq(0)");
+            var target = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended").find("p.class-label:eq(0)");
         }
 
+
+        // handle source object having children
         if (data.o.hasClass("jstree-open")) {
             var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
         } else {
             var payload = $.trim($(data.o).text());
         }
+
         /*var targetParent;
         if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
             targetID = data.r.attr("id").split(",")[1];
@@ -527,7 +525,8 @@ var dnd_classes = {
 		//  * still need URI/prefix for whatever ontology the node comes from.
         //var fullID = "[id='classRow," + targetID + "']";
 		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
-		target.empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + payload + "</p>");
+		target.empty().append(payload);
+        target.parent().css("color", "black");
 		target.attr("rdfa:typeof", uri);
         //d3.select(target).attr("rdfa:typeof", uri);
     }
@@ -535,26 +534,59 @@ var dnd_classes = {
 
 // Arguments for Drag and Drop for property facets ( this applies to the jstree library. see: jstree.com)
 var dnd_properties = {
-    "drop_target": "#list th, #list th tr, #list th tr td, #list th tr td p",
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended",
+    "drop_check": function (data) {
+        console.log("entered");
+        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") ) {
+            if ( data.r.children().length == 0 ) { 
+                console.log("false");
+                return false; 
+            }
+        }
+        console.log("true");
+        return true;
+    },
     "drop_finish": function (data) {
-        var targetID;
+        console.log(data, data.r, data.r.find("p.property-label:eq(0)"), data.o.find('a.jstree-clicked'));
+        if (data.r.is("p.property-label")) {
+            var target = data.r;
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") ) {
+            var target = data.r.find("p.property-label:eq(0)");
+        } else {
+            var target = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended").find("p.property-label:eq(0)");
+        }
+
+
+        // handle source object having children
+        if (data.o.hasClass("jstree-open")) {
+            var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
+        } else {
+            var payload = $.trim($(data.o).text());
+        }
+
+        /*var targetParent;
         if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
             targetID = data.r.attr("id").split(",")[1];
+        } else if () {
+            asdawd
         } else {
             // get the header of this element
             var parentHeader = data.r.parents("th:eq(0)");
             if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
                targetID = parentHeader.attr("id").split(",")[1];
             }
-        }
+        }*/
+
+
         // Set the value now that we have done some validation (some...)
-		// [RDFa]: also sets the RDFa to the text in the node
-		//  * still need URI/prefix for whatever ontology the node comes from.
-		var fullID = "[id='propertyRow," + targetID + "']";
-		var theProp = $.trim($(data.o).text());
-		var uri = $(data.o).attr("hierarchy_id");
-		$(fullID).empty().append("<p class=\"ellipses marginOverride\" style=\"color:black\">" + theProp + "</p>");
-		d3.select(fullID).attr("rdfa:property", uri);
+        // [RDFa]: also sets the RDFa to the text in the node
+        //  * still need URI/prefix for whatever ontology the node comes from.
+        //var fullID = "[id='classRow," + targetID + "']";
+        var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
+        target.empty().append(payload);
+        target.parent().css("color", "black");
+        target.attr("rdfa:typeof", uri);
+        //d3.select(target).attr("rdfa:typeof", uri);
     }
 };
 
@@ -761,7 +793,7 @@ function addAnnotation( index, predicate, object ){
 	var workingCol = document.getElementById("annotationRow," + index);
 	var theTable = workingCol.getElementsByTagName('TABLE')[0];
 	$( theTable ).append( "<tr typeof=\"conversion:enhance\">" +
-	"<td display:none property=\"ov:csvCol\">" + index + "</td>" + 
+	"<td class=\"hidden\" property=\"ov:csvCol\">" + index + "</td>" + 
 	"<td property=\"conversion:predicate\">" + predicate + "</td>" +
 	"<td property=\"conversion:object\">" + object + "</td>" +
 	"</tr>" );
