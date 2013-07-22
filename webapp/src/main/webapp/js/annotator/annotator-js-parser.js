@@ -58,67 +58,64 @@ function createPrefixList(){
 	return prefixes
 }// /createPrefixList
 
-
-
-//	Reads in Params File writes triples related to prefixes, source, dataset, and versionId.
-//	Takes the headers and generates column specific enhancements.
-function generateParmsFileFromHeaders(){
-	
-	//	Bundles go here?
-	
-	//	Package-level data from the html:
-	//		"source_info"/"source_add_new"
-	//		"dataset_info"/"name_add_new"
-	//		"version_info"
-	var baseURI = "conversion:base_uri\t\"http://purl.org/twc/semantgeo\"^^xsd:anyURI;\n";
-	var source = "conversion:source_identifier\t";
-	var dataset = "conversion:dataset_identifier\t";
-	var version = "conversion:version_identifier\t";
-	var addSource, addDataset, addVersion;
+function setSource(){
+	var source = "";
 	// if the user specified a source, use that...
 	// * NOTE that in the future, we will probably want to 
 	// have some kind of checking here to make sure the user
 	// hasn't done anything silly (like only entered a space)
 	if ( (document.getElementById("source_add_new").value) ){
-		addSource = "\"" + (document.getElementById("source_add_new").value) + "\";\n";
+		addSource = (document.getElementById("source_add_new").value);
 		source += addSource;
 	}
 	// ... otherwise, check the dropdown... 
 	else if( (document.getElementById("source_info").value) ) {
-		addSource = "\"" + (document.getElementById("source_info").value) + "\";\n";
+		addSource = (document.getElementById("source_info").value);
 		source += addSource;
 	}
 	// ... and let the user know if everything's null
-	else 
-		alert("Data Source field left blank!");
-	
+	else {
+		//alert("Data Source field left blank!");
+		return;
+	}
+	return source;
+}// /setSource
+
+function setDataset(){
+	var dataset = ""
 	// Do the same thing for the dataset name
 	if ( (document.getElementById("dataset_add_new").value) ){
-		addDataset = "\"" + (document.getElementById("dataset_add_new").value) + "\";\n";
+		addDataset = (document.getElementById("dataset_add_new").value);
 		dataset += addDataset;
 	}
 	else if( (document.getElementById("dataset_info").value) ) {
-		addDataset = "\"" + (document.getElementById("dataset_info").value) + "\";\n";
+		addDataset = (document.getElementById("dataset_info").value);
 		dataset += addDataset;
 	}
-	else 
-		alert("Dataset Name field left blank!");
-		
+	else {
+		//alert("Dataset Name field left blank!");
+		return;
+	}
+	return dataset;
+}// /setDataset
+
+function setVersion(){
 	// Version is only a text field
 	// Just make sure that's not blank
 	// * As with the above, we may want to check/clean user input a little
-	if ( (document.getElementById("version_info").value) ){
+	var version = "";
+	if ( document.getElementById("version_info").value ) {
 		addVersion = "\"" + (document.getElementById("version_info").value) + "\";\n";
 		version += addVersion;
 	}
 	else 
 		alert("Version field left blank!");
+}// /setVersion
+
+//	Reads in Params File writes triples related to prefixes, source, dataset, and versionId.
+//	Takes the headers and generates column specific enhancements.
+function generateParmsFileFromHeaders(){
 	
-	var packageLevelParams = "a conversion:LayerDataset, void:Dataset;\n\n" + baseURI + source + dataset + version + "conversion:enhancement_identifier \"1\"";
-	console.log(packageLevelParams);
-	
-	
-	d3.selectAll(".column-header");
 	// a loop goes here
 	// call queryForPropertyToEnhance
 	// call queryFor HeaderToEnhance

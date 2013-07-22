@@ -598,11 +598,11 @@ $(document).ready(function () {
             "Source": $("#source_info").val(),
             "DataSet": $("#dataset_info").val(),
             "annotationMappings": window.a
-        });*/
-        /*AnnotatorModule.queryForEnhancing({}, function (d) {
+        });
+        AnnotatorModule.queryForEnhancing({}, function (d) {
             console.log(d);
         });*/
-		generateParmsFileFromHeaders();
+		//generateParmsFileFromHeaders();
     });
 
     // TODO: rewrite these in jquery syntax
