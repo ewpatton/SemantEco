@@ -177,6 +177,8 @@ function handleFileSelect(event) {
                         });
 
                         //$("colgroup,"+index).addClass("selected-col");
+                        // We have added new items to the array, so sort it ascending by index
+                        currentlySelected.sort();
                         console.log("selecting col " + index + "....");
                         console.log("currently Selected: " + currentlySelected);
                     });

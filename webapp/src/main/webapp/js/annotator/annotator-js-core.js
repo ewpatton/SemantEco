@@ -633,13 +633,21 @@ $(document).ready(function () {
         });
     });
 
-    // Enable sortable facets
-    $("div#facets").sortable({
-        axis: "y",
-        items: "table",
-        handle: "th",
-        placeholder: "ui-state-highlight"
-    }).find("th").disableSelection();
+    // Enable sortable and collapsable facets
+    $("div#facets")
+        .accordion({
+            header: "h3",
+            collapsible: true,
+            heightStyle: "fill"
+        }).sortable({
+            axis: "y",
+            items: "div.module-facet-container",
+            handle: "h3",
+            placeholder: "ui-state-highlight",
+            forcePlaceholderSize: true
+        });
+
+    // Enable 
 
     // getListofOntologies() call, builds the dropdown and then fills the facets
     AnnotatorModule.getListofOntologies({}, function (d) {
@@ -799,6 +807,68 @@ BundleIdManager.prototype.requestID = function() {
 BundleIdManager.prototype.returnID = function(id) {
     this.ids.enqueue(id);
 }
+
+// We extend the accordion function of jquery to allow multiple items open at a time
+$.fn.accordion = function(opts){
+    var acc, toggle ;
+
+    // Default options
+    opts = opts || {
+        "active":   0
+    };
+    
+    toggle = function(target) {
+        if(opts.ontoggle !== undefined) {
+            if(typeof(opts.ontoggle) !== 'function') {
+                console.log("opts.ontoggle is not a function");
+            }
+            else if(opts.ontoggle(target)===false)
+                return;
+        }
+        $(target)
+        .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+        .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+        .next().slideToggle();
+    };
+    
+    acc = this.each(function(){
+        $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
+                  .find("h3")
+                  .addClass("ui-accordion-header ui-helper-reset ui-accordion-icons ui-state-default ui-corner-top ui-corner-bottom")
+                  .hover(function() { $(this).toggleClass("ui-state-hover"); })
+                  .prepend('<span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>')
+                  .click(function() {
+                      toggle(this);
+                    return false;
+                  })
+                  .next()
+                    .addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom")
+                    .hide();
+    });
+    $.each($(this).find("h3"), function(i) {
+            if(opts.active !== undefined) {
+                if(typeof(opts.active) === 'object') {
+                    if(opts.active.indexOf(i) !== -1)
+                        toggle(this);
+                }
+                else if(typeof(opts.active) === 'number') {
+                    if(opts.active === i)
+                        toggle(this);
+                }
+            }
+    });
+    
+    this.getActive = function() {
+        var isActive = [];
+        $.each($(this).find("h3"), function(i) {
+            if($(this).hasClass("ui-state-active"))
+                isActive.push(i);
+        });
+        return isActive;
+    };
+    
+    return acc;
+};
 
 
 

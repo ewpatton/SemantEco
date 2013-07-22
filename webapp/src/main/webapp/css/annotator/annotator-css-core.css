@@ -226,3 +226,27 @@
     img#header-image {
     	float: left;
     }
+
+    .ui-accordion div.facet {
+    	padding: 0em;
+    	/* height: 150px; */
+    }
+
+    div.show-annotations-link {
+    	text-align: center;
+    	width: 100%;
+    }
+
+    .inactive-text-link {
+    	color: gray;
+   		text-decoration: line-through;
+    }
+
+    .inactive-text-link:hover {
+    	cursor: default;
+    }
+
+    .active-text-link:hover {
+    	background-color: lightblue;
+   		cursor: pointer;
+    }

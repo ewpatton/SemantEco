@@ -39,140 +39,69 @@
 					<!-- dropdown div, filled by plugin -->
 					<div id="ontology-dropdown"></div>
 					
-					<!-- classes table -->
-				 	<table id="classes-module" border="1px solid black">
-						<tbody>
-							<tr>
-								<th>Classes</th>
-							</tr>
-							<tr>
-								<td>
-									<div id="ClassesFacet" class="facet">
-										<div id="ClassTree" class="hierarchy"></div>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th style="border: 1px solid black;">Description</th>
-							</tr>
-							<tr>
-								<td>	
-									<div id="ClassesDescription" class="description">
-										<div id="ClassBox"></div>
-									</div>
-								</td>
-							</tr>	
-						</tbody>
-					</table>
+					<!-- classes view -->
+				 	<div id="classes-module" class="module-facet-container">
+						<h3>Classes</h3>
+						<div id="ClassesFacet" class="facet">
+							<div id="ClassTree" class="hierarchy"></div>
+							<div class="show-annotations-link inactive-text-link">Show Annotations</div>
+							<div id="ClassesDescription" class="description">
+								<div id="ClassBox"></div>
+							</div>
+						</div>
+					</div>
 
-					<!-- Object properties table -->
-				 	<table id="object-properties-module" border="1px solid black">
-						<tbody>
-							<tr>
-								<th>Object Properties</th>
-							</tr>
-							<tr>
-								<td>
-									<div id="objectPropertiesFacet" class="facet">
-										<div id="PropertyTree" class="hierarchy"></div>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th style="border: 1px solid black;">Description</th>
-							</tr>
-							<tr>
-								<td>	
-									<div id="objectPropertiesDescription" class="description">
-										<div id="PropBox"></div>
-									</div>
-								</td>
-							</tr>	
-						</tbody>
-					</table>
+					<!-- Object properties view -->
+				 	<div id="object-properties-module" class="module-facet-container">
+						<h3>Object Properties</h3>
+						<div id="objectPropertiesFacet" class="facet">
+							<div id="PropertyTree" class="hierarchy"></div>
+							<div class="show-annotations-link inactive-text-link">Show Annotations</div>
+							<div id="objectPropertiesDescription" class="description">
+								<div id="PropBox"></div>
+							</div>
+						</div>
+					</div>
 
-					<!-- Data properties table -->
-				 	<table id="data-properties-module" border="1px solid black">
-						<tbody>
-							<tr>
-								<th>Data Properties</th>
-							</tr>
-							<tr>
-								<td>
-									<div id="dataPropertiesFacet" class="facet">
-										<div id="dataPropertiesTree" class="hierarchy"></div>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th style="border: 1px solid black;">Description</th>
-							</tr>
-							<tr>
-								<td>	
-									<div id="dataPropertiesDescription" class="description">
-										<div id="dataPropertiesBox"></div>
-									</div>
-								</td>
-							</tr>	
-						</tbody>
-					</table>
+					<!-- Data properties view -->
+				 	<div id="data-properties-module" class="module-facet-container">
+						<h3>Data Properties</h3>
+						<div id="dataPropertiesFacet" class="facet">
+							<div id="dataPropertiesTree" class="hierarchy"></div>
+							<div class="show-annotations-link inactive-text-link">Show Annotations</div>
+							<div id="dataPropertiesDescription" class="description">
+								<div id="dataPropertiesBox"></div>
+							</div>
+						</div>
+					</div>
 
-					<!-- Annotation properties table -->
-				 	<table id="annotation-properties-module" border="1px solid black">
-						<tbody>
-							<tr>
-								<th>Annotation Properties</th>
-							</tr>
-							<tr>
-								<td>
-									<div id="annotationPropertiesFacet" class="facet">
-										<div id="annotationPropertiesTree" class="hierarchy"></div>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th style="border: 1px solid black;">Description</th>
-							</tr>
-							<tr>
-								<td>	
-									<div id="annotationPropertiesDescription" class="description">
-										<div id="annotationPropertiesBox"></div>
-									</div>
-								</td>
-							</tr>	
-						</tbody>
-					</table>
-
-					<!-- Data types table -->
-				 	<table id="data-types-module" border="1px solid black">
-						<tbody>
-							<tr>
-								<th>Datatypes</th>
-							</tr>
-							<tr>
-								<td>
-									<div id="datatypesFacet" class="facet">
-										<div id="DataTypeTree" class="hierarchy"></div>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<th style="border: 1px solid black;">Description</th>
-							</tr>
-							<tr>
-								<td>	
-									<div id="datatypesDescription" class="description">
-										<div id="DataTypeBox"></div>
-									</div>
-								</td>
-							</tr>	
-						</tbody>
-					</table>
+					<!-- Annotation properties view -->
+				 	<div id="annotation-properties-module" class="module-facet-container">
+						<h3>Annotation Properties</h3>
+						<div id="annotationPropertiesFacet" class="facet">
+							<div id="annotationPropertiesTree" class="hierarchy"></div>
+							<div class="show-annotations-link inactive-text-link">Show Annotations</div>
+							<div id="annotationPropertiesDescription" class="description">
+								<div id="annotationPropertiesBox"></div>
+							</div>
+						</div>
+					</div>
+				
+					<!-- Data types view -->
+				 	<div id="data-types-module" class="module-facet-container">
+						<h3>Datatypes</h3>
+						<div id="datatypesFacet" class="facet">
+							<div id="DataTypeTree" class="hierarchy"></div>
+							<div class="show-annotations-link inactive-text-link">Show Annotations</div>
+							<div id="datatypesDescription" class="description">
+								<div id="DataTypeBox"></div>
+							</div>	
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div style="clear:both"></div>
-
 
 		<!-- All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) -->
 		<!-- File to Import Prompt (what file are we working with?) -->
