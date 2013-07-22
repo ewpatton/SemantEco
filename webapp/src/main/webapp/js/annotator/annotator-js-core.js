@@ -44,7 +44,7 @@ var bundles = [];
 function createSubtable(text, colIndex) {
     var theader = '<table class="headerTable marginOverride">\n';
     var tbody = '';
-    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
+    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride" property="ov:csvHeader conversion:label">' + text + '</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride">[class]</p></td></tr>\n';
     var tfooter = '</table>';
@@ -366,17 +366,12 @@ $(function () {
                                 buttons: {
                                     Ok: function () {
 										checkAnnotationRow();
-										var workingCol = document.getElementById("annotationRow," + index);
 										//var theTable = workingCol.getElementsByTagName('TABLE')[0];
 										var cType = "rdfs:comment";
 										var cText = document.getElementById("commentModalInput").value;
-										addTriple( workingCol, cType, cText );
-										/*$( theTable ).append( "<tr>" +
-										"<td>" + cType + "</td>" +
-										"<td typeOf=\"" + cType + 
-										"\">" + cText + "</td>" +
-										"</tr>" );*/
+										addAnnotation( index , cType, cText );
 										
+										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
 									}// /OK function
                                 }// /buttons
@@ -430,11 +425,11 @@ $(function () {
                                 buttons: {
                                     Ok: function () {
 										checkAnnotationRow();
-										var workingCol = document.getElementById("annotationRow," + index);
 										var cType = "conversion:eg";
 										var cText = document.getElementById("canonicalModalInput").value;
-										addTriple( workingCol, cType, cText );
+										addAnnotation( index, cType, cText );
 										
+										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
                                     }
                                 }
@@ -473,11 +468,11 @@ $(function () {
                                 buttons: {
                                     Ok: function () {
 										checkAnnotationRow();
-										var workingCol = document.getElementById("annotationRow," + index);
 										var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
 										var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
-										addTriple( workingCol, cType, cText );
+										addAnnotation( index, cType, cText );
 										
+										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
                                     }
                                 }
@@ -736,19 +731,20 @@ function checkAnnotationRow(){
 
 // Accessory function for adding to the annotation row
 // Takes three aruguments:
-// - workingCol: the column where the triple will be added
+// - index: the index of the column where the triple will be added
 // - predicate: predicate for the triple, which will be shown in the table as well
 //	 as well as added to the RDFa. Note that this may be hard-coded depending on 
 //	 what context menu function calls this.
 // - object: the object of the triple. This will most likely be user-input!
-function addTriple( workingCol, predicate, object ){
+function addAnnotation( index, predicate, object ){
+	var workingCol = document.getElementById("annotationRow," + index);
 	var theTable = workingCol.getElementsByTagName('TABLE')[0];
-	$( theTable ).append( "<tr>" +
-	"<td>" + predicate + "</td>" +
-	"<td typeOf=\"" + predicate + 
-	"\">" + object + "</td>" +
+	$( theTable ).append( "<tr typeof=\"conversion:enhance\">" +
+	"<td display:none property=\"ov:csvCol\">" + index + "</td>" + 
+	"<td property=\"conversion:predicate\">" + predicate + "</td>" +
+	"<td property=\"conversion:object\">" + object + "</td>" +
 	"</tr>" );
-}// /addTriple
+}// /addAnnotation
 
 // Accessory function for removing things from arrays
 // Takes two arguments:
