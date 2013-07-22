@@ -654,6 +654,7 @@ $(document).ready(function () {
         d = $.parseJSON(d);
         if (d.length > 0) {
             var dropDown = $("<select></select>").attr("id", "checkboxDropDownOntologies").attr("name", "testCheckboxDropDown").attr("multiple", "multiple");
+            d.sort();
             for (var i = 0; i < d.length; i++) {
                 dropDown.append("<option>" + d[i] + "</option>");
             }
