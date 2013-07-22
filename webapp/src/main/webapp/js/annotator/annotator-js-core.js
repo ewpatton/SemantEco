@@ -357,32 +357,28 @@ $(function () {
                         //   single column on which the menu is invoked!
                         name: "Add Comment",
                         callback: function () {
+							var index = $("th").index(this);
                         	 $("#commentModal").dialog({
                                 modal: true,
                                 width: 800,
                                 buttons: {
                                     Ok: function () {
+										checkAnnotationRow();
+										var workingCol = document.getElementById("annotationRow," + index);
+										//var theTable = workingCol.getElementsByTagName('TABLE')[0];
+										var cType = "rdfs:comment";
+										var cText = document.getElementById("commentModalInput").value;
+										addTriple( workingCol, cType, cText );
+										/*$( theTable ).append( "<tr>" +
+										"<td>" + cType + "</td>" +
+										"<td typeOf=\"" + cType + 
+										"\">" + cText + "</td>" +
+										"</tr>" );*/
+										
                                         $(this).dialog("close");
-                                    }
-                                }
-                            });
-                            /*
-                            var cRow = document.getElementById("annotations");
-                            var index = $("th").index(this);
-                            var cType = "rdfs:comment"; // in the end, these two fields 
-                            var cText = "testComment"; //  shouldn't be hard-coded....
-                            // if the row is hidden (ie, this is the first comment added), show the row
-                            if (cRow.classList.contains("hide-while-empty")) {
-                                $(cRow).removeClass("hide-while-empty");
-                            }
-                            var workingCol = document.getElementById("annotationRow," + index);
-                            var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-                            var addedRow = workingTable.insertRow(-1);
-                            var typeCell = addedRow.insertCell(0);
-                            var textCell = addedRow.insertCell(1);
-                            typeCell.innerHTML = cType;
-                            textCell.innerHTML = cText;
-                            */
+									}// /OK function
+                                }// /buttons
+                            });// /dialog
                         } // /callback function
                     }, // /addComment
 
@@ -421,11 +417,18 @@ $(function () {
                         // * NOTE that, like the above, thsi will only add an eg to the column on which
                         //   the context menu was invoked, even if multiple columns are selected!
                         callback: function () {
+							var index = $("th").index(this);
                         	 $("#canonicalModal").dialog({
                                 modal: true,
                                 width: 800,
                                 buttons: {
                                     Ok: function () {
+										checkAnnotationRow();
+										var workingCol = document.getElementById("annotationRow," + index);
+										var cType = "conversion:eg";
+										var cText = document.getElementById("canonicalModalInput").value;
+										addTriple( workingCol, cType, cText );
+										
                                         $(this).dialog("close");
                                     }
                                 }
@@ -455,11 +458,18 @@ $(function () {
                         name: "Add Subject Annotation",
                         // Subject Annotation addes new triples. Forced triples is what we like to call it.
                         callback: function () {
+							var index = $("th").index(this);
                             $("#subjectAnnotationModal").dialog({
                                 modal: true,
                                 width: 800,
                                 buttons: {
                                     Ok: function () {
+										checkAnnotationRow();
+										var workingCol = document.getElementById("annotationRow," + index);
+										var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
+										var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
+										addTriple( workingCol, cType, cText );
+										
                                         $(this).dialog("close");
                                     }
                                 }
@@ -696,6 +706,30 @@ $(document).ready(function () {
 // =====================================================================
 // ====================== ACCESSORY / MISC. FUNCTIONS ==================
 // =====================================================================
+
+// if the row is hidden (ie, this is the first comment added), show the row
+function checkAnnotationRow(){
+	var cRow = document.getElementById("annotations");
+	if (cRow.classList.contains("hide-while-empty")) {
+		$(cRow).removeClass("hide-while-empty");
+	}
+}// /checkAnnotationRow
+
+// Accessory function for adding to the annotation row
+// Takes three aruguments:
+// - workingCol: the column where the triple will be added
+// - predicate: predicate for the triple, which will be shown in the table as well
+//	 as well as added to the RDFa. Note that this may be hard-coded depending on 
+//	 what context menu function calls this.
+// - object: the object of the triple. This will most likely be user-input!
+function addTriple( workingCol, predicate, object ){
+	var theTable = workingCol.getElementsByTagName('TABLE')[0];
+	$( theTable ).append( "<tr>" +
+	"<td>" + predicate + "</td>" +
+	"<td typeOf=\"" + predicate + 
+	"\">" + object + "</td>" +
+	"</tr>" );
+}// /addTriple
 
 // Accessory function for removing things from arrays
 // Takes two arguments:
