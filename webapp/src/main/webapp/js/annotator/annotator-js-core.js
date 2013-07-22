@@ -361,6 +361,8 @@ $(function () {
                         	 $("#commentModal").dialog({
                                 modal: true,
                                 width: 800,
+                                draggable: false,
+                                resizable: false,
                                 buttons: {
                                     Ok: function () {
 										checkAnnotationRow();
@@ -398,6 +400,8 @@ $(function () {
                             $("#domainTemplateModal").dialog({
                                 modal: true,
                                 width: 800,
+                                draggable: false,
+                                resizable: false,
                                 buttons: {
                                     Ok: function () {
                                         $(this).dialog("close");
@@ -421,6 +425,8 @@ $(function () {
                         	 $("#canonicalModal").dialog({
                                 modal: true,
                                 width: 800,
+                                draggable: false,
+                                resizable: false,
                                 buttons: {
                                     Ok: function () {
 										checkAnnotationRow();
@@ -462,6 +468,8 @@ $(function () {
                             $("#subjectAnnotationModal").dialog({
                                 modal: true,
                                 width: 800,
+                                draggable: false,
+                                resizable: false,
                                 buttons: {
                                     Ok: function () {
 										checkAnnotationRow();
@@ -624,6 +632,8 @@ $(document).ready(function () {
         $("#fileDialogWrapper").dialog({
             modal: true,
             width: 800,
+            draggable: false,
+            resizable: false,
             buttons: {
                 Import: function () {
                     handleFileSelect();

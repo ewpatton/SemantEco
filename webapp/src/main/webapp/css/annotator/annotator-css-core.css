@@ -57,13 +57,13 @@
 	}
 
     #fileDialogWrapper {
-      width: 100%;
+     /* width: 100%;
       border-radius: 4px;
       text-align: center;
 	  padding-top: 5px;
 	  margin-bottom: 15px;
       -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4); */
     }
     form {
       background: #CCC;
@@ -249,4 +249,9 @@
     .active-text-link:hover {
     	background-color: lightblue;
    		cursor: pointer;
+    }
+
+    .ui-widget-overlay {
+    	opacity: .5;
+    	background: black;
     }
