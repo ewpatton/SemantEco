@@ -209,4 +209,5 @@ function handleFileSelect(event) {
     }; // /reader.onload
     $('#data_info_form').removeClass("hidden");
 	d3.ns.qualify("rdfa", "http://www.w3.org/ns/rdfa.html");
+	d3.select("#list").attr("rdfa:prefix", createPrefixList());
 } // /handleFileSelect
