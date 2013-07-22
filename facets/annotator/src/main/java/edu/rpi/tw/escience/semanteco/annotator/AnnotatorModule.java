@@ -1392,11 +1392,15 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			return  queryObjPropertyHMRoots(request);
 		} else if ( action == HierarchyVerb.CHILDREN ) {
 			return  queryObjPropertyHMChildren(request, (String) request.getParam("objProperties"));
-		} else if ( action == HierarchyVerb.SEARCH ) {
+		} 
+		/*
+		else if ( action == HierarchyVerb.SEARCH ) {
+			
 			return searchAnnotatorProperty( request, (String) request.getParam("string") );
 		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
 			return annotatorPropertyToNode( request, (String) request.getParam("node") );
 		}
+		*/
 		return items;		
 	}
 	
@@ -1479,6 +1483,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label")  && !annot.get("label").equals("")){
 				entry.setLabel((String)annot.get("label"));					
 			}
+			else if (!annot.has("label")){
+				System.out.println("no label for object property root level");
+				entry.setLabel(this.getShortName(binding));					
+			}
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}	
@@ -1538,6 +1546,12 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label")  && !annot.get("label").equals("")){
 				entry.setLabel((String)annot.get("label"));					
 			}
+			else if (!annot.has("label")){
+				System.out.println("no label for object property root level");
+				entry.setLabel(this.getShortName(binding));					
+			}
+			
+			
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}	
@@ -1610,6 +1624,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			if(annot.has("label") && !annot.get("label").equals("")){
 			entry.setLabel((String)annot.get("label"));	
 			}
+			else if (!annot.has("label")){
+				System.out.println("no label for object property child level");
+				entry.setLabel(this.getShortName(binding));					
+			}
 			
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
@@ -1641,6 +1659,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			System.out.println("class: " + binding.toString() + " has annotations: " + annot);
 			if(annot.has("label") && !annot.get("label").equals("")){
 			entry.setLabel((String)annot.get("label"));	
+			}
+			else if (!annot.has("label")){
+				System.out.println("no label for object property child level");
+				entry.setLabel(this.getShortName(binding));					
 			}
 			
 			if(annot.has("comment") && !annot.get("comment").equals("")){
@@ -1707,7 +1729,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//if(annot.has("comment") && !annot.get("comment").equals("")){
 			//	entry.setComment(((String)annot.get("comment")));			
 			
-			
+			entry.setLabel(getShortName(binding));
 			entries.add(entry);
 		}return entries;
 		
