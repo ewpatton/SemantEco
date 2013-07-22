@@ -165,16 +165,14 @@ function handleFileSelect(event) {
                         }
 
                         $.each(bundles, function(idx, bundle) {
-                            if ($.inArray(index, bundle) != -1) {
-                                // Okay, found the bundle tied to this item, see if any of the other items in the bundle are selected or not, select the ones that are not
-                                $.each(bundle, function(idx, item) {
+                            if ($.inArray(index, bundle.columns) != -1) {
+                                // Okay, found one of the bundles tied to this item (can be more), see if any of the other items in the bundle are selected or not, select the ones that are not
+                                $.each(bundle.columns, function(idx, item) {
                                     if ($.inArray(item, currentlySelected) == -1) {
                                         $("th#0\\," + item + ".column-header").addClass("ui-selected");
                                         currentlySelected.push(item);
                                     }
                                 });
-                                // Break out
-                                return false;
                             }
                         });
 

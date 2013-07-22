@@ -16,6 +16,11 @@
 		table-layout: fixed;
 	}
 
+	.fileTable table.headerTable {
+		width: 150px;
+		table-layout: fixed;
+	}
+
 	/* Re adding old css stuff back */
 	.fileTable table {
       max-width: 100%;
@@ -152,8 +157,17 @@
    	}
 
    	.context-menu-item:hover{
-   		background-color: whitesmoke;
+   		background-color: lightblue;
    		cursor: pointer;
+   	}
+
+   	.context-menu-item.disabled{
+   		color: gray;
+   		text-decoration: line-through;
+   	}
+
+   	.context-menu-item.disabled:hover{
+   		cursor: default;
    	}
 	
 	.draggable-prop, .draggable-class { 

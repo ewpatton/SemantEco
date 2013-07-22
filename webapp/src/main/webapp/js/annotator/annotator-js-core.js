@@ -2,7 +2,7 @@
 
 // Keeps track of the ID's of the bundles, hopefully for use
 //    in the future to show off all bundles at once.
-var bID = 0;
+var bundleIdManager = new BundleIdManager();
 
 // This array is for keeping track of the column indices of all selected columns.
 //   It is empty at creation. The callbacks in the column selector function should
@@ -42,7 +42,7 @@ var bundles = [];
 //	   as "nameRow,"+colIndex, "propertyRow,"+colIndex, and "classRow,"+colIndex
 //	   these last two rows are classed as droppable targets.
 function createSubtable(text, colIndex) {
-    var theader = '<table class="marginOverride">\n';
+    var theader = '<table class="headerTable marginOverride">\n';
     var tbody = '';
     tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride">[property]</p></td></tr>\n';
@@ -62,22 +62,33 @@ function createSubtable(text, colIndex) {
 //    - bundleSpan, the number of columns the bundle spans
 // * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
 // TO DO: generate the dropdown menu! Probably in another function!
-function createBundleSubtable(theBundle) {
-    var id = theBundle.bundleID;
+function createBundleSubtable() {
+    var id = id;
     var theader = '<table id=bundle,' + id + '>\n';
     var tbody = '';
+    
     // Brendan Edit: generate options based off of available headers
-    var validHeadersToBundle = $("th.not-bundled").not(".hide-while-empty").not(".hidden").not(".ui-selected").filter(function () {
-        return !($(this).find('p').hasClass("cellBased-on"));
+    var validHeadersToBundle = $("th.not-bundled,th.bundled-implicit").not(".hide-while-empty").not(".hidden").not(".ui-selected").filter(function () {
+        return !($(this).find('td').hasClass("cellBased-on"));
     });
-    // remove selected from possible dropdown
+
+    // Build a list of items
     var generatedOptions = "";
     validHeadersToBundle.each(function (index) {
-        // Keeping this for archiving, but it should be deprecated now that we have a ui-selected class
-        //if ($.inArray($(this).attr('id').split(",")[1], theBundle.bundleCols) == -1) {
-        generatedOptions += "<option>Column " + $(this).attr('id').split(",")[1] + " (" + "TODO" + ")</option>"
+
+        var itemLabel = "Unknown";
+        var type = $.trim($(this).find("td:eq(0)").attr("id").split(",")[0]);
+        console.log(type, type == "nameRow", "nameRow");
+        if (type == "nameRow") {
+            itemLabel = $(this).find("p:eq(0)").text();
+        } else if ( type == "bundleResource" ) { 
+            itemLabel = $(this).find("select").val();
+        }
+
+        generatedOptions += "<option value = \"" + itemLabel + "\">Column " + $(this).attr('id').split(",")[1] + " (" + itemLabel + ")</option>"
     });
-    tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="">implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
+
+    tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="Implicit">Implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + id + '><p class="ellipses marginOverride">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '><p class="ellipses marginOverride">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '><p class="ellipses marginOverride">[class]</p></td></tr>\n';
@@ -90,322 +101,374 @@ function createBundleSubtable(theBundle) {
 //                   context menu and its callback functions!
 // ******************************************************************************
 
+// Enabling and dis
 // Creates and enables the context menu on the column headers!
 // Each function is placed under "items", and should have a NAME and a CALLBACK.
 // If a callback is not specified, then it will utilize the default callback.
 $(function () {
     $.contextMenu({
         selector: '.the-context-menu',
-        // This is the default callback, which will be used for any functions
-        //    that do not have their own callbacks specified. It echoes the 
-        //    key of the selection and the column on which the menu was invoked
-        //    to the console.
-        callback: function (key, options) {
-            var index = $("th").index(this);
-            var m = "clicked: " + key + ", invoked on col: " + index;
-            console.log(m);
-        },
-        // Each of these is one item in the context menu list.
-        // Documentation at http://medialize.github.io/jQuery-contextMenu/docs.html
-        items: {
-            "toggle-cell-based": {
-                // Modifies the cellBased array to add or remove column indices.
-                // If a selected column is in the array, then it will be removed (toggled OFF)
-                // If the column is not in the array, then it will be added (toggled ON)
-                // * NOTE that if this is called when only one column is selected,
-                //   currently it will toggle the column on which the menu was invoked,
-                //   NOT the selected column.
-                name: "Toggle 'cell-based'",
-                callback: function () {
-                    // if one or fewer columns are selected, add/remove the column on which the menu was invoked
-                    if (currentlySelected.length <= 1) {
-                        var index = $("th").index(this);
-                        var toggle = document.getElementById("nameRow," + index);
-                        // if the column is already there, remove it
-                        if (existsA(cellBased, index)) {
-                            $(toggle).removeClass("cellBased-on");
-                            removeA(cellBased, index);
-                            console.log("removing col " + index);
-                        }
-                        // if the column is not there, add it
-                        else {
-                            $(toggle).addClass("cellBased-on");
-                            //$(toggle).attr("class","cellBased-on");
-                            cellBased.push(index);
-                            console.log("adding col " + index);
-                        }
-                    } // /if
-                    // if more than one column is selected, perform the toggle on ALL selected columns
-                    else {
-                        for (i in currentlySelected) {
-                            var toggle = document.getElementById("nameRow," + currentlySelected[i]);
-                            // if the column is already there, remove it
-                            if (existsA(cellBased, currentlySelected[i])) {
-                                $(toggle).removeClass("cellBased-on");
-                                removeA(cellBased, currentlySelected[i]);
-                                console.log("removing col " + currentlySelected[i]);
-                            }
-                            // if the column is not there, add it
-                            else {
-                                $(toggle).addClass("cellBased-on");
-                                //$(toggle).attr("class","cellBased-on");
-                                cellBased.push(currentlySelected[i]);
-                                console.log("adding col " + currentlySelected[i]);
-                            }
-                        } // /for	
+        build: function($trigger, e) {
+            // this callback is executed every time the menu is to be shown
+            // its results are destroyed every time the menu is hidden
+            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+
+            // Here we do some logic on which items are allowed for this menu
+            console.log("Click Trigger:", $trigger);
+            console.log("Selected at Trigger:", currentlySelected);
+
+            // We use booleans to determine if a option is enabled or disabled,
+            var toggle_cell_based_disabled_boolean = false;
+            var create_bundle_disabled_boolean = false;
+
+            // As we look over the items selected, keep track of which bundle we are in, so we can see if multiple bundles exist (this is really ugly. we need to rethink the bundles object!)
+            //var selectedItemsBundleIndex = undefined;
+
+            $.each(currentlySelected, function(index, value) {
+                
+                // Any cell based, means no bundling
+                if ($("th#0\\," + value).find('td').hasClass("cellBased-on")) {
+                    create_bundle_disabled_boolean = true;
+                }
+
+                // Of selected items in a bundle, if from multiple bundles then stop bundling (whew)
+                $.each(bundles, function(idx, bundle) {
+                    // Check if this selected item is in this bundle
+                    if ($.inArray(value, bundle.columns) != -1) {
+                        
+                        // If in a bundle, then no cell-based
+                        toggle_cell_based_disabled_boolean = true;
+
+                        // keep track of bundles, to prevent multiple bundles being bundled
+                        //if (selectedItemsBundleIndex == undefined) {
+                        //    selectedItemsBundleIndex = idx
+                        //} else if (selectedItemsBundleIndex != idx) {
+                            // If this has been set but is not the same as our idx, then we are looking at multiple bundles so block bundling
+                        //    create_bundle_disabled_boolean = true;
+                        //}
+                       // Break each loop
+                       return false;
                     }
-                    console.log("currently specified for cell-based: " + cellBased);
-                } // /cell-based callback
-            }, // /cell-based
+                });
+            });
 
-            "toggle-links_via": {
-                // Modifies the links_via array to add or remove column indices.
-                // If a selected column is in the array, then it will be removed (toggled OFF)
-                // If the column is not in the array, then it will be added (toggled ON)
-                // * NOTE that if this is called when only one column is selected,
-                //   currently it will toggle the column on which the menu was invoked,
-                //   NOT the selected column.
-                name: "Toggle 'links_via'",
-                callback: function () {
-                    // if one or fewer columns are selected, add/remove the column on which the menu was invoked
-                    if (currentlySelected.length <= 1) {
-                        var index = $("th").index(this);
-                        var toggle = document.getElementById("nameRow," + index);
-                        // if the column is already there, remove it
-                        if (existsA(links_via, index)) {
-                            $(toggle).removeClass("links_via-on");
-                            removeA(links_via, index);
-                            console.log("removing col " + index);
-                        }
-                        // if the column is not there, add it
-                        else {
-                            $(toggle).addClass("links_via-on");
-                            //$(toggle).attr("class","links_via-on");
-                            links_via.push(index);
-                            console.log("adding col " + index);
-                        }
-                    } // /if
-                    // if more than one column is selected, perform the toggle on ALL selected columns
-                    else {
-                        for (i in currentlySelected) {
-                            var toggle = document.getElementById("nameRow," + currentlySelected[i]);
-                            // if the column is already there, remove it
-                            if (existsA(links_via, currentlySelected[i])) {
-                                $(toggle).removeClass("links_via-on");
-                                removeA(links_via, currentlySelected[i]);
-                                console.log("removing col " + currentlySelected[i]);
-                            }
-                            // if the column is not there, add it
-                            else {
-                                $(toggle).addClass("links_via-on");
-                                //$(toggle).attr("class","links_via-on");
-                                links_via.push(currentlySelected[i]);
-                                console.log("adding col " + currentlySelected[i]);
-                            }
-                        } // /for	
-                    } // /else
-                    console.log("currently specified for links_via: " + links_via);
-                } // /links_via callback
-            }, // /links_via
-
-            "bundle": {
-                name: "Create Bundle",
-                callback: function () {
-                	console.log(currentlySelected);
-
-                    // First, let's get a reference to all DOM items that were selected
-                    var headerGroupings = [];
-                    var aGroup = [];
-                    $.each(currentlySelected, function(index, value) {
-                        aGroup.push($("th#0\\," + value));
-                        // Detect selection gaps, so we can selectivly colspan
-                        if( index != currentlySelected.length - 1 ) {
-                            if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
-                                headerGroupings.push(aGroup);
-                                aGroup = [];
-                            }
-                        } else if (index == currentlySelected.length - 1) {
-                            headerGroupings.push(aGroup);
-                        }
-                    });
-
-                    console.log("Groups:", headerGroupings);
-
-                    // Let's log these groupings for this bundle into our local bundles object\
-                    // Use slice to pass by value and not reference
-                    bundles.push(currentlySelected.slice(0));
-
-                    // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
-                    // we will also build the new headers and insert them in this loop
-                    $.each(headerGroupings, function(index, group) { 
-                        $.each(group, function(index, item) { 
-                            var colspan = group.length
-                            var selectedID = item.attr("id").split(",")[1];
-                            if ($("#bundledRow\\," + selectedID).children().length > 0) {
-                                // Expose the extended-bundles row (yuck)
-                                if (!$("#bundles-extended").is(":visible")) {
-                                    $("#bundles-extended").removeClass("hide-while-empty");
+            return {
+                // This is the default callback, which will be used for any functions
+                //    that do not have their own callbacks specified. It echoes the 
+                //    key of the selection and the column on which the menu was invoked
+                //    to the console.
+                callback: function (key, options) {
+                    var index = $("th").index(this);
+                    var m = "clicked: " + key + ", invoked on col: " + index;
+                    console.log(m);
+                },
+                // Each of these is one item in the context menu list.
+                // Documentation at http://medialize.github.io/jQuery-contextMenu/docs.html
+                items: {
+                    "toggle-cell-based": {
+                        // Modifies the cellBased array to add or remove column indices.
+                        // If a selected column is in the array, then it will be removed (toggled OFF)
+                        // If the column is not in the array, then it will be added (toggled ON)
+                        // * NOTE that if this is called when only one column is selected,
+                        //   currently it will toggle the column on which the menu was invoked,
+                        //   NOT the selected column.
+                        name: "Toggle 'cell-based'",
+                        disabled: toggle_cell_based_disabled_boolean,
+                        callback: function () {
+                            // if one or fewer columns are selected, add/remove the column on which the menu was invoked
+                            if (currentlySelected.length <= 1) {
+                                var index = $("th").index(this);
+                                var toggle = document.getElementById("nameRow," + index);
+                                // if the column is already there, remove it
+                                if (existsA(cellBased, index)) {
+                                    $(toggle).removeClass("cellBased-on");
+                                    removeA(cellBased, index);
+                                    console.log("removing col " + index);
                                 }
-                                // Move the item down
-                                $("#bundledRow\\," + selectedID).children(":first").appendTo("td#bundledRow-extended\\," + selectedID);
+                                // if the column is not there, add it
+                                else {
+                                    $(toggle).addClass("cellBased-on");
+                                    //$(toggle).attr("class","cellBased-on");
+                                    cellBased.push(index);
+                                    console.log("adding col " + index);
+                                }
+                            } // /if
+                            // if more than one column is selected, perform the toggle on ALL selected columns
+                            else {
+                                for (i in currentlySelected) {
+                                    var toggle = document.getElementById("nameRow," + currentlySelected[i]);
+                                    // if the column is already there, remove it
+                                    if (existsA(cellBased, currentlySelected[i])) {
+                                        $(toggle).removeClass("cellBased-on");
+                                        removeA(cellBased, currentlySelected[i]);
+                                        console.log("removing col " + currentlySelected[i]);
+                                    }
+                                    // if the column is not there, add it
+                                    else {
+                                        $(toggle).addClass("cellBased-on");
+                                        //$(toggle).attr("class","cellBased-on");
+                                        cellBased.push(currentlySelected[i]);
+                                        console.log("adding col " + currentlySelected[i]);
+                                    }
+                                } // /for	
                             }
+                            console.log("currently specified for cell-based: " + cellBased);
+                        } // /cell-based callback
+                    }, // /cell-based
 
-                            //Expose the bundles row
-                            if (!$("#bundles").is(":visible")) {
-                                $("#bundles").removeClass("hide-while-empty");
-                            }
+                    "toggle-links_via": {
+                        // Modifies the links_via array to add or remove column indices.
+                        // If a selected column is in the array, then it will be removed (toggled OFF)
+                        // If the column is not in the array, then it will be added (toggled ON)
+                        // * NOTE that if this is called when only one column is selected,
+                        //   currently it will toggle the column on which the menu was invoked,
+                        //   NOT the selected column.
+                        name: "Toggle 'links_via'",
+                        callback: function () {
+                            // if one or fewer columns are selected, add/remove the column on which the menu was invoked
+                            if (currentlySelected.length <= 1) {
+                                var index = $("th").index(this);
+                                var toggle = document.getElementById("nameRow," + index);
+                                // if the column is already there, remove it
+                                if (existsA(links_via, index)) {
+                                    $(toggle).removeClass("links_via-on");
+                                    removeA(links_via, index);
+                                    console.log("removing col " + index);
+                                }
+                                // if the column is not there, add it
+                                else {
+                                    $(toggle).addClass("links_via-on");
+                                    //$(toggle).attr("class","links_via-on");
+                                    links_via.push(index);
+                                    console.log("adding col " + index);
+                                }
+                            } // /if
+                            // if more than one column is selected, perform the toggle on ALL selected columns
+                            else {
+                                for (i in currentlySelected) {
+                                    var toggle = document.getElementById("nameRow," + currentlySelected[i]);
+                                    // if the column is already there, remove it
+                                    if (existsA(links_via, currentlySelected[i])) {
+                                        $(toggle).removeClass("links_via-on");
+                                        removeA(links_via, currentlySelected[i]);
+                                        console.log("removing col " + currentlySelected[i]);
+                                    }
+                                    // if the column is not there, add it
+                                    else {
+                                        $(toggle).addClass("links_via-on");
+                                        //$(toggle).attr("class","links_via-on");
+                                        links_via.push(currentlySelected[i]);
+                                        console.log("adding col " + currentlySelected[i]);
+                                    }
+                                } // /for	
+                            } // /else
+                            console.log("currently specified for links_via: " + links_via);
+                        } // /links_via callback
+                    }, // /links_via
 
-                            // Before we move the item down, handle colspan
-                            var itemColspan = item.attr('colspan');
-                            if (typeof itemColspan !== 'undefined' && itemColspan !== false) {
-                                // has a colspan so set colspan for dest
-                                $("td#bundledRow\\," + selectedID).attr("colspan", itemColspan);
+                    "bundle": {
+                        name: "Create Bundle",
+                        disabled: create_bundle_disabled_boolean,
+                        callback: function () {
+                        	console.log(currentlySelected);
 
-                            }
-                            // Before we move the item down, handle hidden cells
-                            if (item.hasClass("hidden")) {
-                                $("td#bundledRow\\," + selectedID).addClass("hidden");
-                            }
+                            // First, let's get a reference to all DOM items that were selected
+                            var headerGroupings = [];
+                            var aGroup = [];
+                            $.each(currentlySelected, function(index, value) {
+                                aGroup.push($("th#0\\," + value));
+                                // Detect selection gaps, so we can selectivly colspan
+                                if( index != currentlySelected.length - 1 ) {
+                                    if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
+                                        headerGroupings.push(aGroup);
+                                        aGroup = [];
+                                    }
+                                } else if (index == currentlySelected.length - 1) {
+                                    headerGroupings.push(aGroup);
+                                }
+                            });
 
-                            // Now, move the item down
-                            item.children(":first").appendTo("td#bundledRow\\," + selectedID);
+                            console.log("Groups:", headerGroupings);
 
-                            // Insert new header table, colspan if first in group, else hide
-                            if (index == 0) {
-                                var newBundle = new bundle(bID, group, colspan);
-                                bID++;
-                                item.append("<div>" + createBundleSubtable(newBundle) + "</div>").attr("colspan", colspan);                                
-                            } else {
-                                item.addClass("hidden");                               
-                            }
-                            // TODO: Disable the forms here .attr("disabled", "disabled");
-                        });
-                    });
-                }
-            },
+                            // Let's log these groupings for this bundle into our local bundles object\
+                            // Use slice to pass by value and not reference
+                            var newBundle = new Bundle(bundleIdManager.requestID(), currentlySelected.slice(0), false);
+                            bundles.push(newBundle);
 
-            "comment": {
-                // Adds a comment to the Annotation Row
-                // * when finished, this should pop up a lightbox to solicit user input
-                //   including the type of comment (radio selector?) as well as the
-                //   comment text itself.
-                // If there is already a comment/the row is already showing, then just add it.
-                // Otherwise, show the row, then add the comment to the column on which the context
-                //    menu was called.
-                // * NOTE that if multiple columns are selected, it will only add the comment to the 
-                //   single column on which the menu is invoked!
-                name: "Add Comment",
-                callback: function () {
-                	 $("#commentModal").dialog({
-                        modal: true,
-                        width: 800,
-                        buttons: {
-                            Ok: function () {
-                                $(this).dialog("close");
-                            }
+                            // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
+                            // we will also build the new headers and insert them in this loop
+                            $.each(headerGroupings, function(index, group) { 
+                                $.each(group, function(index, item) { 
+                                    var colspan = group.length
+                                    var selectedID = item.attr("id").split(",")[1];
+                                    if ($("#bundledRow\\," + selectedID).children().length > 0) {
+                                        // Expose the extended-bundles row (yuck)
+                                        if (!$("#bundles-extended").is(":visible")) {
+                                            $("#bundles-extended").removeClass("hide-while-empty");
+                                        }
+                                        // Move the item down
+                                        $("#bundledRow\\," + selectedID).children(":first").appendTo("td#bundledRow-extended\\," + selectedID);
+                                    }
+
+                                    //Expose the bundles row
+                                    if (!$("#bundles").is(":visible")) {
+                                        $("#bundles").removeClass("hide-while-empty");
+                                    }
+
+                                    // Before we move the item down, handle colspan
+                                    var itemColspan = item.attr('colspan');
+                                    if (typeof itemColspan !== 'undefined' && itemColspan !== false) {
+                                        // has a colspan so set colspan for dest
+                                        $("td#bundledRow\\," + selectedID).attr("colspan", itemColspan);
+
+                                    }
+                                    // Before we move the item down, handle hidden cells
+                                    if (item.hasClass("hidden")) {
+                                        $("td#bundledRow\\," + selectedID).addClass("hidden");
+                                    }
+
+                                    // Before we move the cell down, handle bundle class (explicit, implicit)
+                                    item.removeClass("not-bundled").addClass("bundled-implicit");
+
+                                    // Now, move the item down
+                                    item.children(":first").appendTo("td#bundledRow\\," + selectedID);
+
+                                    // Insert new header table, colspan if first in group, else hide
+                                    if (index == 0) {
+                                        item.append("<div>" + createBundleSubtable() + "</div>").attr("colspan", colspan);                                
+                                    } else {
+                                        item.addClass("hidden");                               
+                                    }
+                                    // TODO: Disable the forms here .attr("disabled", "disabled");
+                                });
+                            });
                         }
-                    });
-                    /*
-                    var cRow = document.getElementById("annotations");
-                    var index = $("th").index(this);
-                    var cType = "rdfs:comment"; // in the end, these two fields 
-                    var cText = "testComment"; //  shouldn't be hard-coded....
-                    // if the row is hidden (ie, this is the first comment added), show the row
-                    if (cRow.classList.contains("hide-while-empty")) {
-                        $(cRow).removeClass("hide-while-empty");
+                    },
+
+                    "comment": {
+                        // Adds a comment to the Annotation Row
+                        // * when finished, this should pop up a lightbox to solicit user input
+                        //   including the type of comment (radio selector?) as well as the
+                        //   comment text itself.
+                        // If there is already a comment/the row is already showing, then just add it.
+                        // Otherwise, show the row, then add the comment to the column on which the context
+                        //    menu was called.
+                        // * NOTE that if multiple columns are selected, it will only add the comment to the 
+                        //   single column on which the menu is invoked!
+                        name: "Add Comment",
+                        callback: function () {
+                        	 $("#commentModal").dialog({
+                                modal: true,
+                                width: 800,
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                            /*
+                            var cRow = document.getElementById("annotations");
+                            var index = $("th").index(this);
+                            var cType = "rdfs:comment"; // in the end, these two fields 
+                            var cText = "testComment"; //  shouldn't be hard-coded....
+                            // if the row is hidden (ie, this is the first comment added), show the row
+                            if (cRow.classList.contains("hide-while-empty")) {
+                                $(cRow).removeClass("hide-while-empty");
+                            }
+                            var workingCol = document.getElementById("annotationRow," + index);
+                            var workingTable = workingCol.getElementsByTagName('TABLE')[0];
+                            var addedRow = workingTable.insertRow(-1);
+                            var typeCell = addedRow.insertCell(0);
+                            var textCell = addedRow.insertCell(1);
+                            typeCell.innerHTML = cType;
+                            textCell.innerHTML = cText;
+                            */
+                        } // /callback function
+                    }, // /addComment
+
+                    "edit Domain Template": {
+                        // Adds a comment to the Annotation Row
+                        // * when finished, this should pop up a lightbox to solicit user input
+                        //   including the type of comment (radio selector?) as well as the
+                        //   comment text itself.
+                        // If there is already a comment/the row is already showing, then just add it.
+                        // Otherwise, show the row, then add the comment to the column on which the context
+                        //    menu was called.
+                        // * NOTE that if multiple columns are selected, it will only add the comment to the 
+                        //   single column on which the menu is invoked!
+                        name: "Edit Domain Template",
+                        callback: function () {
+                            // Show modal
+                            $("#domainTemplateModal").dialog({
+                                modal: true,
+                                width: 800,
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        }
+                    },
+
+                    "add-canonical-value": {
+                        name: "Add Canonical Value",
+                        // Like addComment, this allows a user to add a canonical value
+                        //    using our conversion:eg. As the above, "egText" should eventually
+                        //    be user-specified.
+                        // Canonical Values hang out in the annotation row along with comments and
+                        //    other annotations.
+                        // * NOTE that, like the above, thsi will only add an eg to the column on which
+                        //   the context menu was invoked, even if multiple columns are selected!
+                        callback: function () {
+                        	 $("#canonicalModal").dialog({
+                                modal: true,
+                                width: 800,
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                            /*
+                            var egRow = document.getElementById("annotations");
+                            var index = $("th").index(this);
+                            var egType = "conversion:eg"; // in the end, these two fields 
+                            var egText = "test_eg"; //  shouldn't be hard-coded....
+                            // if the row is hidden (ie, this is the first comment added), show the row
+                            if (egRow.classList.contains("hide-while-empty")) {
+                                $(egRow).removeClass("hide-while-empty");
+                            }
+                            var workingCol = document.getElementById("annotationRow," + index);
+                            var workingTable = workingCol.getElementsByTagName('TABLE')[0];
+                            var addedRow = workingTable.insertRow(-1);
+                            var typeCell = addedRow.insertCell(0);
+                            var textCell = addedRow.insertCell(1);
+                            typeCell.innerHTML = egType;
+                            textCell.innerHTML = egText;
+                            */
+                        } // /callback function
+
+                    }, // /eg
+
+                    "add-subject-annotation": {
+                        name: "Add Subject Annotation",
+                        // Subject Annotation addes new triples. Forced triples is what we like to call it.
+                        callback: function () {
+                            $("#subjectAnnotationModal").dialog({
+                                modal: true,
+                                width: 800,
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        }
                     }
-                    var workingCol = document.getElementById("annotationRow," + index);
-                    var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-                    var addedRow = workingTable.insertRow(-1);
-                    var typeCell = addedRow.insertCell(0);
-                    var textCell = addedRow.insertCell(1);
-                    typeCell.innerHTML = cType;
-                    textCell.innerHTML = cText;
-                    */
-                } // /callback function
-            }, // /addComment
-
-            "edit Domain Template": {
-                // Adds a comment to the Annotation Row
-                // * when finished, this should pop up a lightbox to solicit user input
-                //   including the type of comment (radio selector?) as well as the
-                //   comment text itself.
-                // If there is already a comment/the row is already showing, then just add it.
-                // Otherwise, show the row, then add the comment to the column on which the context
-                //    menu was called.
-                // * NOTE that if multiple columns are selected, it will only add the comment to the 
-                //   single column on which the menu is invoked!
-                name: "Edit Domain Template",
-                callback: function () {
-                    // Show modal
-                    $("#domainTemplateModal").dialog({
-                        modal: true,
-                        width: 800,
-                        buttons: {
-                            Ok: function () {
-                                $(this).dialog("close");
-                            }
-                        }
-                    });
-                }
-            },
-
-            "add-canonical-value": {
-                name: "Add Canonical Value",
-                // Like addComment, this allows a user to add a canonical value
-                //    using our conversion:eg. As the above, "egText" should eventually
-                //    be user-specified.
-                // Canonical Values hang out in the annotation row along with comments and
-                //    other annotations.
-                // * NOTE that, like the above, thsi will only add an eg to the column on which
-                //   the context menu was invoked, even if multiple columns are selected!
-                callback: function () {
-                	 $("#canonicalModal").dialog({
-                        modal: true,
-                        width: 800,
-                        buttons: {
-                            Ok: function () {
-                                $(this).dialog("close");
-                            }
-                        }
-                    });
-                    /*
-                    var egRow = document.getElementById("annotations");
-                    var index = $("th").index(this);
-                    var egType = "conversion:eg"; // in the end, these two fields 
-                    var egText = "test_eg"; //  shouldn't be hard-coded....
-                    // if the row is hidden (ie, this is the first comment added), show the row
-                    if (egRow.classList.contains("hide-while-empty")) {
-                        $(egRow).removeClass("hide-while-empty");
-                    }
-                    var workingCol = document.getElementById("annotationRow," + index);
-                    var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-                    var addedRow = workingTable.insertRow(-1);
-                    var typeCell = addedRow.insertCell(0);
-                    var textCell = addedRow.insertCell(1);
-                    typeCell.innerHTML = egType;
-                    textCell.innerHTML = egText;
-                    */
-                } // /callback function
-
-            }, // /eg
-
-            "add-subject-annotation": {
-                name: "Add Subject Annotation",
-                // Subject Annotation addes new triples. Forced triples is what we like to call it.
-                callback: function () {
-                    $("#subjectAnnotationModal").dialog({
-                        modal: true,
-                        width: 800,
-                        buttons: {
-                            Ok: function () {
-                                $(this).dialog("close");
-                            }
-                        }
-                    });
-                }
-            },
-        } // /items
+                } // /items
+            };
+        }
     }); // /context menu
 }); // /context menu function
 
@@ -675,12 +738,35 @@ function existsA(theArray, theThing) {
 //    bundle, IF it is EXPLICIT. A value of -1 indicates the
 //    bundle is IMPLICIT; this is the default set here at 
 //    creation.
-function bundle(id, columns, colspan) {
-    this.bundleID = id;
-    this.bundleCols = columns;
-    this.bundleResource = -1;
-    this.colspan = colspan;
+function Bundle(id, columns, explicit) {
+    this.id = id;
+    this.columns = columns;
+    this.explicit = explicit; // boolean if this is explicit or implicit
 }
+
+Bundle.prototype.toggleExplicit = function() {
+    this.explicit =  !this.explicit;
+}
+
+// Manage the Ids for bundles. Can assign Ids, and Ids can be returned freeing them up for another bundle to use
+function BundleIdManager() {
+    this.ids = new Queue();
+    this.curId = 0;
+}
+
+BundleIdManager.prototype.requestID = function() {
+    if (this.ids.getLength() == 0) {
+        return this.curId++;
+    } else {
+        return this.ids.dequeue();
+    }
+}
+
+BundleIdManager.prototype.returnID = function(id) {
+    this.ids.enqueue(id);
+}
+
+
 
 // ==========================================
 // = HERE LIES THE CODE ARCHIVE / GRAVEYARD =
