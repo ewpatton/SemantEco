@@ -81,6 +81,9 @@ function handleFileSelect(event) {
             if (!tharr[j]) { // if we have extra columns trailing at the end,
                 extraColumns++;
             } else {
+				// This creates the portion in the DOM that will hold the RDFa!
+				createEnhancementNode(tharr[j], j);
+				
                 // colgroup
                 oneCol = document.createElement('col');
                 $(oneCol).attr("id", "colgroup," + j);
@@ -153,6 +156,7 @@ function handleFileSelect(event) {
 
         // Push to DOM and reveal to user
         $('#list').append(table).removeClass("hidden");
+		GreenTurtle.attach(document,true);
 
         // Make the column headers selectable and updates the currentlySelected
         //    array accordingly when things are selected or unselected.

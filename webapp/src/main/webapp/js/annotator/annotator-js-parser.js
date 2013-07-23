@@ -58,6 +58,30 @@ function createPrefixList(){
 	return prefixes
 }// /createPrefixList
 
+// Creates appropriate div for a column, containing required basic triples
+// This should be called repeatedly as the UI table is generated, 
+// and takes two arguments:
+//	- index: integer index of the column the div will be tied to
+//	- label: the text of the label for that column
+// * NOTE that other conversions on a column should be in elements attached
+//   to the bNode created by this method!
+function createEnhancementNode(label, index){
+	// create blank node for the enhancement
+	var bNode = document.createElement('div');
+	$(bNode).attr("id", "enhance-col,"+index);
+	// create nodes for the first enhancements
+	var colNum = document.createElement('p');
+	var colLabel = document.createElement('p');
+	$(colNum).text(index);
+	$(colLabel).text(label);
+	d3.select(colNum).attr("rdfa:typeof","ov:csvCol");
+	d3.select(colNum).attr("rdfa:typeof","ov:csvHeader conversion:label");
+	bNode.appendChild(colNum);
+	bNode.appendChild(colLabel);
+	var rdfaDiv = document.getElementById("e_process");
+	rdfaDiv.appendChild(bNode);
+}// createEnhancementNode
+
 function setSource(){
 	var source = "";
 	// if the user specified a source, use that...
