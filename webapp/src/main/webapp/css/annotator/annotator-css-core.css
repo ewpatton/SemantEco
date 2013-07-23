@@ -4,6 +4,8 @@
 		background: white;
 	}
 
+	th,td { vertical-align: bottom; }
+
 	div#header {
 		background-color: rgba(0, 33, 204, 0.61);
 		padding-top: 5px;
@@ -21,6 +23,11 @@
 		table-layout: fixed;
 	}
 
+	.fileTable table.annotation-table {
+		width: 100%;
+		table-layout: fixed;
+	}
+
 	/* Re adding old css stuff back */
 	.fileTable table {
       max-width: 100%;
@@ -32,7 +39,7 @@
       margin-top: 0px;
 	  border: 1px solid #dddddd;
       border-collapse: separate;
-      *border-collapse: collapse;
+      /* border-collapse: collapse; */
       border-left: 0;
       -webkit-border-radius: 4px;
          -moz-border-radius: 4px;

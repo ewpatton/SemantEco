@@ -487,15 +487,23 @@ $(function () {
 
 // Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
 var dnd_classes = {
-    "drop_target": ".column-header, .bundled-row, .bundled-row-extended",
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
+    "drop_check": function (data) {
+        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
+            if ( data.r.children().length == 0 ) { 
+                return false; 
+            }
+        }
+        return true;
+    },
     "drop_finish": function (data) {
-        console.log(data, data.r, data.r.find("p.class-label:eq(0)"), data.o.find('a.jstree-clicked'));
+        //console.log(data, data.r, data.r.find("p.class-label:eq(0)"), data.o.find('a.jstree-clicked'));
         if (data.r.is("p.class-label")) {
             var target = data.r;
-        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") ) {
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             var target = data.r.find("p.class-label:eq(0)");
         } else {
-            var target = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended").find("p.class-label:eq(0)");
+            var target = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").find("p.class-label:eq(0)");
         }
 
 
@@ -534,26 +542,23 @@ var dnd_classes = {
 
 // Arguments for Drag and Drop for property facets ( this applies to the jstree library. see: jstree.com)
 var dnd_properties = {
-    "drop_target": ".column-header, .bundled-row, .bundled-row-extended",
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
     "drop_check": function (data) {
-        console.log("entered");
-        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") ) {
+        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             if ( data.r.children().length == 0 ) { 
-                console.log("false");
                 return false; 
             }
         }
-        console.log("true");
         return true;
     },
     "drop_finish": function (data) {
-        console.log(data, data.r, data.r.find("p.property-label:eq(0)"), data.o.find('a.jstree-clicked'));
+        //console.log(data, data.r, data.r.find("p.property-label:eq(0)"), data.o.find('a.jstree-clicked'));
         if (data.r.is("p.property-label")) {
             var target = data.r;
-        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") ) {
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             var target = data.r.find("p.property-label:eq(0)");
         } else {
-            var target = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended").find("p.property-label:eq(0)");
+            var target = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").find("p.property-label:eq(0)");
         }
 
 
@@ -637,7 +642,15 @@ $(document).ready(function () {
         if (this.offsetWidth < this.scrollWidth) {
             $(this).qtip({
                 content: {
-                    text: $(this).text()
+                    text: function () {
+                        if ( $(this).text().length != 0 ) {
+                            return $(this).text();
+                        } else if ( $(this).val().length != 0 ) {
+                            return $(this).val();
+                        } else {
+                            return "Unknown";
+                        }
+                    }
                 },
                 overwrite: false, // Don't overwrite tooltips already bound
                 show: {
@@ -774,6 +787,21 @@ $(document).ready(function () {
 // ====================== ACCESSORY / MISC. FUNCTIONS ==================
 // =====================================================================
 
+// Bind to clicks on editables (text to input to text)
+$(function () {
+    $('body').on('click' ,'p.editable-input', function(e) {
+        var input = $('<input />', {'type': 'text', 'name': 'anEditable', 'value': $(this).html(), "class": $(this).attr('class')});
+        $(this).parent().append(input);
+        $(this).remove();
+        input.focus();
+    });
+
+    $('body').on('blur' ,'input.editable-input', function(e) {
+        $(this).parent().append($('<p />', { "class": $(this).attr('class')}).html($(this).val()));
+        $(this).remove();
+    });
+});
+
 // if the row is hidden (ie, this is the first comment added), show the row
 function checkAnnotationRow(){
 	var cRow = document.getElementById("annotations");
@@ -794,8 +822,8 @@ function addAnnotation( index, predicate, object ){
 	var theTable = workingCol.getElementsByTagName('TABLE')[0];
 	$( theTable ).append( "<tr typeof=\"conversion:enhance\">" +
 	"<td class=\"hidden\" property=\"ov:csvCol\">" + index + "</td>" + 
-	"<td property=\"conversion:predicate\">" + predicate + "</td>" +
-	"<td property=\"conversion:object\">" + object + "</td>" +
+	"<td property=\"conversion:predicate\"><p class=\"ellipses marginOverride class-label editable-input\">" + predicate + "</p></td>" +
+	"<td property=\"conversion:object\"><p class=\"ellipses marginOverride property-label editable-input\">" + object + "</p></td>" +
 	"</tr>" );
 }// /addAnnotation
 

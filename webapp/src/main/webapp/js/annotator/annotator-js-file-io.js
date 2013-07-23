@@ -73,7 +73,7 @@ function handleFileSelect(event) {
         // * This row is also empty and hidden at table generation
         // * This row includes empty tables at creation for adding to later.
         var atr = document.createElement('tr');
-        $(atr).attr("class", 'annotation-row hide-while-empty');
+        $(atr).attr("class", 'hide-while-empty');
         $(atr).attr("id", 'annotations');
         //$(atr).attr("style", 'display:none');
         var th, btd, atd, annTable;
@@ -109,8 +109,9 @@ function handleFileSelect(event) {
                 // annotation row
                 atd = document.createElement('td');
                 $(atd).attr("id", 'annotationRow,' + j);
-                //$(atd).attr("class", 'annotationRow');
-                annTable = document.createElement('table')
+                $(atd).attr("class", 'annotation-row');
+                annTable = document.createElement('table');
+                $(annTable).attr("class", 'annotation-table');
                 atd.appendChild(annTable);
                 atr.appendChild(atd);
             }
