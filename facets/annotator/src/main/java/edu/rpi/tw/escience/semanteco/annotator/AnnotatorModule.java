@@ -1,14 +1,22 @@
 package edu.rpi.tw.escience.semanteco.annotator;
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -166,6 +174,48 @@ public class AnnotatorModule implements Module {
 	
 	public OntModel getModel(){
 		return AnnotatorModule.model;
+	}
+	
+	@QueryMethod
+	public String getCSVFile(Request request) throws URISyntaxException, JSONException, IOException{
+		
+		
+		String queryString = (String) request.getParam("csvUri");
+		BufferedReader br = null;
+
+		try{
+			URL requestURL = new URL(queryString);
+			System.out.println("requestURL : " + requestURL.toURI().toString());
+			//URLConnection conn = requestURL.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
+
+
+			conn.setReadTimeout(5000);
+			//String contentType = conn.getContentType();
+			//System.out.println("connType : " + contentType);
+			try{
+				InputStream o = (InputStream)conn.getContent();
+				InputStreamReader isr = new InputStreamReader(o);
+				br = new BufferedReader(isr);
+			}
+			catch(Exception e){ e.printStackTrace();
+			JSONObject error = new JSONObject();
+			error.put("error", "test");
+			return error.toString();
+			}
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} 
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		String line;
+		String result="";
+		while((line=br.readLine())!=null) result += line;			
+
+		return result;
+		
 	}
 	
 	@QueryMethod
