@@ -34,3 +34,5 @@ pom.xml.old
 webapp/test
 
 *.swp
+
+*.class
