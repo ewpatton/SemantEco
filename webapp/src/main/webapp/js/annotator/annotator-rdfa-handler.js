@@ -37,9 +37,11 @@ function queryForEnhancing(){
 //	There should be a better way later to read in prefixes from a file maybe
 //		or add/remove based on which ontologies the user has active.
 //	But for time's sake right now, HARD CODE ALL THE THINGS.
-//	annotator-js-file-io.js calls this at the very end of table construction;
-//	prefixes are stored in the #here-be-rdfa div.
-function createPrefixList(){
+//	This function is called when the user hits "OK" after entering package-level data.
+//	Prefixes are stored in the #here-be-rdfa div.
+// 	Takes as a parameter:
+// 	 - the full URI of the dataset (requires user input!) to add as a prefix
+function createPrefixList(datasetURI){
 	var prefixes = "";
 	prefixes += "rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# ";
 	prefixes += "rdfs: http://www.w3.org/2000/01/rdf-schema# ";
@@ -54,8 +56,9 @@ function createPrefixList(){
 	prefixes += "sweet: http://sweet.jpl.nasa.gov/2.1/ ";
 	prefixes += "void: http://rdfs.org/ns/void# ";
 	prefixes += "conversion: http://purl.org/twc/vocab/conversion/ ";
+	prefixes += ": " + datasetURI + " ";
 	
-	return prefixes
+	return prefixes;
 }// /createPrefixList
 
 // Creates appropriate div for a column, containing required basic triples
@@ -77,11 +80,11 @@ function createEnhancementNode(label, index){
 	//   specifies what they are.
 	var colProp = document.createElement('p');
 	// Class is more complex (https://github.com/ewpatton/SemantEco/wiki/subclassing-range-for-a-column-%28csv2rdf4lod-enhancement%29)
-	var colRangeName = document.createElement('p');
+	/*var colRangeName = document.createElement('p');
 	var colClass = document.createElement('p'); // blank node
 		// these will be attached as children to colClass
 		var colClassName = document.createElement('p');
-		var colSubclassOf = document.createElement('p');
+		var colSubclassOf = document.createElement('p');*/
 	
 	// these are the only two things where we already know the necessary
 	//    objects at table creation.
@@ -92,23 +95,69 @@ function createEnhancementNode(label, index){
 	d3.select(colNum).attr("rdfa:typeof","ov:csvCol");
 	d3.select(colLabel).attr("rdfa:typeof","ov:csvHeader conversion:label");
 	d3.select(colProp).attr("rdfa:typeof","conversion:equivalent_property");
-	d3.select(colRangeName).attr("rdfa:typeof","conversion:range_name");
-	d3.select(colClass).attr("rdfa:typeof","conversion:enhance");
-	d3.select(colClassName).attr("rdfa:typeof","conversion:class_name");
-	d3.select(colSubclassOf).attr("rdfa:typeof","conversion:subclass_of");
+	//d3.select(colRangeName).attr("rdfa:typeof","conversion:range_name");
+	//d3.select(colClass).attr("rdfa:typeof","conversion:enhance");
+	//d3.select(colClassName).attr("rdfa:typeof","conversion:class_name");
+	//d3.select(colSubclassOf).attr("rdfa:typeof","conversion:subclass_of");
 	
 	// glue everything together....
-	colClass.appendChild(colClassName);
-	colClass.appendChild(colSubclassOf);
+	//colClass.appendChild(colClassName);
+	//colClass.appendChild(colSubclassOf);
 	bNode.appendChild(colNum);
 	bNode.appendChild(colLabel);
 	bNode.appendChild(colProp);
-	bNode.appendChild(colRangeName);
-	bNode.appendChild(colClass);
+	//bNode.appendChild(colRangeName);
+	//bNode.appendChild(colClass);
 	// stick it in the page
 	var rdfaDiv = document.getElementById("e_process");
 	rdfaDiv.appendChild(bNode);
 }// createEnhancementNode
+
+// pulls user input about the dataset and adds it to the RDFa
+// RETURNS the full URI of the dataset, for addition to the prefix list.
+function addPackageLevelData(){
+	// get the data
+	// * base_uri might not be hardcoded in the future
+	var base = "http://purl.org/twc/semantgeo";
+	var source = setSource();
+	var dataset = setDataset();
+	var version = setVersion();
+	var full = base + "/source/" + source + "/dataset/" + dataset + "/version/" + version + "/conversion/enhancement/1";
+	// create the divs
+	var fullURI = document.createElement('p');
+	var baseURI = document.createElement('p');
+	var si = document.createElement('p');
+	var di = document.createElement('p');
+	var vi = document.createElement('p');
+	var ei = document.createElement('p');
+	// put the data in the divs
+	$(fullURI).text(full);
+	$(baseURI).text(base);
+	$(si).text(source);
+	$(di).text(dataset);
+	$(vi).text(version);
+	$(ei).text("1");
+	// Type everything
+	// Don't forget, the full URI here represents a resource!
+	d3.select(fullURI).attr("rdfa:resource",full).attr("rdfa:typeof","conversion:LayerDataset void:Dataset");
+	// and everything else here represents properties of that resource:
+	d3.select(baseURI).attr("rdfa:typeof","conversion:base_uri");
+	d3.select(si).attr("rdfa:typeof","conversion:source_identifier");
+	d3.select(di).attr("rdfa:typeof","conversion:dataset_identifier");
+	d3.select(vi).attr("rdfa:typeof","conversion:version_identifier");
+	d3.select(ei).attr("rdfa:typeof","conversion:enhancement_identifier");
+	// append ALL THE THINGS
+	fullURI.appendChild(baseURI);
+	fullURI.appendChild(si);
+	fullURI.appendChild(di);
+	fullURI.appendChild(vi);
+	fullURI.appendChild(ei);
+	
+	document.getElementById("here-be-rdfa").appendChild(fullURI);
+	return full;
+}// /addPackageLevelData
+
+
 
 function setSource(){
 	var source = "";
@@ -127,7 +176,7 @@ function setSource(){
 	}
 	// ... and let the user know if everything's null
 	else {
-		//alert("Data Source field left blank!");
+		console.log("Data Source field left blank!");
 		return;
 	}
 	return source;
@@ -145,7 +194,7 @@ function setDataset(){
 		dataset += addDataset;
 	}
 	else {
-		//alert("Dataset Name field left blank!");
+		console.log("Dataset Name field left blank!");
 		return;
 	}
 	return dataset;
@@ -157,11 +206,13 @@ function setVersion(){
 	// * As with the above, we may want to check/clean user input a little
 	var version = "";
 	if ( document.getElementById("version_info").value ) {
-		addVersion = "\"" + (document.getElementById("version_info").value) + "\";\n";
-		version += addVersion;
+		version += (document.getElementById("version_info").value);
+		version.replace(/^\s+|\s+$/g,'');
+		return version;
 	}
 	else 
-		alert("Version field left blank!");
+		console.log("Version field left blank!");
+		return;
 }// /setVersion
 
 //	Reads in Params File writes triples related to prefixes, source, dataset, and versionId.

@@ -104,6 +104,15 @@
 		<!-- dropdown div, filled by plugin -->
 		<div id="ontology-dropdown"></div>
 		
+		<!-- RDFa will live here. This div will always remain hidden -->
+		<div id="here-be-rdfa" class="hidden">
+			
+			<div id="e_process" typeof="conversion:enhancement_process">
+			<!-- per-column triples -->
+			</div>
+		<!-- package-level triples -->
+		</div>
+		
 		<!-- All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) -->
 		<!-- File to Import Prompt (what file are we working with?) -->
 		<div id="fileDialogWrapper" class="hidden">
@@ -191,13 +200,7 @@
 			<input type="text" id="canonicalModalInput" placeHolder="e.g. Alabama is a state" />
 		</div>
 		
-		<!-- RDFa will live here -->
-		<div id="here-be-rdfa" class="hidden">
-			<!-- package-level triples -->
-			<div id="e_process" typeof="conversion:enhancement_process">
-			<!-- per-column triples -->
-			</div>
-		</div>
+		
 
 	    <!-- Load Javascript libraries -->
 	    <!-- Local JS Libraries -->

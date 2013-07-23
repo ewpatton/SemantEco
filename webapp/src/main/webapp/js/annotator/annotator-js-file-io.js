@@ -28,6 +28,11 @@ function handleFileSelect(event) {
         width: 800,
         buttons: {
             Ok: function () {
+				var uriPrefix = addPackageLevelData();
+				var prefixes = createPrefixList(uriPrefix);
+				console.log(prefixes);
+				d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
+				GreenTurtle.attach(document,true);
                 $(this).dialog("close");
             }
         }
@@ -54,9 +59,9 @@ function handleFileSelect(event) {
         var group = document.createElement('colgroup');
         var oneCol;
         // Create subtabled column headers
-        var thr = document.createElement('tr'); // [RDFa]: prefixes can live in this element? Then we 
-        $(thr).attr("class", 'col-selectable'); // can select this and use the children to get all the
-		$(thr).attr("id", 'col-headers');		// property and class RDFa?
+        var thr = document.createElement('tr'); 
+        $(thr).attr("class", 'col-selectable'); 
+		$(thr).attr("id", 'col-headers');		
         var tharr = rows[0].split(',');
         var numcols = tharr.length;
         // Create row for bundled properties
@@ -82,7 +87,9 @@ function handleFileSelect(event) {
                 extraColumns++;
             } else {
 				// This creates the portion in the DOM that will hold the RDFa!
-				createEnhancementNode(tharr[j], j);
+				if (tharr[j] != ''){
+					createEnhancementNode(tharr[j], j);
+				}
 				
                 // colgroup
                 oneCol = document.createElement('col');
@@ -117,8 +124,8 @@ function handleFileSelect(event) {
                 $(annTable).attr("class", 'annotation-table');
                 atd.appendChild(annTable);
                 atr.appendChild(atd);
-            }
-        } //
+            }// /else
+        } // /for
         table.appendChild(group);
         table.appendChild(thr);
         table.appendChild(btr);
@@ -156,8 +163,6 @@ function handleFileSelect(event) {
 
         // Push to DOM and reveal to user
         $('#list').append(table).removeClass("hidden");
-		
-		d3.select("here-be-rdfa").attr("rdfa:prefixes",createPrefixList());
 		GreenTurtle.attach(document,true);
 
         // Make the column headers selectable and updates the currentlySelected
@@ -219,5 +224,5 @@ function handleFileSelect(event) {
     }; // /reader.onload
     $('#data_info_form').removeClass("hidden");
 	d3.ns.qualify("rdfa", "http://www.w3.org/ns/rdfa.html");
-	d3.select("#list").attr("rdfa:prefix", createPrefixList());
+	
 } // /handleFileSelect
