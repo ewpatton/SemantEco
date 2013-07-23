@@ -252,7 +252,6 @@
 
     .inactive-text-link {
     	color: gray;
-   		text-decoration: line-through;
     }
 
     .inactive-text-link:hover {
