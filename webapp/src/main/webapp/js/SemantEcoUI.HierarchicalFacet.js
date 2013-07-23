@@ -189,6 +189,7 @@ SemantEcoUI.HierarchicalFacet = {};
 
     var processChildren = function(jqdiv, node, data) {
         if(!data.success) {
+            jqdiv.parent().find(".loading").css("display","none");
             window.alert(data.error);
             return;
         }
@@ -226,16 +227,23 @@ SemantEcoUI.HierarchicalFacet = {};
     };
 
     SemantEcoUI.HierarchicalFacet.getChildren = function(jqdiv, node) {
+        jqdiv.parent().find(".loading").css("display", "block");
         var module = jqdiv.data("hierarchy.module");
         var qmethod = jqdiv.data("hierarchy.query_method");
         var args = {};
         args[jqdiv.data("hierarchy.param")] = node.attr("hierarchy_id");
         module[qmethod](HierarchyVerb.CHILDREN,
                 args, function(d) {
-            if(typeof d === "string") {
-                d = JSON.parse(d);
+            try {
+                if(typeof d === "string") {
+                    d = JSON.parse(d);
+                }
+                processChildren(jqdiv, node, d);
+            } finally {
+                jqdiv.parent().find(".loading").css("display", "none");
             }
-            processChildren(jqdiv, node, d);
+        }, function(e) {
+            jqdiv.parent().find(".loading").css("display","none");
         });
     };
 
@@ -377,6 +385,7 @@ SemantEcoUI.HierarchicalFacet = {};
         var text = $("input[type='text']", div);
         text.autocomplete({minLength: 4, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);
+        div.find(".loading").css("display","block");
         div = $("div.jstree-placeholder", div);
         div.data("hierarchy.module", module);
         div.data("hierarchy.query_method", qmethod);
@@ -385,7 +394,13 @@ SemantEcoUI.HierarchicalFacet = {};
             if(typeof d === "string") {
                 d = JSON.parse(d);
             }
-            processRoots(div, d, jstreeArgs);
+            try {
+                processRoots(div, d, jstreeArgs);
+            } finally {
+                div.parent().find(".loading").css("display","none");
+            }
+        }, function(e) {
+            div.parent().find(".loading").css("display","none");
         });
     };
 
