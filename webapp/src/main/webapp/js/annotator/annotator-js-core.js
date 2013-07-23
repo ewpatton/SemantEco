@@ -503,7 +503,7 @@ var dnd_classes = {
     },
     "drop_finish": function (data) {
         // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
-        var target, columnID;
+        var target, columnID, columnType;
 
         if (data.r.is("p.class-label")) {
             target = data.r;
@@ -514,10 +514,11 @@ var dnd_classes = {
         } else {
             var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
             target = parent.find("p.class-label:eq(0)");
+			columnType = parent.attr("id").split(",")[0];
             columnID = parent.attr("id").split(",")[1];
         }
 
-        console.log(columnID);
+        console.log(columnType + " " + columnID);
 
 
         // handle source object having children
@@ -548,8 +549,7 @@ var dnd_classes = {
 		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		target.attr("rdfa:typeof", uri);
-        //d3.select(target).attr("rdfa:typeof", uri);
+		updateProp(columnID,columnType,uri)
 
         // Manipulate the property-label to reflect what was just dropped
         // First find the property-label
