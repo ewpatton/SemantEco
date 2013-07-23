@@ -30,7 +30,6 @@ function handleFileSelect(event) {
             Ok: function () {
 				var uriPrefix = addPackageLevelData();
 				var prefixes = createPrefixList(uriPrefix);
-				console.log(prefixes);
 				d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
 				GreenTurtle.attach(document,true);
                 $(this).dialog("close");

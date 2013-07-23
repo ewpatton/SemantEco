@@ -89,9 +89,10 @@ function createEnhancementNode(label, index){
 //     be generated at table creation.
 // This takes two parameters:
 // 	- index: the index of the column we are modifying
+// 	- colType: the type of the column (regular, bundle, etc)
 // 	- theProperty: full URI/CURIE of the property we are adding. Either one should
 // 	     be okay, since we should have the prefixes stored in the main RDFa div.
-function updateProp(index,theProperty){
+function updateProp(index,colType,theProperty){
 	var propNode = document.getElementById("prop-enhance,"+index);
 	$(propNode).text(theProperty);
 }// /updateProp
