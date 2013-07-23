@@ -591,16 +591,16 @@ var dnd_properties = {
             target = data.r;
             columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
         } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
-            target = data.r.find("p.class-label:eq(0)");
+            target = data.r.find("p.property-label:eq(0)");
             columnID = data.r.attr("id").split(",")[1];
         } else {
             var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
-            target = parent.find("p.class-label:eq(0)");
+            target = parent.find("p.property-label:eq(0)");
             columnID = parent.attr("id").split(",")[1];
         }
 
         console.log(columnID);
-        
+
         // handle source object having children
         if (data.o.hasClass("jstree-open")) {
             var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
