@@ -507,9 +507,11 @@ var dnd_classes = {
 
         if (data.r.is("p.class-label")) {
             target = data.r;
+			columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
             columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
         } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             target = data.r.find("p.class-label:eq(0)");
+			columnType = parent.attr("id").split(",")[0];
             columnID = data.r.attr("id").split(",")[1];
         } else {
             var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
@@ -549,7 +551,6 @@ var dnd_classes = {
 		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		updateProp(columnID,columnType,uri)
 
         // Manipulate the property-label to reflect what was just dropped
         // First find the property-label
@@ -585,21 +586,24 @@ var dnd_properties = {
     },
     "drop_finish": function (data) {
         // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
-        var target, columnID;
+        var target, columnID, columnType;
         
         if (data.r.is("p.property-label")) {
             target = data.r;
-            columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
+            columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
+			columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
         } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             target = data.r.find("p.property-label:eq(0)");
-            columnID = data.r.attr("id").split(",")[1];
+            columnType = data.r.attr("id").split(",")[0];
+			columnID = data.r.attr("id").split(",")[1];
         } else {
             var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
             target = parent.find("p.property-label:eq(0)");
-            columnID = parent.attr("id").split(",")[1];
+            columnType = parent.attr("id").split(",")[0];
+			columnID = parent.attr("id").split(",")[1];
         }
 
-        console.log(columnID);
+        console.log(columnType + " " + columnID);
 
         // handle source object having children
         if (data.o.hasClass("jstree-open")) {
@@ -614,7 +618,7 @@ var dnd_properties = {
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		updateProp(columnID,uri);
+		updateProp(columnID,columnType,uri);
 
         // Manipulate the class-label to reflect what was just dropped
         // First find the class-label
