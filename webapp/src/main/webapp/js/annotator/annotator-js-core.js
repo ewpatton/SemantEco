@@ -543,6 +543,25 @@ var dnd_classes = {
         target.parent().css("color", "black");
 		target.attr("rdfa:typeof", uri);
         //d3.select(target).attr("rdfa:typeof", uri);
+
+        // Manipulate the property-label to reflect what was just dropped
+        // First find the property-label
+        var propertyLabel = target.closest("tr").siblings().filter(function () {
+            return $(this).find("p.property-label").length == 1;
+        });
+
+        // Only apply if class has not been set yet
+        if ( propertyLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
+            propertyLabel = propertyLabel.find("p.property-label");
+
+            // Now get which fact the drop target was from
+            var sourceFacet = data.o.closest("div.facet").attr("id");
+
+            // Now apply logic
+            if ( sourceFacet == "datatypesFacet" ) {
+                propertyLabel.empty().append("[datatype or annotation property]");
+            }
+        }
     }
 };
 
