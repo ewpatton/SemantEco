@@ -1,32 +1,6 @@
 // annotator-js-parser.js
 // Handles creation of triples for the enhancement file on the client-side
 
-/* WILL REPLACE THE FOLLOWING FUNCTIONS:
-
-after import of file: readCsvFileForInitialConversion
-
-queryForEnhancing:
-	calls: generateParmsFileFromHeaders
-	calls in a loop: queryForPropertyToEnhance for property level enhancements)
-					 queryForHeaderToEnhance (for class type enhancements)
-	then calls: convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile)
-	then calls: mireotClass(rangeClass, null, outputRdfFileLocation);
-
-generateParmsFileFromHeaders:
-
-
-queryForPropertyToEnhance:
-	gets triple with column string in the object, and for that anonymous node, gets the subject
-	(the blank node id) and assert equivalent property
-	(to do this: https://github.com/ewpatton/SemantEco/wiki/to-change-the-property-for-linking-to-a-column-(csv2rdf4lod-enhancement)
-
-queryForHeaderToEnhance:
-	adds new triples based on generated anonymous node, and replaces range_name triple.
-	(to do this: https://github.com/ewpatton/SemantEco/wiki/subclassing-range-for-a-column-(csv2rdf4lod-enhancement)
-
-convertToRdfWithEnhancementsFile: calls: csv2rdfObject.toRDF
-*/
-
 // THE MAIN EVENT. Should call the other functions.
 function queryForEnhancing(){
 }// /queryForEnhancing
@@ -34,8 +8,8 @@ function queryForEnhancing(){
 
 
 //	Prefixes!
-//	There should be a better way later to read in prefixes from a file maybe
-//		or add/remove based on which ontologies the user has active.
+//	There should be a better way later to read in prefixes from JSON maybe
+//		or add/remove based on which ontologies the user has active?
 //	But for time's sake right now, HARD CODE ALL THE THINGS.
 //	This function is called when the user hits "OK" after entering package-level data.
 //	Prefixes are stored in the #here-be-rdfa div.
@@ -75,43 +49,100 @@ function createEnhancementNode(label, index){
 	// create nodes for the first enhancements
 	var colNum = document.createElement('p');
 	var colLabel = document.createElement('p');
-	// nodes for prop and class are created here, and given the necessary RDFa
-	//   types for the eventual conversion, but they remain blank until the user
-	//   specifies what they are.
+	// node for property is created here, and given the necessary RDFa
+	//   type for the eventual conversion, but it remains blank until the user
+	//   specifies what it is.
 	var colProp = document.createElement('p');
-	// Class is more complex (https://github.com/ewpatton/SemantEco/wiki/subclassing-range-for-a-column-%28csv2rdf4lod-enhancement%29)
+	$(colProp).attr("id","prop-enhance,"+index);
+	// We can also create a node for the class, and give it an ID, however
+	//	 depending on whether it is a class or a datatype, the structure will be
+	//	 different. So this will be a dummy node that can be overridden/retyped
+	//	 as necessary. We mostly just want to give it an ID right now for ease of
+	//	 manipulation later =)
+	var colType = document.createElement('p');
+	$(colType).attr("id","type-enhance,"+index);
+	
+	// These are the only two things where we already know the necessary
+	//   objects at table creation.
+	$(colNum).text(index);
+	$(colLabel).text(label);
+	// But we know the predicates for everything except for class/type.
+	d3.select(bNode).attr("rdfa:typeof","conversion:enhance");
+	d3.select(colNum).attr("rdfa:typeof","ov:csvCol");
+	d3.select(colLabel).attr("rdfa:typeof","ov:csvHeader conversion:label");
+	d3.select(colProp).attr("rdfa:typeof","conversion:equivalent_property");
+	
+	// glue everything together....
+	bNode.appendChild(colNum);
+	bNode.appendChild(colLabel);
+	bNode.appendChild(colProp);
+	bNode.appendChild(colType);
+	
+	// stick it in the page
+	var rdfaDiv = document.getElementById("e_process");
+	rdfaDiv.appendChild(bNode);
+}// createEnhancementNode
+
+// When the user makes a property assignment, update that property in the RDFa; 
+//     this should occur in the callback for dropping a property.
+// This assumes that the node already exists - which it should, since it should
+//     be generated at table creation.
+// This takes two parameters:
+// 	- index: the index of the column we are modifying
+// 	- theProperty: full URI/CURIE of the property we are adding. Either one should
+// 	     be okay, since we should have the prefixes stored in the main RDFa div.
+function updateProp(index,theProperty){
+	var propNode = document.getElementById("prop-enhance,"+index);
+	$(propNode).text(theProperty);
+}// /updateProp
+
+// Checks to see whether there has been a Data Type assignment
+//	 in the RDFa for the column at (index).
+function hasDataType(index){
+	var checking = document.getElementById("type-enhance,"+index);
+	var rdfaType = d3.select(checking).attr("rdfa:typeof");
+	console.log(rdfaType);
+	if (rdfaType === "conversion:range"){
+		return true; }
+	else {
+		return false; }
+}// /hasDataType
+
+// Checks to see whether there has been a Class assignment
+//	 in the RDFa for the column at (index).
+// There are TWO child nodes of the column's enhancement node
+//	 if a class has been assigned! We are checking for the range_name
+//	 one.
+function hasClassType(index){
+	var checking = document.getElementById("type-enhance,"+index);
+	var rdfaType = d3.select(checking).attr("rdfa:typeof");
+	console.log(rdfaType);
+	if (rdfaType === "conversion:range_name"){
+		return true; }
+	else {
+		return false; }
+}// /hasClassType
+
+// Class is more complex (https://github.com/ewpatton/SemantEco/wiki/subclassing-range-for-a-column-%28csv2rdf4lod-enhancement%29)
+function addClassTypeEnhancement(index){
+	//var bNode = document.getElementById("enhance-col,"+index);
 	/*var colRangeName = document.createElement('p');
 	var colClass = document.createElement('p'); // blank node
 		// these will be attached as children to colClass
 		var colClassName = document.createElement('p');
 		var colSubclassOf = document.createElement('p');*/
 	
-	// these are the only two things where we already know the necessary
-	//    objects at table creation.
-	$(colNum).text(index);
-	$(colLabel).text(label);
-	// but we know everything's attributes
-	d3.select(bNode).attr("rdfa:typeof","conversion:enhance");
-	d3.select(colNum).attr("rdfa:typeof","ov:csvCol");
-	d3.select(colLabel).attr("rdfa:typeof","ov:csvHeader conversion:label");
-	d3.select(colProp).attr("rdfa:typeof","conversion:equivalent_property");
 	//d3.select(colRangeName).attr("rdfa:typeof","conversion:range_name");
 	//d3.select(colClass).attr("rdfa:typeof","conversion:enhance");
 	//d3.select(colClassName).attr("rdfa:typeof","conversion:class_name");
 	//d3.select(colSubclassOf).attr("rdfa:typeof","conversion:subclass_of");
 	
-	// glue everything together....
 	//colClass.appendChild(colClassName);
 	//colClass.appendChild(colSubclassOf);
-	bNode.appendChild(colNum);
-	bNode.appendChild(colLabel);
-	bNode.appendChild(colProp);
+	
 	//bNode.appendChild(colRangeName);
 	//bNode.appendChild(colClass);
-	// stick it in the page
-	var rdfaDiv = document.getElementById("e_process");
-	rdfaDiv.appendChild(bNode);
-}// createEnhancementNode
+}// /addClassTypeEnhancement
 
 // pulls user input about the dataset and adds it to the RDFa
 // RETURNS the full URI of the dataset, for addition to the prefix list.

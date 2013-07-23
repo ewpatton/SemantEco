@@ -612,10 +612,9 @@ var dnd_properties = {
         // [RDFa]: also sets the RDFa to the text in the node
         //  * still need URI/prefix for whatever ontology the node comes from.
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
-        target.empty().append(payload);
+		target.empty().append(payload);
         target.parent().css("color", "black");
-        target.attr("rdfa:typeof", uri);
-        //d3.select(target).attr("rdfa:typeof", uri);
+		updateProp(columnID,uri);
 
         // Manipulate the class-label to reflect what was just dropped
         // First find the class-label
