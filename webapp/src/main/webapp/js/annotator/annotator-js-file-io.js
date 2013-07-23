@@ -156,6 +156,8 @@ function handleFileSelect(event) {
 
         // Push to DOM and reveal to user
         $('#list').append(table).removeClass("hidden");
+		
+		d3.select("here-be-rdfa").attr("rdfa:prefixes",createPrefixList());
 		GreenTurtle.attach(document,true);
 
         // Make the column headers selectable and updates the currentlySelected

@@ -38,7 +38,7 @@ function queryForEnhancing(){
 //		or add/remove based on which ontologies the user has active.
 //	But for time's sake right now, HARD CODE ALL THE THINGS.
 //	annotator-js-file-io.js calls this at the very end of table construction;
-//	prefixes are stored in the #list div.
+//	prefixes are stored in the #here-be-rdfa div.
 function createPrefixList(){
 	var prefixes = "";
 	prefixes += "rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# ";
@@ -72,12 +72,40 @@ function createEnhancementNode(label, index){
 	// create nodes for the first enhancements
 	var colNum = document.createElement('p');
 	var colLabel = document.createElement('p');
+	// nodes for prop and class are created here, and given the necessary RDFa
+	//   types for the eventual conversion, but they remain blank until the user
+	//   specifies what they are.
+	var colProp = document.createElement('p');
+	// Class is more complex (https://github.com/ewpatton/SemantEco/wiki/subclassing-range-for-a-column-%28csv2rdf4lod-enhancement%29)
+	var colRangeName = document.createElement('p');
+	var colClass = document.createElement('p'); // blank node
+		// these will be attached as children to colClass
+		var colClassName = document.createElement('p');
+		var colSubclassOf = document.createElement('p');
+	
+	// these are the only two things where we already know the necessary
+	//    objects at table creation.
 	$(colNum).text(index);
 	$(colLabel).text(label);
+	// but we know everything's attributes
+	d3.select(bNode).attr("rdfa:typeof","conversion:enhance");
 	d3.select(colNum).attr("rdfa:typeof","ov:csvCol");
-	d3.select(colNum).attr("rdfa:typeof","ov:csvHeader conversion:label");
+	d3.select(colLabel).attr("rdfa:typeof","ov:csvHeader conversion:label");
+	d3.select(colProp).attr("rdfa:typeof","conversion:equivalent_property");
+	d3.select(colRangeName).attr("rdfa:typeof","conversion:range_name");
+	d3.select(colClass).attr("rdfa:typeof","conversion:enhance");
+	d3.select(colClassName).attr("rdfa:typeof","conversion:class_name");
+	d3.select(colSubclassOf).attr("rdfa:typeof","conversion:subclass_of");
+	
+	// glue everything together....
+	colClass.appendChild(colClassName);
+	colClass.appendChild(colSubclassOf);
 	bNode.appendChild(colNum);
 	bNode.appendChild(colLabel);
+	bNode.appendChild(colProp);
+	bNode.appendChild(colRangeName);
+	bNode.appendChild(colClass);
+	// stick it in the page
 	var rdfaDiv = document.getElementById("e_process");
 	rdfaDiv.appendChild(bNode);
 }// createEnhancementNode
