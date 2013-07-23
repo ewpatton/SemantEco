@@ -557,21 +557,22 @@ var dnd_classes = {
         var propertyLabel = target.closest("tr").siblings().filter(function () {
             return $(this).find("p.property-label").length == 1;
         });
-
-        // Only apply if class has not been set yet
+		
+		// Now get which fact the drop target was from
+		var sourceFacet = data.o.closest("div.facet").attr("id");
+        
+		// Only apply if class has not been set yet
         if ( propertyLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
             propertyLabel = propertyLabel.find("p.property-label");
-
-            // Now get which fact the drop target was from
-            var sourceFacet = data.o.closest("div.facet").attr("id");
 
             // Now apply logic
             if ( sourceFacet == "datatypesFacet" ) {
                 propertyLabel.empty().append("[datatype or annotation property]");
             }
         }
-    }
-};
+		updateClassType(columnID,columnType,uri,payload,sourceFacet);
+    }// /drop_finish
+};// /dnd_classes
 
 // Arguments for Drag and Drop for property facets ( this applies to the jstree library. see: jstree.com)
 var dnd_properties = {
@@ -722,9 +723,9 @@ $(document).ready(function () {
     });
 
     // Bind various click and form event listeners once the DOM is good to go
-	// This is a WORK IN PROGRES and doesn't do what it did before right now.
+	// This is a WORK IN PROGRESS and doesn't do what it did before right now.
     $('#commit_enhancement').click(function () {
-        /*$.bbq.pushState({
+        $.bbq.pushState({
             "FileName": window.file_name,
             "Source": $("#source_info").val(),
             "DataSet": $("#dataset_info").val(),
@@ -732,8 +733,7 @@ $(document).ready(function () {
         });
         AnnotatorModule.queryForEnhancing({}, function (d) {
             console.log(d);
-        });*/
-		//generateParmsFileFromHeaders();
+        });
     });
 
     // TODO: rewrite these in jquery syntax
