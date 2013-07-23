@@ -21,7 +21,7 @@
 	<body>
 		<div id="header">
 			<div class="header-text">
-				<img id="header-image" src="banner_bea_edit_01.png" alt="SemantAnnotator" />
+				<img id="header-image" src="patrice_banner4.jpg" alt="SemantAnnotator" />
 				<div id="header-menu">
 					<ul>
 						<li><input id="menu-import-file" type="button" value="Import File" class="button-width-override" /></li>
@@ -36,9 +36,6 @@
 			</div>
 			<div id="sidebar" class="sidebar">
 				<div id="facets">
-					<!-- dropdown div, filled by plugin -->
-					<div id="ontology-dropdown"></div>
-					
 					<!-- classes view -->
 				 	<div id="classes-module" class="module-facet-container">
 						<h3>Classes</h3>
@@ -103,6 +100,10 @@
 		</div>
 		<div style="clear:both"></div>
 
+		<!-- Absolute position used on ontology dropdown -->
+		<!-- dropdown div, filled by plugin -->
+		<div id="ontology-dropdown"></div>
+		
 		<!-- All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) -->
 		<!-- File to Import Prompt (what file are we working with?) -->
 		<div id="fileDialogWrapper" class="hidden">

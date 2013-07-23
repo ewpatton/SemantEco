@@ -46,7 +46,7 @@ function createSubtable(text, colIndex) {
     var tbody = '';
     tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride" property="ov:csvHeader conversion:label">' + text + '</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride class-label">[class]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
     var tfooter = '</table>';
     var subtable = theader + tbody + tfooter;
     return subtable;
@@ -90,7 +90,7 @@ function createBundleSubtable() {
     tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="Implicit">Implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + id + '><p class="ellipses marginOverride">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '><p class="ellipses marginOverride class-label">[class]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
     var tfooter = '</table>';
     var subtable = theader + tbody + tfooter;
     return subtable;
@@ -355,6 +355,7 @@ $(function () {
                         // * NOTE that if multiple columns are selected, it will only add the comment to the 
                         //   single column on which the menu is invoked!
                         name: "Add Comment",
+                        disabled: true,
                         callback: function () {
 							var index = $("th").index(this);
                         	$("#commentModal").dialog({
@@ -389,6 +390,7 @@ $(function () {
                         // * NOTE that if multiple columns are selected, it will only add the comment to the 
                         //   single column on which the menu is invoked!
                         name: "Edit Domain Template",
+                        disabled: true,
                         callback: function () {
                             // Show modal
                             $("#domainTemplateModal").dialog({
@@ -406,7 +408,6 @@ $(function () {
                     },
 
                     "add-canonical-value": {
-                        name: "Add Canonical Value",
                         // Like addComment, this allows a user to add a canonical value
                         //    using our conversion:eg. As the above, "egText" should eventually
                         //    be user-specified.
@@ -414,6 +415,8 @@ $(function () {
                         //    other annotations.
                         // * NOTE that, like the above, thsi will only add an eg to the column on which
                         //   the context menu was invoked, even if multiple columns are selected!
+                        name: "Add Canonical Value",
+                        disabled: true,
                         callback: function () {
 							var index = $("th").index(this);
                         	 $("#canonicalModal").dialog({
@@ -455,27 +458,30 @@ $(function () {
                     }, // /eg
 
                     "add-subject-annotation": {
-                        name: "Add Subject Annotation",
                         // Subject Annotation addes new triples. Forced triples is what we like to call it.
+                        name: "Add Subject Annotation",
                         callback: function () {
 							var index = $("th").index(this);
-                            $("#subjectAnnotationModal").dialog({
+                            checkAnnotationRow();
+                            // Patrice wants it to default
+                            var cType = "aPredicate";
+                            var cText = "aObject";
+                            //var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
+                            //var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
+                            addAnnotation( index, cType, cText );
+                            
+                            GreenTurtle.attach(document,true);
+                            /*$("#subjectAnnotationModal").dialog({
                                 modal: true,
                                 width: 800,
                                 draggable: false,
                                 resizable: false,
                                 buttons: {
                                     Ok: function () {
-										checkAnnotationRow();
-										var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
-										var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
-										addAnnotation( index, cType, cText );
-										
-										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
                                     }
                                 }
-                            });
+                            }); */
                         }
                     }
                 } // /items
@@ -569,29 +575,38 @@ var dnd_properties = {
             var payload = $.trim($(data.o).text());
         }
 
-        /*var targetParent;
-        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
-            targetID = data.r.attr("id").split(",")[1];
-        } else if () {
-            asdawd
-        } else {
-            // get the header of this element
-            var parentHeader = data.r.parents("th:eq(0)");
-            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
-               targetID = parentHeader.attr("id").split(",")[1];
-            }
-        }*/
-
-
         // Set the value now that we have done some validation (some...)
         // [RDFa]: also sets the RDFa to the text in the node
         //  * still need URI/prefix for whatever ontology the node comes from.
-        //var fullID = "[id='classRow," + targetID + "']";
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
         target.empty().append(payload);
         target.parent().css("color", "black");
         target.attr("rdfa:typeof", uri);
         //d3.select(target).attr("rdfa:typeof", uri);
+
+        // Manipulate the class-label to reflect what was just dropped
+        // First find the class-label
+        var classLabel = target.closest("tr").siblings().filter(function () {
+            return $(this).find("p.class-label").length == 1;
+        });
+
+        console.log(classLabel, classLabel.find("td").css("color"));
+        // Only apply if class has not been set yet
+        if ( classLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
+            classLabel = classLabel.find("p.class-label");
+
+            // Now get which fact the drop target was from
+            var sourceFacet = data.o.closest("div.facet").attr("id");
+
+            // Now apply logic
+            if ( sourceFacet == "annotationPropertiesFacet" || sourceFacet == "dataPropertiesFacet" ) {
+                classLabel.empty().append("[datatype]");
+            } else if (sourceFacet == "objectPropertiesFacet") {
+                classLabel.empty().append("[class]");
+            } else {
+                console.log("Source of DnD invalid, can't apply logic over class label!");
+            }
+        }
     }
 };
 
@@ -736,8 +751,10 @@ $(document).ready(function () {
             // Turn it into what we want!
             $("#checkboxDropDownOntologies").dropdownchecklist({
                 emptyText: "Select an Ontology ...",
-                width: 230,
                 onComplete: function (selector) {
+                    // Show user we are about to re-populate the facets with new jstrees
+                    $(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
+
                     var values = []; // [RDFa]: can use this for prefixes?
                     for (i = 0; i < selector.options.length; i++) {
                         if (selector.options[i].selected && (selector.options[i].value != "")) {
@@ -747,15 +764,14 @@ $(document).ready(function () {
                     $.bbq.pushState({
                         "listOfOntologies": values
                     });
-                    // Re-query facets
-                    $("#ClassTree").empty();
-                    $("#PropertyTree").empty();
-                    $("#dataPropertiesTree").empty();
-                    $("#annotationPropertiesTree").empty();
-                    $("#DataTypeTree").empty();
+                   
 
                     // Call patrice's new silly init call thingy ( :D )
                     AnnotatorModule.initOWLModel({}, function (d) {
+                        
+                        // Clean up, then Re-query facets
+                        $(".hierarchy").empty();
+
                         SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
                             "dnd": dnd_classes,
                             "plugins": ["dnd"]
@@ -822,8 +838,8 @@ function addAnnotation( index, predicate, object ){
 	var theTable = workingCol.getElementsByTagName('TABLE')[0];
 	$( theTable ).append( "<tr typeof=\"conversion:enhance\">" +
 	"<td class=\"hidden\" property=\"ov:csvCol\">" + index + "</td>" + 
-	"<td property=\"conversion:predicate\"><p class=\"ellipses marginOverride class-label editable-input\">" + predicate + "</p></td>" +
-	"<td property=\"conversion:object\"><p class=\"ellipses marginOverride property-label editable-input\">" + object + "</p></td>" +
+	"<td property=\"conversion:predicate\"><p class=\"ellipses marginOverride property-label editable-input\">" + predicate + "</p></td>" +
+	"<td property=\"conversion:object\"><p class=\"ellipses marginOverride class-label editable-input\">" + object + "</p></td>" +
 	"</tr>" );
 }// /addAnnotation
 
