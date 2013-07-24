@@ -486,7 +486,7 @@ public class AnnotatorModule implements Module {
 		CharArrayReader reader = new CharArrayReader(rdfa.toCharArray());
 		//m.read
 		m.read(reader,null, "HTML");
-		m.toString();
+		System.out.println(m.toString());
 		//System.getProperty("user.dir")+"
 		FileOutputStream fos = new FileOutputStream("/tmp/rdfa.rdf");
 		m.write(fos, "TTL");
