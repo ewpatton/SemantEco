@@ -479,7 +479,8 @@ public class AnnotatorModule implements Module {
 		
 		RDFReader r;
 		
-		Class.forName("net.rootdev.javardfa.RDFaReader");
+//		Class.forName("net.rootdev.javardfa.RDFaReader");
+		Module.class.getClassLoader().loadClass("net/rootdev/javardfa/RDFaReader.class");
 		Model m = ModelFactory.createDefaultModel();
 		m.read(rdfa,"HTML");
 		m.toString();
