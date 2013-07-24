@@ -314,6 +314,35 @@ function createCellBasedNode(cbCols){
 	mainNode.appendChild(cbNode);
 }
 
+// needs:
+//	- resource name for the bundle, typed conversion:ImplicitBundle
+//	- a property
+//	- name template
+//	- type name
+function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
+	var mainNode = document.getElementById("here-be-rdfa");
+	// create nodes...
+	var bundleNode = document.createElement('p');
+	var bundleProp = document.createElement('p');
+	var bundleNameTemp = document.createElement('p');
+	var bundleType = document.createElement('p');
+	// ... type them...
+	d3.select(bundleNode).attr("rdfa:resource","#"+bResource).attr("rdfa:typeof","conversion:ImplicitBundle");
+	d3.select(bundleProp).attr("rdfa:property","conversion:property_name");
+	d3.select(bundleNameTemp).attr("rdfa:property","name_template");
+	d3.select(bundleType).attr("rdfa:property","conversion:type_name");
+	// ... add text...
+	$(bundleNode).text(bResource);
+	$(bundleProp).text(bProp);
+	$(bundleNameTemp).text(bNameTemp);
+	$(bundleType).text(bType);
+	// ... put subtree together
+	bundleNode.appendChild(bundleProp);
+	bundleNode.appendChild(bundleNameTemp);
+	bundleNode.appendChild(bundleType);
+	mainNode.appendChild(bundleNode);
+}// /createImplicitBundleNode
+
 function addAnnotationRDFa( index, predicate, object ){
 	// create nodes...
 	var anNodetation = document.createElement('p');
@@ -336,6 +365,7 @@ function addAnnotationRDFa( index, predicate, object ){
 	anNodetation.appendChild(obj);
 	mainNode.appendChild(anNodetation);
 }// /addAnnotation
+
 
 
 // This doesn't work yet!
