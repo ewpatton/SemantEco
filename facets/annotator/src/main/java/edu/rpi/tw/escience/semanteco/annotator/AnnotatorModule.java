@@ -2170,6 +2170,15 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 	*/
 	
+	@QueryMethod
+	protected Collection<HierarchyEntry> searchAnnotations(final Request request, final String str){
+		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		JSONArray j = this.annotatorTester.searchAnnotations(str);
+
+		return entries;
+
+	}
+	
 	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {	
 		//initModel();
 	//	this.initOWLModel(request);
@@ -2364,6 +2373,13 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return entries;
 	}
 
+	
+	@QueryMethod
+	public String searchTester(final Request request){
+		String searchString = (String) request.getParam("string");
+		JSONArray j = this.annotatorTester.searchAnnotations(searchString);
+		return j.toString();	
+	}
 
 
 	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) {
