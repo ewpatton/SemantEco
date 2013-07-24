@@ -24,22 +24,23 @@
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
-<repository>
-   <id>phillord</id>
-    <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
-</repository>
-  <repository>
-            <id>rootdev.repo.ssh</id>
-            <name>Rootdev maven repository, via ssh</name>
-            <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
-        </repository>
+    <repository>
+      <id>phillord</id>
+      <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
+    </repository>
+    <repository>
+      <id>rootdev.repo.ssh</id>
+      <name>Rootdev maven repository, via ssh</name>
+      <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
   </repositories>
 
   <dependencies>
     <dependency>
       <groupId>net.rootdev</groupId>
-      <artifactId>java-rdfa-htmlparser</artifactId>
-      <version>0.4.2-RC2</version>
+      <artifactId>java-rdfa</artifactId>
+      <version>0.4.2</version>
     </dependency>
     <dependency>
      <groupId>rpi</groupId>
