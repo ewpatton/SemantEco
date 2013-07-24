@@ -126,13 +126,7 @@ SemantEcoUI.HierarchicalFacet = {};
         populateRoots(jqdiv, jstreeArgs);
     };
 
-    var populateRoots = function(jqdiv, jstreeArgs) {
-        var roots = jqdiv.data("hierarchy.roots");
-        var ul = $("<ul />");
-        jqdiv.append(ul);
-        for(var i=0;i<roots.length;i++) {
-            ul.append(generateRootElement(roots[i]));
-        }
+    var createBaseJSTree = function(jqdiv, jstreeArgs) {
         var args = {
                 "core": { "open_parents": true },
                 "plugins": ["themes", "html_data", "ui"],
@@ -149,6 +143,16 @@ SemantEcoUI.HierarchicalFacet = {};
                 .bind("deselect_node.jstree", updateState)
                 .delegate("a", "click", cancelClick);
         SemantEcoUI.HierarchicalFacet.setTooltip(jqdiv, defaultTooltip);
+    };
+
+    var populateRoots = function(jqdiv, jstreeArgs) {
+        var roots = jqdiv.data("hierarchy.roots");
+        var ul = $("<ul />");
+        jqdiv.append(ul);
+        for(var i=0;i<roots.length;i++) {
+            ul.append(generateRootElement(roots[i]));
+        }
+        createBaseJSTree(jqdiv, jstreeArgs);
         var state = $.bbq.getState( jqdiv.data( "hierarchy.param" ) );
         if ( state != undefined && state.length != undefined && state.length > 0 ) {
             reopenSelections(jqdiv, state);
@@ -390,6 +394,13 @@ SemantEcoUI.HierarchicalFacet = {};
         div.data("hierarchy.module", module);
         div.data("hierarchy.query_method", qmethod);
         div.data("hierarchy.param", param);
+        if("populate" in jstreeArgs) {
+            if(!jstreeArgs.populate) {
+                delete jstreeArgs.populate;
+                createBaseJSTree(jstreeArgs);
+                return;
+            }
+        }
         module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
             if(typeof d === "string") {
                 d = JSON.parse(d);
