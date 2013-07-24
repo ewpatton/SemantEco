@@ -2154,7 +2154,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		
 		return items;
 	}
-	
+	/*
 	protected void searchLabels(String entity){
 		//
 		this.annotatorTester.searchLabels(entity);
@@ -2163,6 +2163,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return;
 		
 	}
+	*/
 	
 	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {	
 		//initModel();
