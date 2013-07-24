@@ -3,6 +3,7 @@ import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -451,7 +452,7 @@ public class AnnotatorModule implements Module {
 	}
 
 	
-	@QueryMethod
+	@QueryMethod(method=HTTP.POST)
 	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException, ClassNotFoundException, IOException{
 		//com.hp.hpl.jena.grddl.GRDDLReader
 		//String rdfA = (String) request.getParam("enhancementsAsRDFa");
@@ -477,14 +478,17 @@ public class AnnotatorModule implements Module {
 		String rdfa = (String) request.getParam("rdfa");
 		
 		
-		RDFReader r;
+		//RDFReader r;
 		
-//		Class.forName("net.rootdev.javardfa.RDFaReader");
-		Module.class.getClassLoader().loadClass("net/rootdev/javardfa/RDFaReader.class");
+		Class.forName("net.rootdev.javardfa.jena.RDFaReader");
+		//Module.class.getClassLoader().loadClass("net/rootdev/javardfa/jena/RDFaReader.class");
 		Model m = ModelFactory.createDefaultModel();
-		m.read(rdfa,"HTML");
+		CharArrayReader reader = new CharArrayReader(rdfa.toCharArray());
+		//m.read
+		m.read(reader,null, "HTML");
 		m.toString();
-		FileOutputStream fos = new FileOutputStream(System.getProperty("user.dir")+"/rdfa.rdf");
+		//System.getProperty("user.dir")+"
+		FileOutputStream fos = new FileOutputStream("/tmp/rdfa.rdf");
 		m.write(fos, "TTL");
 		fos.close();
 

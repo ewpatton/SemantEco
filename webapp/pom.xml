@@ -38,6 +38,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>nu.validator.htmlparser</groupId>
+      <artifactId>htmlparser</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
       <groupId>net.rootdev</groupId>
       <artifactId>java-rdfa</artifactId>
       <version>0.4.2</version>
