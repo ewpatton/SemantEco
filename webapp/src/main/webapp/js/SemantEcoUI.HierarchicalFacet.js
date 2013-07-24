@@ -398,8 +398,9 @@ SemantEcoUI.HierarchicalFacet = {};
                 delete jstreeArgs.populate;
                 div.append("<ul>");
                 var li = $("<li>");
-                li.addClass("drop-hint").text("Drop Favorites Here");
                 div.find("ul").append(li);
+                li.addClass("drop-hint")
+                li.append('<a href="#" />').find("a").text("Drop Favorites Here");
                 createBaseJSTree(div, jstreeArgs);
                 $(window).trigger("rendered_tree.semanteco", div);
                 return;
