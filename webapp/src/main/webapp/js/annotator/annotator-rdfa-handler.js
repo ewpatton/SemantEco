@@ -64,9 +64,9 @@ function createEnhancementNode(label, index){
 	$(colLabel).text(label);
 	// But we know the predicates for everything except for class/type.
 	d3.select(bNode).attr("rdfa:typeof","conversion:enhance");
-	d3.select(colNum).attr("rdfa:typeof","ov:csvCol");
-	d3.select(colLabel).attr("rdfa:typeof","ov:csvHeader conversion:label");
-	d3.select(colProp).attr("rdfa:typeof","conversion:equivalent_property");
+	d3.select(colNum).attr("rdfa:property","ov:csvCol");
+	d3.select(colLabel).attr("rdfa:property","ov:csvHeader conversion:label");
+	d3.select(colProp).attr("rdfa:property","conversion:equivalent_property");
 	
 	// glue everything together....
 	bNode.appendChild(colNum);
@@ -124,9 +124,9 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 			$(subclassNode).attr("id","subclass-enhance,"+index);
 			// ... and type them.
 			d3.select(eNode).attr("rdfa:typeof","conversion:enhance");
-			d3.select(typeNode).attr("rdfa:typeof","conversion:range_name");
-			d3.select(classNameNode).attr("rdfa:typeof","conversion:class_name");
-			d3.select(subclassNode).attr("rdfa:typeof","conversion:subclass_of");
+			d3.select(typeNode).attr("rdfa:property","conversion:range_name");
+			d3.select(classNameNode).attr("rdfa:property","conversion:class_name");
+			d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
 			$(typeNode).text(classLabel);
 			$(classNameNode).text(classLabel);
 			$(subclassNode).text(classURI);
@@ -152,7 +152,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				bNode.removeChild(eNode);
 			}
 			// then re-type the typeNode and add the thing
-			d3.select(typeNode).attr("rdfa:typeof","conversion:range");
+			d3.select(typeNode).attr("rdfa:property","conversion:range");
 			$(typeNode).text(classURI);
 		}// /!isDataType
 	}// /adding a datatype
@@ -216,11 +216,11 @@ function addPackageLevelData(){
 	// Don't forget, the full URI here represents a resource!
 	d3.select(fullURI).attr("rdfa:resource",full).attr("rdfa:typeof","conversion:LayerDataset void:Dataset");
 	// and everything else here represents properties of that resource:
-	d3.select(baseURI).attr("rdfa:typeof","conversion:base_uri");
-	d3.select(si).attr("rdfa:typeof","conversion:source_identifier");
-	d3.select(di).attr("rdfa:typeof","conversion:dataset_identifier");
-	d3.select(vi).attr("rdfa:typeof","conversion:version_identifier");
-	d3.select(ei).attr("rdfa:typeof","conversion:enhancement_identifier");
+	d3.select(baseURI).attr("rdfa:property","conversion:base_uri");
+	d3.select(si).attr("rdfa:prpoerty","conversion:source_identifier");
+	d3.select(di).attr("rdfa:property","conversion:dataset_identifier");
+	d3.select(vi).attr("rdfa:property","conversion:version_identifier");
+	d3.select(ei).attr("rdfa:property","conversion:enhancement_identifier");
 	// append ALL THE THINGS
 	fullURI.appendChild(baseURI);
 	fullURI.appendChild(si);
@@ -294,6 +294,48 @@ function setVersion(){
 		console.log("Version field left blank!");
 		return;
 }// /setVersion
+
+
+function createCellBasedNode(cbCols){
+	var mainNode = document.getElementById("here-be-rdfa");
+	var cbNode = document.createElement('p');
+	d3.select(cbNode).attr("rdfa:typeof","conversion:enhance");
+	var cols = document.createElement('p');
+	var type = document.createElement('p');
+	d3.select(cols).attr("rdfa:property","ov:csvColumn");
+	d3.select(type).attr("rdfa:property","qb:Observation");
+	var colList = "";
+	for ( i in cbCols ){
+		colList += cbCols[i] + ",";
+	}
+	$(cols).text(colList);
+	cbNode.appendChild(cols);
+	cbNode.appendChild(type);
+	mainNode.appendChild(cbNode);
+}
+
+function addAnnotationRDFa( index, predicate, object ){
+	// create nodes...
+	var anNodetation = document.createElement('p');
+	var colNumber = document.createElement('p');
+	var pred = document.createElement('p');
+	var obj = document.createElement('p');
+	// ... type them...
+	d3.select(anNodetation).attr("rdfa:typeof","conversion:enhance");
+	d3.select(colNumber).attr("rdfa:property","ov:csvCol");
+	d3.select(pred).attr("rdfa:property","conversion:predicate");
+	d3.select(obj).attr("rdfa:property","converion:object");
+	// ... add things...
+	$(colNumber).text(index);
+	$(pred).text(predicate);
+	$(obj).text(object);
+	// ... and stick it all together!
+	var mainNode = document.getElementById("e_process");
+	anNodetation.appendChild(colNumber);
+	anNodetation.appendChild(pred);
+	anNodetation.appendChild(obj);
+	mainNode.appendChild(anNodetation);
+}// /addAnnotation
 
 
 // This doesn't work yet!

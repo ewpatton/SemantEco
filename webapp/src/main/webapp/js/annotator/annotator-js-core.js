@@ -374,8 +374,8 @@ $(function () {
 										//var theTable = workingCol.getElementsByTagName('TABLE')[0];
 										var cType = "rdfs:comment";
 										var cText = document.getElementById("commentModalInput").value;
-										addAnnotation( index , cType, cText );
-										
+										addAnnotation(index , cType, cText);
+										addAnnotationRDFa(index,cType,cText);
 										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
 									}// /OK function
@@ -435,7 +435,7 @@ $(function () {
 										var cType = "conversion:eg";
 										var cText = document.getElementById("canonicalModalInput").value;
 										addAnnotation( index, cType, cText );
-										
+										addAnnotationRDFa(index,cType,cText);
 										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
                                     }
@@ -474,7 +474,7 @@ $(function () {
                             //var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
                             //var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
                             addAnnotation( index, cType, cText );
-                            
+                            addAnnotationRDFa(index,cType,cText);
                             GreenTurtle.attach(document,true);
                             /*$("#subjectAnnotationModal").dialog({
                                 modal: true,
