@@ -1,10 +1,6 @@
-// annotator-js-parser.js
+// annotator-rdfa-handler.js
 // Handles creation of triples for the enhancement file on the client-side
-
-// THE MAIN EVENT. Should call the other functions.
-function queryForEnhancing(){
-}// /queryForEnhancing
-
+// These methods are called in the annotator-js-core and annotator-js-file-io javascript files
 
 
 //	Prefixes!
@@ -191,25 +187,6 @@ function hasClassType(index){
 		return false; }
 }// /hasClassType
 
-// Class is more complex (https://github.com/ewpatton/SemantEco/wiki/subclassing-range-for-a-column-%28csv2rdf4lod-enhancement%29)
-function addClassTypeEnhancement(index){
-	/*var colRangeName = document.createElement('p');
-	var colClass = document.createElement('p'); // blank node
-		// these will be attached as children to colClass
-		var colClassName = document.createElement('p');
-		var colSubclassOf = document.createElement('p');*/
-	
-	//d3.select(colRangeName).attr("rdfa:typeof","conversion:range_name");
-	//d3.select(colClass).attr("rdfa:typeof","conversion:enhance");
-	//d3.select(colClassName).attr("rdfa:typeof","conversion:class_name");
-	//d3.select(colSubclassOf).attr("rdfa:typeof","conversion:subclass_of");
-	
-	//colClass.appendChild(colClassName);
-	//colClass.appendChild(colSubclassOf);
-	
-	//bNode.appendChild(colRangeName);
-	//bNode.appendChild(colClass);
-}// /addClassTypeEnhancement
 
 // pulls user input about the dataset and adds it to the RDFa
 // RETURNS the full URI of the dataset, for addition to the prefix list.
@@ -256,7 +233,8 @@ function addPackageLevelData(){
 }// /addPackageLevelData
 
 
-
+// Gets the source from the user input lightbox, and returns it.
+// If we want to do any input checking/handling, put it in here?
 function setSource(){
 	var source = "";
 	// if the user specified a source, use that...
@@ -280,6 +258,8 @@ function setSource(){
 	return source;
 }// /setSource
 
+// Gets the dataset name from the user input lightbox, and returns it.
+// If we want to do any input checking/handling, put it in here?
 function setDataset(){
 	var dataset = ""
 	// Do the same thing for the dataset name
@@ -298,6 +278,8 @@ function setDataset(){
 	return dataset;
 }// /setDataset
 
+// Gets the version from the user input lightbox, and returns it.
+// If we want to do any input checking/handling, put it in here?
 function setVersion(){
 	// Version is only a text field
 	// Just make sure that's not blank
@@ -313,20 +295,13 @@ function setVersion(){
 		return;
 }// /setVersion
 
-//	Reads in Params File writes triples related to prefixes, source, dataset, and versionId.
-//	Takes the headers and generates column specific enhancements.
-function generateParmsFileFromHeaders(){
-	
-	// a loop goes here
-	// call queryForPropertyToEnhance
-	// call queryFor HeaderToEnhance
-	
-}// /generateParmsFileFromHeaders
 
-function queryForPropertyToEnhance(){
-	
-}// /queryForPropertyToEnhance
-
-function queryForHeaderToEnhance(){
-	
-}// /queryForHeaderToEnhance
+// This doesn't work yet!
+// Working from the GreenTurtle API here: https://code.google.com/p/green-turtle/wiki/API
+// This should parse the RDFa and return the graph in .ttl format.
+function turtleGen(){
+	GreenTurtle.attach(document,true);
+	var turtle = document.data.graph.toString({shorten:true});
+	console.log(turtle);
+	//return turtle;
+}// /turtleGen
