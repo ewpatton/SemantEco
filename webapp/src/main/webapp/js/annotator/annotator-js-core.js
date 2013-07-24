@@ -62,8 +62,8 @@ function createSubtable(text, colIndex) {
 //    - bundleSpan, the number of columns the bundle spans
 // * NOTE that this method currently assumes bundled columns are consecutive and adjacent!
 // TO DO: generate the dropdown menu! Probably in another function!
-function createBundleSubtable(id) {
-    var theader = '<table id=bundle,' + id + '>\n';
+function createBundleSubtable(bundleID, implicitID) {
+    var theader = '<table id=bundle,' + bundleID + '>\n';
     var tbody = '';
     
     // Brendan Edit: generate options based off of available headers
@@ -72,7 +72,7 @@ function createBundleSubtable(id) {
     });
 
     // Build a list of items
-    var generatedOptions = "";
+    var generatedOptions = "<option value = \"Implicit Bundle " + implicitID + "\">Implicit Bundle " + implicitID + "</option>";
     validHeadersToBundle.each(function (index) {
 
         var itemLabel = "Unknown";
@@ -86,10 +86,10 @@ function createBundleSubtable(id) {
         generatedOptions += "<option value = \"" + itemLabel + "\">Column " + $(this).attr('id').split(",")[1] + " (" + itemLabel + ")</option>"
     });
 
-    tbody += '<tr><td id=bundleResource,' + id + '><form style="background:white" action=""><select style="width:100%" name="uri"><option value="Implicit">Implicit</option>' + generatedOptions + '</select></form></td></tr>\n';
-    tbody += '<tr><td id=bundleName,' + id + '><p class="ellipses marginOverride">[name template]</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + id + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
-    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + id + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
+    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" action="return false;"><select class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
+    tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride">[name template]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + bundleID + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
+    tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + bundleID + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
     var tfooter = '</table>';
     var subtable = theader + tbody + tfooter;
     return subtable;
@@ -118,6 +118,12 @@ $(function () {
             // We use booleans to determine if a option is enabled or disabled,
             var toggle_cell_based_disabled_boolean = false;
             var create_bundle_disabled_boolean = false;
+
+            // When nothing is selected, block the context menu
+            if (currentlySelected.length == 0) {
+                return false; // no idea if this works
+            }
+
 
             // As we look over the items selected, keep track of which bundle we are in, so we can see if multiple bundles exist (this is really ugly. we need to rethink the bundles object!)
             //var selectedItemsBundleIndex = undefined;
@@ -290,14 +296,14 @@ $(function () {
 
                             // Let's log these groupings for this bundle into our local bundles object\
                             // Use slice to pass by value and not reference
-                            var newBundle = new Bundle(bundleIdManager.requestID(), currentlySelected.slice(0), false);
+                            var newBundle = new Bundle(bundleIdManager.requestBundleID(), bundleIdManager.requestImplicitID(), currentlySelected.slice(0));
                             bundles.push(newBundle);
 
                             // Second, let's determine which columns have children below them that need to be pushed down before the bundle is created and push them down
                             // we will also build the new headers and insert them in this loop
                             $.each(headerGroupings, function(index, group) { 
                                 $.each(group, function(index, item) { 
-                                    var colspan = group.length
+                                    var colspan = group.length;
                                     var selectedID = item.attr("id").split(",")[1];
                                     if ($("#bundledRow\\," + selectedID).children().length > 0) {
                                         // Expose the extended-bundles row (yuck)
@@ -305,7 +311,7 @@ $(function () {
                                             $("#bundles-extended").removeClass("hide-while-empty");
                                         }
                                         // Move the item down
-                                        $("#bundledRow\\," + selectedID).children(":first").appendTo("td#bundledRow-extended\\," + selectedID);
+                                        $("#bundledRow\\," + selectedID).children(":first").removeClass("bundle-table").addClass("bundle-table-extended").appendTo("td#bundledRow-extended\\," + selectedID);
                                     }
 
                                     //Expose the bundles row
@@ -329,11 +335,11 @@ $(function () {
                                     item.removeClass("not-bundled").addClass("bundled-implicit");
 
                                     // Now, move the item down
-                                    item.children(":first").appendTo("td#bundledRow\\," + selectedID);
+                                    item.children(":first").removeClass("headerTable").addClass("bundle-table").appendTo("td#bundledRow\\," + selectedID);
 
                                     // Insert new header table, colspan if first in group, else hide
                                     if (index == 0) {
-                                        item.append("<div>" + createBundleSubtable(newBundle.id) + "</div>").attr("colspan", colspan);                                
+                                        item.append(createBundleSubtable(newBundle._id, newBundle.implicitId)).attr("colspan", colspan);                                
                                     } else {
                                         item.addClass("hidden");                               
                                     }
@@ -854,6 +860,73 @@ $(function () {
     });
 });
 
+// Bind to clicks on dropdowns (implicit and explicit bundles)
+$(function () {
+    var selectPreviousValue;
+
+    $('body').on('focus' ,'select.bundle-select', function(e) {
+        selectPreviousValue = $("option:selected", this).text().split(" ")[0];
+    });
+
+    $('body').on('change' ,'select.bundle-select', function(e) {
+        var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqeuryyyy
+        var _this = this; // keep track of scope on triggering select item
+        var bundleId = $(this).closest("td").attr("id").split(",")[1];
+        var bundleDropdowns = $("th select.bundle-select").filter(function () { return $(this).closest("td").attr("id").split(",")[1] == bundleId });
+
+        // Given the bundleId of this select, get the actual bundle from the bundles array
+        var bundle = undefined;
+        $.each(bundles, function (index, aBundle) {
+            if ( aBundle._id == bundleId) {
+                bundle = aBundle;
+                return false; // break out
+            }
+        });
+
+        if (newValue == "New") {
+            // Changed to implicit (From explicit)            
+            
+            // First, change the vars of the bundle accordingly
+            bundle.implicitId = bundleIdManager.requestImplicitID();
+
+            // Now update all dropdowns of this bundle with the new value (and move them if necessary)
+            $.each(bundleDropdowns, function (index, aDropdown) {
+                if ( aDropdown.selectedIndex != 0 ) {
+                    aDropdown.selectedIndex = 0;
+                }
+                $("option:eq(0)", aDropdown).val("Implicit Bundle " + bundle.implicitId).text("Implicit Bundle " + bundle.implicitId);
+            });
+
+        } else if (newValue == "Column") {
+            // Changed to Column
+            // Set Bundle Vars (get id from id of table)
+
+            // Now update all dropdowns of this bundle with the new value
+            $.each(bundleDropdowns, function (index, aDropdown) {
+                // Move to same item in dropdown, don't do it for the original dropdown of course
+                if (aDropdown != _this ) {
+                    // Alter selection to match
+                    var matchOption = $("option", aDropdown).filter( function() { return $(this).text() == $("option:selected", _this).text() });
+                    console.log("MatchOption:", matchOption, matchOption.index, aDropdown);
+                    aDropdown.selectedIndex = matchOption.index();
+                }
+                
+                // If this was not just column to column but Implicit to Column, switch first element to "New Implicit Bundle" (and return the id)
+                console.log("prevValue", selectPreviousValue);
+                if ( selectPreviousValue == "Implicit" ) {
+                    $("option:eq(0)", aDropdown).val("New Implicit Bundle").text("New Implicit Bundle");
+                    
+                    // Return ID if we can
+                    if ( bundle.implicitId != undefined ) {
+                        bundleIdManager.returnImplicitID(bundle.implicitId);
+                        bundle.implicitId = undefined;
+                    }
+                }
+            });
+        }
+    });
+});
+
 // if the row is hidden (ie, this is the first comment added), show the row
 function checkAnnotationRow(){
 	var cRow = document.getElementById("annotations");
@@ -920,32 +993,54 @@ function existsA(theArray, theThing) {
 //    bundle, IF it is EXPLICIT. A value of -1 indicates the
 //    bundle is IMPLICIT; this is the default set here at 
 //    creation.
-function Bundle(id, columns, explicit) {
-    this.id = id;
+function Bundle(bundleId, implicitId, columns) {
+    this._id = bundleId;
+    this.implicitId = implicitId;
     this.columns = columns;
-    this.explicit = explicit; // boolean if this is explicit or implicit
 }
 
-Bundle.prototype.toggleExplicit = function() {
-    this.explicit =  !this.explicit;
+Bundle.prototype.isExplicit = function() {
+    if (this.implicitId != undefined && this.implicitId != -1) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+Bundle.prototype.isImplicit = function() {
+    return !this.isExplicit();
 }
 
 // Manage the Ids for bundles. Can assign Ids, and Ids can be returned freeing them up for another bundle to use
 function BundleIdManager() {
-    this.ids = new Queue();
-    this.curId = 0;
+    this.bundleIds = new Queue();
+    this.implicitIds = new Queue();
+    this.curBundleId = 0;
+    this.curImplicitId = 0;
 }
 
-BundleIdManager.prototype.requestID = function() {
-    if (this.ids.getLength() == 0) {
-        return this.curId++;
+BundleIdManager.prototype.requestImplicitID = function() {
+    if (this.implicitIds.getLength() == 0) {
+        return this.curImplicitId++;
     } else {
-        return this.ids.dequeue();
+        return this.implicitIds.dequeue();
     }
 }
 
-BundleIdManager.prototype.returnID = function(id) {
-    this.ids.enqueue(id);
+BundleIdManager.prototype.returnImplicitID = function(id) {
+    this.implicitIds.enqueue(id);
+}
+
+BundleIdManager.prototype.requestBundleID = function() {
+    if (this.bundleIds.getLength() == 0) {
+        return this.curBundleId++;
+    } else {
+        return this.bundleIds.dequeue();
+    }
+}
+
+BundleIdManager.prototype.returnBundleID = function(id) {
+    this.bundleIds.enqueue(id);
 }
 
 // We extend the accordion function of jquery to allow multiple items open at a time

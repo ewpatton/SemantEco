@@ -100,10 +100,7 @@ function handleFileSelect(event) {
                 // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
                 $(th).attr("id", '0,' + j);
 				d3.select(th).attr("rdfa:typeof","conversion:enhance");
-                var temp = document.createElement('div');
-                var stContent = createSubtable(tharr[j], j);
-                temp.innerHTML = stContent;
-                th.appendChild(temp);
+                th.innerHTML= (createSubtable(tharr[j], j));
                 thr.appendChild(th);
                 // bundled column row
                 btd = document.createElement('td');

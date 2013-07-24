@@ -27,7 +27,14 @@
 
 	.fileTable table.annotation-table {
 		width: 100%;
-		table-layout: fixed;
+	}
+
+	.fileTable table.bundle-table {
+		width: 100%;
+	}
+
+	.fileTable table.bundle-table-extended {
+		width: 100%;
 	}
 
 	/* Re adding old css stuff back */
