@@ -470,7 +470,7 @@ $(function () {
                             checkAnnotationRow();
                             // Patrice wants it to default
                             var cType = "aPredicate";
-                            var cText = "aObject";
+                            var cText = "anObject";
                             //var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
                             //var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
                             addAnnotation( index, cType, cText );
@@ -517,7 +517,7 @@ var dnd_classes = {
             columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
         } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             target = data.r.find("p.class-label:eq(0)");
-			columnType = parent.attr("id").split(",")[0];
+			columnType = data.r.attr("id").split(",")[0];
             columnID = data.r.attr("id").split(",")[1];
         } else {
             var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
@@ -580,8 +580,8 @@ var dnd_classes = {
     }// /drop_finish
 };// /dnd_classes
 
-// Arguments for Drag and Drop for property facets ( this applies to the jstree library. see: jstree.com)
-var dnd_properties = {
+// Arguments for Drag and Drop for facets ( this applies to the jstree library. see: jstree.com)
+var dnd = {
     "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
     "drop_check": function (data) {
         if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
@@ -592,27 +592,32 @@ var dnd_properties = {
         return true;
     },
     "drop_finish": function (data) {
+
+        // Get which facet the drop came from
+        var sourceFacet = data.o.closest("div.facet").attr("id");
+
+        // Determine the label we are looking for given the source facet
+        var label = ( $.inArray(sourceFacet, ["annotationPropertiesFacet", "dataPropertiesFacet", "objectPropertiesFacet"]) != -1 ? "property-label" : "class-label" );
+
         // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
         var target, columnID, columnType;
         
-        if (data.r.is("p.property-label")) {
+        if (data.r.is("p." + label)) {
             target = data.r;
             columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
 			columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
         } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
-            target = data.r.find("p.property-label:eq(0)");
+            target = data.r.find("p." + label + ":eq(0)");
             columnType = data.r.attr("id").split(",")[0];
 			columnID = data.r.attr("id").split(",")[1];
         } else {
             var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
-            target = parent.find("p.property-label:eq(0)");
+            target = parent.find("p." + label + ":eq(0)");
             columnType = parent.attr("id").split(",")[0];
 			columnID = parent.attr("id").split(",")[1];
         }
 
-        console.log(columnType + " " + columnID);
-
-        // handle source object having children
+        // Handle drop source object having children in the tree
         if (data.o.hasClass("jstree-open")) {
             var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
         } else {
@@ -627,31 +632,75 @@ var dnd_properties = {
         target.parent().css("color", "black");
 		updateProp(columnID,columnType,uri);
 
-        // Manipulate the class-label to reflect what was just dropped
-        // First find the class-label
-        var classLabel = target.closest("tr").siblings().filter(function () {
-            return $(this).find("p.class-label").length == 1;
+        // Apply suggestion logic
+        modifyLabelAsRestriction(target, sourceFacet);
+
+        // Only apply to siblings in bundle if this is a bundle cell, and not a column header cell (TODO: tag bundle cell with a class, dont have me search for a select)
+        var siblingSelect = target.closest("tr").siblings().filter(function () {
+            return $(this).find("select").length == 1;
         });
 
-        console.log(classLabel, classLabel.find("td").css("color"));
-        // Only apply if class has not been set yet
-        if ( classLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
-            classLabel = classLabel.find("p.class-label");
+        console.log("SiblingSelect:", siblingSelect.length);
+        if ( siblingSelect.length != 0 ) {
+            // Delegate this drop event to all siblings in bundle (if this is a bundle)
+            // First, is this item in a bundle
+            $.each(bundles, function(idx, bundle) {
+                if ( $.inArray(parseInt(columnID), bundle.columns ) != -1 ) {
+                    
+                    // This ID is in a bundle
+                    $.each(bundle.columns, function(idx2, column) { 
+                        if ( column != columnID ) {
 
-            // Now get which fact the drop target was from
-            var sourceFacet = data.o.closest("div.facet").attr("id");
+                            // apply same DnD to sibling items
+                            var siblingTarget = $("#" + columnType + "\\," + column).find("p." + label + ":eq(0)");
+                            siblingTarget.empty().append(payload);
+                            siblingTarget.parent().css("color", "black");
+                            updateProp(column, columnType, uri); //I hope this is what you need katie
+                            
+                            // Apply suggestion logic
+                            console.log("passing:", label, siblingTarget, sourceFacet);
+                            modifyLabelAsRestriction(siblingTarget, sourceFacet);
+                        }
+                    });
 
-            // Now apply logic
-            if ( sourceFacet == "annotationPropertiesFacet" || sourceFacet == "dataPropertiesFacet" ) {
-                classLabel.empty().append("[datatype]");
-            } else if (sourceFacet == "objectPropertiesFacet") {
-                classLabel.empty().append("[class]");
-            } else {
-                console.log("Source of DnD invalid, can't apply logic over class label!");
-            }
+                    // Break out of each on find
+                    return false;
+                }
+            });
         }
     }
 };
+
+// A function that given a DnD dropTarget and the sourceFacet of the drop, restrict a label on this cell
+function modifyLabelAsRestriction(dropTarget, sourceFacet) {
+    // Manipulate the class-label to reflect what was just dropped
+
+    // Determine label from what was passed
+    var label = ( dropTarget.hasClass("property-label") ? "class-label" : "property-label" );
+    
+    // Find the sibling label
+    var siblingLabel = dropTarget.closest("tr").siblings().filter(function () {
+        return $(this).find("p." + label).length == 1;
+    });
+
+    console.log("More", siblingLabel, $(siblingLabel), siblingLabel.find("td").css("color"));
+
+    // Only apply if has not been set yet (indicated by color)
+    if ( siblingLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
+        siblingLabel = siblingLabel.find("p." + label);
+
+        // Now apply logic
+        if ( ( sourceFacet == "annotationPropertiesFacet" || sourceFacet == "dataPropertiesFacet" ) && label == "class-label" ) {
+            siblingLabel.empty().append("[datatype]");
+        } else if (sourceFacet == "objectPropertiesFacet" && label == "class-label" ) {
+            siblingLabel.empty().append("[class]");
+        } else if ( sourceFacet == "datatypesFacet" && label == "property-label" ) {
+                siblingLabel.empty().append("[datatype or annotation property]");
+        } else {
+            console.log("Source of DnD invalid, can't apply logic over label!");
+        }
+    }
+}
 
 
 // Extract a string from the jsTree (this is silly, re-write code so this is not needed)
@@ -815,23 +864,23 @@ $(document).ready(function () {
                         $(".hierarchy").empty();
 
                         SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
-                            "dnd": dnd_classes,
+                            "dnd": dnd,
                             "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
-                            "dnd": dnd_properties,
+                            "dnd": dnd,
                             "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
-                            "dnd": dnd_properties,
+                            "dnd": dnd,
                             "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
-                            "dnd": dnd_properties,
+                            "dnd": dnd,
                             "plugins": ["dnd"]
                         });
                         SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
-                            "dnd": dnd_classes,
+                            "dnd": dnd,
                             "plugins": ["dnd"]
                         });
                     });
@@ -869,6 +918,7 @@ $(function () {
     });
 
     $('body').on('change' ,'select.bundle-select', function(e) {
+        console.log("Saw Change:", this);
         var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqeuryyyy
         var _this = this; // keep track of scope on triggering select item
         var bundleId = $(this).closest("td").attr("id").split(",")[1];
@@ -891,7 +941,9 @@ $(function () {
 
             // Now update all dropdowns of this bundle with the new value (and move them if necessary)
             $.each(bundleDropdowns, function (index, aDropdown) {
+                console.log("trying to zero", aDropdown, aDropdown.selectedIndex);
                 if ( aDropdown.selectedIndex != 0 ) {
+                    console.log("zero", aDropdown)
                     aDropdown.selectedIndex = 0;
                 }
                 $("option:eq(0)", aDropdown).val("Implicit Bundle " + bundle.implicitId).text("Implicit Bundle " + bundle.implicitId);
@@ -907,7 +959,7 @@ $(function () {
                 if (aDropdown != _this ) {
                     // Alter selection to match
                     var matchOption = $("option", aDropdown).filter( function() { return $(this).text() == $("option:selected", _this).text() });
-                    console.log("MatchOption:", matchOption, matchOption.index, aDropdown);
+                    console.log("MatchOption:", matchOption, matchOption.index(), aDropdown, aDropdown.selectedIndex);
                     aDropdown.selectedIndex = matchOption.index();
                 }
                 
@@ -924,6 +976,18 @@ $(function () {
                 }
             });
         }
+    });
+});
+
+// Load a CSV file from a URL
+$(function () {
+    $('body').on('click' ,'input#import-file-csv', function(e) {
+        $.bbq.pushState({ "csvUri": $("input#fileDialogFileURL").val() });    
+
+        AnnotatorModule.getCSVFile({}, function (d) {
+            console.log(d);
+            buildTable(d);
+        });
     });
 });
 

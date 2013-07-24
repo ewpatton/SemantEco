@@ -7,7 +7,7 @@
 	th,td { vertical-align: bottom; }
 
 	div#header {
-		background-color: rgba(23, 60, 255, 1);
+		/* background-color: rgba(23, 60, 255, 1); */
 		text-align: left;
 		height: 50px;
 	}
@@ -26,15 +26,18 @@
 	}
 
 	.fileTable table.annotation-table {
-		width: 100%;
+		width: 150px;
+		table-layout: fixed;
 	}
 
 	.fileTable table.bundle-table {
 		width: 100%;
+		table-layout: fixed;
 	}
 
 	.fileTable table.bundle-table-extended {
-		width: 100%;
+		width: 150px;
+		table-layout: fixed;
 	}
 
 	/* Re adding old css stuff back */
@@ -282,4 +285,8 @@
     div.hierarchy div.loading {
     	display: block;
     	position: relative;
+    }
+
+    .bundle-select {
+    	width: 100%;
     }
