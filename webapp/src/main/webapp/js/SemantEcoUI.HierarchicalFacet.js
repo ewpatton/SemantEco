@@ -389,7 +389,6 @@ SemantEcoUI.HierarchicalFacet = {};
         var text = $("input[type='text']", div);
         text.autocomplete({minLength: 4, source: searchClosure(div, module, qmethod)})
             .on("autocompleteselect", selectFunction);
-        div.find(".loading").css("display","block");
         div = $("div.jstree-placeholder", div);
         div.data("hierarchy.module", module);
         div.data("hierarchy.query_method", qmethod);
@@ -398,10 +397,15 @@ SemantEcoUI.HierarchicalFacet = {};
             if(!jstreeArgs.populate) {
                 delete jstreeArgs.populate;
                 div.append("<ul>");
+                var li = generateRootElement();
+                $(li).addClass("drop-hint").text("Drop Favorites Here");
+                div.find("ul").append(li);
                 createBaseJSTree(div, jstreeArgs);
+                $(window).trigger("rendered_tree.semanteco", jqdiv);
                 return;
             }
         }
+        div.find(".loading").css("display","block");
         module[qmethod](HierarchyVerb.ROOTS, {}, function(d) {
             if(typeof d === "string") {
                 d = JSON.parse(d);
