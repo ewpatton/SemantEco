@@ -780,7 +780,8 @@ $(document).ready(function () {
     // Bind various click and form event listeners once the DOM is good to go
 	// This is a WORK IN PROGRESS and doesn't do what it did before right now.
     $('#commit_enhancement').click(function () {
-        $.bbq.pushState({
+		var turtle = turtleGen();
+        /*$.bbq.pushState({
             "FileName": window.file_name,
             "Source": $("#source_info").val(),
             "DataSet": $("#dataset_info").val(),
@@ -788,7 +789,7 @@ $(document).ready(function () {
         });
         AnnotatorModule.queryForEnhancing({}, function (d) {
             console.log(d);
-        });
+        });*/
     });
 
     // TODO: rewrite these in jquery syntax
