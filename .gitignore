@@ -36,3 +36,5 @@ webapp/test
 *.swp
 
 *.class
+
+*.swo
