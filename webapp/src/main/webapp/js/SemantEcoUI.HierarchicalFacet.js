@@ -397,7 +397,8 @@ SemantEcoUI.HierarchicalFacet = {};
         if("populate" in jstreeArgs) {
             if(!jstreeArgs.populate) {
                 delete jstreeArgs.populate;
-                createBaseJSTree(jstreeArgs);
+                div.append("<ul>");
+                createBaseJSTree(div, jstreeArgs);
                 return;
             }
         }
