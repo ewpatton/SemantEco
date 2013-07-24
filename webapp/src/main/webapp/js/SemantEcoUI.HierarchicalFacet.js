@@ -75,7 +75,7 @@ SemantEcoUI.HierarchicalFacet = {};
      */
     var generateElement = function(jqdiv, parent, entry) {
         var hasChild = entry.rawData["hasChild"] === undefined ? true :
-            entry.rawData.hasChild;
+            entry.rawData.hasChild != 0;
         var opts = hasChild ? {"state":"closed"} : {};
         opts["data"] = entry.prefLabel;
         var li = jqdiv.jstree("create_node", parent, "last", opts);
@@ -86,7 +86,7 @@ SemantEcoUI.HierarchicalFacet = {};
     var generateRootElement = function(entry) {
         var hasChildren = true;
         if(entry.rawData["hasChild"] !== undefined) {
-            hasChildren = entry.rawData.hasChild;
+            hasChildren = entry.rawData.hasChild != 0;
         }
         var style = hasChildren ? "jstree-closed" : "jstree-leaf";
         var li = $('<li />');
