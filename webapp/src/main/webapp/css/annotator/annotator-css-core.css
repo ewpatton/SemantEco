@@ -7,7 +7,7 @@
 	th,td { vertical-align: bottom; }
 
 	div#header {
-		/* background-color: rgba(23, 60, 255, 1); */
+		 background-color: rgba(0, 51, 204, 0.96);
 		text-align: left;
 		height: 50px;
 	}
