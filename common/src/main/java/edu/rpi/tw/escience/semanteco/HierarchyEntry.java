@@ -86,7 +86,7 @@ public class HierarchyEntry implements Serializable {
 	 * a callback to obtain children.
 	 * @param axioms
 	 */
-	public void setHasChild(String hasChild) {
+	public void setHasChild(Integer hasChild) {
 		this.contents.put(HASCHILD_FIELD, hasChild);
 	}
 
@@ -157,8 +157,8 @@ public class HierarchyEntry implements Serializable {
 	 * Gets whether this entry has children
 	 * @return
 	 */
-	public Boolean getHasChild() {
-		return (Boolean)this.contents.get(HASCHILD_FIELD);
+	public Integer getHasChild() {
+		return (Integer)this.contents.get(HASCHILD_FIELD);
 	}
 
 	/**
