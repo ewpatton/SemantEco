@@ -19,6 +19,16 @@
 
   <dependencies>
 
+
+
+<dependency>
+            <groupId>net.rootdev</groupId>
+            <artifactId>java-rdfa-htmlparser</artifactId>
+            <version>0.4.2-RC2</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+
  <dependency>
 	<groupId>rpi</groupId>
     <artifactId>OWLHelper</artifactId>
@@ -29,11 +39,18 @@
 	<version>1.0-SNAPSHOT</version>
     </dependency>
 
+ <dependency>
+        <groupId>net.rootdev</groupId>
+    <artifactId>java-rdfa-htmlparser</artifactId>
+        <version>0.4.2-RC2</version>
+    </dependency>
+
 
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-common</artifactId>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -127,6 +144,12 @@
       <id>tetherless2</id>
       <url>http://orion.tw.rpi.edu/artifactory/ext-snapshot-local</url>
     </repository>
+
+ <repository>
+            <id>rootdev.repo.ssh</id>
+            <name>Rootdev maven repository, via ssh</name>
+            <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
+        </repository>
 
   </repositories>
   <build>

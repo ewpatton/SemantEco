@@ -2092,8 +2092,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		return items;
 	}
 
-	protected Collection<HierarchyEntry> queryeBirdTaxonomyHMRoots(
-			final Request request) {
+	protected Collection<HierarchyEntry> queryeBirdTaxonomyHMRoots(final Request request) {
 		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
 		// Variables
 		final Variable id = query.getVariable(VAR_NS + "child");
@@ -2103,9 +2102,7 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		final QueryResource subClassOf = query.getResource(RDFS_NS
 				+ "subClassOf");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
-
-		final QueryResource birdTaxonomy = query
-				.getResource("http://ebird#birdTaxonomy");
+		final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
 		request.getLogger().info("reached queryeBirdTaxonomyRoots \n");
 
 		// build query
@@ -2115,13 +2112,10 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		vars.add(parent);
 		query.setVariables(vars);
 		query.addOrderBy(label, SortType.ASC);
-		final NamedGraphComponent graph = query
-				.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
+		final NamedGraphComponent graph = query.getNamedGraph("http://was.tw.rpi.edu/ebird-taxonomy");
 		graph.addPattern(id, subClassOf, parent);
 		graph.addPattern(id, subClassOf, birdTaxonomy);
-
 		graph.addPattern(id, hasLabel, label);
-
 		// get only the subclasses of the subclasses of OWL thing
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 

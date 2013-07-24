@@ -90,6 +90,7 @@ import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 //import com.hp.hpl.jena.grddl.*;
 //import net.rootdev.javardfa.*;
+//import net.rootdev.javardfa.RDFaReader;
 import rpi.AnnotatorTester;
 
 /*
@@ -260,7 +261,7 @@ public class AnnotatorModule implements Module {
 		}
 		String line;
 		String result="";
-		while((line=br.readLine())!=null) result += line;			
+		while((line=br.readLine())!=null) result += line + "\n";			
 
 		return result;
 		
@@ -451,12 +452,41 @@ public class AnnotatorModule implements Module {
 
 	
 	@QueryMethod
-	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
+	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException, ClassNotFoundException, IOException{
 		//com.hp.hpl.jena.grddl.GRDDLReader
 		//String rdfA = (String) request.getParam("enhancementsAsRDFa");
 		//Model m = createMemModel();
+		
+		//"<div id\="here-be-rdfa" class="hidden" prefix="rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# xsd: http://www.w3.org/2001/XMLSchema# skos: http://www.w3.org/2004/02/skos/core# geonames: http://www.geonames.org/ontology# prov: http://www.w3.org/ns/prov# qb: http://purl.org/linked-data/cube# dcterms: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ ov: http://open.vocab.org/terms/ sweet: http://sweet.jpl.nasa.gov/2.1/ void: http://rdfs.org/ns/void# conversion: http://purl.org/twc/vocab/conversion/ : http://purl.org/twc/semantgeo/source/undefined/dataset/undefined/version/undefined/conversion/enhancement/1 ">
+		
+	//	<div id="e_process" typeof="conversion:enhancement_process">
+	//	<!-- per-column triples -->
+	//	<div id="enhance-col,0" typeof="conversion:enhance"><p typeof="ov:csvCol">0</p><p typeof="ov:csvHeader conversion:label">Sample#</p><p id="prop-enhance,0" typeof="conversion:equivalent_property"></p><p id="type-enhance,0"></p></div><div id="enhance-col,1" typeof="conversion:enhance"><p typeof="ov:csvCol">1</p><p typeof="ov:csvHeader conversion:label"> Date</p><p id="prop-enhance,1" typeof="conversion:equivalent_property"></p><p id="type-enhance,1"></p></div><div id="enhance-col,2" typeof="conversion:enhance"><p typeof="ov:csvCol">2</p><p typeof="ov:csvHeader conversion:label"> Lake Name</p><p id="prop-enhance,2" typeof="conversion:equivalent_property"></p><p id="type-enhance,2"></p></div><div id="enhance-col,3" typeof="conversion:enhance"><p typeof="ov:csvCol">3</p><p typeof="ov:csvHeader conversion:label"> Z Max (m)</p><p id="prop-enhance,3" typeof="conversion:equivalent_property"></p><p id="type-enhance,3"></p></div><div id="enhance-col,4" typeof="conversion:enhance"><p typeof="ov:csvCol">4</p><p typeof="ov:csvHeader conversion:label"> Sample Z (m)</p><p id="prop-enhance,4" typeof="conversion:equivalent_property"></p><p id="type-enhance,4"></p></div><div id="enhance-col,5" typeof="conversion:enhance"><p typeof="ov:csvCol">5</p><p typeof="ov:csvHeader conversion:label"> pH air eq</p><p id="prop-enhance,5" typeof="conversion:equivalent_property"></p><p id="type-enhance,5"></p></div></div>"
+	//<!-- package-level triples -->
+	//<p resource="http://purl.org/twc/semantgeo/source/undefined/dataset/undefined/version/undefined/conversion/enhancement/1" typeof="conversion:LayerDataset void:Dataset">http://purl.org/twc/semantgeo/source/undefined/dataset/undefined/version/undefined/conversion/enhancement/1<p typeof="conversion:base_uri">http://purl.org/twc/semantgeo</p><p typeof="conversion:source_identifier"></p><p typeof="conversion:dataset_identifier"></p><p typeof="conversion:version_identifier"></p><p typeof="conversion:enhancement_identifier">1</p></p></div>";
 
+	//	"<p vocab="http://schema.org/" typeof="Person">"
+	///	   My name is
+	//	   <span property="name">Manu Sporny</span>
+	//	   and you can give me a ring via
+	//	   <span property="telephone">1-800-555-0199</span>
+	//	   or visit 
+	//	   <a property="url" href="http://manu.sporny.org/">my homepage</a>.
+	//	</p>
+		System.out.println("rdfa: " + request.getParam("rdfa"));
+		String rdfa = (String) request.getParam("rdfa");
+		
+		
 		RDFReader r;
+		
+		Class.forName("net.rootdev.javardfa.RDFaReader");
+		Model m = ModelFactory.createDefaultModel();
+		m.read(rdfa,"HTML");
+		m.toString();
+		FileOutputStream fos = new FileOutputStream(System.getProperty("user.dir")+"/rdfa.rdf");
+		m.write(fos, "TTL");
+		fos.close();
+
 		return null;
 	}
 	
@@ -2125,8 +2155,16 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;
 	}
 	
-	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {
+	protected void searchLabels(String entity){
+		//
+		this.annotatorTester.searchLabels(entity);
 		
+		
+		return;
+		
+	}
+	
+	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {	
 		//initModel();
 	//	this.initOWLModel(request);
 		
@@ -2157,12 +2195,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			}
 			
 			entry.setHasChild(this.annotatorTester.hasChildren(binding));
-			entries.add(entry);
-			
+			entries.add(entry);		
 		}
 		//JSONArray classes = ann.getOnlyChildOWLClasses("root");		
-		return entries;
-		
+		return entries;		
 	}
 	
 	protected Collection<HierarchyEntry> queryClassHMChildren(final Request request, String clazz) throws OWLOntologyCreationException, JSONException {

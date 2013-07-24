@@ -28,10 +28,23 @@
    <id>phillord</id>
     <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
 </repository>
+  <repository>
+            <id>rootdev.repo.ssh</id>
+            <name>Rootdev maven repository, via ssh</name>
+            <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
+        </repository>
   </repositories>
 
   <dependencies>
+<dependency>
+            <groupId>net.rootdev</groupId>
+            <artifactId>java-rdfa-htmlparser</artifactId>
+            <version>0.4.2-RC2</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
     <dependency>
+
      <groupId>rpi</groupId>
     <artifactId>OWLHelper</artifactId>
 <!--    <version>1.0-SNAPSHOT</version> -->
