@@ -401,7 +401,7 @@ SemantEcoUI.HierarchicalFacet = {};
                 li.addClass("drop-hint").text("Drop Favorites Here");
                 div.find("ul").append(li);
                 createBaseJSTree(div, jstreeArgs);
-                $(window).trigger("rendered_tree.semanteco", jqdiv);
+                $(window).trigger("rendered_tree.semanteco", div);
                 return;
             }
         }
