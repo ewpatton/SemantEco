@@ -89,79 +89,95 @@ function createEnhancementNode(label, index){
 // 	- theProperty: full URI/CURIE of the property we are adding. Either one should
 // 	     be okay, since we should have the prefixes stored in the main RDFa div.
 function updateProp(index,colType,theProperty){
+	console.log("updateProp is being called");
+	// Only update the thing if it's not in a bundle.
+	// Bundles are handled elsewhere!
 	var header = document.getElementById("0,"+index);
-	if ( header.hasClass("not-bundled");
+	if ( $(header).hasClass("not-bundled")){
 		var propNode = document.getElementById("prop-enhance,"+index);
 		$(propNode).text(theProperty);
-	else // if it is in a bundle, we need to do some shenanigans....
-		console.log("this thing's in a bundle");
+	}
+	else // if it is in a bundle, we'll handle it later
+		console.log("RDFa for Property-ing bundles is handled elsewhere");
 }// /updateProp
 
 function updateClassType(index,colType,classURI,classLabel,sourceFacet){
-	var bNode = document.getElementById("enhance-col,"+index);
-	// get the node we want to update, and check its type if any
-	var typeNode = document.getElementById("type-enhance,"+index);
-	var subclassNode,classNameNode,eNode;	// These are the nodes for the subclassing enhancements. They
-											//	  might exist, OR we might need to create them. Either way,
-											//    use these variable.
-	var isClass = hasClassType(index);
-	var isDataType = hasDataType(index);
-	// Is the thing we are adding a Class or a Data Type?
-	if ( sourceFacet == "ClassesFacet" ){ // if it's a class
-		if ( isClass ){ 	// and so is the thing we're adding...
-			// The enhancement property is already set for typeNode
-			// Just add the stuff
-			// * NOTE that eNode is meant to remain blank!
-			classNameNode = document.getElementById("classname-enhance,"+index);
-			subclassNode = document.getElementById("subclass-enhance,"+index);
-			$(typeNode).text(classLabel);
-			$(classNameNode).text(classLabel);
-			$(subclassNode).text(classURI);
-		}// /if isClass
-		else { 				// if it isn't, then we need to create nodes....
-			eNode = document.createElement('p');
-			classNameNode = document.createElement('p');
-			subclassNode = document.createElement('p');
-			// ... give them ID's.... 
-			$(eNode).attr("id","class-root-enhance,"+index);
-			$(classNameNode).attr("id","classname-enhance,"+index);
-			$(subclassNode).attr("id","subclass-enhance,"+index);
-			// ... and type them.
-			d3.select(eNode).attr("rdfa:typeof","conversion:enhance");
-			d3.select(typeNode).attr("rdfa:property","conversion:range_name");
-			d3.select(classNameNode).attr("rdfa:property","conversion:class_name");
-			d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
-			$(typeNode).text(classLabel);
-			$(classNameNode).text(classLabel);
-			$(subclassNode).text(classURI);
-			
-			eNode.appendChild(classNameNode);
-			eNode.appendChild(subclassNode);
-			bNode.appendChild(eNode);
-		}
-	}// /adding a class
-	else if (sourceFacet == "datatypesFacet"){ // the thing is a datatype
-		if (isDataType){					  // and so is the node we're adding it to....
-			// override the things; property is already set
-			$(typeNode).text(classURI);
-		}// /isDataType
-		else {
-			// we have to delete some nodes =(
-			eNode = document.getElementById("class-root-enhance,"+index);
-			classNameNode = document.getElementById("classname-enhance,"+index);
-			subclassNode = document.getElementById("subclass-enhance,"+index);
-			if ( eNode ) { // but only if the nodes exist....
-				eNode.removeChild(classNameNode);
-				eNode.removeChild(subclassNode);
-				bNode.removeChild(eNode);
+	console.log("updateClassType is being called");
+	// Only update the thing if it's not in a bundle.
+	// Bundles are handled elsewhere!
+	var header = document.getElementById("0,"+index);
+	if ( $(header).hasClass("not-bundled")){
+		var bNode = document.getElementById("enhance-col,"+index);
+		// get the node we want to update, and check its type if any
+		var typeNode = document.getElementById("type-enhance,"+index);
+		var subclassNode,classNameNode,eNode;	// These are the nodes for the subclassing enhancements. They
+												//	  might exist, OR we might need to create them. Either way,
+												//    use these variable.
+		var isClass = hasClassType(index);
+		var isDataType = hasDataType(index);
+		// Is the thing we are adding a Class or a Data Type?
+		if ( sourceFacet == "ClassesFacet" ){ // if it's a class
+			if ( isClass ){ 	// and so is the thing we're adding...
+				// The enhancement property is already set for typeNode
+				// Just add the stuff
+				// * NOTE that eNode is meant to remain blank!
+				console.log("updating class");
+				classNameNode = document.getElementById("classname-enhance,"+index);
+				subclassNode = document.getElementById("subclass-enhance,"+index);
+				$(typeNode).text(classLabel);
+				$(classNameNode).text(classLabel);
+				$(subclassNode).text(classURI);
+			}// /if isClass
+			else { 				// if it isn't, then we need to create nodes....
+				console.log("adding class");
+				eNode = document.createElement('p');
+				classNameNode = document.createElement('p');
+				subclassNode = document.createElement('p');
+				// ... give them ID's.... 
+				$(eNode).attr("id","class-root-enhance,"+index);
+				$(classNameNode).attr("id","classname-enhance,"+index);
+				$(subclassNode).attr("id","subclass-enhance,"+index);
+				// ... and type them.
+				d3.select(eNode).attr("rdfa:typeof","conversion:enhance");
+				d3.select(typeNode).attr("rdfa:property","conversion:range_name");
+				d3.select(classNameNode).attr("rdfa:property","conversion:class_name");
+				d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
+				$(typeNode).text(classLabel);
+				$(classNameNode).text(classLabel);
+				$(subclassNode).text(classURI);
+				
+				eNode.appendChild(classNameNode);
+				eNode.appendChild(subclassNode);
+				bNode.appendChild(eNode);
 			}
-			// then re-type the typeNode and add the thing
-			d3.select(typeNode).attr("rdfa:property","conversion:range");
-			$(typeNode).text(classURI);
-		}// /!isDataType
-	}// /adding a datatype
-	else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
-		console.log("why are you calling this method???");
+		}// /adding a class
+		else if (sourceFacet == "datatypesFacet"){ // the thing is a datatype
+			if (isDataType){					  // and so is the node we're adding it to....
+				// override the things; property is already set
+				console.log("updating datatype");
+				$(typeNode).text(classURI);
+			}// /isDataType
+			else {
+				// we have to delete some nodes =(
+				console.log("removing class, adding datatype");
+				eNode = document.getElementById("class-root-enhance,"+index);
+				classNameNode = document.getElementById("classname-enhance,"+index);
+				subclassNode = document.getElementById("subclass-enhance,"+index);
+				if ( eNode ) { // but only if the nodes exist....
+					eNode.removeChild(classNameNode);
+					eNode.removeChild(subclassNode);
+					bNode.removeChild(eNode);
+				}
+				// then re-type the typeNode and add the thing
+				d3.select(typeNode).attr("rdfa:property","conversion:range");
+				$(typeNode).text(classURI);
+			}// /!isDataType
+		}// /adding a datatype
+		else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
+			console.log("why are you calling this method???");
+	}// /the thing's not in a bundle
+	else // if it is in a bundle, we need to do some shenanigans....
+		console.log("RDFa for Typing/Classing bundles is handled elsewhere");
 }// /updateClassType
 
 // Checks to see whether there has been a Data Type assignment

@@ -557,7 +557,7 @@ var dnd_classes = {
 		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-
+		updateClassType(columnID,columnType,uri,payload,sourceFacet);
         // Manipulate the property-label to reflect what was just dropped
         // First find the property-label
         var propertyLabel = target.closest("tr").siblings().filter(function () {
@@ -576,7 +576,7 @@ var dnd_classes = {
                 propertyLabel.empty().append("[datatype or annotation property]");
             }
         }
-		updateClassType(columnID,columnType,uri,payload,sourceFacet);
+		
     }// /drop_finish
 };// /dnd_classes
 
@@ -630,8 +630,19 @@ var dnd = {
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		updateProp(columnID,columnType,uri);
-
+		
+		// check the source facet and make the appropriate RDFa update
+		if ( sourceFacet == "ClassesFacet" || sourceFacet == "datatypesFacet" ){
+			console.log("dnd is calling updateClassType here");
+			updateClassType(columnID,columnType,uri,payload,sourceFacet);
+		}
+		else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet") {
+			console.log("dnd is calling updateProp here");
+			updateProp(columnID,columnType,uri);
+		}
+		else 
+			console.log("sourceFacet = " + sourceFacet);
+		
         // Apply suggestion logic
         modifyLabelAsRestriction(target, sourceFacet);
 
