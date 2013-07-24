@@ -2375,10 +2375,20 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 	
 	@QueryMethod
-	public String searchTester(final Request request){
+	protected Collection<HierarchyEntry> searchTester(final Request request){
+		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 		String searchString = (String) request.getParam("string");
 		JSONArray j = this.annotatorTester.searchAnnotations(searchString);
-		return j.toString();	
+		//loop over json array
+		for(int i=0;i<j.length();i++) {
+			final HierarchyEntry entry = new HierarchyEntry();
+			//System.out.println("prop: " + j.get(i).toString());
+	//		JSONObject obj = (JSONObject) j.get(i);
+	//		entry.setUri(uri);
+			entries.add(entry);
+
+		}
+		return entries;	
 	}
 
 
