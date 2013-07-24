@@ -495,6 +495,13 @@ public class AnnotatorModule implements Module {
 		return null;
 	}
 	
+	@QueryMethod
+	public String queryForEnhancingParams(final Request request){
+		System.out.println("turtle is : " + request.getParam("turtle"));		
+
+		
+		return null;
+	}
 		
 
 	@QueryMethod
