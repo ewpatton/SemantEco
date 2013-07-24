@@ -343,6 +343,17 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 	mainNode.appendChild(bundleNode);
 }// /createImplicitBundleNode
 
+// adds a "conversion:bundled_by", to indicate a column is bundled by another
+//	- bundleCol: the BUNDLING column
+// 	- subCol: the column that is IN the bundle
+function createExplicitBundledBy(bundleCol, subCol){
+	var subEnhancement = document.getElementById("enhance-col,"+subCol);
+	var bbNode = document.createElement('p');
+	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by");
+	$(bbNode).text( "ov:csvCol " + bundleCol );
+	subEnhancement.appendChild(bbNode);
+}// /createExplicitBundledBy
+
 function addAnnotationRDFa( index, predicate, object ){
 	// create nodes...
 	var anNodetation = document.createElement('p');
