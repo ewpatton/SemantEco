@@ -735,6 +735,7 @@ function toString(obj, level) {
 
 //  Extracting comments, putting them in the comment box for a facet jsTree
 $(window).bind("rendered_tree.semanteco", function (e, div) {
+    $("div.loading").hide();
     $(div).addClass("jstree-default");
     $(div).delegate("a", "click", function (event, data) {
         event.preventDefault();
@@ -885,7 +886,7 @@ $(document).ready(function () {
                         });
                         SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
                             "dnd": dnd,
-                            "plugins": ["dnd"]
+                            "plugins": ["dnd"],
                         });
                         SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
                             "dnd": dnd,
@@ -894,6 +895,11 @@ $(document).ready(function () {
                         SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
                             "dnd": dnd,
                             "plugins": ["dnd"]
+                        });
+                        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"],
+                            "populate": false
                         });
                     });
                 }
