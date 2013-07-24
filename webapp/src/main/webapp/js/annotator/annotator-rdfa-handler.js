@@ -403,12 +403,8 @@ function addAnnotationRDFa( index, predicate, object ){
 // Working from the GreenTurtle API here: https://code.google.com/p/green-turtle/wiki/API
 // This should parse the RDFa and return the graph in .ttl format.
 function turtleGen(){
-	var target = new Object;
-	target.graph = new RDFaGraph();
-	var processor = new GraphRDFaProcessor(target);
-	var theRDFa = document.getElementById("here-be-rdfa");
-	processor.process(theRDFa);
-	var turtle = target.graph.toString({shorten:true});
-	console.log(turtle);
-	return turtle;
+   document.data.implementation.attach(document);
+   var turtle = document.data.graph.toString({shorten: true});
+   console.log(turtle);
+    return turtle;
 }// /turtleGen
