@@ -44,7 +44,7 @@ var bundles = [];
 function createSubtable(text, colIndex) {
     var theader = '<table class="headerTable marginOverride">\n';
     var tbody = '';
-    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride" property="ov:csvHeader conversion:label">' + text + '</p></td></tr>\n';
+    tbody += '<tr><td id=nameRow,' + colIndex + '><p class="ellipses marginOverride">' + text + '</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=propertyRow,' + colIndex + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=classRow,' + colIndex + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
     var tfooter = '</table>';
@@ -1010,10 +1010,10 @@ function checkAnnotationRow(){
 function addAnnotation( index, predicate, object ){
 	var workingCol = document.getElementById("annotationRow," + index);
 	var theTable = workingCol.getElementsByTagName('TABLE')[0];
-	$( theTable ).append( "<tr typeof=\"conversion:enhance\">" +
-	"<td class=\"hidden\" property=\"ov:csvCol\">" + index + "</td>" + 
-	"<td property=\"conversion:predicate\"><p class=\"ellipses marginOverride property-label editable-input\">" + predicate + "</p></td>" +
-	"<td property=\"conversion:object\"><p class=\"ellipses marginOverride class-label editable-input\">" + object + "</p></td>" +
+	$( theTable ).append( "<tr>" +
+	"<td class=\"hidden\">" + index + "</td>" + 
+	"<td><p class=\"ellipses marginOverride property-label editable-input\">" + predicate + "</p></td>" +
+	"<td><p class=\"ellipses marginOverride class-label editable-input\">" + object + "</p></td>" +
 	"</tr>" );
 }// /addAnnotation
 

@@ -120,7 +120,6 @@ function buildTable(data) {
             $(th).attr("class", "ui-widget-content the-context-menu column-header not-bundled");
             // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
             $(th).attr("id", '0,' + j);
-            d3.select(th).attr("rdfa:typeof","conversion:enhance");
             th.innerHTML= (createSubtable(tharr[j], j));
             thr.appendChild(th);
             // bundled column row

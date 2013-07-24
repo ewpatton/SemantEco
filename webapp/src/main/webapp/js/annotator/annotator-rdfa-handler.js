@@ -89,8 +89,12 @@ function createEnhancementNode(label, index){
 // 	- theProperty: full URI/CURIE of the property we are adding. Either one should
 // 	     be okay, since we should have the prefixes stored in the main RDFa div.
 function updateProp(index,colType,theProperty){
-	var propNode = document.getElementById("prop-enhance,"+index);
-	$(propNode).text(theProperty);
+	var header = document.getElementById("0,"+index);
+	if ( header.hasClass("not-bundled");
+		var propNode = document.getElementById("prop-enhance,"+index);
+		$(propNode).text(theProperty);
+	else // if it is in a bundle, we need to do some shenanigans....
+		console.log("this thing's in a bundle");
 }// /updateProp
 
 function updateClassType(index,colType,classURI,classLabel,sourceFacet){
@@ -349,8 +353,8 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 function createExplicitBundledBy(bundleCol, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('p');
-	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by");
-	$(bbNode).text( "ov:csvCol " + bundleCol );
+	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by").attr("rdfa:typeof","ov:csvCol");
+	$(bbNode).text( bundleCol );
 	subEnhancement.appendChild(bbNode);
 }// /createExplicitBundledBy
 
