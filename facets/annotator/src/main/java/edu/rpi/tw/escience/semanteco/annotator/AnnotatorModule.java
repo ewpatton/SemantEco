@@ -61,6 +61,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -87,7 +88,8 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
-
+//import com.hp.hpl.jena.grddl.*;
+//import net.rootdev.javardfa.*;
 import rpi.AnnotatorTester;
 
 /*
@@ -171,9 +173,55 @@ public class AnnotatorModule implements Module {
 		AnnotatorModule.model = model;
 	}
 	
-	
 	public OntModel getModel(){
 		return AnnotatorModule.model;
+	}
+	
+	@QueryMethod
+	public String queryClassesInPropertyRange(Request request) throws OWLOntologyCreationException, JSONException{
+		JSONArray j = this.annotatorTester.queryClassesInPropertyRange((String) request.getParam("classesInPropertyRange"));
+		String namedClass = (String) j.get(0);
+		/*
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+			HierarchyEntry entry = new HierarchyEntry();
+			entry.setUri(namedClass);		
+			JSONObject annot = this.annotatorTester.getAnnotationsForClass(namedClass.toString());
+			System.out.println("class: " + namedClass.toString() + " has annotations: " + annot);
+			if(annot.has("label") && !annot.get("label").equals("")){
+			entry.setLabel((String)annot.get("label"));		
+			}
+			else{
+				entry.setLabel(getShortName(namedClass));
+			}
+			
+			if(annot.has("comment") && !annot.get("comment").equals("")){
+				entry.setComment(((String)annot.get("comment")));			
+			}
+			entry.setHasChild(this.annotatorTester.hasChildren(namedClass));
+			entries.add(entry);
+			return entries;	
+*/
+		return namedClass;
+
+		
+		
+	}
+	
+	@QueryMethod
+	public String getPropertiesClassCanRange(Request request)throws OWLOntologyCreationException, JSONException{
+		try{
+			
+		String aClass =	(String) request.getParam("propertiesClassCanRange");
+		System.out.println("range is : "+  aClass);
+		JSONArray j = this.annotatorTester.getPropertiesClassCanRange(aClass);
+		return j.toString();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+		
+		//return this.annotatorTester.getPropertiesClassCanRange((String) request.getParam("propertiesClassCanRange")).toString();
 	}
 	
 	@QueryMethod
@@ -401,9 +449,21 @@ public class AnnotatorModule implements Module {
 		return null;
 	}
 
-
+	
 	@QueryMethod
 	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
+		//com.hp.hpl.jena.grddl.GRDDLReader
+		//String rdfA = (String) request.getParam("enhancementsAsRDFa");
+		//Model m = createMemModel();
+
+		RDFReader r;
+		return null;
+	}
+	
+		
+
+	@QueryMethod
+	public String queryForEnhancing2(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
 		
 		//example implicit bundle:
 		/*
@@ -1751,7 +1811,23 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			
 			entry.setLabel(getShortName(binding));
 			entries.add(entry);
-		}return entries;
+		}
+		
+		//for standard datatypes
+		JSONObject dataTypes = AnnotatorTester.setupDataTypesMap();
+		Iterator i = dataTypes.keys();
+
+		while(i.hasNext()){	
+			
+			HierarchyEntry entry = new HierarchyEntry();
+			String uri = (String) i.next();
+			entry.setUri(uri);
+			entry.setLabel(getShortName(uri));
+			entries.add(entry);
+		}
+		
+		
+		return entries;
 		
 	}
 	
