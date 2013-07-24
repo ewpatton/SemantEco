@@ -184,7 +184,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 //	 in the RDFa for the column at (index).
 function hasDataType(index){
 	var checking = document.getElementById("type-enhance,"+index);
-	var rdfaType = d3.select(checking).attr("rdfa:typeof");
+	var rdfaType = d3.select(checking).attr("rdfa:property");
 	console.log(rdfaType);
 	if (rdfaType === "conversion:range"){
 		return true; }
@@ -199,7 +199,7 @@ function hasDataType(index){
 //	 one.
 function hasClassType(index){
 	var checking = document.getElementById("type-enhance,"+index);
-	var rdfaType = d3.select(checking).attr("rdfa:typeof");
+	var rdfaType = d3.select(checking).attr("rdfa:property");
 	console.log(rdfaType);
 	if (rdfaType === "conversion:range_name"){
 		return true; }
