@@ -518,7 +518,7 @@ public class AnnotatorModule implements Module {
 		
 		FileOutputStream fos = new FileOutputStream(paramsFile);
 		CharArrayReader reader = new CharArrayReader(turtleFileAsString.toCharArray());
-		fos.write(reader);
+		//fos.write(reader);
 		
 		//fos.write(arg0);
 		fos.close();
