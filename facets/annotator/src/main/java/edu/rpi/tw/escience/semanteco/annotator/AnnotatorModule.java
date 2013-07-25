@@ -2286,7 +2286,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 	}
 
-	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) throws OWLOntologyCreationException {
+	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) throws OWLOntologyCreationException, JSONException {
 		
 		final Collection<HierarchyEntry> entries ;
 		entries = this.annotatorTester.getParentClassesAsserted(str);
