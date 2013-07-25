@@ -268,7 +268,7 @@ SemantEcoUI.HierarchicalFacet = {};
                         var entry = {};
                         entry["label"] = objs[obj.uri] === undefined ?
                             obj.label === undefined ? "(unknown)" : obj.label
-                              : objs[obj.uri].label;
+                              : objs[obj.uri].prefLabel;
                         entry["value"] = obj.uri;
                         return entry;
                     });
@@ -368,8 +368,12 @@ SemantEcoUI.HierarchicalFacet = {};
             // data not yet loaded from server
             retrievePathToNode(jqdiv, item);
         } else {
-            jqdiv.jstree("open_node", objs[item].element)
-                .jstree("select_node", objs[item].element);
+            var elem = objs[item]["element"];
+            if(elem === undefined) {
+                elem = objs[item]["element"] = jqdiv.find('li[hierarchy_id="'+item+'"]');
+            }
+            jqdiv.jstree("open_node", elem)
+                .jstree("select_node", elem);
         }
     };
 
