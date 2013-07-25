@@ -179,6 +179,8 @@ public class AnnotatorModule implements Module {
 		return AnnotatorModule.model;
 	}
 	
+
+	
 	@QueryMethod
 	public String queryClassesInPropertyRange(Request request) throws OWLOntologyCreationException, JSONException{
 		JSONArray j = this.annotatorTester.queryClassesInPropertyRange((String) request.getParam("classesInPropertyRange"));
@@ -2188,13 +2190,15 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//			}
 			return  queryClassHMChildren(request, (String) request.getParam("classes"));
 		} 
-		/*
+	
 		else if ( action == HierarchyVerb.SEARCH ) {
 			return searchAnnotatorClass( request, (String) request.getParam("string") );
-		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+		} 
+		
+		else if ( action == HierarchyVerb.PATH_TO_NODE ) {
 			return annotatorClassToNode( request, (String) request.getParam("node") );
 		}
-		*/
+	
 		
 		return items;
 	}
@@ -2209,13 +2213,81 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 	*/
 	
+	/*
 	@QueryMethod
-	protected Collection<HierarchyEntry> searchAnnotations(final Request request, final String str){
-		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-		JSONArray j = this.annotatorTester.searchAnnotations(str);
-
+	protected Collection<HierarchyEntry> searchAnnotations(final Request request, final String str) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		entries = this.annotatorTester.searchAnnotations(str);
 		return entries;
 
+	}
+	*/
+	
+	@QueryMethod
+	protected String searchAnnotations(final Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String str = (String) request.getParam("search");
+		entries = this.annotatorTester.searchAnnotations(str);
+		return entries.toString();
+	}
+	
+	@QueryMethod
+	public String testM(Request request){
+		return null;
+	}
+	
+
+	@QueryMethod
+	protected String searchTester(Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String searchString = (String) request.getParam("string");
+		entries = this.annotatorTester.searchAnnotations(searchString);
+		//loop over json array
+	//	for(int i=0;i<j.length();i++) {
+	//		final HierarchyEntry entry = new HierarchyEntry();
+			//System.out.println("prop: " + j.get(i).toString());
+	//		JSONObject obj = (JSONObject) j.get(i);
+	//		entry.setUri(uri);
+	//		entries.add(entry);
+
+	//	}
+		return entries.toString();	
+	}
+	
+	@QueryMethod
+	public String searchTester2(final Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String searchString = (String) request.getParam("string");
+		entries = this.annotatorTester.searchAnnotations(searchString);
+		
+
+		if(entries != null){
+			System.out.println("entries are: "+ entries .toString());
+		return entries.toString();		
+		}
+		else{
+			return null;
+		}
+	}
+
+
+
+	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) throws JSONException {
+		final Collection<HierarchyEntry> entries ;
+		//String searchString = (String) request.getParam("string");
+		entries = this.annotatorTester.searchAnnotations(str);
+		if(entries != null){
+			System.out.println("entries are: "+ entries .toString());
+		return entries;		
+		}
+		else{
+			return null;
+		}
+
+	}
+
+	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
+		return null;
 	}
 	
 	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {	
@@ -2411,35 +2483,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}	
 		return entries;
 	}
-
-	
-	@QueryMethod
-	protected Collection<HierarchyEntry> searchTester(final Request request){
-		final Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-		String searchString = (String) request.getParam("string");
-		JSONArray j = this.annotatorTester.searchAnnotations(searchString);
-		//loop over json array
-		for(int i=0;i<j.length();i++) {
-			final HierarchyEntry entry = new HierarchyEntry();
-			//System.out.println("prop: " + j.get(i).toString());
-	//		JSONObject obj = (JSONObject) j.get(i);
-	//		entry.setUri(uri);
-			entries.add(entry);
-
-		}
-		return entries;	
-	}
-
-
-	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) {
-		return null;
-
-	}
-
-	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
-		return null;
-	}
-
 
 	//would it be better to have one model and reasoner for this module, instead of per query method? yes.
 	//do that through a constructor?
@@ -2972,6 +3015,39 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 	@QueryMethod
 	public String getAxiomsForClassTester(final Request request){
+		//this.initModel();
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) null );
+		return enhanceStatements1.next().toString();
+
+		//StmtIterator sTest = c.listProperties(null);
+		//return sTest.next();
+
+		/*
+		for(StmtIterator s = c.listProperties(null); ; s.hasNext()){
+			Statement s1 = s.next();
+			s1.getPredicate();
+		}
+		 */
+
+		//	s.next().getPredicate();
+
+		//////s.
+		//isObjectProperty
+		//isDatatypeProperty
+		//isAnnotationProperty
+
+		//asAnnotationProperty
+		//asDatatypeProperty
+		//asObjectProperty		
+	}
+	
+	@QueryMethod
+	public String getAxiomsForClassTesterM(final Request request){
 		//this.initModel();
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
