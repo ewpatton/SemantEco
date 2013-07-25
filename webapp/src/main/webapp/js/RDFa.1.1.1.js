@@ -671,10 +671,11 @@ RDFaProcessor.prototype.process = function(node,options) {
          var att = current.attributes[i];
          //if (att.namespaceURI=="http://www.w3.org/2000/xmlns/") {
          if (att.nodeName.charAt(0)=="x" && att.nodeName.indexOf("xmlns:")==0) {
-            if (!prefixesCopied) {
-               prefixes = this.copyMappings(prefixes);
-               prefixesCopied = true;
-            }
+            // EWP: disabled copying so prefixes are defined globally
+//            if (!prefixesCopied) {
+//               prefixes = this.copyMappings(prefixes);
+//               prefixesCopied = true;
+//            }
             var prefix = att.nodeName.substring(6);
             // TODO: resolve relative?
             var ref = RDFaProcessor.trim(att.value);
@@ -684,10 +685,11 @@ RDFaProcessor.prototype.process = function(node,options) {
       // Handle prefix mappings (@prefix)
       var prefixAtt = current.getAttributeNode("prefix");
       if (prefixAtt) {
-         if (!prefixesCopied) {
-            prefixes = this.copyMappings(prefixes);
-            prefixesCopied = true;
-         }
+         // EWP: disabled copying so prefixes are defined globally
+//         if (!prefixesCopied) {
+//            prefixes = this.copyMappings(prefixes);
+//            prefixesCopied = true;
+//         }
          this.parsePrefixMappings(prefixAtt.value,prefixes);
       }
 
@@ -1136,7 +1138,7 @@ function RDFaGraph()
       var prolog = requestOptions.baseURI ? "@base <"+baseURI+"> .\n" : "";
       if (options.shorten) {
          for (var prefix in options.prefixesUsed) {
-            prolog += "@prefix "+prefix+" <"+this.prefixes[prefix]+"> .\n";
+            prolog += "@prefix "+prefix+": <"+this.prefixes[prefix]+"> .\n";
          }
       }
       return prolog.length==0 ? s : prolog+"\n"+s;
@@ -1275,6 +1277,8 @@ RDFaPredicate.prototype.toString = function(options) {
       s = options.graph.shorten(this.predicate,options.prefixesUsed);
       if (!s) {
          s = "<" + this.predicate + ">"
+      } else if(s == "rdf:type") {
+         s = "a";
       }
    } else {
       s = "<" + this.predicate + ">"
@@ -1286,16 +1290,18 @@ RDFaPredicate.prototype.toString = function(options) {
       }
       // TODO: handle HTML literal
       if (this.objects[i].type=="http://www.w3.org/1999/02/22-rdf-syntax-ns#object") {
+         var o = null;
          if (this.objects[i].value.substring(0,2)=="_:") {
-            s += this.objects[i].value;
+            o = this.objects[i].value;
          } else if (options && options.shorten && options.graph) {
-            s = options.graph.shorten(this.objects[i].value,options.prefixesUsed);
+            o = options.graph.shorten(this.objects[i].value,options.prefixesUsed);
             if (!s) {
-               s = "<" + this.objects[i].value + ">"
+               o = "<" + this.objects[i].value + ">"
             }
          } else {
-            s += "<" + this.objects[i].value + ">";
+            o += "<" + this.objects[i].value + ">";
          }
+         s += o;
       } else if (this.objects[i].type=="http://www.w3.org/2001/XMLSchema#integer" ||
                  this.objects[i].type=="http://www.w3.org/2001/XMLSchema#decimal" ||
                  this.objects[i].type=="http://www.w3.org/2001/XMLSchema#double" ||
