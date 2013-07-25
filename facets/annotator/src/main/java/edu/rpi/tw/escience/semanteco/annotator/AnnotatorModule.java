@@ -1705,7 +1705,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}	
 		System.out.println("return entries: " + entries.toString());
 		*/
-		return entries;
+		return this.annotatorTester.sortIt(entries);
 	}
 	
 	protected Collection<HierarchyEntry> queryDataPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
@@ -1748,7 +1748,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
 			entries.add(entry);
 		}
-		return entries;
+			return this.annotatorTester.sortIt(entries);
+
 	}
 	
 	protected Collection<HierarchyEntry> queryAnnoPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
@@ -1785,7 +1786,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
 			entries.add(entry);
 		}
-		return entries;
+		return this.annotatorTester.sortIt(entries);
+
 	}
 	
 	
@@ -1821,7 +1823,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
 
 			entries.add(entry);
-		}return entries;
+		}
+		return this.annotatorTester.sortIt(entries);
 		
 	}
 	
@@ -1933,7 +1936,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			
 			entry.setLabel(getShortName(binding));
 			entries.add(entry);
-		}return entries;
+		}		return this.annotatorTester.sortIt(entries);
+
 		
 	}
 	
@@ -1967,7 +1971,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			}
 			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
 			entries.add(entry);
-		}return entries;
+		}		return this.annotatorTester.sortIt(entries);
+
 		
 	}
 
