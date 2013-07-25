@@ -331,6 +331,7 @@ SemantEcoUI.HierarchicalFacet = {};
                     } else {
                         nodesToCreate.push(uri);
                     }
+                    obj["rawData"] = results[i];
                     obj["prefLabel"] = results[i].label;
                     obj["parent"] = results[i].parent;
                     if ( results[i]["altLabel"] !== undefined ) {
