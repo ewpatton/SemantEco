@@ -187,6 +187,7 @@ function buildTable(data) {
         $("tr.col-selectable").selectable({
             filter: "th.column-header",
             autoRefresh: true,
+            cancel: "p.editable-input",
             selected: function (event, ui) {
                 var index = parseInt($(ui.selected).attr("id").split(",")[1]);
                 currentlySelected.push(index);
@@ -214,7 +215,7 @@ function buildTable(data) {
                 //console.log(this, $(this), event, ui);
                 var index = parseInt($(ui.unselected).attr("id").split(",")[1]);
                 var indexInSelected = currentlySelected.indexOf(index);
-                console.log(currentlySelected, index, indexInSelected);
+                //console.log(currentlySelected, index, indexInSelected);
                 currentlySelected.splice(indexInSelected, 1);
 
                 console.log("unselecting col " + index + "....");

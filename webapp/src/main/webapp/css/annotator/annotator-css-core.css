@@ -23,36 +23,37 @@
 	.fileTable table.headerTable {
 		width: 150px;
 		table-layout: fixed;
+		margin: auto;
 	}
 
 	.fileTable table.annotation-table {
 		width: 150px;
 		table-layout: fixed;
+		margin: auto;
 	}
 
 	.fileTable table.bundle-table {
-		width: 100%;
+		width: 150px;
 		table-layout: fixed;
+		margin: auto;
 	}
 
 	.fileTable table.bundle-table-extended {
 		width: 150px;
 		table-layout: fixed;
+		margin: auto;
 	}
 
 	/* Re adding old css stuff back */
 	.fileTable table {
-      max-width: 100%;
       background-color: #fff;
       border-collapse: collapse;
-      border-spacing: 0;
+      border-spacing: 0px;
       width: 100%;
       margin-bottom: 0px;
       margin-top: 0px;
 	  border: 1px solid #dddddd;
-      border-collapse: separate;
-      /* border-collapse: collapse; */
-      border-left: 0;
+      border-left: 0px;
       -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
               border-radius: 4px;
@@ -65,7 +66,7 @@
       border-top: 1px solid #dddddd;
 	  border-left: 1px solid #dddddd;
     }
-    .fileTable table tr:first-child {
+    .fileTable table tr:first {
       font-weight: bold;
     }
     .fileTable table tr:nth-child(odd){
@@ -73,6 +74,11 @@
     }
     .fileTable th {
 		border-collapse: collapse;
+		width: 150px;
+	}
+
+	.fileTable table.bundle-table.table-width-override {
+		width: 100%;
 	}
 
     #fileDialogWrapper {
@@ -289,4 +295,54 @@
 
     .bundle-select {
     	width: 100%;
+    }
+
+    div.global-properties-container {
+    	width: 300px; 
+    	height: 107px; 
+    	padding: 10px;
+    	float: left; 
+    	position: absolute; 
+    	left: 20px; 
+    	top: 0px; 
+    	background-color: rgb(245, 245, 245); 
+    	z-index: 1; 
+    	border: 1px solid black; 
+    	text-align: center;
+    	display: none; 
+    }
+
+    /* Quick CSS for video */
+	div.global-properties-container table {
+      background-color: #fff;
+      border-collapse: collapse;
+      border-spacing: 0px;
+      width: 100%;
+      margin-bottom: 0px;
+      margin-top: 0px;
+	  border: 1px solid #dddddd;
+      border-left: 0px;
+      -webkit-border-radius: 4px;
+         -moz-border-radius: 4px;
+              border-radius: 4px;
+    }
+	div.global-properties-container table th:not(.column-header){
+      border-top: 1px solid #dddddd;
+	  border-left: 1px solid #dddddd;
+    }
+    div.global-properties-container table td:not(.cellBased-on):not(.links_via-on) {
+      border-top: 1px solid #dddddd;
+	  border-left: 1px solid #dddddd;
+    }
+    div.global-properties-container table tr {
+      font-weight: bold;
+    }
+    div.global-properties-container table tr:nth-child(odd){
+      background-color: #f9f9f9;
+    }
+
+    div#data_info_form table {
+    	border: 0px solid black;
+    	margin-bottom: 0px;
+    	text-align: center;
     }

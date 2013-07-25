@@ -26,11 +26,23 @@
 					<ul>
 						<li><input id="menu-import-file" type="button" value="Import File" class="button-width-override" /></li>
 						<li><input id="menu-commit-enhancement" type="button" value="Commit Enhancements" class="button-width-override" /></li>
+						<li><input id="menu-show-globals" type="button" value="Edit Global Properties" class="button-width-override" /></li>
+						<li><input id="menu-show-data-info-form" type="button" value="Describe Dataset" class="button-width-override" /></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 		<div id="content" style="min-height: 0%; padding-top:0px; margin-top: 25px;">
+			<div id="globalProperties,0" class="global-properties-container">
+				<p>Global Domain Template</p>
+				<table class="headerTable marginOverride">
+					<tbody>
+						<tr><td id="nameRow,3"><p class="ellipses marginOverride">Domain Template</p></td></tr>
+						<tr><td style="color:red" class="droppable-prop" id="propertyRow,3"><p class="ellipses marginOverride property-label">[property]</p></td></tr>
+						<tr><td style="color:red" class="droppable-class" id="classRow,3"><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>
+					</tbody>
+				</table>
+			</div>
 			<div id="display">
 				<div id="list" class="fileTable hidden" style="overflow: auto; border: 1px solid black"></div>
 			</div>
@@ -39,7 +51,7 @@
 					<!-- classes view -->
 				 	<div id="classes-module" class="module-facet-container">
 						<h3>Classes</h3>
-						<div id="ClassesFacet" class="facet">
+						<div id="classesFacet" class="facet">
 							<div id="ClassTree" class="hierarchy"></div>
 							<div class="show-annotations-link inactive-text-link">Show Annotations</div>
 							<div id="ClassesDescription" class="description">
@@ -127,13 +139,11 @@
 		<!-- All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) -->
 		<!-- File to Import Prompt (what file are we working with?) -->
 		<div id="fileDialogWrapper" class="hidden">
-			<p>To begin, select a CSV file to import</p>
-			<form id="the_form" onSubmit="return false">
-				<input type="file" id="the_file" accept=".csv" />
-			</form>
-			<div id="file_info"></div>
-			<p>You may also import a file from a URL</p>
-			<input type="text" id="fileDialogFileURL" placeholder="http://path/to/your/file.csv"><input id="import-file-csv" type="button" value="Import From URL" class="button-width-override" />
+			<p><input type="radio" id="importSystemInput" class="import-radio" name="importing" value="Import a *.CSV file from your system:" checked="checked">Import a *.CSV file from your system: <input type="file" id="the_file" accept=".csv" />
+			<div id="file_info"></div></p>
+			<!-- <input id="import-file-system" type="button" value="Import from System" class="button-width-override" /> -->
+			<p><input type="radio" id="importURLInput" class="import-radio" name="importing" value="Import a *.CSV file via a URL:">Import a *.CSV file via a URL: <input type="text" id="fileDialogFileURL" placeholder="http://path/to/your/file.csv" style="width: 47%;"></p>
+			<!-- <input id="import-file-csv" type="button" value="Import From URL" class="button-width-override" /> -->
 		</div>
 
 		<!-- File Metadata Input Form (Modal) -->
@@ -141,8 +151,8 @@
 			<table>
 				<tr>
 					<td colspan="3">
-						<p>Please provide the following pieces of information about your data:</p>
-						<span id="tentative-uri">(it may take a moment to render your data table)</span>
+						<p class="info-form-temp-notifier">While your data is being loaded you can input more information about it below</p>
+						<p class="info-form-temp-notifier">You may skip this step and come back to it later</p>
 					</td>
 				</tr>
 				<tr>

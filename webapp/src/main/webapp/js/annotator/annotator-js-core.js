@@ -87,7 +87,7 @@ function createBundleSubtable(bundleID, implicitID) {
     });
 
     tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" action="return false;"><select class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
-    tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride">[name template]</p></td></tr>\n';
+    tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride editable-input">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + bundleID + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + bundleID + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
     var tfooter = '</table>';
@@ -335,7 +335,11 @@ $(function () {
                                     item.removeClass("not-bundled").addClass("bundled-implicit");
 
                                     // Now, move the item down
-                                    item.children(":first").removeClass("headerTable").addClass("bundle-table").appendTo("td#bundledRow\\," + selectedID);
+                                    if (item.attr("colspan") != undefined) {
+                                        item.children(":first").removeClass("headerTable").addClass("bundle-table").addClass("table-width-override").appendTo("td#bundledRow\\," + selectedID);
+                                    } else {
+                                       item.children(":first").removeClass("headerTable").addClass("bundle-table").appendTo("td#bundledRow\\," + selectedID);
+                                    }
 
                                     // Insert new header table, colspan if first in group, else hide
                                     if (index == 0) {
@@ -582,7 +586,7 @@ var dnd_classes = {
 
 // Arguments for Drag and Drop for facets ( this applies to the jstree library. see: jstree.com)
 var dnd = {
-    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row, div.global-properties-container",
     "drop_check": function (data) {
         if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
             if ( data.r.children().length == 0 ) { 
@@ -604,14 +608,14 @@ var dnd = {
         
         if (data.r.is("p." + label)) {
             target = data.r;
-            columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
-			columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
-        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
+            columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row, div.global-properties-container").attr("id").split(",")[0];
+			columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row, div.global-properties-container").attr("id").split(",")[1];
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") || data.r.is("div.global-properties-container") ) {
             target = data.r.find("p." + label + ":eq(0)");
             columnType = data.r.attr("id").split(",")[0];
 			columnID = data.r.attr("id").split(",")[1];
         } else {
-            var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
+            var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row, div.global-properties-container");
             target = parent.find("p." + label + ":eq(0)");
             columnType = parent.attr("id").split(",")[0];
 			columnID = parent.attr("id").split(",")[1];
@@ -632,7 +636,7 @@ var dnd = {
         target.parent().css("color", "black");
 		
 		// check the source facet and make the appropriate RDFa update
-		if ( sourceFacet == "ClassesFacet" || sourceFacet == "datatypesFacet" ){
+		if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
 			console.log("dnd is calling updateClassType here");
 			updateClassType(columnID,columnType,uri,payload,sourceFacet);
 		}
@@ -706,7 +710,9 @@ function modifyLabelAsRestriction(dropTarget, sourceFacet) {
         } else if (sourceFacet == "objectPropertiesFacet" && label == "class-label" ) {
             siblingLabel.empty().append("[class]");
         } else if ( sourceFacet == "datatypesFacet" && label == "property-label" ) {
-                siblingLabel.empty().append("[datatype or annotation property]");
+            siblingLabel.empty().append("[datatype or annotation property]");
+        } else if ( sourceFacet == "classesFacet" && label == "property-label" ) {
+            siblingLabel.empty().append("[object property]");
         } else {
             console.log("Source of DnD invalid, can't apply logic over label!");
         }
@@ -804,6 +810,14 @@ $(document).ready(function () {
         });
     });
 
+    $('input#menu-show-globals').click(function () {
+        if ( $('div.global-properties-container').is(":visible") ) {
+            $('div.global-properties-container').slideUp();
+        } else {
+            $('div.global-properties-container').slideDown();
+        }
+    });
+
     // TODO: rewrite these in jquery syntax
     //document.getElementById('the_form').addEventListener('submit', handleFileSelect, false);
     document.getElementById('the_file').addEventListener('change', fileInfo, false);
@@ -817,12 +831,19 @@ $(document).ready(function () {
             resizable: false,
             buttons: {
                 Import: function () {
-                    handleFileSelect();
+                    if ( $("input#importSystemInput").is(":checked") ) {
+                        handleFileSelect();    
+                    } else {
+                        handleUrlSelect();
+                    }
+                    // close dialog
                     $(this).dialog("close");
                 }
             }
         });
     });
+
+    /* $( ".selector" ).dialog( "close" ); */
 
     // Enable sortable and collapsable facets
     $("div#facets")
@@ -915,6 +936,7 @@ $(document).ready(function () {
 // Bind to clicks on editables (text to input to text)
 $(function () {
     $('body').on('click' ,'p.editable-input', function(e) {
+        console.log("Clicked editable");
         var input = $('<input />', {'type': 'text', 'name': 'anEditable', 'value': $(this).html(), "class": $(this).attr('class')});
         $(this).parent().append(input);
         $(this).remove();
@@ -998,14 +1020,48 @@ $(function () {
 });
 
 // Load a CSV file from a URL
-$(function () {
-    $('body').on('click' ,'input#import-file-csv', function(e) {
-        $.bbq.pushState({ "csvUri": $("input#fileDialogFileURL").val() });    
+function handleUrlSelect() {
+    $.bbq.pushState({ "csvUri": $("input#fileDialogFileURL").val() });
 
-        AnnotatorModule.getCSVFile({}, function (d) {
-            console.log(d);
-            buildTable(d);
-        });
+    // Show modal
+    $("#data_info_form").dialog({
+        modal: true,
+        width: 800,
+        buttons: {
+            Ok: function () {
+                var uriPrefix = addPackageLevelData();
+                var prefixes = createPrefixList(uriPrefix);
+                d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
+                GreenTurtle.attach(document,true);
+                $(this).dialog("close");
+            }
+        }
+    });    
+
+    AnnotatorModule.getCSVFile({}, function (d) {
+        console.log(d);
+        buildTable(d);
+    });
+}
+
+// Load a CSV file from the user system
+$(function () {
+    $('body').on('click' ,'input#menu-show-data-info-form', function(e) {
+        $("p.info-form-temp-notifier").hide();
+        // Show modal
+        $("#data_info_form").dialog({
+            modal: true,
+            width: 800,
+            buttons: {
+                Ok: function () {
+                    var uriPrefix = addPackageLevelData();
+                    var prefixes = createPrefixList(uriPrefix);
+                    d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
+                    GreenTurtle.attach(document,true);
+                    $(this).dialog("close");
+                }
+            }
+        });    
     });
 });
 
