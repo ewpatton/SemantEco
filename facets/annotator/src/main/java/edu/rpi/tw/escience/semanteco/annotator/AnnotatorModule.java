@@ -496,8 +496,34 @@ public class AnnotatorModule implements Module {
 	}
 	
 	@QueryMethod
-	public String queryForEnhancingParams(final Request request){
-		System.out.println("turtle is : " + request.getParam("turtle"));		
+	public String queryForEnhancingParams(final Request request) throws IOException{
+		System.out.println("turtle is : " + request.getParam("turtle"));
+		PrintWriter csvFile = this.csvFileWriter;
+		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
+        String eId = "1";
+		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
+		request.getLogger().debug("headers are : " + headerList.toString());
+		
+		/* generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
+	    			datasetId, datasetVersion, null, 
+	    			conversionID, cellDelimiter, null, null, null,
+	    			null, null, null, username, 
+	    			machineUri, username);
+	    			*/
+		
+		
+		//write the string the paramsFile path
+		String turtleFileAsString = (String) request.getParam("turtle");
+		
+		
+		FileOutputStream fos = new FileOutputStream(paramsFile);
+		CharArrayReader reader = new CharArrayReader(turtleFileAsString.toCharArray());
+		fos.write(reader);
+		
+		//fos.write(arg0);
+		fos.close();
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        //convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
 
 		
 		return null;
