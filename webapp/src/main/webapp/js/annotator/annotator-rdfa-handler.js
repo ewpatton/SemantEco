@@ -211,6 +211,8 @@ function hasClassType(index){
 // pulls user input about the dataset and adds it to the RDFa
 // RETURNS the full URI of the dataset, for addition to the prefix list.
 function addPackageLevelData(){
+	var rootNode = $("#here-be-rdfa");
+	var otherParams = $("#e_process");
 	// get the data
 	// * base_uri might not be hardcoded in the future
 	var base = "http://purl.org/twc/semantgeo";
@@ -219,39 +221,39 @@ function addPackageLevelData(){
 	var version = setVersion();
 	var full = base + "/source/" + source + "/dataset/" + dataset + "/version/" + version + "/conversion/enhancement/1";
 	// create the divs
-	var fullURI = document.createElement('p');
-	var baseURI = document.createElement('p');
-	var si = document.createElement('p');
-	var di = document.createElement('p');
-	var vi = document.createElement('p');
-	var ei = document.createElement('p');
+	//var fullURI = document.createElement('p');
+	// var baseURI = document.createElement('p');
+	// var si = document.createElement('p');
+	// var di = document.createElement('p');
+	// var vi = document.createElement('p');
+	// var ei = document.createElement('p');
 	// put the data in the divs
-	$(fullURI).text(full);
-	$(baseURI).text(base);
-	$(si).text(source);
-	$(di).text(dataset);
-	$(vi).text(version);
-	$(ei).text("1");
-	// Type everything
-	// Don't forget, the full URI here represents a resource!
-	d3.select(fullURI).attr("rdfa:resource",full).attr("rdfa:typeof","conversion:LayerDataset void:Dataset");
-	// and everything else here represents properties of that resource:
-	d3.select(baseURI).attr("rdfa:property","conversion:base_uri");
-	d3.select(si).attr("rdfa:prpoerty","conversion:source_identifier");
-	d3.select(di).attr("rdfa:property","conversion:dataset_identifier");
-	d3.select(vi).attr("rdfa:property","conversion:version_identifier");
-	d3.select(ei).attr("rdfa:property","conversion:enhancement_identifier");
-	// append ALL THE THINGS
-	fullURI.appendChild(baseURI);
-	fullURI.appendChild(si);
-	fullURI.appendChild(di);
-	fullURI.appendChild(vi);
-	fullURI.appendChild(ei);
+	rootNode.attr("about",full);
+	var elem = $("<div>");
+	elem.attr("property","conversion:base_uri").append(base);
+	elem.insertBefore(otherParams);
+	elem = $("<div>");
+	elem.attr("property","conversion:source_identifier").append(source);
+	elem.insertBefore(otherParams);
+	elem = $("<div>");
+	elem.attr("property","conversion:dataset_identifier").append(dataset);
+	elem.insertBefore(otherParams);
+	elem = $("<div>");
+	elem.attr("property","conversion:version_identifier").append(version);
+	elem.insertBefore(otherParams);
+	elem = $("<div>");
+	elem.attr("property","conversion:version_identifier").append("1");
+	elem.insertBefore(otherParams);
 	
-	document.getElementById("here-be-rdfa").appendChild(fullURI);
 	return full;
 }// /addPackageLevelData
 
+// in progress
+function createNode(attr,pred){
+	elem = $("<div>");
+	elem.attr(attr,pred);
+	return elem;
+}
 
 // Gets the source from the user input lightbox, and returns it.
 // If we want to do any input checking/handling, put it in here?
@@ -347,7 +349,7 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 	var bundleNameTemp = document.createElement('p');
 	var bundleType = document.createElement('p');
 	// ... type them...
-	d3.select(bundleNode).attr("rdfa:resource","#"+bResource).attr("rdfa:typeof","conversion:ImplicitBundle");
+	d3.select(bundleNode).attr("rdfa:about","#"+bResource).attr("rdfa:typeof","conversion:ImplicitBundle");
 	d3.select(bundleProp).attr("rdfa:property","conversion:property_name");
 	d3.select(bundleNameTemp).attr("rdfa:property","name_template");
 	d3.select(bundleType).attr("rdfa:property","conversion:type_name");
