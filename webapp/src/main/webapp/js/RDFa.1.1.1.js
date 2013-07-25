@@ -238,7 +238,7 @@ function RDFaProcessor(targetObject) {
 
 RDFaProcessor.prototype.newBlankNode = function() {
    this.blankCounter++;
-   return "_:"+this.blankCounter;
+   return "_:a"+this.blankCounter;
 }
 
 RDFaProcessor.XMLLiteralURI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"; 
