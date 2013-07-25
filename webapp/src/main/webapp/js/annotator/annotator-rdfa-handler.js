@@ -63,7 +63,7 @@ function createEnhancementNode(label, index){
 	$(colNum).text(index);
 	$(colLabel).text(label);
 	// But we know the predicates for everything except for class/type.
-	d3.select(bNode).attr("rdfa:typeof","conversion:enhance");
+	d3.select(bNode).attr("rdfa:rel","conversion:enhance");
 	d3.select(colNum).attr("rdfa:property","ov:csvCol");
 	d3.select(colLabel).attr("rdfa:property","ov:csvHeader conversion:label");
 	d3.select(colProp).attr("rdfa:property","conversion:equivalent_property");
@@ -242,7 +242,7 @@ function addPackageLevelData(){
 	elem.attr("property","conversion:version_identifier").append(version);
 	elem.insertBefore(otherParams);
 	elem = $("<div>");
-	elem.attr("property","conversion:version_identifier").append("1");
+	elem.attr("property","conversion:enhancement_identifier").append("1");
 	elem.insertBefore(otherParams);
 	
 	return full;
