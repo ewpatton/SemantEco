@@ -43,19 +43,19 @@ function createEnhancementNode(label, index){
 	var bNode = document.createElement('div');
 	$(bNode).attr("id", "enhance-col,"+index);
 	// create nodes for the first enhancements
-	var colNum = document.createElement('p');
-	var colLabel = document.createElement('p');
+	var colNum = document.createElement('div');
+	var colLabel = document.createElement('div');
 	// node for property is created here, and given the necessary RDFa
 	//   type for the eventual conversion, but it remains blank until the user
 	//   specifies what it is.
-	var colProp = document.createElement('p');
+	var colProp = document.createElement('div');
 	$(colProp).attr("id","prop-enhance,"+index);
 	// We can also create a node for the class, and give it an ID, however
 	//	 depending on whether it is a class or a datatype, the structure will be
 	//	 different. So this will be a dummy node that can be overridden/retyped
 	//	 as necessary. We mostly just want to give it an ID right now for ease of
 	//	 manipulation later =)
-	var colType = document.createElement('p');
+	var colType = document.createElement('div');
 	$(colType).attr("id","type-enhance,"+index);
 	
 	// These are the only two things where we already know the necessary
@@ -130,9 +130,9 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 			}// /if isClass
 			else { 				// if it isn't, then we need to create nodes....
 				console.log("adding class");
-				eNode = document.createElement('p');
-				classNameNode = document.createElement('p');
-				subclassNode = document.createElement('p');
+				eNode = document.createElement('div');
+				classNameNode = document.createElement('div');
+				subclassNode = document.createElement('div');
 				// ... give them ID's.... 
 				$(eNode).attr("id","class-root-enhance,"+index);
 				$(classNameNode).attr("id","classname-enhance,"+index);
@@ -221,12 +221,12 @@ function addPackageLevelData(){
 	var version = setVersion();
 	var full = base + "/source/" + source + "/dataset/" + dataset + "/version/" + version + "/conversion/enhancement/1";
 	// create the divs
-	//var fullURI = document.createElement('p');
-	// var baseURI = document.createElement('p');
-	// var si = document.createElement('p');
-	// var di = document.createElement('p');
-	// var vi = document.createElement('p');
-	// var ei = document.createElement('p');
+	//var fullURI = document.createElement('div');
+	// var baseURI = document.createElement('div');
+	// var si = document.createElement('div');
+	// var di = document.createElement('div');
+	// var vi = document.createElement('div');
+	// var ei = document.createElement('div');
 	// put the data in the divs
 	rootNode.attr("about",full);
 	var elem = $("<div>");
@@ -320,10 +320,10 @@ function setVersion(){
 
 function createCellBasedNode(cbCols){
 	var mainNode = document.getElementById("here-be-rdfa");
-	var cbNode = document.createElement('p');
+	var cbNode = document.createElement('div');
 	d3.select(cbNode).attr("rdfa:typeof","conversion:enhance");
-	var cols = document.createElement('p');
-	var type = document.createElement('p');
+	var cols = document.createElement('div');
+	var type = document.createElement('div');
 	d3.select(cols).attr("rdfa:property","ov:csvColumn");
 	d3.select(type).attr("rdfa:property","qb:Observation");
 	var colList = "";
@@ -344,10 +344,10 @@ function createCellBasedNode(cbCols){
 function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 	var mainNode = document.getElementById("here-be-rdfa");
 	// create nodes...
-	var bundleNode = document.createElement('p');
-	var bundleProp = document.createElement('p');
-	var bundleNameTemp = document.createElement('p');
-	var bundleType = document.createElement('p');
+	var bundleNode = document.createElement('div');
+	var bundleProp = document.createElement('div');
+	var bundleNameTemp = document.createElement('div');
+	var bundleType = document.createElement('div');
 	// ... type them...
 	d3.select(bundleNode).attr("rdfa:about","#"+bResource).attr("rdfa:typeof","conversion:ImplicitBundle");
 	d3.select(bundleProp).attr("rdfa:property","conversion:property_name");
@@ -370,7 +370,7 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 // 	- subCol: the column that is IN the bundle
 function createExplicitBundledBy(bundleCol, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
-	var bbNode = document.createElement('p');
+	var bbNode = document.createElement('div');
 	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by").attr("rdfa:typeof","ov:csvCol");
 	$(bbNode).text( bundleCol );
 	subEnhancement.appendChild(bbNode);
@@ -378,10 +378,10 @@ function createExplicitBundledBy(bundleCol, subCol){
 
 function addAnnotationRDFa( index, predicate, object ){
 	// create nodes...
-	var anNodetation = document.createElement('p');
-	var colNumber = document.createElement('p');
-	var pred = document.createElement('p');
-	var obj = document.createElement('p');
+	var anNodetation = document.createElement('div');
+	var colNumber = document.createElement('div');
+	var pred = document.createElement('div');
+	var obj = document.createElement('div');
 	// ... type them...
 	d3.select(anNodetation).attr("rdfa:typeof","conversion:enhance");
 	d3.select(colNumber).attr("rdfa:property","ov:csvCol");
