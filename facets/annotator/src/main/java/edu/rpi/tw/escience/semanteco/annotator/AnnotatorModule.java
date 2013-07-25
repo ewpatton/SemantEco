@@ -2332,8 +2332,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasChildren(binding));
 			entries.add(entry);		
 		}
-		//JSONArray classes = ann.getOnlyChildOWLClasses("root");		
-		return entries;		
+		//JSONArray classes = ann.getOnlyChildOWLClasses("root");	
+		return this.annotatorTester.sortIt(entries);
+		//return entries;		
 	}
 	
 	protected Collection<HierarchyEntry> queryClassHMChildren(final Request request, String clazz) throws OWLOntologyCreationException, JSONException {
@@ -2370,7 +2371,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}
 
 		//JSONArray classes = ann.getOnlyChildOWLClasses("root");		
-		return entries;
+		return this.annotatorTester.sortIt(entries);
+
+	//	return entries;
 		
 	}
 	/*
