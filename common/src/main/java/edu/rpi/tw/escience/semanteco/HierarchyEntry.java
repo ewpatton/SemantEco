@@ -108,10 +108,10 @@ public class HierarchyEntry implements Serializable {
 
 	/**
 	 * Sets the parent URI for the entry
-	 * @param parent
+	 * @param iri
 	 */
-	public void setParent(final URI parent) {
-		this.contents.put(PARENT_FIELD, parent.toASCIIString());
+	public void setParent(final URI iri) {
+		this.contents.put(PARENT_FIELD, iri.toASCIIString());
 	}
 
 	/**
@@ -227,5 +227,9 @@ public class HierarchyEntry implements Serializable {
 	 */
 	public void setUri(final String uri) {
 		setUri(URI.create(uri));
+	}
+	
+	public void setParent(final String uri) {
+		setParent(URI.create(uri));
 	}
 }

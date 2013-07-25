@@ -497,7 +497,7 @@ public class AnnotatorModule implements Module {
 		return null;
 	}
 	
-	@QueryMethod
+	@QueryMethod(method=HTTP.POST)
 	public String queryForEnhancingParams(final Request request) throws IOException{
 		System.out.println("turtle is : " + request.getParam("turtle"));
 		PrintWriter csvFile = this.csvFileWriter;
@@ -2023,7 +2023,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 
 	@HierarchicalMethod(parameter = "annotatorClasses")
-	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) throws JSONException {
+	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 		this.initModel(request);
 
@@ -2196,7 +2196,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		} 
 		
 		else if ( action == HierarchyVerb.PATH_TO_NODE ) {
-			return annotatorClassToNode( request, (String) request.getParam("node") );
+			return annotatorClassToNode( request, (String) request.getParam("uri") );
 		}
 	
 		
@@ -2286,8 +2286,17 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 	}
 
-	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
-		return null;
+	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) throws OWLOntologyCreationException {
+		
+		final Collection<HierarchyEntry> entries ;
+		entries = this.annotatorTester.getParentClassesAsserted(str);
+		if(entries != null){
+			System.out.println("entries are: "+ entries .toString());
+		return entries;		
+		}
+		else{
+			return null;
+		} 
 	}
 	
 	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {	
