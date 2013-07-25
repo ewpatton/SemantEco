@@ -260,7 +260,9 @@ SemantEcoUI.HierarchicalFacet = {};
             module[qmethod](HierarchyVerb.SEARCH, {"string": request.term},
                     function(d) {
                 try {
-                    d = JSON.parse(d);
+                    if(typeof d === "string") {
+                        d = JSON.parse(d);
+                    }
                     var objs = $("div.jstree", jqdiv).data("hierarchy.lookup");
                     d = _.map(d.results, function(obj) {
                         var entry = {};
