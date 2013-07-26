@@ -334,14 +334,6 @@ $(function () {
                                     // Before we move the cell down, handle bundle class (explicit, implicit)
                                     item.removeClass("not-bundled").addClass("bundled-implicit");
 
-                                    // Before we move the cell down, lock the dropdown
-                                    // TODO: Disable the forms here .attr("disabled", "disabled");
-                                    //var firstTD = item.children(":first").find("td:eq(0)");
-                                    //console.log(firstTD);
-                                    //if ( firstTD.attr("id").split(",")[0] == "bundleResource") {
-                                    //    item.children(":first").find("form").attr("disabled", "disabled");
-                                    //}
-
                                     // Now, move the item down
                                     if (item.attr("colspan") != undefined) {
                                         item.children(":first").removeClass("headerTable").addClass("bundle-table").addClass("table-width-override").appendTo("td#bundledRow\\," + selectedID);
@@ -355,6 +347,7 @@ $(function () {
                                     } else {
                                         item.addClass("hidden");                               
                                     }
+                                    // TODO: Disable the forms here .attr("disabled", "disabled");
                                 });
                             });
                         }
@@ -884,68 +877,52 @@ $(document).ready(function () {
             $("#checkboxDropDownOntologies").dropdownchecklist({
                 emptyText: "Select an Ontology ...",
                 onComplete: function (selector) {
+                    // Show user we are about to re-populate the facets with new jstrees
+                    $(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
+
                     var values = []; // [RDFa]: can use this for prefixes?
                     for (i = 0; i < selector.options.length; i++) {
                         if (selector.options[i].selected && (selector.options[i].value != "")) {
                             values.push(selector.options[i].value);
                         }
                     }
+                    $.bbq.pushState({
+                        "listOfOntologies": values
+                    });
+                   
 
-                    var curState = $.bbq.getState("listOfOntologies");
-                    if (curState == undefined ) { curState = []; }
+                    // Call patrice's new silly init call thingy ( :D )
+                    AnnotatorModule.initOWLModel({}, function (d) {
+                        
+                        // Clean up, then Re-query facets
+                        $(".hierarchy").empty();
 
-                    console.log(curState, values, values.length, curState != values, values.length > 0);
-
-                    if ( curState.join("").localeCompare(values.join("")) != 0 && values.length > 0 ) {
-                        $.bbq.pushState({
-                            "listOfOntologies": values
+                        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"]
                         });
-
-                        // Show user we are about to re-populate the facets with new jstrees
-                        if ( !$("div#classes-module > h3").find("> .ui-icon").end().next().is(":visible") ) { $("div#classes-module > h3").find("> .ui-icon").end().next().slideToggle(); }
-                        if ( !$("div#object-properties-module > h3").find("> .ui-icon").end().next().is(":visible") ) { $("div#object-properties-module > h3").find("> .ui-icon").end().next().slideToggle(); }
-                        if ( !$("div#data-properties-module > h3").find("> .ui-icon").end().next().is(":visible") ) { $("div#data-properties-module > h3").find("> .ui-icon").end().next().slideToggle(); }
-                        if ( !$("div#annotation-properties-module > h3").find("> .ui-icon").end().next().is(":visible") ) { $("div#annotation-properties-module > h3").find("> .ui-icon").end().next().slideToggle(); }
-                        if ( !$("div#data-types-module > h3").find("> .ui-icon").end().next().is(":visible") ) { $("div#data-types-module > h3").find("> .ui-icon").end().next().slideToggle(); }
-                        
-
-                     
-                        //$("div#facets").accordion({"active": [0,1,2,3,4]});
-                        $(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
-
-                        // Call patrice's new silly init call thingy ( :D )
-                        AnnotatorModule.initOWLModel({}, function (d) {
-                        
-                            // Clean up, then Re-query facets
-                            $(".hierarchy").empty();
-
-                            SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
-                                "dnd": dnd,
-                                "plugins": ["dnd"]
-                            });
-                            SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
-                                "dnd": dnd,
-                                "plugins": ["dnd"]
-                            });
-                            SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
-                                "dnd": dnd,
-                                "plugins": ["dnd"],
-                            });
-                            SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
-                                "dnd": dnd,
-                                "plugins": ["dnd"]
-                            });
-                            SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
-                                "dnd": dnd,
-                                "plugins": ["dnd"]
-                            });
-                            SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
-                                "dnd": dnd,
-                                "plugins": ["dnd"],
-                                "populate": false
-                            });
-                        });    
-                    }
+                        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"]
+                        });
+                        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"],
+                        });
+                        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"]
+                        });
+                        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"]
+                        });
+                        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
+                            "dnd": dnd,
+                            "plugins": ["dnd"],
+                            "populate": false
+                        });
+                    });
                 }
             });
         }
@@ -1016,18 +993,6 @@ $(function () {
             // Changed to Column
             // Set Bundle Vars (get id from id of table)
 
-            // Video hack TODO: rewrite this after the video is done
-            // Find id of column we are bundling
-            // pull data and update our data
-            var targetColumnID = $("option:selected", this).text().split(" ")[1];
-            var targetColumn = $("th#0\\," + targetColumnID + ".column-header");
-            var targetColumnName = targetColumn.find("td#nameRow\\," + targetColumnID).find("p").text();
-            var targetColumnPropertyLabel = targetColumn.find("p.property-label").text();
-            var targetColumnClassLabel = targetColumn.find("p.class-label").text();
-
-            console.log("target column name", targetColumnName, targetColumn, targetColumn.find("td#bundleName\\," + targetColumnID))
-
-
             // Now update all dropdowns of this bundle with the new value
             $.each(bundleDropdowns, function (index, aDropdown) {
                 // Move to same item in dropdown, don't do it for the original dropdown of course
@@ -1037,14 +1002,6 @@ $(function () {
                     console.log("MatchOption:", matchOption, matchOption.index(), aDropdown, aDropdown.selectedIndex);
                     aDropdown.selectedIndex = matchOption.index();
                 }
-
-                //Apply new naming to all dropdowns VIDOE HACK MAY NEED TO REWRITE
-                // Get id of this dropdown
-                var dropdownID = $(aDropdown).closest("td").attr("id").split(",")[1];
-                console.log("dropdownid", dropdownID, $(aDropdown).closest("td"), $(aDropdown).closest("tbody").find("td#bundleName\\," + dropdownID));
-                $(aDropdown).closest("tbody").find("p.property-label").empty().text(targetColumnPropertyLabel).parent().css("color", "black");
-                $(aDropdown).closest("tbody").find("p.class-label").empty().text(targetColumnClassLabel).parent().css("color", "black");
-                $(aDropdown).closest("tbody").find("td#bundleName\\," + dropdownID).find("p").empty().text(targetColumnName);
                 
                 // If this was not just column to column but Implicit to Column, switch first element to "New Implicit Bundle" (and return the id)
                 console.log("prevValue", selectPreviousValue);
@@ -1073,7 +1030,7 @@ function handleUrlSelect() {
         buttons: {
             Ok: function () {
                 var uriPrefix = addPackageLevelData();
-                var prefixes = createPrefixList(uriPrefix);
+                var prefixes = createPrefix(uriPrefix);
                 d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
                 GreenTurtle.attach(document,true);
                 $(this).dialog("close");
@@ -1098,7 +1055,7 @@ $(function () {
             buttons: {
                 Ok: function () {
                     var uriPrefix = addPackageLevelData();
-                    var prefixes = createPrefixList(uriPrefix);
+                    var prefixes = createPrefix(uriPrefix);
                     d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
                     GreenTurtle.attach(document,true);
                     $(this).dialog("close");

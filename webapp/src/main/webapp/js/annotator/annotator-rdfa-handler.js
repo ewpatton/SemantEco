@@ -11,25 +11,12 @@
 //	Prefixes are stored in the #here-be-rdfa div.
 // 	Takes as a parameter:
 // 	 - the full URI of the dataset (requires user input!) to add as a prefix
-function createPrefixList(datasetURI){
-	var prefixes = "";
-	prefixes += "rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# ";
-	prefixes += "rdfs: http://www.w3.org/2000/01/rdf-schema# ";
-	prefixes += "xsd: http://www.w3.org/2001/XMLSchema# ";
-	prefixes += "skos: http://www.w3.org/2004/02/skos/core# ";
-	prefixes += "geonames: http://www.geonames.org/ontology# ";
-	prefixes += "prov: http://www.w3.org/ns/prov# ";
-	prefixes += "qb: http://purl.org/linked-data/cube# ";
-	prefixes += "dcterms: http://purl.org/dc/terms/ ";
-	prefixes += "foaf: http://xmlns.com/foaf/0.1/ ";
-	prefixes += "ov: http://open.vocab.org/terms/ ";
-	prefixes += "sweet: http://sweet.jpl.nasa.gov/2.1/ ";
-	prefixes += "void: http://rdfs.org/ns/void# ";
-	prefixes += "conversion: http://purl.org/twc/vocab/conversion/ ";
+function createPrefix(datasetURI){
+	var prefixes = "conversion: http://purl.org/twc/vocab/conversion/ "
 	prefixes += ": " + datasetURI + " ";
 	
 	return prefixes;
-}// /createPrefixList
+}// /createPrefix
 
 // Creates appropriate div for a column, containing required basic triples
 // This should be called repeatedly as the UI table is generated, 
@@ -127,23 +114,23 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				$(typeNode).text(classLabel);
 				$(classNameNode).text(classLabel);
 				$(subclassNode).text(classURI);
-				d3.select(subclassNode).attr("rdfa:typeof",classURI);
+				$(subclassNode).attr("href",classURI);
 			}// /if isClass
 			else { 				// if it isn't, then we need to create nodes....
 				console.log("adding class");
 				eNode = document.createElement('div');
 				classNameNode = document.createElement('div');
-				subclassNode = document.createElement('div');
+				subclassNode = document.createElement('a');
 				// ... give them ID's.... 
 				$(eNode).attr("id","class-root-enhance,"+index);
 				$(classNameNode).attr("id","classname-enhance,"+index);
 				$(subclassNode).attr("id","subclass-enhance,"+index);
 				// ... and type them.
-				d3.select(eNode).attr("rdfa:typeof","conversion:enhance");
+				d3.select(eNode).attr("rdfa:rel","conversion:enhance");
 				d3.select(typeNode).attr("rdfa:property","conversion:range_name");
 				d3.select(classNameNode).attr("rdfa:property","conversion:class_name");
-				d3.select(subclassNode).attr("rdfa:rel","conversion:subclass_of");
-				d3.select(subclassNode).attr("rdfa:resource",classURI);
+				d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
+				$(subclassNode).attr("href",classURI);
 				$(typeNode).text(classLabel);
 				$(classNameNode).text(classLabel);
 				$(subclassNode).text(classURI);
@@ -212,6 +199,7 @@ function hasClassType(index){
 
 // pulls user input about the dataset and adds it to the RDFa
 // RETURNS the full URI of the dataset, for addition to the prefix list.
+//	* NOTE that this should only create nodes if they don't already exist!
 function addPackageLevelData(){
 	var rootNode = $("#here-be-rdfa");
 	var otherParams = $("#e_process");
@@ -222,14 +210,7 @@ function addPackageLevelData(){
 	var dataset = setDataset();
 	var version = setVersion();
 	var full = base + "/source/" + source + "/dataset/" + dataset + "/version/" + version + "/conversion/enhancement/1";
-	// create the divs
-	//var fullURI = document.createElement('div');
-	// var baseURI = document.createElement('div');
-	// var si = document.createElement('div');
-	// var di = document.createElement('div');
-	// var vi = document.createElement('div');
-	// var ei = document.createElement('div');
-	// put the data in the divs
+	
 	rootNode.attr("about",full);
 	var elem = $("<div>");
 	elem.attr("property","conversion:base_uri").append(base);
