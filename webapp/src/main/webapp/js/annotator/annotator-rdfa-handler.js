@@ -102,7 +102,7 @@ function updateProp(index,colType,theProperty){
 }// /updateProp
 
 function updateClassType(index,colType,classURI,classLabel,sourceFacet){
-	console.log("updateClassType is being called");
+	console.log("updateClassType: " + sourceFacet);
 	// Only update the thing if it's not in a bundle.
 	// Bundles are handled elsewhere!
 	var header = document.getElementById("0,"+index);
@@ -116,7 +116,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 		var isClass = hasClassType(index);
 		var isDataType = hasDataType(index);
 		// Is the thing we are adding a Class or a Data Type?
-		if ( sourceFacet == "ClassesFacet" ){ // if it's a class
+		if ( sourceFacet == "classesFacet" ){ // if it's a class
 			if ( isClass ){ 	// and so is the thing we're adding...
 				// The enhancement property is already set for typeNode
 				// Just add the stuff
@@ -127,6 +127,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				$(typeNode).text(classLabel);
 				$(classNameNode).text(classLabel);
 				$(subclassNode).text(classURI);
+				d3.select(subclassNode).attr("rdfa:typeof",classURI);
 			}// /if isClass
 			else { 				// if it isn't, then we need to create nodes....
 				console.log("adding class");
@@ -141,7 +142,8 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				d3.select(eNode).attr("rdfa:typeof","conversion:enhance");
 				d3.select(typeNode).attr("rdfa:property","conversion:range_name");
 				d3.select(classNameNode).attr("rdfa:property","conversion:class_name");
-				d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
+				d3.select(subclassNode).attr("rdfa:rel","conversion:subclass_of");
+				d3.select(subclassNode).attr("rdfa:resource",classURI);
 				$(typeNode).text(classLabel);
 				$(classNameNode).text(classLabel);
 				$(subclassNode).text(classURI);
@@ -264,7 +266,7 @@ function setSource(){
 	// have some kind of checking here to make sure the user
 	// hasn't done anything silly (like only entered a space)
 	if ( (document.getElementById("source_add_new").value) ){
-		addSource = (document.getElementById("source_add_new").value);
+		addSource = (document.getElementById("source_add_new").value).replace(/\W+/g,'');
 		source += addSource;
 	}
 	// ... otherwise, check the dropdown... 
@@ -286,7 +288,7 @@ function setDataset(){
 	var dataset = ""
 	// Do the same thing for the dataset name
 	if ( (document.getElementById("dataset_add_new").value) ){
-		addDataset = (document.getElementById("dataset_add_new").value);
+		addDataset = (document.getElementById("dataset_add_new").value).replace(/\W+/g,'');
 		dataset += addDataset;
 	}
 	else if( (document.getElementById("dataset_info").value) ) {
@@ -309,7 +311,7 @@ function setVersion(){
 	var version = "";
 	if ( document.getElementById("version_info").value ) {
 		version += (document.getElementById("version_info").value);
-		version.replace(/^\s+|\s+$/g,'');
+		version = version.replace(/\W+/g,'');
 		return version;
 	}
 	else 
