@@ -187,7 +187,7 @@ function buildTable(data) {
         $("tr.col-selectable").selectable({
             filter: "th.column-header",
             autoRefresh: true,
-            cancel: "p.editable-input",
+            cancel: "p.editable-input,input,textarea,button,select,option",
             selected: function (event, ui) {
                 var index = parseInt($(ui.selected).attr("id").split(",")[1]);
                 currentlySelected.push(index);
