@@ -156,12 +156,18 @@ public class AnnotatorModule implements Module {
 	private String dataSetName;
 	private String sourceName;
 	String workingDir = System.getProperty("user.dir");
+	
+	///private String csvFileLocation= "/tmp/csvFile.csv";
+	//private String outputRdfFileLocation = "/tmp/output.ttl";
+	//private String paramsFile = "/tmp/sample-enhancement.ttl"; 
+	
+	
+	private String paramsFile = workingDir + "/sample-enhancement.ttl";  
 	private String csvFileLocation= workingDir + "/csvFile.csv";
-	private String outputRdfFileLocation=workingDir + "output.ttl";
-	private String paramsFile = workingDir + "sample-enhancement.ttl";  
+    private String outputRdfFileLocation=workingDir + "/output.ttl";
+
 	//private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
 	//private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
-	//private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";  
 	AnnotatorTester annotatorTester = null;
 
 
