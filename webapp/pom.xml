@@ -480,8 +480,7 @@
 	<artifactId>maven-surefire-plugin</artifactId>
 	<version>2.12</version>
 	<configuration>
-
-  <argLine>-Xmx1024m</argLine>
+ <argLine>-Xmx16777216m </argLine>
 
 	  <basedir>${project.build.directory}</basedir>
 	  <workingDirectory>${project.build.directory}</workingDirectory>

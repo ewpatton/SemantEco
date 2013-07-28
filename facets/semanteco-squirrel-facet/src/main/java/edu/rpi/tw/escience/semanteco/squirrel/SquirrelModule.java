@@ -115,25 +115,29 @@ public class SquirrelModule implements Module {
 		graph.addPattern(fGeometry, asWKT, featureWKT);
 		
 		 //Get polygon coordinates
-		 String[] coords = (String[])(request.getParam("UserDrawnMapPolygon"));
-		 String[][] longlat = new String[coords.length][2];
+		 JSONArray coords = (JSONArray) request.getParam("UserDrawnMapPolygon");
+		 String[] coordsStr = new String[coords.length()];
+		 for(int a = 0; a < coords.length(); a++)
+			 coordsStr[a] = coords.optString(a);
+		 
+		 String[][] longlat = new String[coordsStr.length][2];
 		
 		 //Parse out () and ,
 		 //Separate lat and long b/c polygon takes long lat, not lat long
-		 for(int a = 0; a < coords.length; a++)
+		 for(int a = 0; a < coordsStr.length; a++)
 		 {
-		  coords[a] = coords[a].replace("(", "");
-		  coords[a] = coords[a].replace(")", "");
-		  coords[a] = coords[a].replace(",", "");
-		  longlat[a][0] = (coords[a].split("\\s+"))[1];
-		  longlat[a][1] = (coords[a].split("\\s+"))[0];
+		  coordsStr[a] = coordsStr[a].replace("(", "");
+		  coordsStr[a] = coordsStr[a].replace(")", "");
+		  coordsStr[a] = coordsStr[a].replace(",", "");
+		  longlat[a][0] = (coordsStr[a].split("\\s+"))[1];
+		  longlat[a][1] = (coordsStr[a].split("\\s+"))[0];
 		 }
 		 
 		 //Construct condition
 		 String filterCondition = "<" + GEOF + "sfWithin>(?fWKT, \"POLYGON((" ;
-		 for(int b = 0; b < coords.length; b++)
+		 for(int b = 0; b < coordsStr.length; b++)
 		  filterCondition += longlat[b][0] + " " + longlat[b][1] + "," ;
-		 filterCondition = filterCondition.substring(0, filterCondition.length() - 1);
+		 filterCondition += longlat[0][0] + " " + longlat[0][1];
 		 filterCondition += "))\"^^" + "<" + GEO + "wktLiteral>)" ;
 		 
 		 //Filter for features in polygon
@@ -150,6 +154,7 @@ public class SquirrelModule implements Module {
 		if(resultStr == null) { return responseStr; }
 			System.out.println(resultStr);
 		 return resultStr;	
+		 
 	}
 	
 	@Override
@@ -170,6 +175,8 @@ public class SquirrelModule implements Module {
 	@Override
 	public void visit(final SemantEcoUI ui, final Request request) {
 		// TODO add resources to display
+		Resource res = config.getResource("squirrel.js");
+		ui.addScript(res);
 	}
 
 	@Override
@@ -196,4 +203,6 @@ public class SquirrelModule implements Module {
 	public void setModuleConfiguration(final ModuleConfiguration config) {
 		this.config = config;
 	}
+	
+
 }
