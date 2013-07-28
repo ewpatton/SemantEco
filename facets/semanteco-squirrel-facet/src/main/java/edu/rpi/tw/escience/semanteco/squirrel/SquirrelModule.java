@@ -37,7 +37,7 @@ import org.json.JSONObject;
 
 
 public class SquirrelModule implements Module {
-
+	//SQUIRREL
 	private ModuleConfiguration config = null;
 	private static final String FAILURE = "{\"success\":false}";
 	private static final Logger log = Logger.getLogger(SquirrelModule.class);
