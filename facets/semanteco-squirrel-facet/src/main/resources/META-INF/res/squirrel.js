@@ -1,20 +1,19 @@
 SemantEcoUI.overlays = new Object(); // Put in SemantEco.js?
 
-function drawRadiusExtendedPolygon(radius, aName)
-{
+function drawRadiusExtendedPolygon(radius, aName) {
     //Get drawn polygon coordinates (latlngs)
     var coords = $.bbq.getState("UserDrawnMapPolygon");
     
     // Check arguments first
-    if (typeof coords == undefined) { return false; }
+    if (coords == undefined) { return false; }
 
 	// Generate extended polygon overlay name
-    if (typeof aName == undefined) {
+    if (aName == undefined) {
         aName = Math.random().toString(36).slice(2); // Generate a random alphanumeric string
     }
 
 	//Get the user drawn polygon and find it's center
-    var drawnPolygon = SemantEcoUI.overlays[$bbq.getState("PolygonID")];
+    var drawnPolygon = SemantEcoUI.overlays[$.bbq.getState("PolygonID")];
     var center = drawnPolygon.getBounds().getCenter();
     
     //Calculate coords for the new polygon 
@@ -24,12 +23,22 @@ function drawRadiusExtendedPolygon(radius, aName)
     var newPolygon;
     var extCoords = [];
     //Get radial extended latlngs
-    for(var a = 0; a < coords.length; a++)
-    	extCoords.push(google.maps.geometry.spherical.computeHeading(center, drawnPolygon.getPath().getAt(a)).computeOffset(radius));
+    for(var a = 0; a < coords.length; a++) {
+        //console.log(coords[a], radius, center, drawnPolygon.getPath().getAt(a), google.maps.geometry.spherical.computeHeading(center, drawnPolygon.getPath().getAt(a)));
+    	//extCoords.push(google.maps.geometry.spherical.computeHeading(center, drawnPolygon.getPath().getAt(a)).computeOffset(radius));
+        var heading = google.maps.geometry.spherical.computeHeading(center, drawnPolygon.getPath().getAt(a));
+        var cleanCoords = coords[a].replace("(", "").replace(")", "").split(",");
+        var lat = parseFloat(cleanCoords[0]);
+        var lng = parseFloat(cleanCoords[1]);
+        var newLatLng = new google.maps.LatLng(lat, lng);
+        var aCoord = google.maps.geometry.spherical.computeOffset(newLatLng, radius, heading);
+        //console.log(coords[a], newLatLng, radius, heading, aCoord);
+        extCoords.push(aCoord);
+
+    }
     
     // Build extended polygon
-    newPolygon = new google.maps.Polygon
-    ({
+    newPolygon = new google.maps.Polygon({
         paths: extCoords,
         strokeColor: '#FF0000',
         strokeOpacity: 0.8,
@@ -62,54 +71,33 @@ function drawRadiusExtendedPolygon(radius, aName)
     return true;
 }
 
-function drawTwoPolygons(polygon1WKT, polygon2WKT, aName, bName)
-{   
+function drawPolygonFromWKT(wktLiteral, aName) {   
     // Check arguments first
-    if (typeof polygon1Coords == undefined || typeof polygon2Coords == undefined) { return false; }
+    if (wktLiteral == undefined) { console.log("Bad Input, no WKTLiteral passed"); return false; }
 
 	// Generate names
-    if (typeof aName == undefined) 
+    if (aName == undefined) 
         aName = Math.random().toString(36).slice(2); // Generate a random alphanumeric string
-    if (typeof bName == undefined) 
-        bName = Math.random().toString(36).slice(2); // Generate a random alphanumeric string
     
     //Extract coords from geosparql POLYGON
+    var cleanLiteralList = wktLiteral.replace(/[^\d.\-, ]/g, '').split(",");
+
     //EX INPUT: "POLYGON((45.336702 -81.587906, 39.774769 -81.148453, 39.30029   -69.964371, 45.58329 -70.403824, 45.336702 -81.587906))"^^geo:wktLiteral))
 
-    //PARSING: Parse out letters parentheses and commas
-    //Create long lat array (not lat long yet b/c geosparql polygon format uses long lat)
-    var polygon1Coords = (polygon1WKT.substring(0, polygo1nWKT.length-21)).substring(9);
-    polygon1Coords = polygon1Coords.replace(",", "");
-	var polygon12Coords = (polygon2WKT.substring(0, polygon2WKT.length-21)).substring(9);
-    polygon2Coords = polygon2Coords.replace(",", "");
-    var polygon1latlng = [];
-    var polygon1LONGLAT = polygon1Coords.split(","); 
-    var polygon2latlng = [];
-    var polygon2LONGLAT = polygon2Coords.split(",");
-    
     //Create lat lng arrays from lng lat points for each polygon
-    for(var a = 0; a < polygon1LONGLAT.length; i++)
-        polygon1latlng.push(new google.maps.LatLng((polygon1LONGLAT[a].split(/[\s,]+/))[1], (polygon1LONGLAT[a].split(/[\s,]+/))[0]));
-    for(var a = 0; a < polygon2LONGLAT.length; a++)
-        polygon1latlng.push(new google.maps.LatLng((polygon2LONGLAT[a].split(/[\s,]+/))[1], (polygon2LONGLAT[a].split(/[\s,]+/))[0]));
+    newPolygonLatLngList = [];
+    console.log(cleanLiteralList);
+    for(var i = 0; i < cleanLiteralList.length; i++) {
+        var lng = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[1]);
+        var lat = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[0]);
+        console.log(cleanLiteralList[i], lat, lng);
+        newPolygonLatLngList.push(new google.maps.LatLng(lat, lng));
+    }
 
-    // Build polygon1
-    var polygon1 = new google.maps.Polygon
+    // Build polygon
+    var newPolygon = new google.maps.Polygon
     ({
-        paths: polygon1latlng,
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 3,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        editable: true,
-        draggable: true
-    });
-
-    // Build polygon2
-    var polygon2 = new google.maps.Polygon
-    ({
-        paths: polygon2latlng,
+        paths: newPolygonLatLngList,
         strokeColor: '#FF0000',
         strokeOpacity: 0.8,
         strokeWeight: 3,
@@ -120,20 +108,13 @@ function drawTwoPolygons(polygon1WKT, polygon2WKT, aName, bName)
     });
     
     // Connect polygons to the existing Google Map
-    polygon1.setMap(SemantEcoUI.map);
-	polygon2.setMap(SemantEcoUI.map);
+    newPolygon.setMap(SemantEcoUI.map);
 	
     // Store reference to the overlay of polygon1
     if (SemantEcoUI.overlays[aName] == undefined) {
         // Name is not already taken
-        SemantEcoUI.overlays[aName] = polygon1;
-    } else { return false; }
-    
-    //Store reference to the overlay of polygon2
-    if (SemantEcoUI.overlays[bName] == undefined) {
-        // Name is not already taken
-        SemantEcoUI.overlays[bName] = polygon2;
-    } else { return false; }
+        SemantEcoUI.overlays[aName] = newPolygon;
+    } else { console.log("Cannot make polygon, name is taken:", aName); return false; }
 
     // Return success
     return true;

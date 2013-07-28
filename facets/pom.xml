@@ -64,6 +64,7 @@
 	<module>annotator</module>
 	<module>provenance</module>
 	<module>semanteco-geo-facet</module>
+  <module>semanteco-squirrel-facet</module>
       </modules>
     </profile>
     <profile>
