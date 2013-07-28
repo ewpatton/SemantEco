@@ -89,9 +89,9 @@ function drawTwoPolygons(polygon1WKT, polygon2WKT, aName, bName)
     
     //Create lat lng arrays from lng lat points for each polygon
     for(var a = 0; a < polygon1LONGLAT.length; i++)
-        polygon1latlng.push(new google.maps.LatLng((polygon1LONGLAT[a].split(/[\s,]+/))[1], (polygon1LONGLAT[a].split(/[\s,]+/))[0]);
+        polygon1latlng.push(new google.maps.LatLng((polygon1LONGLAT[a].split(/[\s,]+/))[1], (polygon1LONGLAT[a].split(/[\s,]+/))[0]));
     for(var a = 0; a < polygon2LONGLAT.length; a++)
-        polygon1latlng.push(new google.maps.LatLng((polygon2LONGLAT[a].split(/[\s,]+/))[1], (polygon2LONGLAT[a].split(/[\s,]+/))[0]);
+        polygon1latlng.push(new google.maps.LatLng((polygon2LONGLAT[a].split(/[\s,]+/))[1], (polygon2LONGLAT[a].split(/[\s,]+/))[0]));
 
     // Build polygon1
     var polygon1 = new google.maps.Polygon
