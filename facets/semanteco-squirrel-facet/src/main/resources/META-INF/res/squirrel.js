@@ -81,15 +81,16 @@ function drawPolygonFromWKT(wktLiteral, aName) {
     
     //Extract coords from geosparql POLYGON
     var cleanLiteralList = wktLiteral.replace(/[^\d.\-, ]/g, '').split(",");
+
     //EX INPUT: "POLYGON((45.336702 -81.587906, 39.774769 -81.148453, 39.30029   -69.964371, 45.58329 -70.403824, 45.336702 -81.587906))"^^geo:wktLiteral))
 
     //Create lat lng arrays from lng lat points for each polygon
     newPolygonLatLngList = [];
     console.log(cleanLiteralList);
     for(var i = 0; i < cleanLiteralList.length; i++) {
-        var lng = parseFloat($.trim(cleanLiteralList[i]).split(" ")[0]);
-        var lat = parseFloat($.trim(cleanLiteralList[i]).split(" ")[1]);
-        console.log(cleanLiteralList[i], lng, lat);
+        var lng = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[1]);
+        var lat = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[0]);
+        console.log(cleanLiteralList[i], lat, lng);
         newPolygonLatLngList.push(new google.maps.LatLng(lat, lng));
     }
 
