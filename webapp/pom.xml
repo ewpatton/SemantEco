@@ -437,6 +437,7 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
+<<<<<<< HEAD
                 <artifactItem>
                   <groupId>edu.rpi.tw.escience</groupId>
                   <artifactId>semanteco-geo-facet</artifactId>
@@ -454,6 +455,8 @@
   <overWrite>true</overWrite>
   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
 </artifactItem>
+=======
+>>>>>>> 3704b5f94790451c1d577c79e8dda49d70141976
 	      </artifactItems>
 	    </configuration>
 	  </execution>
@@ -631,6 +634,14 @@
                       <groupId>edu.rpi.tw.escience</groupId>
                       <artifactId>semanteco-darrin</artifactId>
                       <version>1.0-SNAPSHOT</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>edu.rpi.tw.escience</groupId>
+                      <artifactId>semanteco-geo-facet</artifactId>
+                      <version>4.2-SNAPSHOT</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
                       <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>

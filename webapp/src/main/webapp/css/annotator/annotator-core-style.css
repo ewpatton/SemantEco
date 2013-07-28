@@ -1,0 +1,206 @@
+/* By Brendan Ashby - The brendan code edit */
+body{
+	font: 12px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
+	color: #404040;
+	background: #F8F8F8;
+}
+
+#banner {
+	background-image:url('../../images/annotator/patrice_banner4.jpg');
+	width:100%;
+	height:100px;
+	margin:	auto;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: blue;
+	position: absolute;
+}
+#fileSelect {
+	text-align: center;
+	margin: auto;
+	width:	800px;
+	background-color: rgb(230, 230, 230);
+}
+.outer{
+		display: table;
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		#position: relative;
+		overflow: hidden;
+}
+.middle{
+		#position: relative;
+		#top: 50%;
+		display: table-cell;
+		vertical-align: middle;
+}
+#inputMetadataModal {
+	display: none;
+	text-align: center;
+	margin: auto;
+	width:	800px;
+	background-color: rgb(230, 230, 230);
+}
+#treeWidgetDialogs {
+	display: none;
+}
+#inputFileTable{
+	display: none;
+	width:100%;
+	overflow-x: scroll;
+	padding-top: 100px; /* This is very hackey, but I don't know how to fix it atm */
+}
+#fileTableLoading {
+	display: none;
+	text-align: center;
+	margin: auto;
+	width:	800px;
+	background-color: rgb(230, 230, 230);
+}
+#importFileButton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	background-color:#79bbff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #528ecc;
+}
+#importFileButton:hover {
+	background-color:#378de5;
+}
+
+
+
+
+/* Older Styles */
+#wrap {
+  float:left;
+  width: 68%;
+  padding: 10px; 
+  overflow: hidden;
+  background: #FAFAFA;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+form {
+  background: #CCC;
+  border-radius: 2px;
+  padding: 10px;
+}
+
+th {
+	border-collapse: collapse;
+}
+
+.bundled-row { 
+	font-weight: bold;
+	text-align:center;
+	margin:0; 
+	padding:0;
+}
+.annotation-row {
+	text-align:center;	
+	font-size:8px;
+	margin:0; 
+	padding:0;
+}
+
+.links_via-on {
+	border: 2px solid #0000dd;
+}
+
+.cellBased-on {
+	border: 2px solid #00dd00;
+}
+
+.links_via-on .cellBased-on {
+	border-top: 2px inset #0000dd;
+	border-left: 2px inset #0000dd;
+	border-bottom: 2px outset #00dd00;
+	border-right: 2px outset #00dd00;
+}
+
+.col-selectable .ui-selecting { background: #FECA40; }
+.col-selectable .ui-selected { background: #F39814; }
+
+.selected-col { background: #F39814 !important; }
+
+.ui-widget-content {
+	border: 1px solid #aaaaaa;
+	background: #fff;
+	color: #222222;
+}
+	
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight,
+.ui-widget-header .ui-state-highlight {
+	background: #80ea69;
+	color: black;
+}
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+	background: #fb3f51;
+	font-weight: bold;
+	color: white;
+}
+
+div.hierarchy div.wrapper {
+	height: 100%;
+}
+
+.ontology-selector {
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.context-menu-list	{
+	margin:0; 
+	padding:0;
+	min-width: 120px;
+	max-width: 350px;
+	display: inline-block;
+	position: absolute;
+	list-style-type: none;
+	border: 1px solid #DDD;
+	background: #EEE;
+	}
+
+.draggable-prop, .draggable-class { 
+	width: 90px;
+	height: 15px;
+	padding: 0.5em;
+	float: left;
+	margin: 10px 10px 10px 0; 
+}
+
+.ui-tooltip, .ui-tooltip-content {
+	margin:0; 
+	padding:0;
+	min-width: 200px;
+	max-width: 300px;
+	display: inline-block;
+	position: absolute;
+	list-style-type: none;
+	border: 1px solid #DDD;
+	background: #EEE;
+}
+
+.hide-while-empty {
+	display:none;
+}

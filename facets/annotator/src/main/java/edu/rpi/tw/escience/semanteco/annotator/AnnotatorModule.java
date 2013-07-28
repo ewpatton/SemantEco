@@ -2,15 +2,12 @@ package edu.rpi.tw.escience.semanteco.annotator;
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -18,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +55,6 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 
@@ -73,11 +70,11 @@ import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.QueryMethod.HTTP;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
+import edu.rpi.tw.escience.semanteco.query.Query.Type;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
-import edu.rpi.tw.escience.semanteco.query.Query.Type;
-import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 
 /*
  * treat enhancements atomically
@@ -2470,7 +2467,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 	@Override
 	public void visit(final SemantEcoUI ui, final Request request) {
-		// TODO add resources to display
+		// Add data files to the window, for now we dont do it this way
+	    //ui.addScript(config.getResource("js/annotator-core-javascript.js"));
+	    //ui.addStylesheet(config.getResource("css/annotator-core-style.css"));
 	}
 
 	@Override
