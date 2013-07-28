@@ -277,6 +277,12 @@
       <artifactId>semanteco-health</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+	<dependency>
+  <groupId>edu.rpi.tw.escience</groupId>
+  <artifactId>semanteco-squirrel-facet</artifactId>
+  <version>4.1-SNAPSHOT</version>
+  <scope>provided</scope>
+</dependency>
   </dependencies>
 
   <build>
@@ -431,6 +437,26 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
                 </artifactItem>
+<<<<<<< HEAD
+                <artifactItem>
+                  <groupId>edu.rpi.tw.escience</groupId>
+                  <artifactId>semanteco-geo-facet</artifactId>
+                  <version>4.2-SNAPSHOT</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+                </artifactItem>
+				
+				<artifactItem>
+				<groupId>edu.rpi.tw.escience</groupId>
+				<artifactId>semanteco-squirrel-facet</artifactId>
+				<version>4.1-SNAPSHOT</version>
+				<type>jar</type>
+  <overWrite>true</overWrite>
+  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/modules</outputDirectory>
+</artifactItem>
+=======
+>>>>>>> 3704b5f94790451c1d577c79e8dda49d70141976
 	      </artifactItems>
 	    </configuration>
 	  </execution>
@@ -457,6 +483,8 @@
 	<artifactId>maven-surefire-plugin</artifactId>
 	<version>2.12</version>
 	<configuration>
+ <argLine>-Xmx16777216m </argLine>
+
 	  <basedir>${project.build.directory}</basedir>
 	  <workingDirectory>${project.build.directory}</workingDirectory>
 	</configuration>

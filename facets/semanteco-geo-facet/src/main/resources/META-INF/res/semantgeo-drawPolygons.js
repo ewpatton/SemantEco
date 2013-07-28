@@ -56,6 +56,9 @@ function addPolygonToMap(coords, aName){
 
     // Publish final polygon path to $.bbq state
     $.bbq.pushState({"UserDrawnMapPolygon": latlngarray});
+    
+    //Push the name of the polygon
+    $.bbq.pushState({"PolygonID": aName});
 
     // Return success
     return true;
