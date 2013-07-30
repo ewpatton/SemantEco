@@ -35,7 +35,7 @@ function createEnhancementNode(label, index){
 	// node for property is created here, and given the necessary RDFa
 	//   type for the eventual conversion, but it remains blank until the user
 	//   specifies what it is.
-	var colProp = document.createElement('div');
+	var colProp = document.createElement('a');
 	$(colProp).attr("id","prop-enhance,"+index);
 	// We can also create a node for the class, and give it an ID, however
 	//	 depending on whether it is a class or a datatype, the structure will be
@@ -82,7 +82,7 @@ function updateProp(index,colType,theProperty){
 	var header = document.getElementById("0,"+index);
 	if ( $(header).hasClass("not-bundled")){
 		var propNode = document.getElementById("prop-enhance,"+index);
-		$(propNode).text(theProperty);
+		$(propNode).attr("href",theProperty);
 	}
 	else // if it is in a bundle, we'll handle it later
 		console.log("RDFa for Property-ing bundles is handled elsewhere");
@@ -113,7 +113,6 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				subclassNode = document.getElementById("subclass-enhance,"+index);
 				$(typeNode).text(classLabel);
 				$(classNameNode).text(classLabel);
-				$(subclassNode).text(classURI);
 				$(subclassNode).attr("href",classURI);
 			}// /if isClass
 			else { 				// if it isn't, then we need to create nodes....
@@ -159,7 +158,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				}
 				// then re-type the typeNode and add the thing
 				d3.select(typeNode).attr("rdfa:property","conversion:range");
-				$(typeNode).text(classURI);
+				$(typeNode).attr("href",classURI);
 			}// /!isDataType
 		}// /adding a datatype
 		else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
@@ -304,15 +303,17 @@ function setVersion(){
 function createCellBasedNode(cbCols){
 	var mainNode = document.getElementById("here-be-rdfa");
 	var cbNode = document.createElement('div');
-	d3.select(cbNode).attr("rdfa:typeof","conversion:enhance");
+	$(cbNode).attr("id","cell-based-enhance");
+	d3.select(cbNode).attr("rdfa:rel","conversion:enhance");
 	var cols = document.createElement('div');
 	var type = document.createElement('div');
 	d3.select(cols).attr("rdfa:property","ov:csvColumn");
-	d3.select(type).attr("rdfa:property","qb:Observation");
+	d3.select(type).attr("rdfa:typeof","qb:Observation");
 	var colList = "";
 	for ( i in cbCols ){
 		colList += cbCols[i] + ",";
 	}
+	colList = colList.substring(0, colList.length - 1); // strip off the last comma
 	$(cols).text(colList);
 	cbNode.appendChild(cols);
 	cbNode.appendChild(type);
@@ -328,9 +329,9 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 	var mainNode = document.getElementById("here-be-rdfa");
 	// create nodes...
 	var bundleNode = document.createElement('div');
-	var bundleProp = document.createElement('div');
+	var bundleProp = document.createElement('a');
 	var bundleNameTemp = document.createElement('div');
-	var bundleType = document.createElement('div');
+	var bundleType = document.createElement('a');
 	// ... type them...
 	d3.select(bundleNode).attr("rdfa:about","#"+bResource).attr("rdfa:typeof","conversion:ImplicitBundle");
 	d3.select(bundleProp).attr("rdfa:property","conversion:property_name");
@@ -338,9 +339,9 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 	d3.select(bundleType).attr("rdfa:property","conversion:type_name");
 	// ... add text...
 	$(bundleNode).text(bResource);
-	$(bundleProp).text(bProp);
+	$(bundleProp).attr("href",bProp);
 	$(bundleNameTemp).text(bNameTemp);
-	$(bundleType).text(bType);
+	$(bundleType).attr("href",bType);
 	// ... put subtree together
 	bundleNode.appendChild(bundleProp);
 	bundleNode.appendChild(bundleNameTemp);
@@ -383,13 +384,36 @@ function addAnnotationRDFa( index, predicate, object ){
 }// /addAnnotation
 
 
+// Adds triples for: 
+//	- package-level data [DONE]
+//	- cell-based conversions
+//	- implicit bundles
+//	- explicit bundles
+//	- subject annotations
+//	- name template
+//	- domain template
+// This should be called inside the turtleGen function, or AFTER the user has 
+//	completed enhancements, so that we are not unnecessarily updating RDFa 
+//	while the user is still making changes
+function finalizeTriples(){
+	// handle package level data
+	var uriPrefix = addPackageLevelData();
+    var prefixes = createPrefix(uriPrefix);
+	d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
+	
+	// handle cell-based
+	createCellBasedNode(cellBased);
+	
+	GreenTurtle.attach(document,true);
+}
 
-// This doesn't work yet!
+
 // Working from the GreenTurtle API here: https://code.google.com/p/green-turtle/wiki/API
 // This should parse the RDFa and return the graph in .ttl format.
 function turtleGen(){
-   document.data.implementation.attach(document);
-   var turtle = document.data.graph.toString({shorten: true});
-   console.log(turtle);
+	finalizeTriples()
+	document.data.implementation.attach(document);
+	var turtle = document.data.graph.toString({shorten: true});
+	console.log(turtle);
     return turtle;
 }// /turtleGen

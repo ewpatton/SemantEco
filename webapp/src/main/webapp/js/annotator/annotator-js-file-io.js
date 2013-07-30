@@ -30,9 +30,9 @@ function handleFileSelect(event) {
         width: 800,
         buttons: {
             Ok: function () {
-				var uriPrefix = addPackageLevelData();
-				var prefixes = createPrefix(uriPrefix);
-				d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
+				//var uriPrefix = addPackageLevelData();
+				//var prefixes = createPrefix(uriPrefix);
+				//d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
 				GreenTurtle.attach(document,true);
                 $(this).dialog("close");
             }
