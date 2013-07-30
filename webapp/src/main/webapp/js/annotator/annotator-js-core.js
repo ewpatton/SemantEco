@@ -324,11 +324,12 @@ $(function () {
                                     if (typeof itemColspan !== 'undefined' && itemColspan !== false) {
                                         // has a colspan so set colspan for dest
                                         $("td#bundledRow\\," + selectedID).attr("colspan", itemColspan);
-
+										$("td#bundledRow\\," + selectedID).addClass("bundled");
                                     }
                                     // Before we move the item down, handle hidden cells
                                     if (item.hasClass("hidden")) {
                                         $("td#bundledRow\\," + selectedID).addClass("hidden");
+										$("td#bundledRow\\," + selectedID).addClass("bundled");
                                     }
 
                                     // Before we move the cell down, handle bundle class (explicit, implicit)
