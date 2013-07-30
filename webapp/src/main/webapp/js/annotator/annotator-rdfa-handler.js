@@ -305,10 +305,11 @@ function createCellBasedNode(cbCols){
 	var cbNode = document.createElement('div');
 	$(cbNode).attr("id","cell-based-enhance");
 	d3.select(cbNode).attr("rdfa:rel","conversion:enhance");
+	d3.select(cbNode).attr("rdfa:typeof","qb:Observation");
 	var cols = document.createElement('div');
-	var type = document.createElement('div');
+	//var type = document.createElement('div');
 	d3.select(cols).attr("rdfa:property","ov:csvColumn");
-	d3.select(type).attr("rdfa:typeof","qb:Observation");
+	//d3.select(type).attr("rdfa:typeof","qb:Observation");
 	var colList = "";
 	for ( i in cbCols ){
 		colList += cbCols[i] + ",";
@@ -316,7 +317,7 @@ function createCellBasedNode(cbCols){
 	colList = colList.substring(0, colList.length - 1); // strip off the last comma
 	$(cols).text(colList);
 	cbNode.appendChild(cols);
-	cbNode.appendChild(type);
+	//cbNode.appendChild(type);
 	mainNode.appendChild(cbNode);
 }
 
@@ -402,7 +403,9 @@ function finalizeTriples(){
 	d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
 	
 	// handle cell-based
-	createCellBasedNode(cellBased);
+	if ( !document.getElementById("cell-based-enhance")){
+		createCellBasedNode(cellBased);
+	}
 	
 	GreenTurtle.attach(document,true);
 }
