@@ -301,24 +301,29 @@ function setVersion(){
 
 
 function createCellBasedNode(cbCols){
-	var mainNode = document.getElementById("here-be-rdfa");
-	var cbNode = document.createElement('div');
-	$(cbNode).attr("id","cell-based-enhance");
-	d3.select(cbNode).attr("rdfa:rel","conversion:enhance");
-	d3.select(cbNode).attr("rdfa:typeof","qb:Observation");
-	var cols = document.createElement('div');
-	//var type = document.createElement('div');
-	d3.select(cols).attr("rdfa:property","ov:csvColumn");
-	//d3.select(type).attr("rdfa:typeof","qb:Observation");
-	var colList = "";
-	for ( i in cbCols ){
-		colList += cbCols[i] + ",";
+	if (cbCols.length == 0){
+		return;
 	}
-	colList = colList.substring(0, colList.length - 1); // strip off the last comma
-	$(cols).text(colList);
-	cbNode.appendChild(cols);
-	//cbNode.appendChild(type);
-	mainNode.appendChild(cbNode);
+	else {
+		var mainNode = document.getElementById("here-be-rdfa");
+		var cbNode = document.createElement('div');
+		$(cbNode).attr("id","cell-based-enhance");
+		d3.select(cbNode).attr("rdfa:rel","conversion:enhance");
+		d3.select(cbNode).attr("rdfa:typeof","qb:Observation");
+		var cols = document.createElement('div');
+		//var type = document.createElement('div');
+		d3.select(cols).attr("rdfa:property","ov:csvColumn");
+		//d3.select(type).attr("rdfa:typeof","qb:Observation");
+		var colList = "";
+		for ( i in cbCols ){
+			colList += cbCols[i] + ",";
+		}
+		colList = colList.substring(0, colList.length - 1); // strip off the last comma
+		$(cols).text(colList);
+		cbNode.appendChild(cols);
+		//cbNode.appendChild(type);
+		mainNode.appendChild(cbNode);
+	}
 }
 
 // needs:
@@ -365,17 +370,18 @@ function addAnnotationRDFa( index, predicate, object ){
 	// create nodes...
 	var anNodetation = document.createElement('div');
 	var colNumber = document.createElement('div');
-	var pred = document.createElement('div');
-	var obj = document.createElement('div');
+	var pred = document.createElement('a');
+	var obj = document.createElement('a');
 	// ... type them...
-	d3.select(anNodetation).attr("rdfa:typeof","conversion:enhance");
+	d3.select(anNodetation).attr("rdfa:rel","conversion:enhance");
+	// TODO: give the root node an ID
 	d3.select(colNumber).attr("rdfa:property","ov:csvCol");
-	d3.select(pred).attr("rdfa:property","conversion:predicate");
-	d3.select(obj).attr("rdfa:property","converion:object");
+	d3.select(pred).attr("rdfa:rel","conversion:predicate");
+	d3.select(obj).attr("rdfa:rel","converion:object");
 	// ... add things...
 	$(colNumber).text(index);
-	$(pred).text(predicate);
-	$(obj).text(object);
+	$(pred).attr("href",predicate);
+	$(obj).attr("href",object);
 	// ... and stick it all together!
 	var mainNode = document.getElementById("e_process");
 	anNodetation.appendChild(colNumber);
