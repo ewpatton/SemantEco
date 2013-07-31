@@ -422,7 +422,7 @@ function finalizeTriples(){
 function turtleGen(){
 	finalizeTriples()
 	document.data.implementation.attach(document);
-	var turtle = document.data.graph.toString({shorten: true});
+	var turtle = document.data.graph.toString({shorten: true, numericalBlankNodePrefix: "c"});
 	console.log(turtle);
     return turtle;
 }// /turtleGen

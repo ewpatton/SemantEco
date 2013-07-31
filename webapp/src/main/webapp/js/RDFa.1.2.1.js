@@ -673,11 +673,10 @@ RDFaProcessor.prototype.process = function(node,options) {
          var att = current.attributes[i];
          //if (att.namespaceURI=="http://www.w3.org/2000/xmlns/") {
          if (att.nodeName.charAt(0)=="x" && att.nodeName.indexOf("xmlns:")==0) {
-            // EWP: disabled copying so prefixes are defined globally
-//            if (!prefixesCopied) {
-//               prefixes = this.copyMappings(prefixes);
-//               prefixesCopied = true;
-//            } 
+            if (!prefixesCopied) {
+               prefixes = this.copyMappings(prefixes);
+               prefixesCopied = true;
+            }
             var prefix = att.nodeName.substring(6);
             // TODO: resolve relative?
             var ref = RDFaProcessor.trim(att.value);
@@ -1130,6 +1129,18 @@ function RDFaGraph()
    this.base =  null;
    this.toString = function(requestOptions) {
       var options = requestOptions && requestOptions.shorten ? { graph: this, shorten: true, prefixesUsed: {} } : null;
+      if (requestOptions && requestOptions.blankNodePrefix) {
+         options.filterBlankNode = function(id) {
+            return "_:"+requestOptions.blankNodePrefix+id.substring(2);
+         }
+      }
+      if (requestOptions && requestOptions.numericalBlankNodePrefix) {
+         var onlyNumbers = /^[0-9]+$/;
+         options.filterBlankNode = function(id) {
+            var label = id.substring(2);
+            return onlyNumbers.test(label) ? "_:"+requestOptions.numericalBlankNodePrefix+label : id;
+         }
+      }
       s = "";
       for (var subject in this.subjects) {
          var snode = this.subjects[subject];
@@ -1196,7 +1207,11 @@ function RDFaSubject(graph,subject) {
 RDFaSubject.prototype.toString = function(options) {
    var s = null;
    if (this.subject.substring(0,2)=="_:") {
-      s = this.subject;
+      if (options && options.filterBlankNode) {
+         s = options.filterBlankNode(this.subject);
+      } else {
+         s = this.subject;
+      }
    } else if (options && options.shorten) {
       s = this.graph.shorten(this.subject,options.prefixesUsed);
       if (!s) {
@@ -1291,9 +1306,7 @@ RDFaPredicate.prototype.toString = function(options) {
       s = options.graph.shorten(this.predicate,options.prefixesUsed);
       if (!s) {
          s = "<" + this.predicate + ">"
-      } else if(s == "rdf:type") {
-         s = "a";
-	}
+      }
    } else {
       s = "<" + this.predicate + ">"
    }
@@ -1305,7 +1318,11 @@ RDFaPredicate.prototype.toString = function(options) {
       // TODO: handle HTML literal
       if (this.objects[i].type=="http://www.w3.org/1999/02/22-rdf-syntax-ns#object") {
          if (this.objects[i].value.substring(0,2)=="_:") {
-            s += this.objects[i].value;
+            if (options && options.filterBlankNode) {
+               s += options.filterBlankNode(this.objects[i].value);
+            } else {
+               s += this.objects[i].value;
+            }
          } else if (options && options.shorten && options.graph) {
             u = options.graph.shorten(this.objects[i].value,options.prefixesUsed);
             if (u) {
