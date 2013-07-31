@@ -673,10 +673,11 @@ RDFaProcessor.prototype.process = function(node,options) {
          var att = current.attributes[i];
          //if (att.namespaceURI=="http://www.w3.org/2000/xmlns/") {
          if (att.nodeName.charAt(0)=="x" && att.nodeName.indexOf("xmlns:")==0) {
-            if (!prefixesCopied) {
-               prefixes = this.copyMappings(prefixes);
-               prefixesCopied = true;
-            }
+            // EWP: disabled copying so prefixes are defined globally
+//            if (!prefixesCopied) {
+//               prefixes = this.copyMappings(prefixes);
+//               prefixesCopied = true;
+//            } 
             var prefix = att.nodeName.substring(6);
             // TODO: resolve relative?
             var ref = RDFaProcessor.trim(att.value);
@@ -1138,7 +1139,7 @@ function RDFaGraph()
       var prolog = requestOptions && requestOptions.baseURI ? "@base <"+baseURI+"> .\n" : "";
       if (options && options.shorten) {
          for (var prefix in options.prefixesUsed) {
-            prolog += "@prefix "+prefix+" <"+this.prefixes[prefix]+"> .\n";
+            prolog += "@prefix "+prefix+": <"+this.prefixes[prefix]+"> .\n";
          }
       }
       return prolog.length==0 ? s : prolog+"\n"+s;
@@ -1290,7 +1291,9 @@ RDFaPredicate.prototype.toString = function(options) {
       s = options.graph.shorten(this.predicate,options.prefixesUsed);
       if (!s) {
          s = "<" + this.predicate + ">"
-      }
+      } else if(s == "rdf:type") {
+         s = "a";
+	}
    } else {
       s = "<" + this.predicate + ">"
    }
