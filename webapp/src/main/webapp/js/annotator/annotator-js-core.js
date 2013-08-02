@@ -73,6 +73,7 @@ function createBundleSubtable(bundleID, implicitID) {
 
     // Build a list of items
     var generatedOptions = "<option value = \"Implicit Bundle " + implicitID + "\">Implicit Bundle " + implicitID + "</option>";
+	var colID;
     validHeadersToBundle.each(function (index) {
 
         var itemLabel = "Unknown";
@@ -82,11 +83,11 @@ function createBundleSubtable(bundleID, implicitID) {
         } else if ( type == "bundleResource" ) { 
             itemLabel = $(this).find("select").val();
         }
-
-        generatedOptions += "<option value = \"" + itemLabel + "\">Column " + $(this).attr('id').split(",")[1] + " (" + itemLabel + ")</option>"
+		colID = $(this).attr('id').split(",")[1];
+        generatedOptions += "<option value = \"" + colID + "\">Column " + colID + " (" + itemLabel + ")</option>"
     });
 
-    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" action="return false;"><select class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
+    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange=updateResource('+bundleID+') action="return false;"><select id="bundle-resource-select" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride editable-input">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + bundleID + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + bundleID + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
@@ -1122,6 +1123,22 @@ function existsA(theArray, theThing) {
         return true;
 }
 
+function updateResource(bundleID){
+	var r = document.getElementById("bundle-resource-select").value;
+	var theBundle;
+	for (i in bundles){
+		if ( bundles[i]._id === bundleID ){
+			theBundle = bundles[i];
+		}
+	}
+	if( !theBundle ){
+		console.log("Bundle does not exist!");
+		return;
+	}
+	console.log("Setting bundle #" + bundleID + "'s resource to " + r);
+	theBundle.setResource(r);
+}
+
 // Accessory function for creating a bundle 
 // Takes three arguments:
 //  - id: a unique static ID for the bundle, different from
@@ -1136,6 +1153,33 @@ function Bundle(bundleId, implicitId, columns) {
     this._id = bundleId;
     this.implicitId = implicitId;
     this.columns = columns;
+	this.resource = -1;
+	this.type = "";
+	this.prop = "";
+}
+
+Bundle.prototype.setResource = function(index){
+	this.resource = index;
+}
+
+Bundle.prototype.getResource = function(){
+	return this.resource;
+}
+
+Bundle.prototype.setType = function (typeURI){
+	this.type = typeURI;
+}
+
+Bundle.prototype.getType = function(){
+	return this.type;
+}
+
+Bundle.prototype.setProp = function(propURI){
+	this.prop = propURI;
+}
+
+Bundle.prototype.getProp = function(){
+	return this.prop;
 }
 
 Bundle.prototype.isExplicit = function() {
