@@ -87,7 +87,7 @@ function createBundleSubtable(bundleID, implicitID) {
         generatedOptions += "<option value = \"" + colID + "\">Column " + colID + " (" + itemLabel + ")</option>"
     });
 
-    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange=updateResource('+bundleID+') action="return false;"><select id="bundle-resource-select" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
+    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange=updateResource('+bundleID+') action="return false;"><select id="bundle-resource-select,'+bundleID+'" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride editable-input">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + bundleID + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + bundleID + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
@@ -622,28 +622,28 @@ var dnd = {
             columnType = parent.attr("id").split(",")[0];
 			columnID = parent.attr("id").split(",")[1];
         }
-
+		
         // Handle drop source object having children in the tree
         if (data.o.hasClass("jstree-open")) {
             var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
         } else {
             var payload = $.trim($(data.o).text());
         }
-
+		
         // Set the value now that we have done some validation (some...)
         // [RDFa]: also sets the RDFa to the text in the node
         //  * still need URI/prefix for whatever ontology the node comes from.
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		
+		console.log("colType: " + columnType + ", colID: " + columnID);
 		// check the source facet and make the appropriate RDFa update
 		if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
-			console.log("dnd is calling updateClassType here");
+			//console.log("dnd is calling updateClassType here");
 			updateClassType(columnID,columnType,uri,payload,sourceFacet);
 		}
 		else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet") {
-			console.log("dnd is calling updateProp here");
+			//console.log("dnd is calling updateProp here");
 			updateProp(columnID,columnType,uri);
 		}
 		else 
@@ -1108,7 +1108,7 @@ function removeA(arr) {
         }
     }
     return arr;
-}
+}// /removeA
 
 // Accessory function for checking to see if a thing is
 //    in an array.
@@ -1121,10 +1121,16 @@ function existsA(theArray, theThing) {
         return false;
     } else
         return true;
-}
+}// /existsA
 
+
+// Given the ID of a bundle, sets the "resource" property of that bundle
+//	to a column index if that bundle is explicit, or to -1 if it is implicit.
+// This functino should only be called in the callback of the bundling resource
+//	dropdown menus.
 function updateResource(bundleID){
-	var r = document.getElementById("bundle-resource-select").value;
+	var theForm = document.getElementById("bundle-resource-select," + bundleID);
+	var newResource = theForm.options[theForm.selectedIndex].value;
 	var theBundle;
 	for (i in bundles){
 		if ( bundles[i]._id === bundleID ){
@@ -1135,9 +1141,9 @@ function updateResource(bundleID){
 		console.log("Bundle does not exist!");
 		return;
 	}
-	console.log("Setting bundle #" + bundleID + "'s resource to " + r);
-	theBundle.setResource(r);
-}
+	console.log("Setting bundle #" + bundleID + "'s resource to " + newResource);
+	theBundle.setResource(newResource);
+}// /updateResource
 
 // Accessory function for creating a bundle 
 // Takes three arguments:
@@ -1149,6 +1155,8 @@ function updateResource(bundleID){
 //    bundle, IF it is EXPLICIT. A value of -1 indicates the
 //    bundle is IMPLICIT; this is the default set here at 
 //    creation.
+// Prop and Type are null at creation, and must be set later
+//	via drag and drop.
 function Bundle(bundleId, implicitId, columns) {
     this._id = bundleId;
     this.implicitId = implicitId;

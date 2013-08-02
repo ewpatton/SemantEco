@@ -76,12 +76,13 @@ function createEnhancementNode(label, index){
 // 	- theProperty: full URI/CURIE of the property we are adding. Either one should
 // 	     be okay, since we should have the prefixes stored in the main RDFa div.
 function updateProp(index,colType,theProperty){
-	console.log("updateProp is being called");
+	console.log("updateProp: " + colType);
 	// Only update the thing if it's not in a bundle.
 	// Bundles are handled elsewhere!
-	
+	var tableheader = (document.getElementById(colType+ "," + index));
 	// if it is in a bundle, we'll handle it later
-	if ( $(document.getElementById(colType+ "," + index)).hasClass("bundled-implicit") || $(document.getElementById(colType+ "," + index)).hasClass("bundled")){
+	if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){
+		console.log("bundle table: " + $(tableheader).childNodes[0].attr("id"));
 		console.log("RDFa for Property-ing bundles is handled elsewhere");
 		return;
 	}
@@ -90,13 +91,14 @@ function updateProp(index,colType,theProperty){
 }// /updateProp
 
 function updateClassType(index,colType,classURI,classLabel,sourceFacet){
-	console.log("updateClassType: " + sourceFacet);
-	// Only update the thing if it's not in a bundle.
-	// Bundles are handled elsewhere!
-	if ( $(document.getElementById(colType+ "," + index)).hasClass("bundled-implicit") || $(document.getElementById(colType+ "," + index)).hasClass("bundled")){
+	console.log("updateClassType: " + colType);
+	//if ( $(document.getElementById(colType+ "," + index)).hasClass("bundled-implicit") || $(document.getElementById(colType+ "," + index)).hasClass("bundled")){
+	if (colType === "bundleClassRow"){
 		console.log("RDFa for Typing/Classing bundles is handled elsewhere");
 		return;
 	}
+	
+	// if not in a bundle, do this
 	var bNode = document.getElementById("enhance-col,"+index);
 	// get the node we want to update, and check its type if any
 	var typeNode = document.getElementById("type-enhance,"+index);
@@ -357,7 +359,7 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 
 // adds a "conversion:bundled_by", to indicate a column is bundled by another
 //	- bundlingCol: the BUNDLING column
-// 	- subCol: the column that is IN the bundle
+// 	- subCol: the column that is IN the bundle (subordinate column)
 function createExplicitBundledBy(bundlingCol, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('div');
@@ -411,6 +413,16 @@ function finalizeTriples(){
 	// handle cell-based
 	if ( !document.getElementById("cell-based-enhance")){
 		createCellBasedNode(cellBased);
+	}
+	
+	// handle explicit bundles
+	for( i in bundles ){
+		if( bundles[i].resource != "-1" ){
+			for( j in bundles[i].columns ){
+				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].resource );
+				createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
+			}
+		}	
 	}
 	
 	GreenTurtle.attach(document,true);
