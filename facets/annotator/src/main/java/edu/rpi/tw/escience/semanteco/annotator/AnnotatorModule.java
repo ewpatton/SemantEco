@@ -1645,78 +1645,22 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;		
 	}
 	
-	protected Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
+	private Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
 		return null;
 	}
 
-	protected Collection<HierarchyEntry> annotatorPropertyToNode(final Request request, final String str) {
+	private Collection<HierarchyEntry> annotatorPropertyToNode(final Request request, final String str) {
 		return null;
 	}
 	
-	protected Collection<HierarchyEntry> queryObjPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
-		
-		
+	private Collection<HierarchyEntry> queryObjPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {		
 		//AnnotatorTester ann = new AnnotatorTester();
 		System.out.println("queryPropertyHMRoots");
-
-		//String thing = "http://www.w3.org/2002/07/owl#Thing";
-		System.out.println("for root objproperties:");
-		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
-		JSONArray classes =  this.annotatorTester.getOWLProperties("root");	
-		for(int i=0;i<classes.length();i++) {
-			HierarchyEntry entry = new HierarchyEntry();
-
-			String binding = (String)  classes.get(i);
-			entry.setUri(binding);
-	
-			JSONObject annot = this.annotatorTester.getAnnotationsForProperty(binding.toString());
-			System.out.println("class: " + binding.toString() + " has annotations: " + annot);		
-			if(annot.has("label")  && !annot.get("label").equals("")){
-				entry.setLabel((String)annot.get("label"));					
-			}
-			else if (!annot.has("label")){
-				System.out.println("no label for object property root level");
-				entry.setLabel(this.getShortName(binding));					
-			}
-			if(annot.has("comment")  && !annot.get("comment").equals("")){
-				entry.setComment(((String)annot.get("comment")));			
-			}	
-			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
-
-			entries.add(entry);
-		}
-		
-		
-		/*
-		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
-		OntProperty topObjProp = model.getOntProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
-		for (Iterator<? extends OntProperty> i = topObjProp.listSubProperties(true); i.hasNext(); ) { //true here is for direct
-			HierarchyEntry entry = new HierarchyEntry();
-			OntProperty propertyRoot = i.next();	
-			System.out.println("root: " + propertyRoot.toString());
-			System.out.println("label: " + propertyRoot.getLabel(null));
-
-			entry.setUri(propertyRoot.getURI());
-			
-
-			if(propertyRoot.getLabel(null) == "" || propertyRoot.getLabel(null) == null){
-				entry.setLabel(getShortName(propertyRoot.toString()));
-			}
-			else{
-				entry.setLabel(propertyRoot.getLabel(null));
-			}     
-			entries.add(entry);
-		}	
-		System.out.println("return entries: " + entries.toString());
-		*/
-		return this.annotatorTester.sortIt(entries);
+		return  this.annotatorTester.getOWLProperties("root");			
 	}
 	
-	protected Collection<HierarchyEntry> queryDataPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
-		
+	private Collection<HierarchyEntry> queryDataPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
 		
 		//AnnotatorTester ann = new AnnotatorTester();
 		System.out.println("queryDataPropertyHMRoots");
@@ -1732,8 +1676,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 			String binding = (String)  classes.get(i);
 			entry.setUri(binding);
-	
-		
+			
 			JSONObject annot = this.annotatorTester.getAnnotationsForProperty(binding.toString());
 			System.out.println("class: " + binding.toString() + " has annotations: " + annot);		
 			if(annot.has("label")  && !annot.get("label").equals("")){
@@ -1747,11 +1690,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			
 			if(annot.has("comment")  && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
-			}	
-		
-			
-			
-			
+			}		
 			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
 			entries.add(entry);
 		}
@@ -1799,40 +1738,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	
 	
 	protected Collection<HierarchyEntry> queryObjPropertyHMChildren(final Request request, String classRequiresSubPropertyString)throws JSONException, OWLOntologyCreationException {
-		
 		System.out.println("queryPropertyHMRoots");
-
-		//String thing = "http://www.w3.org/2002/07/owl#Thing";
-		System.out.println("for root objproperties:");
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
-		JSONArray classes =  this.annotatorTester.getOWLProperties(classRequiresSubPropertyString);	
-		for(int i=0;i<classes.length();i++) {
-			HierarchyEntry entry = new HierarchyEntry();
-
-			String binding = (String)  classes.get(i);
-			entry.setUri(binding);
-	
-			JSONObject annot =this.annotatorTester.getAnnotationsForProperty(binding.toString());
-			System.out.println("class: " + binding.toString() + " has annotations: " + annot);
-			if(annot.has("label") && !annot.get("label").equals("")){
-			entry.setLabel((String)annot.get("label"));	
-			}
-			else if (!annot.has("label")){
-				System.out.println("no label for object property child level");
-				entry.setLabel(this.getShortName(binding));					
-			}
-			
-			if(annot.has("comment") && !annot.get("comment").equals("")){
-				entry.setComment(((String)annot.get("comment")));			
-			}
-			entry.setHasChild(this.annotatorTester.hasPropertyChildren(binding));
-
-			entries.add(entry);
-		}
-		return this.annotatorTester.sortIt(entries);
-		
+		return this.annotatorTester.getOWLProperties(classRequiresSubPropertyString);
 	}
 	
 	protected Collection<HierarchyEntry> queryDataPropertyHMChildren(final Request request, String classRequiresSubPropertyString)throws JSONException, OWLOntologyCreationException {
@@ -2187,8 +2096,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		
 		else if ( action == HierarchyVerb.PATH_TO_NODE ) {
 			return annotatorClassToNode( request, (String) request.getParam("uri") );
-		}
-		
+		}	
 		return items;
 	}
 	
@@ -2241,7 +2149,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 
 
-	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) throws JSONException {
+	private Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) throws JSONException {
 		final Collection<HierarchyEntry> entries ;
 		//String searchString = (String) request.getParam("string");
 		entries = this.annotatorTester.searchAnnotations(str);
@@ -2255,7 +2163,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 	}
 
-	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) throws OWLOntologyCreationException, JSONException {
+	private Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) throws OWLOntologyCreationException, JSONException {
 		
 		final Collection<HierarchyEntry> entries ;
 		entries = this.annotatorTester.getParentClassesAsserted(str);
@@ -2268,87 +2176,17 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		} 
 	}
 	
-	protected Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {	
-		
-		//AnnotatorTester ann = new AnnotatorTester();
+	private Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {		
 		System.out.println("queryClassHMRoots");
-
-		System.out.println("for root:");
-		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
-		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 		return  this.annotatorTester.getChildClasses("root");	
-		
-		//wraps hierarchy entires
-		/*
-		for(int i=0;i<classes.length();i++) {
-			HierarchyEntry entry = new HierarchyEntry();
-			String binding = (String)  classes.get(i);
-			entry.setUri(binding);		
-			JSONObject annot = this.annotatorTester.getAnnotationsForClass(binding.toString());
-			System.out.println("class: " + binding.toString() + " has annotations: " + annot);		
-			
-			if(annot.has("label") && !annot.get("label").equals("") ){
-			entry.setLabel((String)annot.get("label"));		
-			}
-			else{
-				entry.setLabel(getShortName(binding));
-			}
-			
-			if(annot.has("comment")  && !annot.get("comment").equals("")){
-				entry.setComment(((String)annot.get("comment")));			
-			}
-			
-			entry.setHasChild(this.annotatorTester.hasChildren(binding));
-			entries.add(entry);		
-		}
-		
-		
-		//JSONArray classes = ann.getOnlyChildOWLClasses("root");	
-		return this.annotatorTester.sortIt(entries);
-		*/
-		//return entries;		
 	}
 	
 	private Collection<HierarchyEntry> queryClassHMChildren(final Request request, String clazz) throws OWLOntologyCreationException, JSONException {
 		//AnnotatorTester ann = new AnnotatorTester();
 		System.out.println("queryClassHMChildren");
-
-		//String thing = "http://www.w3.org/2002/07/owl#Thing";
-		System.out.println("for children:");
-		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
-		//Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
-		//array of classes is returned
-		return  this.annotatorTester.getChildClasses(clazz);	
-		
-		//just wraps into Hierarchy Entries
-		/*
-		for(int i=0;i<classes.length();i++) {
-			HierarchyEntry entry = new HierarchyEntry();
-			String binding = (String)  classes.get(i);
-			entry.setUri(binding);			
-			JSONObject annot = this.annotatorTester.getAnnotationsForClass(binding.toString());
-			System.out.println("class: " + binding.toString() + " has annotations: " + annot);
-			if(annot.has("label") && !annot.get("label").equals("")){
-			entry.setLabel((String)annot.get("label"));		
-			}
-			else{
-				entry.setLabel(getShortName(binding));
-			}		
-			if(annot.has("comment") && !annot.get("comment").equals("")){
-				entry.setComment(((String)annot.get("comment")));			
-			}
-			entry.setHasChild(this.annotatorTester.hasChildren(binding));
-			entries.add(entry);
-		}
-
-		//JSONArray classes = ann.getOnlyChildOWLClasses("root");		
-		return this.annotatorTester.sortIt(entries);
-		*/
-
-	//	return entries;
-		
+		return  this.annotatorTester.getChildClasses(clazz);		
 	}
+	
 	/*
 	protected Collection<rpi.HierarchyEntry> queryClassHMChildren(final Request request, String classes) throws OWLOntologyCreationException, JSONException {
 		AnnotatorTester ann = new AnnotatorTester();
