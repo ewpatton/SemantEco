@@ -286,6 +286,7 @@ public class AnnotatorModule implements Module {
 			}
 			else{
 				this.annotatorTester = new AnnotatorTester();
+				System.out.println("Must provide a list of ontologies, forloading.");
 			}
 			
 			return "done";
@@ -1954,6 +1955,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//String thing = "http://www.w3.org/2002/07/owl#Thing";
 		System.out.println("for child dataproperties:");
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		
+		
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
 		JSONArray classes =  this.annotatorTester.getOWLAnnoProperties(classRequiresSubPropertyString);	
@@ -2170,35 +2173,11 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	@HierarchicalMethod(parameter = "classes")
 	public Collection<HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
-		//this.initModel(request);
-		//this.initOWLModel(request);
-
-
+		
 		if(action == HierarchyVerb.ROOTS) {
-			//			HierarchyEntry entry = new HierarchyEntry();
-			//			entry.setUri(URI.create("http://example.com/bird1"));
-			//			entry.setLabel("bird1");
-			//			entry.setAltLabel("birdicus uno");
-			//			items.add(entry);
-			//			entry = new HierarchyEntry();
-			//			entry.setUri(URI.create("http://example.com/bird2"));
-			//			entry.setLabel("bird2");
-			//			entry.setAltLabel("birdicus dos");
-			//			items.add(entry);
+			
 			return  queryClassHMRoots(request);
 		} else if ( action == HierarchyVerb.CHILDREN ) {
-			//			if ( request.getParam("species").equals("http://example.com/bird1") ) {
-			//				HierarchyEntry entry = new HierarchyEntry();
-			//				entry.setUri(URI.create("http://example.com/bird3"));
-			//				entry.setLabel("bird3");
-			//				entry.setAltLabel("birdicus tres");
-			//				items.add(entry);
-			//				entry = new HierarchyEntry();
-			//				entry.setUri(URI.create("http://example.com/bird4"));
-			//				entry.setLabel("bird4");
-			//				entry.setAltLabel("birdicus quatro");
-			//				items.add(entry);
-			//			}
 			return  queryClassHMChildren(request, (String) request.getParam("classes"));
 		} 
 	
@@ -2209,7 +2188,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		else if ( action == HierarchyVerb.PATH_TO_NODE ) {
 			return annotatorClassToNode( request, (String) request.getParam("uri") );
 		}
-	
 		
 		return items;
 	}
@@ -2321,7 +2299,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		System.out.println("for root:");
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-		JSONArray classes =  this.annotatorTester.getOWLClasses("root");	
+		JSONArray classes =  this.annotatorTester.getChildClasses("root");	
+		
+		//wraps hierarchy entires
 		for(int i=0;i<classes.length();i++) {
 			HierarchyEntry entry = new HierarchyEntry();
 			String binding = (String)  classes.get(i);
@@ -2343,6 +2323,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasChildren(binding));
 			entries.add(entry);		
 		}
+		
+		
 		//JSONArray classes = ann.getOnlyChildOWLClasses("root");	
 		return this.annotatorTester.sortIt(entries);
 		//return entries;		
@@ -2357,14 +2339,14 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
-		JSONArray classes =  this.annotatorTester.getOWLClasses(clazz);	
+		//array of classes is returned
+		JSONArray classes =  this.annotatorTester.getChildClasses(clazz);	
+		
+		//just wraps into Hierarchy Entries
 		for(int i=0;i<classes.length();i++) {
 			HierarchyEntry entry = new HierarchyEntry();
-
 			String binding = (String)  classes.get(i);
-			entry.setUri(binding);
-
-			
+			entry.setUri(binding);			
 			JSONObject annot = this.annotatorTester.getAnnotationsForClass(binding.toString());
 			System.out.println("class: " + binding.toString() + " has annotations: " + annot);
 			if(annot.has("label") && !annot.get("label").equals("")){
@@ -2372,8 +2354,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			}
 			else{
 				entry.setLabel(getShortName(binding));
-			}
-			
+			}		
 			if(annot.has("comment") && !annot.get("comment").equals("")){
 				entry.setComment(((String)annot.get("comment")));			
 			}
