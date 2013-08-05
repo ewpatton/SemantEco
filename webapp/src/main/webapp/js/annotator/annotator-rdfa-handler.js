@@ -363,8 +363,11 @@ function createImplicitBundleNode(bResource, bProp, bNameTemp, bType){
 function createExplicitBundledBy(bundlingCol, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('div');
-	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by").attr("rdfa:typeof","ov:csvCol");
-	$(bbNode).text( bundlingCol );
+	var bbCol = document.createElement('div');
+	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
+	d3.select(bbCol).attr("rdfa:property","ov:csvCol");
+	$(bbCol).text( bundlingCol );
+	bbNode.appendChild(bbCol);
 	subEnhancement.appendChild(bbNode);
 }// /createExplicitBundledBy
 
