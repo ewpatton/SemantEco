@@ -1076,7 +1076,7 @@ function checkAnnotationRow(){
 }// /checkAnnotationRow
 
 // Accessory function for adding to the annotation row
-// Takes three aruguments:
+// Takes three arguments:
 // - index: the index of the column where the triple will be added
 // - predicate: predicate for the triple, which will be shown in the table as well
 //	 as well as added to the RDFa. Note that this may be hard-coded depending on 
@@ -1123,17 +1123,14 @@ function existsA(theArray, theThing) {
         return true;
 }// /existsA
 
-
-// Given the ID of a bundle, sets the "resource" property of that bundle
-//	to a column index if that bundle is explicit, or to -1 if it is implicit.
-// This functino should only be called in the callback of the bundling resource
-//	dropdown menus.
-function updateResource(bundleID){
-	var theForm = document.getElementById("bundle-resource-select," + bundleID);
-	var newResource = theForm.options[theForm.selectedIndex].value;
+// Given a bundle ID, returns the bundle that has that ID.
+// Used for assigning properties and things.
+function getBundleById(theID){
 	var theBundle;
+	console.log("Checking for bundle #" + theID);
 	for (i in bundles){
-		if ( bundles[i]._id === bundleID ){
+		console.log("... bundle#" + bundles[i]._id + "?");
+		if ( bundles[i]._id.toString() === theID ){	
 			theBundle = bundles[i];
 		}
 	}
@@ -1141,9 +1138,34 @@ function updateResource(bundleID){
 		console.log("Bundle does not exist!");
 		return;
 	}
+	return theBundle;
+}// /getBundleById
+
+
+// These are accessory functions for updating bundle objects based on user drag-and-drop.
+// They need the bundle ID, and whatever is being updated for each.
+function updateResource(bundleID){
+	var theForm = document.getElementById("bundle-resource-select," + bundleID);
+	var newResource = theForm.options[theForm.selectedIndex].value;
+	var theBundle = getBundleById(bundleID);
 	console.log("Setting bundle #" + bundleID + "'s resource to " + newResource);
 	theBundle.setResource(newResource);
 }// /updateResource
+
+function updateBundleProp(bundleID, theURI){
+	var theBundle = getBundleById(bundleID);
+	theBundle.setProp(theURI);
+}// /updateBundleProp
+
+function updateBundleClassType(bundleID, theURI){
+	var theBundle = getBundleById(bundleID);
+	theBundle.setType(theURI);
+}// /updateBundleClassType
+
+function updateBundleName(bundleID, theNameTemp){
+	var theBundle = getBundleById(bundleID);
+	theBundle.setName(theNameTemp);
+}// /update
 
 // Accessory function for creating a bundle 
 // Takes three arguments:
@@ -1162,6 +1184,7 @@ function Bundle(bundleId, implicitId, columns) {
     this.implicitId = implicitId;
     this.columns = columns;
 	this.resource = -1;
+	this.nameTemp = "";
 	this.type = "";
 	this.prop = "";
 }
@@ -1174,7 +1197,7 @@ Bundle.prototype.getResource = function(){
 	return this.resource;
 }
 
-Bundle.prototype.setType = function (typeURI){
+Bundle.prototype.setType = function(typeURI){
 	this.type = typeURI;
 }
 
@@ -1188,6 +1211,14 @@ Bundle.prototype.setProp = function(propURI){
 
 Bundle.prototype.getProp = function(){
 	return this.prop;
+}
+
+Bundle.prototype.setName = function(theName){
+	this.nameTemp = theName;
+}
+
+Bundle.prototype.getName = function(){
+	return this.nameTemp;
 }
 
 Bundle.prototype.isExplicit = function() {
