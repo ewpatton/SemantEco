@@ -1130,7 +1130,7 @@ function getBundleById(theID){
 	console.log("Checking for bundle #" + theID);
 	for (i in bundles){
 		console.log("... bundle#" + bundles[i]._id + "?");
-		if ( bundles[i]._id.toString() === theID ){	
+		if ( bundles[i]._id.toString() === theID.toString() ){	
 			theBundle = bundles[i];
 		}
 	}
