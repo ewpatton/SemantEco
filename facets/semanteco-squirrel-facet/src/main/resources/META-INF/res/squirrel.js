@@ -71,6 +71,87 @@ function drawRadiusExtendedPolygon(radius, aName) {
     return true;
 }
 
+function printPolygons(WKTString)
+{
+ var WKTs = WKTString.split("\n");
+ for(var a = 0; a < WKTs.length; a++)
+  console.log("WKT PRINTED HERE\n", WKTs[a] );
+}
+
+function drawPolygons(WKTString) 
+{
+ var WKTs = WKTString.split("\n");
+ for(var a = 0; a < WKTs.length; a++)
+ {
+  if(WKTs[a].indexOf("POLYGON") != -1)
+  {
+   //Format - escape quotes
+   var drawMe = "\\";
+   drawMe += WKTs[a];
+   drawMe = drawMe.substring(0, drawMe.length-1);
+   drawMe = drawMe + "\\\"";
+   //drawPolygonFromWKT(drawMe);
+   setTimeout(drawPolygonFromWKT(drawMe), 5000);
+   console.log(drawMe);
+  }
+  else if(WKTs[a].indexOf("LINESTRING") != -1 || WKTs[a].indexOf("POINT") != -1)
+   drawLinestringFromWKT(WKTs[a]);
+ }
+}
+ 
+function checkString(str)
+{
+    var drawMe = "\\";
+    drawMe += str;
+    drawMe = drawMe.substring(0, drawMe.length-1);
+    drawMe = drawMe + "\\\"";
+    //drawPolygonFromWKT(drawMe);
+    console.log(drawMe);
+}
+
+function checkLinestring(wktLiteral)
+{
+ //var wktLiteral = wktLiteral.replace(/[\s,]+/, " ");
+ //var start = wktLiteral.indexOf("(");
+ //var end = wktLiteral.indexOf(")");
+ //var cleanLiteralList = wktLiteral.substring(start+1, end);
+ console.log(wktLiteral);
+ //console.log(cleanLiteralList);
+}
+
+function drawLinestringFromWKT(wktLiteral)
+{
+ var wktLiteral = wktLiteral.replace(/[\s,]+/, " ");
+ var start = wktLiteral.indexOf("(");
+ var end = wktLiteral.indexOf(")");
+ var cleanLiteralList = wktLiteral.substring(start+1, end);
+ cleanLiteralList = cleanLiteralList.split(",");
+
+    // Build polyline
+    var polyOptions = {
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
+        editable: true
+    };
+    var newPolyline = new google.maps.Polyline(polyOptions);
+    
+    // Connect polylines to the existing Google Map
+    newPolyline.setMap(SemantEcoUI.map);
+
+	for(var i = 0; i < cleanLiteralList.length; i++)
+ 	{
+        var lng = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[1]);
+        var lat = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[0]);
+        console.log(cleanLiteralList[i], lat, lng);
+        //Switched coordinates here b/c geosparql polygon takes long lat : "LINESTRING((long1 lat1, long2...
+        newPolyline.getPath().push(new google.maps.LatLng(lng, lat));
+    }
+    
+    // Return success
+    return true;
+}
+
 function drawPolygonFromWKT(wktLiteral, aName) {   
     // Check arguments first
     if (wktLiteral == undefined) { console.log("Bad Input, no WKTLiteral passed"); return false; }
@@ -91,7 +172,8 @@ function drawPolygonFromWKT(wktLiteral, aName) {
         var lng = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[1]);
         var lat = parseFloat($.trim(cleanLiteralList[i]).split(/[\s,]+/)[0]);
         console.log(cleanLiteralList[i], lat, lng);
-        newPolygonLatLngList.push(new google.maps.LatLng(lat, lng));
+        //Switched coordinates here b/c geosparql polygon takes long lat : "POLYGON((long1 lat1, long2...
+        newPolygonLatLngList.push(new google.maps.LatLng(lng, lat));
     }
 
     // Build polygon
