@@ -25,6 +25,13 @@ public class HierarchyEntry implements Serializable {
 	private static final String AXIOMS_FIELD = "axioms";
 	private static final String ALTLABEL_FIELD = "altLabel";
 	private static final String HASCHILD_FIELD = "hasChild";
+	
+	//*new*
+	private static final String TYPE_FIELD = "type";
+	private static final String ANNOTATIONS_FIELD = "annotations";
+	private static final String ONTOLOGY_PREFIX_FIELD = "ontologyPrefix";
+	private static final String ONTOLOGY_FIELD = "ontology";
+	private static final String SHORTNAME_FIELD = "shortName";
 
 	private Map<String, Object> contents;
 	private Map<String, Set<String>> axioms;
@@ -88,6 +95,18 @@ public class HierarchyEntry implements Serializable {
 	 */
 	public void setHasChild(Integer hasChild) {
 		this.contents.put(HASCHILD_FIELD, hasChild);
+	}
+	
+	public void setType(String type) {
+		this.contents.put(TYPE_FIELD, type);
+	}
+	
+	public void setAnnotations(String annotations) {
+		this.contents.put(ANNOTATIONS_FIELD, annotations);
+	}
+	
+	public void setHasChild(String ontologyPrefix) {
+		this.contents.put(ONTOLOGY_PREFIX_FIELD, ontologyPrefix);
 	}
 
 	/**
@@ -160,6 +179,47 @@ public class HierarchyEntry implements Serializable {
 	public Integer getHasChild() {
 		return (Integer)this.contents.get(HASCHILD_FIELD);
 	}
+	
+	/**
+	 * Gets whether this entry has a type
+	 * @return
+	 */
+	public String getType() {
+		return (String)this.contents.get(TYPE_FIELD);
+	}
+	
+
+	
+	/**
+	 * Gets annotations
+	 * @return
+	 */
+	public String getAnnotations() {
+		return (String)this.contents.get(ANNOTATIONS_FIELD);
+	}
+	
+	/**
+	 * Gets prefix of ontology
+	 * @return
+	 */
+	public String getOntologyPrefix() {
+		return (String)this.contents.get(ONTOLOGY_PREFIX_FIELD);
+	}
+	/**
+	 * Gets ontology
+	 * @return
+	 */
+	public String getOntology() {
+		return (String)this.contents.get(ONTOLOGY_FIELD);
+	}
+	/**
+	 * Gets shortname
+	 * @return
+	 */
+	public String getShortName() {
+		return (String)this.contents.get(SHORTNAME_FIELD);
+	}
+	
 
 	/**
 	 * Gets the collection of axioms for this entry (if any)
@@ -231,5 +291,16 @@ public class HierarchyEntry implements Serializable {
 	
 	public void setParent(final String uri) {
 		setParent(URI.create(uri));
+	}
+	
+	public void setShortName(final String shortName) {
+		this.contents.put(this.SHORTNAME_FIELD, shortName);
+	}
+	
+	public void setPrefix(final String prefix) {
+		this.contents.put(this.ONTOLOGY_PREFIX_FIELD, prefix);
+	}
+	public void setOntology(final String ontology) {
+		this.contents.put(this.ONTOLOGY_FIELD, ontology);
 	}
 }

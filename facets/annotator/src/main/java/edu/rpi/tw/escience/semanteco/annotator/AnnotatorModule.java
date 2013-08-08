@@ -1670,7 +1670,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
-		JSONArray classes =  this.annotatorTester.getOWLDataProperties("root");	
+		return this.annotatorTester.getOWLDataProperties("root");	
+		/*
 		for(int i=0;i<classes.length();i++) {
 			HierarchyEntry entry = new HierarchyEntry();
 
@@ -1695,7 +1696,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entries.add(entry);
 		}
 			return this.annotatorTester.sortIt(entries);
-
+*/
 	}
 	
 	protected Collection<HierarchyEntry> queryAnnoPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
@@ -1709,7 +1710,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
-		JSONArray classes =  this.annotatorTester.getOWLAnnoProperties("root");	
+		return this.annotatorTester.getOWLAnnoProperties("root");	
+		/*
 		for(int i=0;i<classes.length();i++) {
 			HierarchyEntry entry = new HierarchyEntry();
 
@@ -1732,7 +1734,8 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
 			entries.add(entry);
 		}
-		return this.annotatorTester.sortIt(entries);
+		*/
+		//return this.annotatorTester.sortIt(entries);
 
 	}
 	
@@ -1753,7 +1756,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
-		JSONArray classes =  this.annotatorTester.getOWLDataProperties(classRequiresSubPropertyString);	
+		return annotatorTester.getOWLDataProperties(classRequiresSubPropertyString);	
+		
+		/*
+		
 		for(int i=0;i<classes.length();i++) {
 			HierarchyEntry entry = new HierarchyEntry();
 
@@ -1776,7 +1782,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
 			entries.add(entry);
 		}return entries;
-		
+		*/
 	}
 	
 	protected Collection<HierarchyEntry> queryDataTypeHMRoots(final Request request)throws JSONException, OWLOntologyCreationException {
@@ -1866,9 +1872,12 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
 		
 		
-		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		//Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
 
-		JSONArray classes =  this.annotatorTester.getOWLAnnoProperties(classRequiresSubPropertyString);	
+		return  this.annotatorTester.getOWLAnnoProperties(classRequiresSubPropertyString);	
+		
+		
+		/*
 		for(int i=0;i<classes.length();i++) {
 			HierarchyEntry entry = new HierarchyEntry();
 
@@ -1891,7 +1900,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			entries.add(entry);
 		}		return this.annotatorTester.sortIt(entries);
 
-		
+		*/
 	}
 
 	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMRoots(final Request request) {
