@@ -77,12 +77,19 @@ function createEnhancementNode(label, index){
 // 	     be okay, since we should have the prefixes stored in the main RDFa div.
 function updateProp(index,colType,theProperty){
 	console.log("updateProp: " + colType+ "," + index);
-	// Only update the thing if it's not in a bundle.
-	// Bundles are handled elsewhere!
+	
 	var tableheader = (document.getElementById(colType+ "," + index));
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
+	else if ( $(tableheader).hasClass("annotation-row") ){
+		// we have to know both the column index and the ID of the annotation to update it
+		var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
+		var annoID = rowID.split(',')[1]; 
+		console.log("rowID: "+rowID);
+		var propNode = document.getElementById("anno,"+index+","+annoID+",pred");
+		$(propNode).attr("href",theProperty);
+	}// /properties for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -90,7 +97,9 @@ function updateProp(index,colType,theProperty){
 		updateBundleProp(bundleID, theProperty);
 		console.log("Updating bundle #" + bundleID + " with property " + theProperty);
 		return;
-	}
+	}// /properties for bundles
+	
+	// general case is properties for plain ol' column headers: 
 	var propNode = document.getElementById("prop-enhance,"+index);
 	$(propNode).attr("href",theProperty);
 }// /updateProp
@@ -101,6 +110,14 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
+	else if ( $(tableheader).hasClass("annotation-row") ){
+		// we have to know both the column index and the ID of the annotation to update it
+		var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
+		var annoID = rowID.split(',')[1]; 
+		console.log("rowID: "+rowID);
+		var objNode = document.getElementById("anno,"+index+","+annoID+",obj");
+		$(objNode).attr("href",classURI);
+	}// /classes for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){		
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -401,7 +418,7 @@ function createImplicitBundledBy(bundleName, subCol){
 	subEnhancement.appendChild(bbNode);
 }// /createExplicitBundledBy
 
-function addAnnotationRDFa( index, predicate, object ){
+function addAnnotationRDFa( index, annoID, predicate, object ){
 	// create nodes...
 	var anNodetation = document.createElement('div');
 	var colNumber = document.createElement('div');
@@ -409,10 +426,11 @@ function addAnnotationRDFa( index, predicate, object ){
 	var obj = document.createElement('a');
 	// ... type them...
 	d3.select(anNodetation).attr("rdfa:rel","conversion:enhance");
+	$(anNodetation).attr("id","anno,"+index+","+annoID);
 	// TODO: give the root node an ID
 	d3.select(colNumber).attr("rdfa:property","ov:csvCol");
 	d3.select(pred).attr("rdfa:rel","conversion:predicate");
-	d3.select(obj).attr("rdfa:rel","converion:object");
+	d3.select(obj).attr("rdfa:rel","conversion:object");
 	// ... add things...
 	$(colNumber).text(index);
 	$(pred).attr("href",predicate);
@@ -424,6 +442,15 @@ function addAnnotationRDFa( index, predicate, object ){
 	anNodetation.appendChild(obj);
 	mainNode.appendChild(anNodetation);
 }// /addAnnotation
+
+function handleAnnotations(annoID){
+	var annotation, annIndex, annPred, annObj;
+	annotation = document.getElementById("anno,"+annoID);
+	annIndex = parseInt(annotation.childNodes[0].innerHTML);
+	annPred = $(document.getElementById("anno,"+annIndex+","+annoID+",pred")).attr("href");
+	annObj = $(document.getElementById("anno,"+annIndex+","+annoID+",obj")).attr("href");
+	addAnnotationRDFa( annIndex, annoID, annPred, annObj );
+}// /handleAnnotations
 
 
 // Adds triples for: 
@@ -458,12 +485,18 @@ function finalizeTriples(){
 		}	
 		else { // implicit bundle
 			createImplicitBundleNode(bundles[i]);
-			for (j in bundles[i].columns){ // for each colum in bundle
-				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].nameTemp );
+			for (j in bundles[i].columns){ // for each column in bundle
+				console.log("bundling " + bundles[i].columns[j] + " into implicit");
 				createImplicitBundledBy(bundles[i].nameTemp, bundles[i].columns[j]);
 			}
 		}
 	}
+	
+	// handle subject annotations: 
+	for ( var i=0; i<annotationID; i++ ){
+		console.log("handling annotation #" + i);
+		handleAnnotations(i);
+	}// /for each subject annotation
 	
 	GreenTurtle.attach(document,true);
 }

@@ -1,8 +1,13 @@
 // Brendan Edit: Organize all the code
 
-// Keeps track of the ID's of the bundles, hopefully for use
-//    in the future to show off all bundles at once.
+// Keeps track of the ID's of the bundles.
+// These stay constant regardless of the bundle's resource or name, to make it
+//	 easier to find the bundles.
 var bundleIdManager = new BundleIdManager();
+
+// Keeps track of ID's of annotations, just so we can iterate through them and make
+//	 RDFa when the user commits enhancements.
+var annotationID = 0;
 
 // This array is for keeping track of the column indices of all selected columns.
 //   It is empty at creation. The callbacks in the column selector function should
@@ -380,8 +385,8 @@ $(function () {
 										//var theTable = workingCol.getElementsByTagName('TABLE')[0];
 										var cType = "rdfs:comment";
 										var cText = document.getElementById("commentModalInput").value;
-										addAnnotation(index , cType, cText);
-										addAnnotationRDFa(index,cType,cText);
+										//addAnnotationRDFa(index,annotationID,cType,cText);
+										addAnnotation(index,cType,cText);
 										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
 									}// /OK function
@@ -440,8 +445,8 @@ $(function () {
 										checkAnnotationRow();
 										var cType = "conversion:eg";
 										var cText = document.getElementById("canonicalModalInput").value;
-										addAnnotation( index, cType, cText );
-										addAnnotationRDFa(index,cType,cText);
+										//addAnnotationRDFa(index,annotationID,cType,cText);
+										addAnnotation(index,cType,cText);
 										GreenTurtle.attach(document,true);
                                         $(this).dialog("close");
                                     }
@@ -479,8 +484,8 @@ $(function () {
                             var cText = "anObject";
                             //var cType = document.getElementById("subjectAnnotationPredicateModalInput").value;
                             //var cText = document.getElementById("subjectAnnotationObjectModalInput").value;
-                            addAnnotation( index, cType, cText );
-                            addAnnotationRDFa(index,cType,cText);
+							//addAnnotationRDFa(index,annotationID,cType,cText);
+                            addAnnotation(index,cType,cText);
                             GreenTurtle.attach(document,true);
                             /*$("#subjectAnnotationModal").dialog({
                                 modal: true,
@@ -1085,11 +1090,13 @@ function checkAnnotationRow(){
 function addAnnotation( index, predicate, object ){
 	var workingCol = document.getElementById("annotationRow," + index);
 	var theTable = workingCol.getElementsByTagName('TABLE')[0];
-	$( theTable ).append( "<tr>" +
+	console.log("Creating annotation #" + annotationID);
+	$( theTable ).append( "<tr id=\"anno,"+ annotationID + "\">" +
 	"<td class=\"hidden\">" + index + "</td>" + 
-	"<td><p class=\"ellipses marginOverride property-label editable-input\">" + predicate + "</p></td>" +
-	"<td><p class=\"ellipses marginOverride class-label editable-input\">" + object + "</p></td>" +
+	"<td><p id=\"anno,"+index+","+annotationID+",pred\" class=\"ellipses marginOverride property-label editable-input\">" + predicate + "</p></td>" +
+	"<td><p id=\"anno,"+index+","+annotationID+",obj\"class=\"ellipses marginOverride class-label editable-input\">" + object + "</p></td>" +
 	"</tr>" );
+	annotationID++;
 }// /addAnnotation
 
 // Accessory function for removing things from arrays
