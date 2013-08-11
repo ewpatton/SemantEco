@@ -628,6 +628,7 @@ var dnd = {
 			columnID = parent.attr("id").split(",")[1];
         }
 		
+		
         // Handle drop source object having children in the tree
         if (data.o.hasClass("jstree-open")) {
             var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
@@ -642,17 +643,34 @@ var dnd = {
 		target.empty().append(payload);
         target.parent().css("color", "black");
 		console.log("colType: " + columnType + ", colID: " + columnID);
-		// check the source facet and make the appropriate RDFa update
-		if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
-			//console.log("dnd is calling updateClassType here");
-			updateClassType(columnID,columnType,uri,payload,sourceFacet);
+		
+		if (columnType == "annotationRow"){ // we're dealing with an annotation
+			var annotationID = target.attr("id").split(",")[2];
+			console.log("dropped onto annotation #" + annotationID);
+			if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
+				console.log("dnd updating annotation object...");
+				updateAnnotationObj(columnID,annotationID,uri,payload);
+				//updateClassType(columnID,columnType,uri,payload,sourceFacet);
+			}
+			else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet"){
+				console.log("dnd updating annotation predicate...");
+				updateAnnotationPred(columnID,annotationID,uri,payload);
+			}
 		}
-		else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet") {
-			//console.log("dnd is calling updateProp here");
-			updateProp(columnID,columnType,uri);
+		
+		else { // not an annotation
+			// check the source facet and make the appropriate RDFa update
+			if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
+				//console.log("dnd is calling updateClassType here");
+				updateClassType(columnID,columnType,uri,payload,sourceFacet);
+			}
+			else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet") {
+				//console.log("dnd is calling updateProp here");
+				updateProp(columnID,columnType,uri);
+			}
+			else 
+				console.log("sourceFacet = " + sourceFacet);
 		}
-		else 
-			console.log("sourceFacet = " + sourceFacet);
 		
         // Apply suggestion logic
         modifyLabelAsRestriction(target, sourceFacet);

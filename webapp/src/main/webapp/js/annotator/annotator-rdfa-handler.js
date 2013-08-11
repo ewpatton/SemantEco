@@ -82,14 +82,14 @@ function updateProp(index,colType,theProperty){
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
-	else if ( $(tableheader).hasClass("annotation-row") ){
+	/*else if ( $(tableheader).hasClass("annotation-row") ){
 		// we have to know both the column index and the ID of the annotation to update it
-		var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
+		/*var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
 		var annoID = rowID.split(',')[1]; 
 		console.log("rowID: "+rowID);
 		var propNode = document.getElementById("anno,"+index+","+annoID+",pred");
 		$(propNode).attr("href",theProperty);
-	}// /properties for annotations are handled in a different way
+	}*/// /properties for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -110,14 +110,14 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
-	else if ( $(tableheader).hasClass("annotation-row") ){
+	/*else if ( $(tableheader).hasClass("annotation-row") ){
 		// we have to know both the column index and the ID of the annotation to update it
-		var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
+		/*var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
 		var annoID = rowID.split(',')[1]; 
 		console.log("rowID: "+rowID);
 		var objNode = document.getElementById("anno,"+index+","+annoID+",obj");
 		$(objNode).attr("href",classURI);
-	}// /classes for annotations are handled in a different way
+	}*/// /classes for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){		
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -225,6 +225,18 @@ function hasClassType(index){
 	else {
 		return false; }
 }// /hasClassType
+
+function updateAnnotationPred(index,annoID,predURI,predLabel){
+	var propNode = document.getElementById("anno,"+index+","+annoID+",pred");
+	$(propNode).attr("href",predURI);
+	$(propNode).text(predLabel);
+}// /updateAnnotationPred
+
+function updateAnnotationObj(index,annoID,objURI,objLabel){
+	var objNode = document.getElementById("anno,"+index+","+annoID+",obj");
+	$(objNode).attr("href",objURI);
+	$(objNode).text(objLabel);
+}// /updateAnnotationObj
 
 
 // pulls user input about the dataset and adds it to the RDFa
