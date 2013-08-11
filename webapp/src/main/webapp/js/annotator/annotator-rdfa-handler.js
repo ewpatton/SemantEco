@@ -464,15 +464,24 @@ function handleAnnotations(annoID){
 	addAnnotationRDFa( annIndex, annoID, annPred, annObj );
 }// /handleAnnotations
 
+// in progress
+function createDomainTemplateNode(){
+	var domainTemp = document.createElement('div');
+	var domainName = document.createElement('a');
+	d3.select(domainTemp).attr("rdfa:rel","conversion:enhance");
+	d3.select(domainName).attr("rdfa:rel","conversion:domain_name");
+
+}// /createDomainTemplateNode
+
 
 // Adds triples for: 
 //	- package-level data [DONE]
-//	- cell-based conversions
-//	- implicit bundles
-//	- explicit bundles
-//	- subject annotations
+//	- cell-based conversions [DONE]
+//	- implicit bundles [mostly done]
+//	- explicit bundles [DONE]
+//	- subject annotations [DONE]
 //	- name template
-//	- domain template
+//	- domain template 
 // This should be called inside the turtleGen function, or AFTER the user has 
 //	completed enhancements, so that we are not unnecessarily updating RDFa 
 //	while the user is still making changes
