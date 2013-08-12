@@ -43,7 +43,7 @@ import edu.rpi.tw.escience.semanteco.Request;
  *
  */
 public class ClientRequest extends LoggerWrapper implements Request {
-	
+
 	private WsOutbound clientLog;
 	private WsOutbound provenanceLog;
 	private Logger log;
@@ -58,7 +58,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		private Model dataModel = null;
 		private boolean combined = false;
 	}
-	
+
 	protected final String arrayToString(String[] arr) {
 		StringBuilder res = new StringBuilder("[");
 		for(int i=0;i<arr.length;i++) {
@@ -70,7 +70,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		res.append("]");
 		return res.toString();
 	}
-	
+
 	/**
 	 * Creates a new ClientRequest object with the given parameters and a
 	 * WebSocket channel
@@ -169,7 +169,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 	public Logger getLogger() {
 		return this;
 	}
-	
+
 	protected void sendToClient(String str) {
 		CharBuffer cb = CharBuffer.wrap(str);
 		try {
@@ -180,7 +180,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 			clientLog = null;
 		}
 	}
-	
+
 	protected void logToClient(Priority priority, Object message, Throwable t) {
 		if(clientLog == null) {
 			return;
@@ -211,27 +211,27 @@ public class ClientRequest extends LoggerWrapper implements Request {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void forcedLog(String fqcn, Priority priority, Object message, Throwable t) {
 		log.callAppenders(new LoggingEvent(LoggerWrapper.class.getName(), log, priority, message, t));
 		logToClient(priority, message, t);
 	}
-	
+
 	@Override
 	public void log(Priority priority, Object message) {
 		if(priority.isGreaterOrEqual(log.getEffectiveLevel())) {
 			forcedLog(LoggerWrapper.class.getName(), priority, message, null);
 		}
 	}
-	
+
 	@Override
 	public void log(Priority priority, Object message, Throwable t) {
 		if(priority.isGreaterOrEqual(log.getEffectiveLevel())) {
 			forcedLog(LoggerWrapper.class.getName(), priority, message, t);
 		}
 	}
-	
+
 	@Override
 	public void log(String callerFQCN, Priority priority, Object message, Throwable t) {
 		if(priority.isGreaterOrEqual(log.getEffectiveLevel())) {

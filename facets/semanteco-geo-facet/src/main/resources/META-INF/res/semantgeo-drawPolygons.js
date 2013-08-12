@@ -10,10 +10,10 @@ function addPolygonToMap(coords, aName){
     // returns True on success, or false on error
 
     // Check arguments first
-    if (typeof coords == undefined) { return false; }
+    if (coords == undefined) { return false; }
 
     // We are OK if a name was not given, we can generate one
-    if (typeof aName == undefined) {
+    if (aName == undefined) {
         aName = Math.random().toString(36).slice(2); // Generate a random alphanumeric string
     }
 
@@ -54,8 +54,14 @@ function addPolygonToMap(coords, aName){
         latlngarray.push(path.getAt(i).toString());
     }
 
+    console.log("PUSHING TO BBQ STATE", aName);
+
     // Publish final polygon path to $.bbq state
     $.bbq.pushState({"UserDrawnMapPolygon": latlngarray});
+    
+
+    //Push the name of the polygon
+    $.bbq.pushState({"PolygonID": aName});
 
     // Return success
     return true;
