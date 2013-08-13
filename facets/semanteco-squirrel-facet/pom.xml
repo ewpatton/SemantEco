@@ -10,7 +10,6 @@
 
   <artifactId>semanteco-squirrel-facet</artifactId>
 
-  <groupId>edu.rpi.tw.escience</groupId>
   <packaging>jar</packaging>
   <name>semanteco Squirrel facet</name>
   <version>4.1-SNAPSHOT</version>

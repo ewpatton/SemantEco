@@ -288,19 +288,20 @@ public class HierarchyEntry implements Serializable {
 	public void setUri(final String uri) {
 		setUri(URI.create(uri));
 	}
-	
+
 	public void setParent(final String uri) {
 		setParent(URI.create(uri));
 	}
-	
+
 	public void setShortName(final String shortName) {
-		this.contents.put(this.SHORTNAME_FIELD, shortName);
+		this.contents.put(SHORTNAME_FIELD, shortName);
 	}
-	
+
 	public void setPrefix(final String prefix) {
-		this.contents.put(this.ONTOLOGY_PREFIX_FIELD, prefix);
+		this.contents.put(ONTOLOGY_PREFIX_FIELD, prefix);
 	}
+
 	public void setOntology(final String ontology) {
-		this.contents.put(this.ONTOLOGY_FIELD, ontology);
+		this.contents.put(ONTOLOGY_FIELD, ontology);
 	}
 }

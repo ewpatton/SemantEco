@@ -6,7 +6,7 @@
   <servlet>
     <display-name>SemantEco</display-name>
     <servlet-name>SemantEco</servlet-name>
-    <servlet-class>edu.rpi.tw.escience.semanteco.SemantEcoServlet</servlet-class>
+    <servlet-class>edu.rpi.tw.escience.semanteco.SemantEco</servlet-class>
     <init-param>
     	<param-name>log4j-properties-location</param-name>
     	<param-value>WEB-INF/log4j.properties</param-value>

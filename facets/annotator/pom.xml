@@ -18,33 +18,16 @@
   </properties>
 
   <dependencies>
-
-
-
-<dependency>
-            <groupId>net.rootdev</groupId>
-            <artifactId>java-rdfa-htmlparser</artifactId>
-            <version>0.4.2-RC2</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-
- <dependency>
-	<groupId>rpi</groupId>
-    <artifactId>OWLHelper</artifactId>
-<!--    <version>1.0-SNAPSHOT</version> -->
-<!--    <version>1.0-20130709.030736-1</version> -->
-   <!-- <version>1.0-20130709.221206-2</version> -->
-<!--    <version>1.0-20130716.235743-29</version> -->
-	<version>1.0-SNAPSHOT</version>
+    <dependency>
+      <groupId>rpi</groupId>
+      <artifactId>OWLHelper</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
-
- <dependency>
-        <groupId>net.rootdev</groupId>
-    <artifactId>java-rdfa-htmlparser</artifactId>
-        <version>0.4.2-RC2</version>
+    <dependency>
+      <groupId>net.rootdev</groupId>
+      <artifactId>java-rdfa-htmlparser</artifactId>
+      <version>0.4.2-RC2</version>
     </dependency>
-
 
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
@@ -77,12 +60,12 @@
       <version>2.2.2</version>
       <scope>provided</scope>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>aterm</groupId>
       <artifactId>aterm-java</artifactId>
       <version>1.6</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>com.hp.hpl.jena</groupId>
       <artifactId>arq</artifactId>
       <version>2.8.8</version>
@@ -93,63 +76,63 @@
         </exclusion>
       </exclusions>
     </dependency>
- <dependency>
+    <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
       <artifactId>owlapi-api</artifactId>
       <version>3.4</version>
     </dependency>
- <dependency>
+    <dependency>
       <groupId>csv2rdf4lod</groupId>
       <artifactId>csv2rdf4lod</artifactId>
       <version>1.0</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>openrdf-sesame-2.3.1</groupId>
       <artifactId>openrdf-sesame-2.3.1</artifactId>
       <version>2.3.1</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>pml</groupId>
       <artifactId>pml</artifactId>
       <version>pml</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>edu.rpi.tw.data.digest</groupId>
       <artifactId>datadigest</artifactId>
       <version>1.0-20130401.055219-1</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>javacsv</groupId>
       <artifactId>javacsv</artifactId>
       <version>javacsv</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
       <artifactId>owlapi-apibinding</artifactId>
       <version>3.4</version>
     </dependency>
-</dependencies>
+  </dependencies>
   <repositories>
     <repository>
       <id>tetherless</id>
       <url>http://orion.tw.rpi.edu/artifactory/libs-release</url>
     </repository>
 
-<repository>
-   <id>phillord</id>
-    <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
-</repository>
+    <repository>
+      <id>phillord</id>
+      <url>http://homepages.cs.ncl.ac.uk/phillip.lord/maven</url>
+    </repository>
 
     <repository>
       <id>tetherless2</id>
       <url>http://orion.tw.rpi.edu/artifactory/ext-snapshot-local</url>
     </repository>
 
- <repository>
-            <id>rootdev.repo.ssh</id>
-            <name>Rootdev maven repository, via ssh</name>
-            <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
-        </repository>
+    <repository>
+      <id>rootdev.repo.ssh</id>
+      <name>Rootdev maven repository, via ssh</name>
+      <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
+    </repository>
 
   </repositories>
   <build>
