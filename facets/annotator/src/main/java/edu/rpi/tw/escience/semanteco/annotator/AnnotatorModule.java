@@ -1,13 +1,23 @@
 package edu.rpi.tw.escience.semanteco.annotator;
 import static edu.rpi.tw.escience.semanteco.query.Query.VAR_NS;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,6 +62,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -73,10 +84,15 @@ import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.QueryMethod.HTTP;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
+//import com.hp.hpl.jena.grddl.*;
+//import net.rootdev.javardfa.*;
+//import net.rootdev.javardfa.RDFaReader;
+import rpi.AnnotatorTester;
 
 /*
  * treat enhancements atomically
@@ -139,9 +155,21 @@ public class AnnotatorModule implements Module {
 	private PrintWriter enhancementFileWriter = null;
 	private String dataSetName;
 	private String sourceName;
-	private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
-	private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
-	private String paramsFile = "/Users/apseyed/Documents/rpi/sample-enhancement.ttl";     
+	String workingDir = System.getProperty("user.dir");
+	
+	///private String csvFileLocation= "/tmp/csvFile.csv";
+	//private String outputRdfFileLocation = "/tmp/output.ttl";
+	//private String paramsFile = "/tmp/sample-enhancement.ttl"; 
+	
+	
+	private String paramsFile = workingDir + "/sample-enhancement.ttl";  
+	private String csvFileLocation= workingDir + "/csvFile.csv";
+    private String outputRdfFileLocation=workingDir + "/output.ttl";
+
+	//private String csvFileLocation="/Users/apseyed/Documents/rpi/csvFile.csv";
+	//private String outputRdfFileLocation="/Users/apseyed/Documents/rpi/output.ttl";
+	AnnotatorTester annotatorTester = null;
+
 
 	
 	public void setDataSetName(String dataSetName){this.dataSetName = dataSetName;}
@@ -153,14 +181,221 @@ public class AnnotatorModule implements Module {
 		AnnotatorModule.model = model;
 	}
 	
-	
 	public OntModel getModel(){
 		return AnnotatorModule.model;
 	}
+	
 
-	public void initModel() {
+	
+	@QueryMethod
+	public String queryClassesInPropertyRange(Request request) throws OWLOntologyCreationException, JSONException{
+		JSONArray j = this.annotatorTester.queryClassesInPropertyRange((String) request.getParam("classesInPropertyRange"));
+		String namedClass = (String) j.get(0);
+		/*
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+			HierarchyEntry entry = new HierarchyEntry();
+			entry.setUri(namedClass);		
+			JSONObject annot = this.annotatorTester.getAnnotationsForClass(namedClass.toString());
+			System.out.println("class: " + namedClass.toString() + " has annotations: " + annot);
+			if(annot.has("label") && !annot.get("label").equals("")){
+			entry.setLabel((String)annot.get("label"));		
+			}
+			else{
+				entry.setLabel(getShortName(namedClass));
+			}
+			
+			if(annot.has("comment") && !annot.get("comment").equals("")){
+				entry.setComment(((String)annot.get("comment")));			
+			}
+			entry.setHasChild(this.annotatorTester.hasChildren(namedClass));
+			entries.add(entry);
+			return entries;	
+*/
+		return namedClass;
+
+		
+		
+	}
+	
+	@QueryMethod
+	public String getPropertiesClassCanRange(Request request)throws OWLOntologyCreationException, JSONException{
+		try{
+			
+		String aClass =	(String) request.getParam("propertiesClassCanRange");
+		System.out.println("range is : "+  aClass);
+		JSONArray j = this.annotatorTester.getPropertiesClassCanRange(aClass);
+		return j.toString();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+		
+		//return this.annotatorTester.getPropertiesClassCanRange((String) request.getParam("propertiesClassCanRange")).toString();
+	}
+	
+	@QueryMethod
+	public String getCSVFile(Request request) throws URISyntaxException, JSONException, IOException{
+		
+		
+		String queryString = (String) request.getParam("csvUri");
+		BufferedReader br = null;
+
+		try{
+			URL requestURL = new URL(queryString);
+			System.out.println("requestURL : " + requestURL.toURI().toString());
+			//URLConnection conn = requestURL.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
+
+
+			conn.setReadTimeout(5000);
+			//String contentType = conn.getContentType();
+			//System.out.println("connType : " + contentType);
+			try{
+				InputStream o = (InputStream)conn.getContent();
+				InputStreamReader isr = new InputStreamReader(o);
+				br = new BufferedReader(isr);
+			}
+			catch(Exception e){ e.printStackTrace();
+			JSONObject error = new JSONObject();
+			error.put("error", "test");
+			return error.toString();
+			}
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} 
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		String line;
+		String result="";
+		while((line=br.readLine())!=null) result += line + "\n";			
+
+		return result;
+		
+	}
+	
+	@QueryMethod
+	public String initOWLModel(Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException{
+
+
+			if (request.getParam("listOfOntologies") != null){
+				JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies") ;
+				this.annotatorTester = new AnnotatorTester(listOfOntologies, false);	
+			}
+			else{
+				this.annotatorTester = new AnnotatorTester();
+				System.out.println("Must provide a list of ontologies, forloading.");
+			}
+			
+			return "done";
+
+		}
+		
+
+	public void initModel(Request request) {
+		String ontology = "";
+
+		//show where we load from URL the ontologies, for example ncbi taxonomy
+
+		//JSONArray ontologies = (JSONArray) request.getParam("ontologies");
+		//for each item in the JSON Array, check through ontology conditionals
+
+
 		if(model == null) {
+
+
+			//check for what the ontology request is, and load that only into the model.
+
 			model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+			try{
+				//model.read(is, "http://aquarius.tw.rpi.edu/projects/semantaqua/", "TTL");
+			/* works */
+				//model.read("https://code.ecoinformatics.org/code/semtools/trunk/dev/oboe-ext/sbclter/sbc.1.0/oboe-sbc.owl");
+				//model.read("http://purl.org/dc/terms/");			
+				model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
+				//dcat //void
+
+				//pellet error.
+
+
+			}
+			catch(Exception e)
+			{
+				//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+
+			}
+
+			/*
+			if(ontology.equals("dcterms")){			
+			model.read("http://purl.org/dc/terms/");
+			}*/
+
+
+			/*
+			//model = ModelFactory.createOntologyModel();
+
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-characteristics.owl").toString()) ;
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-sbclter.owl").toString()) ;
+			
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-temporal.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-spatial.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-chemistry.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
+			//FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			 * 
+			 *
+			 */
+
+		}
+	}
+
+	
+////	public void initModel(Request request) throws JSONException {
+		
+		
+		
+		
+	//	if(model == null) {
+			
+		//	try {
+			//	if(annotatorTester == null){
+					
+					//JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies");
+					///JSONArray listOfOntologies  = new JSONArray();
+					///listOfOntologies.put("chebi");
+					//annotatorTester = new AnnotatorTester(listOfOntologies);
+					//System.out.println("chebi test");
+					//System.out.println("chebi test2");
+				//	System.out.println(annotatorTester.getChildClasses("http://purl.obolibrary.org/obo/CHEBI_50906").toString());
+
+					
+					
+					
+			//	}
+				
+				
+				
+
+		//	} 
+			
+		//	catch (OWLOntologyCreationException e) {
+				// TODO Auto-generated catch block
+		//		e.printStackTrace();
+		//	}
+			
+			
+	////		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+	////		model.read("http://www.w3.org/2003/01/geo/wgs84_pos#"); //loads
+			/*
 			//model = ModelFactory.createOntologyModel();
 
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-biology-sans-imports.owl").toString()) ;
@@ -177,8 +412,29 @@ public class AnnotatorModule implements Module {
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-taxa.owl").toString()) ;
 			FileManager.get().readModel(model, config.getResource("owl-files/oboe-standards.owl").toString()) ;
+			*/
 			
-		}
+	//	}
+////	}
+	
+	
+	@QueryMethod
+	public String getListofOntologies(final Request request) throws JSONException{
+		//JSONArray j = new JSONArray();
+		//wgs
+		//semanteco ontologies
+		//
+		//prefix sd: http://www.w3.org/ns/sparql-service-description#
+		//prefix void: http://rdfs.org/ns/void#
+		//	prefix prov: http://www.w3.org/ns/prov#
+
+	// "dcterms", "semanteco
+		//j.put("dcterms");
+		//j.put("prov");
+		//j.put("void");
+		//j.put("semanteco-water");
+		return this.annotatorTester.getListOfOntologies().toString();
+		//in the future allow a client to indicate what to load, maybe...
 	}
 
 	/**
@@ -204,9 +460,103 @@ public class AnnotatorModule implements Module {
 		return null;
 	}
 
+	
+	@QueryMethod(method=HTTP.POST)
+	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException, ClassNotFoundException, IOException{
+		//com.hp.hpl.jena.grddl.GRDDLReader
+		//String rdfA = (String) request.getParam("enhancementsAsRDFa");
+		//Model m = createMemModel();
+		
+		//"<div id\="here-be-rdfa" class="hidden" prefix="rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# xsd: http://www.w3.org/2001/XMLSchema# skos: http://www.w3.org/2004/02/skos/core# geonames: http://www.geonames.org/ontology# prov: http://www.w3.org/ns/prov# qb: http://purl.org/linked-data/cube# dcterms: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ ov: http://open.vocab.org/terms/ sweet: http://sweet.jpl.nasa.gov/2.1/ void: http://rdfs.org/ns/void# conversion: http://purl.org/twc/vocab/conversion/ : http://purl.org/twc/semantgeo/source/undefined/dataset/undefined/version/undefined/conversion/enhancement/1 ">
+		
+	//	<div id="e_process" typeof="conversion:enhancement_process">
+	//	<!-- per-column triples -->
+	//	<div id="enhance-col,0" typeof="conversion:enhance"><p typeof="ov:csvCol">0</p><p typeof="ov:csvHeader conversion:label">Sample#</p><p id="prop-enhance,0" typeof="conversion:equivalent_property"></p><p id="type-enhance,0"></p></div><div id="enhance-col,1" typeof="conversion:enhance"><p typeof="ov:csvCol">1</p><p typeof="ov:csvHeader conversion:label"> Date</p><p id="prop-enhance,1" typeof="conversion:equivalent_property"></p><p id="type-enhance,1"></p></div><div id="enhance-col,2" typeof="conversion:enhance"><p typeof="ov:csvCol">2</p><p typeof="ov:csvHeader conversion:label"> Lake Name</p><p id="prop-enhance,2" typeof="conversion:equivalent_property"></p><p id="type-enhance,2"></p></div><div id="enhance-col,3" typeof="conversion:enhance"><p typeof="ov:csvCol">3</p><p typeof="ov:csvHeader conversion:label"> Z Max (m)</p><p id="prop-enhance,3" typeof="conversion:equivalent_property"></p><p id="type-enhance,3"></p></div><div id="enhance-col,4" typeof="conversion:enhance"><p typeof="ov:csvCol">4</p><p typeof="ov:csvHeader conversion:label"> Sample Z (m)</p><p id="prop-enhance,4" typeof="conversion:equivalent_property"></p><p id="type-enhance,4"></p></div><div id="enhance-col,5" typeof="conversion:enhance"><p typeof="ov:csvCol">5</p><p typeof="ov:csvHeader conversion:label"> pH air eq</p><p id="prop-enhance,5" typeof="conversion:equivalent_property"></p><p id="type-enhance,5"></p></div></div>"
+	//<!-- package-level triples -->
+	//<p resource="http://purl.org/twc/semantgeo/source/undefined/dataset/undefined/version/undefined/conversion/enhancement/1" typeof="conversion:LayerDataset void:Dataset">http://purl.org/twc/semantgeo/source/undefined/dataset/undefined/version/undefined/conversion/enhancement/1<p typeof="conversion:base_uri">http://purl.org/twc/semantgeo</p><p typeof="conversion:source_identifier"></p><p typeof="conversion:dataset_identifier"></p><p typeof="conversion:version_identifier"></p><p typeof="conversion:enhancement_identifier">1</p></p></div>";
+
+	//	"<p vocab="http://schema.org/" typeof="Person">"
+	///	   My name is
+	//	   <span property="name">Manu Sporny</span>
+	//	   and you can give me a ring via
+	//	   <span property="telephone">1-800-555-0199</span>
+	//	   or visit 
+	//	   <a property="url" href="http://manu.sporny.org/">my homepage</a>.
+	//	</p>
+		System.out.println("rdfa: " + request.getParam("rdfa"));
+		String rdfa = (String) request.getParam("rdfa");
+		
+		
+		//RDFReader r;
+		
+		Class.forName("net.rootdev.javardfa.jena.RDFaReader");
+		//Module.class.getClassLoader().loadClass("net/rootdev/javardfa/jena/RDFaReader.class");
+		Model m = ModelFactory.createDefaultModel();
+		CharArrayReader reader = new CharArrayReader(rdfa.toCharArray());
+		//m.read
+		m.read(reader,null, "HTML");
+		System.out.println(m.toString());
+		//System.getProperty("user.dir")+"
+		FileOutputStream fos = new FileOutputStream("/tmp/rdfa.rdf");
+		m.write(fos, "TTL");
+		fos.close();
+
+		return null;
+	}
+	
+	@QueryMethod(method=HTTP.POST)
+	public String queryForEnhancingParams(final Request request) throws IOException{
+		System.out.println("turtle is : " + request.getParam("turtle"));
+		PrintWriter csvFile = this.csvFileWriter;
+		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
+        String eId = "1";
+		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
+		request.getLogger().debug("headers are : " + headerList.toString());
+		
+		/* generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
+	    			datasetId, datasetVersion, null, 
+	    			conversionID, cellDelimiter, null, null, null,
+	    			null, null, null, username, 
+	    			machineUri, username);
+	    			*/
+		
+		
+		//write the string the paramsFile path
+		String turtleFileAsString = (String) request.getParam("turtle");
+		
+		
+		FileOutputStream fos = new FileOutputStream(paramsFile);
+		
+		byte[] contentInBytes = turtleFileAsString.getBytes();
+		fos.write(contentInBytes);
+		fos.close();
+
+		
+		//CharArrayReader reader = new CharArrayReader(turtleFileAsString.toCharArray());
+		//fos.write(turtleFileAsString);
+		
+		//fos.write(arg0);
+		fos.close();
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        //convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+
+		
+		return null;
+	}
+		
 
 	@QueryMethod
-	public String queryForEnhancing(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
+	public String queryForEnhancing2(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
+		
+		//example implicit bundle:
+		/*
+		 * :a_sample_bundle
+		 
+		   a conversion:ImplicitBundle;
+		   conversion:property_name oboe:ofEntity; # Can also be a URI, e.g. dcterms:title.
+		   conversion:name_template "[/sd]waterSample[r]";
+		   conversion:type_name <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#WaterSample> .
+		   */
 
 		System.out.println("source is : " +request.getParam("sourceName"));
 		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
@@ -1109,10 +1459,45 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 
 
 
-	public String getShortName(String inName)
+	public String getShortName(String binding)
 	{
-		int pAt = inName.indexOf("#");
-		return (inName.substring(pAt+1));
+		//int pAt = inName.indexOf("#");
+		//return (inName.substring(pAt+1));	
+		 CharSequence pound = "#";
+			System.out.println("bindings: " + binding);
+			if (binding.contains(pound)){
+				//split on the #
+				String[] temp = binding .split("#");
+				String newLabel  = temp[temp.length-1];
+				System.out.println("after split: " + temp.toString());
+				System.out.println("temp 0: " + newLabel.toString() );
+				System.out.println("1datatype label is: " + newLabel);
+				//entry.setLabel(newLabel);		
+				return newLabel;
+			}
+		
+			else if(binding.contains("/")){
+				String[] temp2 = binding .split("/");
+				System.out.println("temp2: " + temp2.toString());
+				System.out.println("position: " + temp2.length);
+				System.out.println("temp2 concat: " +temp2[temp2.length-1] );
+
+				String newLabel = temp2[temp2.length-1];
+				System.out.println("2datatype label is: " + newLabel );
+				//entry.setLabel(newLabel);		
+				return newLabel;
+
+			}	
+			else{
+				//entry.setLabel(binding);	
+				return binding;
+
+			}
+			
+		
+		
+		
+		
 	}
 
 	public String jsonWrapper(Hashtable<String, String> table, String parent) throws JSONException{
@@ -1172,12 +1557,12 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return response.toString();
 	}
 
-
-	@HierarchicalMethod(parameter = "annotatorProperties")
-	public Collection<HierarchyEntry> queryAnnotatorPropertyHM(final Request request, final HierarchyVerb action) {
+/*
+	@HierarchicalMethod(parameter = "annoProperties")
+	public Collection<HierarchyEntry> queryAnnotatorPropertyHM(final Request request, final HierarchyVerb action) throws JSONException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 
-		this.initModel();
+		this.initModel(request);
 
 		if(action == HierarchyVerb.ROOTS) {
 			return  queryAnnotatorPropertyHMRoots(request);
@@ -1190,13 +1575,332 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}
 		return items;		
 	}
+	*/
+	
+	@HierarchicalMethod(parameter = "objProperties")
+	public Collection<HierarchyEntry> queryObjPropertyHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
 
-	protected Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryObjPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryObjPropertyHMChildren(request, (String) request.getParam("objProperties"));
+		} 
+		/*
+		else if ( action == HierarchyVerb.SEARCH ) {
+			
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		*/
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "dataProperties")
+	public Collection<HierarchyEntry> queryDataPropertyHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryDataPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryDataPropertyHMChildren(request, (String) request.getParam("dataProperties"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "annoProperties")
+	public Collection<HierarchyEntry> queryAnnoPropertyHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryAnnoPropertyHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryAnnoPropertyHMChildren(request, (String) request.getParam("annoProperties"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+	
+	@HierarchicalMethod(parameter = "dataTypes")
+	public Collection<HierarchyEntry> queryDataTypesHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		if(action == HierarchyVerb.ROOTS) {
+			return  queryDataTypeHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryDataTypeHMChildren(request, (String) request.getParam("dataTypes"));
+		} else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorProperty( request, (String) request.getParam("string") );
+		} else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorPropertyToNode( request, (String) request.getParam("node") );
+		}
+		return items;		
+	}
+	
+	private Collection<HierarchyEntry> searchAnnotatorProperty(final Request request, final String str) {
 		return null;
 	}
 
-	protected Collection<HierarchyEntry> annotatorPropertyToNode(final Request request, final String str) {
+	private Collection<HierarchyEntry> annotatorPropertyToNode(final Request request, final String str) {
 		return null;
+	}
+	
+	private Collection<HierarchyEntry> queryObjPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {		
+		//AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryPropertyHMRoots");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		return  this.annotatorTester.getOWLProperties("root");			
+	}
+	
+	private Collection<HierarchyEntry> queryDataPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
+		
+		//AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryDataPropertyHMRoots");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for root dataproperties:");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		return this.annotatorTester.getOWLDataProperties("root");	
+		/*
+		for(int i=0;i<classes.length();i++) {
+			HierarchyEntry entry = new HierarchyEntry();
+
+			String binding = (String)  classes.get(i);
+			entry.setUri(binding);
+			
+			JSONObject annot = this.annotatorTester.getAnnotationsForProperty(binding.toString());
+			System.out.println("class: " + binding.toString() + " has annotations: " + annot);		
+			if(annot.has("label")  && !annot.get("label").equals("")){
+				entry.setLabel((String)annot.get("label"));					
+			}
+			else if (!annot.has("label")){
+				System.out.println("no label for object property root level");
+				entry.setLabel(this.getShortName(binding));					
+			}
+			
+			
+			if(annot.has("comment")  && !annot.get("comment").equals("")){
+				entry.setComment(((String)annot.get("comment")));			
+			}		
+			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
+			entries.add(entry);
+		}
+			return this.annotatorTester.sortIt(entries);
+*/
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnoPropertyHMRoots(final Request request) throws JSONException, OWLOntologyCreationException {
+		
+		
+		//AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryAnnoPropertyHMRoots");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for root annoproperties:");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		return this.annotatorTester.getOWLAnnoProperties("root");	
+		/*
+		for(int i=0;i<classes.length();i++) {
+			HierarchyEntry entry = new HierarchyEntry();
+
+			String binding = (String)  classes.get(i);
+			entry.setUri(binding);
+	
+			JSONObject annot = this.annotatorTester.getAnnotationsForProperty(binding.toString());
+			System.out.println("class: " + binding.toString() + " has annotations: " + annot);		
+			if(annot.has("label")  && !annot.get("label").equals("")){
+				entry.setLabel((String)annot.get("label"));					
+			}
+			else{
+				entry.setLabel(getShortName(binding));
+			}
+			
+			
+			if(annot.has("comment")  && !annot.get("comment").equals("")){
+				entry.setComment(((String)annot.get("comment")));			
+			}		
+			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
+			entries.add(entry);
+		}
+		*/
+		//return this.annotatorTester.sortIt(entries);
+
+	}
+	
+	
+	protected Collection<HierarchyEntry> queryObjPropertyHMChildren(final Request request, String classRequiresSubPropertyString)throws JSONException, OWLOntologyCreationException {
+		System.out.println("queryPropertyHMRoots");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		return this.annotatorTester.getOWLProperties(classRequiresSubPropertyString);
+	}
+	
+	protected Collection<HierarchyEntry> queryDataPropertyHMChildren(final Request request, String classRequiresSubPropertyString)throws JSONException, OWLOntologyCreationException {
+		
+		System.out.println("queryDataPropertyHMChildren");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for child dataproperties:");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		return annotatorTester.getOWLDataProperties(classRequiresSubPropertyString);	
+		
+		/*
+		
+		for(int i=0;i<classes.length();i++) {
+			HierarchyEntry entry = new HierarchyEntry();
+
+			String binding = (String)  classes.get(i);
+			entry.setUri(binding);
+	
+			JSONObject annot =this.annotatorTester.getAnnotationsForProperty(binding.toString());
+			System.out.println("class: " + binding.toString() + " has annotations: " + annot);
+			if(annot.has("label") && !annot.get("label").equals("")){
+			entry.setLabel((String)annot.get("label"));	
+			}
+			else if (!annot.has("label")){
+				System.out.println("no label for object property child level");
+				entry.setLabel(this.getShortName(binding));					
+			}
+			
+			if(annot.has("comment") && !annot.get("comment").equals("")){
+				entry.setComment(((String)annot.get("comment")));			
+			}
+			entry.setHasChild(this.annotatorTester.hasDataPropertyChildren(binding));
+			entries.add(entry);
+		}return entries;
+		*/
+	}
+	
+	protected Collection<HierarchyEntry> queryDataTypeHMRoots(final Request request)throws JSONException, OWLOntologyCreationException {
+		
+		System.out.println("queryDataTypeHMRoots");
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for child datatypes:");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		JSONArray classes =  this.annotatorTester.getOWLDataTypes(null);	
+		for(int i=0;i<classes.length();i++) {
+			HierarchyEntry entry = new HierarchyEntry();
+
+			String binding = (String)  classes.get(i);
+			entry.setUri(binding);
+	
+			//JSONObject annot =this.annotatorTester.getAnnotationsForProperty(binding.toString());
+			//System.out.println("class: " + binding.toString() + " has annotations: " + annot);
+			//if(annot.has("label") && !annot.get("label").equals("")){
+			//entry.setLabel((String)annot.get("label"));	
+			//}
+			
+			//if(annot.has("comment") && !annot.get("comment").equals("")){
+			//	entry.setComment(((String)annot.get("comment")));			
+			
+			System.out.println("bindings*************");
+			
+			entry.setLabel(getShortName(binding));
+			entries.add(entry);
+		}
+		
+		//for standard datatypes
+		JSONObject dataTypes = AnnotatorTester.setupDataTypesMap();
+		Iterator i = dataTypes.keys();
+
+		while(i.hasNext()){	
+			
+			HierarchyEntry entry = new HierarchyEntry();
+			String uri = (String) i.next();
+			entry.setUri(uri);
+			entry.setLabel(getShortName(uri));
+			entries.add(entry);
+		}
+		
+		
+		return entries;
+		
+	}
+	
+	
+	protected Collection<HierarchyEntry> queryDataTypeHMChildren(final Request request, String classRequiresSubPropertyString)throws JSONException, OWLOntologyCreationException {
+		
+		System.out.println("queryDataTypeHMChildren");
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for child datatypes:");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		JSONArray classes =  this.annotatorTester.getOWLDataTypes(classRequiresSubPropertyString);	
+		for(int i=0;i<classes.length();i++) {
+			HierarchyEntry entry = new HierarchyEntry();
+
+			String binding = (String)  classes.get(i);
+			entry.setUri(binding);
+	
+			//JSONObject annot =this.annotatorTester.getAnnotationsForProperty(binding.toString());
+			//System.out.println("class: " + binding.toString() + " has annotations: " + annot);
+			//if(annot.has("label") && !annot.get("label").equals("")){
+			//entry.setLabel((String)annot.get("label"));	
+			//}
+			
+			//if(annot.has("comment") && !annot.get("comment").equals("")){
+			//	entry.setComment(((String)annot.get("comment")));			
+			
+			entry.setLabel(getShortName(binding));
+			entries.add(entry);
+		}		return this.annotatorTester.sortIt(entries);
+
+		
+	}
+	
+	protected Collection<HierarchyEntry> queryAnnoPropertyHMChildren(final Request request, String classRequiresSubPropertyString)throws JSONException, OWLOntologyCreationException {
+		
+		System.out.println("queryAnnoPropertyHMChildren");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for child dataproperties:");
+		//Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses("root");
+		
+		
+		//Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		return  this.annotatorTester.getOWLAnnoProperties(classRequiresSubPropertyString);	
+		
+		
+		/*
+		for(int i=0;i<classes.length();i++) {
+			HierarchyEntry entry = new HierarchyEntry();
+
+			String binding = (String)  classes.get(i);
+			entry.setUri(binding);
+	
+			JSONObject annot =this.annotatorTester.getAnnotationsForProperty(binding.toString());
+			System.out.println("class: " + binding.toString() + " has annotations: " + annot);
+			if(annot.has("label") && !annot.get("label").equals("")){
+			entry.setLabel((String)annot.get("label"));	
+			}
+			else{
+				entry.setLabel(getShortName(binding));
+			}
+			
+			if(annot.has("comment") && !annot.get("comment").equals("")){
+				entry.setComment(((String)annot.get("comment")));			
+			}
+			entry.setHasChild(this.annotatorTester.hasAnnoPropertyChildren(binding));
+			entries.add(entry);
+		}		return this.annotatorTester.sortIt(entries);
+
+		*/
 	}
 
 	protected Collection<HierarchyEntry> queryAnnotatorPropertyHMRoots(final Request request) {
@@ -1251,9 +1955,9 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	}
 
 	@HierarchicalMethod(parameter = "annotatorClasses")
-	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) {
+	public Collection<HierarchyEntry> queryAnnotatorClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException {
 		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
-		this.initModel();
+		this.initModel(request);
 
 		if(action == HierarchyVerb.ROOTS) {
 			//			HierarchyEntry entry = new HierarchyEntry();
@@ -1288,7 +1992,225 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		}
 		return items;
 	}
+	
+	//protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
+		protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 
+
+			//this.initModel();
+
+			//construct an owlontology and pose sparql queries against it.
+			//OntModel model = null;
+			//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+			//setModel(model);
+			final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+			final Variable id = query.getVariable(VAR_NS+ "child");
+			final Variable label = query.getVariable(VAR_NS+ "label");
+			final Variable comment = query.getVariable(VAR_NS+ "comment");
+			final Variable parent = query.getVariable(VAR_NS+ "parent");		
+
+			final QueryResource PollutedThing = query.getResource("http://escience.rpi.edu/ontology/semanteco/2/0/pollution.owl#PollutedThing");
+			final QueryResource Measurement = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Measurement");
+			final QueryResource Thing = query.getResource("http://www.w3.org/2002/07/owl#Thing");
+			//http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity
+			final QueryResource Entity = query.getResource("http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity");
+
+			final QueryResource subClassOf = query.getResource(RDFS_NS+"subClassOf");
+			final Variable site = query.getVariable(VAR_NS+"site");
+			final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+			final QueryResource hasComment = query.getResource(RDFS_NS + "comment");
+
+
+			Set<Variable> vars = new LinkedHashSet<Variable>();
+			vars.add(id);
+			vars.add(parent);
+			vars.add(label);
+			query.setVariables(vars);
+			//query.addPattern(site, subClassOf, PollutedThing);
+			//query.addPattern(site, subClassOf, Measurement);
+			query.addPattern(id, subClassOf, parent);
+			query.addPattern(id, subClassOf, Entity);
+			query.addPattern(id, hasLabel, label);
+
+			//add an optional here
+	        final OptionalComponent optional = query.createOptional();
+	        query.addPattern(id, comment, comment);
+
+
+			//construct.addPattern(site, subClassOf, PollutedThing);
+	        //String results = config.getQueryExecutor(request).accept("application/json").execute(query);
+			String results  = executeLocalQuery(query, model);
+			String responseStr = FAILURE;
+			//String resultStr = config.getQueryExecutor(request).accept("application/json").executeLocalQuery(query, model);	
+			//Set master = new HashSet();		//model.
+			//Set<OntClass> classes = new HashSet<OntClass>();		//model.
+			//Set<String> labels = new HashSet<String>();		//model.
+
+			//iterate over results now
+			System.out.println("result: " + results.toString());
+
+
+
+			Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+			OntClass thing = model.getOntClass( OWL.Thing.getURI() );
+			//OntClass entity = model.getOntClass( "http://ecoinformatics.org/oboe/oboe.1.0/oboe-core.owl#Entity" );
+			for (Iterator<OntClass> i = thing.listSubClasses(true); i.hasNext(); ) { //true here is for direct
+				HierarchyEntry entry = new HierarchyEntry();
+
+				OntClass hierarchyRoot = i.next();	
+				System.out.println("root: " + hierarchyRoot.toString());
+				System.out.println("label: " + hierarchyRoot.getLabel(null));
+
+				entry.setUri(hierarchyRoot.getURI());
+				Map<String, Set<String>> axioms = this.getAxiomsForClass(request, hierarchyRoot);
+				entry.setAxioms(axioms);
+				//call a method that given the class, returns a hashSet with all the axioms.		
+				//I think I will put into HierarchyEntry object a HashTable<String,HashSet<String>> where 
+				//e.g. "annotation" is a key and we have a set of strings that represent annotations... what do you think
+
+
+
+
+				if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
+					entry.setLabel(getShortName(hierarchyRoot.toString()));
+				}
+				else{
+					entry.setLabel(hierarchyRoot.getLabel(null));
+				}     
+
+				//entry.setParent(URI.create(thing.getURI()));
+				entries.add(entry);
+			}	
+			System.out.println("return entries: " + entries.toString());
+			return entries;
+			//return jsonWrapper(table, OWL.Thing.getURI().toString());	
+		}
+	
+	@HierarchicalMethod(parameter = "classes")
+	public Collection<HierarchyEntry> queryClassHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		
+		if(action == HierarchyVerb.ROOTS) {
+			
+			return  queryClassHMRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryClassHMChildren(request, (String) request.getParam("classes"));
+		} 
+	
+		else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorClass( request, (String) request.getParam("string") );
+		} 
+		
+		else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorClassToNode( request, (String) request.getParam("uri") );
+		}	
+		return items;
+	}
+	
+	@QueryMethod
+	protected String searchAnnotations(final Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String str = (String) request.getParam("search");
+		entries = this.annotatorTester.searchAnnotations(str);
+		return entries.toString();
+	}
+	
+	@QueryMethod
+	public String testM(Request request){
+		return null;
+	}
+	
+
+	@QueryMethod
+	protected String searchTester(Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String searchString = (String) request.getParam("string");
+		entries = this.annotatorTester.searchAnnotations(searchString);
+		//loop over json array
+	//	for(int i=0;i<j.length();i++) {
+	//		final HierarchyEntry entry = new HierarchyEntry();
+			//System.out.println("prop: " + j.get(i).toString());
+	//		JSONObject obj = (JSONObject) j.get(i);
+	//		entry.setUri(uri);
+	//		entries.add(entry);
+
+	//	}
+		return entries.toString();	
+	}
+	
+	@QueryMethod
+	public String searchTester2(final Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String searchString = (String) request.getParam("string");
+		entries = this.annotatorTester.searchAnnotations(searchString);
+		
+
+		if(entries != null){
+			System.out.println("entries are: "+ entries .toString());
+		return entries.toString();		
+		}
+		else{
+			return null;
+		}
+	}
+
+
+
+	private Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) throws JSONException {
+		final Collection<HierarchyEntry> entries ;
+		//String searchString = (String) request.getParam("string");
+		entries = this.annotatorTester.searchAnnotations(str);
+		if(entries != null){
+			System.out.println("entries are: "+ entries .toString());
+		return entries;		
+		}
+		else{
+			return null;
+		}
+
+	}
+
+	private Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) throws OWLOntologyCreationException, JSONException {
+		
+		final Collection<HierarchyEntry> entries ;
+		entries = this.annotatorTester.getParentClassesAsserted(str);
+		if(entries != null){
+			System.out.println("entries are: "+ entries .toString());
+		return entries;		
+		}
+		else{
+			return null;
+		} 
+	}
+	
+	private Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {		
+		System.out.println("queryClassHMRoots");
+		return  this.annotatorTester.getChildClasses("root");	
+	}
+	
+	private Collection<HierarchyEntry> queryClassHMChildren(final Request request, String clazz) throws OWLOntologyCreationException, JSONException {
+		//AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryClassHMChildren");
+		return  this.annotatorTester.getChildClasses(clazz);		
+	}
+	
+	/*
+	protected Collection<rpi.HierarchyEntry> queryClassHMChildren(final Request request, String classes) throws OWLOntologyCreationException, JSONException {
+		AnnotatorTester ann = new AnnotatorTester();
+		System.out.println("queryClassHMChildren");
+
+		//String thing = "http://www.w3.org/2002/07/owl#Thing";
+		System.out.println("for non-root:");
+		Collection<rpi.HierarchyEntry> entries =  ann.getOWLClasses(classes);
+		
+		return entries;		
+	}
+*/
+	
+	
+	/*
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMRoots(final Request request) {
 
 		//this.initModel();
@@ -1349,9 +2271,6 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			//I think I will put into HierarchyEntry object a HashTable<String,HashSet<String>> where 
 			//e.g. "annotation" is a key and we have a set of strings that represent annotations... what do you think
 
-
-
-
 			if(hierarchyRoot.getLabel(null) == "" || hierarchyRoot.getLabel(null) == null){
 				entry.setLabel(getShortName(hierarchyRoot.toString()));
 			}
@@ -1366,7 +2285,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return entries;
 		//return jsonWrapper(table, OWL.Thing.getURI().toString());	
 	}
-
+*/
 	protected Collection<HierarchyEntry> queryAnnotatorClassHMChildren(final Request request, final String classRequiresSubclassesString) {
 
 		if(classRequiresSubclassesString == null){
@@ -1397,24 +2316,12 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return entries;
 	}
 
-
-
-	protected Collection<HierarchyEntry> searchAnnotatorClass(final Request request, final String str) {
-		return null;
-
-	}
-
-	protected Collection<HierarchyEntry> annotatorClassToNode(final Request request, final String str) {
-		return null;
-	}
-
-
 	//would it be better to have one model and reasoner for this module, instead of per query method? yes.
 	//do that through a constructor?
 	@QueryMethod
 	public String queryForAnnotatorRootClasses(final Request request) throws JSONException{
 		// initialize the model if it doesn't already exist...
-		initModel();	
+		initModel(request);	
 		//setModel(model);
 		//model.
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));	
@@ -1544,7 +2451,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 			return null;
 		}
 
-		initModel();
+		initModel(request);
 
 		//apply sparql queries against it
 		//final Query query = config.getQueryFactory().newQuery(Type.CONSTRUCT);
@@ -1671,7 +2578,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//OntModel model = null;
 		//model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-		initModel();
+		initModel(request);
 
 
 		//load certain ontologies
@@ -1970,6 +2877,39 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		//asDatatypeProperty
 		//asObjectProperty		
 	}
+	
+	@QueryMethod
+	public String getAxiomsForClassTesterM(final Request request){
+		//this.initModel();
+		OntModel model = null;
+		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+
+		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
+
+		StmtIterator enhanceStatements1 =  model.listStatements((Resource) null, (Property) null , (Literal) null );
+		return enhanceStatements1.next().toString();
+
+		//StmtIterator sTest = c.listProperties(null);
+		//return sTest.next();
+
+		/*
+		for(StmtIterator s = c.listProperties(null); ; s.hasNext()){
+			Statement s1 = s.next();
+			s1.getPredicate();
+		}
+		 */
+
+		//	s.next().getPredicate();
+
+		//////s.
+		//isObjectProperty
+		//isDatatypeProperty
+		//isAnnotationProperty
+
+		//asAnnotationProperty
+		//asDatatypeProperty
+		//asObjectProperty		
+	}
 
 
 	@QueryMethod
@@ -1983,7 +2923,7 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
-		initModel();
+		initModel(request);
 		//load certain ontologies
 		//model.read("http://was.tw.rpi.edu/semanteco/air/air.owl", "TTL");
 		//InputStream is = new BufferedInputStream(new FileInputStream("blah.turtle"));			

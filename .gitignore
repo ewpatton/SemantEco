@@ -4,6 +4,7 @@
 .project
 target
 .DS_Store
+.settings
 *~
 webapp/.DS_Store
 
@@ -34,3 +35,7 @@ webapp/test
 
 *.swp
 .refresh-prizms-installation
+
+*.class
+
+*.swo

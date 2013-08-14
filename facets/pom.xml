@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-parent</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>semanteco-facets</artifactId>
@@ -33,12 +33,12 @@
       <dependency>
 	<groupId>edu.rpi.tw.escience</groupId>
 	<artifactId>semanteco-common</artifactId>
-	<version>4.1-SNAPSHOT</version>
+	<version>4.2-SNAPSHOT</version>
       </dependency>
       <dependency>
 	<groupId>edu.rpi.tw.escience</groupId>
 	<artifactId>semanteco-test</artifactId>
-	<version>4.1-SNAPSHOT</version>
+	<version>4.2-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -64,10 +64,31 @@
 	<module>annotator</module>
 	<module>provenance</module>
 	<module>semanteco-geo-facet</module>
+  <module>semanteco-squirrel-facet</module>
       </modules>
     </profile>
     <profile>
       <id>parent-only</id>
     </profile>
   </profiles>
+  <modules>
+    <module>semanteco-darrin</module>
+    <module>semanteco-health</module>
+    <module>semanteco-squirrel-facet</module>
+  </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.4</version>
+          <configuration>
+            <classifier>module</classifier>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>

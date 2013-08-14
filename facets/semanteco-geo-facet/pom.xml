@@ -5,15 +5,13 @@
   <parent>
     <groupId>edu.rpi.tw.escience</groupId>
     <artifactId>semanteco-facets</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>semanteco-geo-facet</artifactId>
 
-  <groupId>edu.rpi.tw.escience</groupId>
   <packaging>jar</packaging>
   <name>semanteco SemantEcoGeo facet</name>
-  <version>4.1-SNAPSHOT</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

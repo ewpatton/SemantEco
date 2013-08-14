@@ -20,9 +20,18 @@ public class HierarchyEntry implements Serializable {
 	private static final long serialVersionUID = -28764795460121436L;
 	private static final String URI_FIELD = "uri";
 	private static final String LABEL_FIELD = "label";
+	private static final String COMMENT_FIELD = "comment";
 	private static final String PARENT_FIELD = "parent";
 	private static final String AXIOMS_FIELD = "axioms";
 	private static final String ALTLABEL_FIELD = "altLabel";
+	private static final String HASCHILD_FIELD = "hasChild";
+	
+	//*new*
+	private static final String TYPE_FIELD = "type";
+	private static final String ANNOTATIONS_FIELD = "annotations";
+	private static final String ONTOLOGY_PREFIX_FIELD = "ontologyPrefix";
+	private static final String ONTOLOGY_FIELD = "ontology";
+	private static final String SHORTNAME_FIELD = "shortName";
 
 	private Map<String, Object> contents;
 	private Map<String, Set<String>> axioms;
@@ -33,7 +42,6 @@ public class HierarchyEntry implements Serializable {
 	public HierarchyEntry() {
 		this.contents = new HashMap<String, Object>();
 		this.axioms = new HashMap<String, Set<String>>();
-		
 	}
 
 	/**
@@ -69,6 +77,37 @@ public class HierarchyEntry implements Serializable {
 		this.axioms = axioms;
 		this.contents.put(AXIOMS_FIELD, new JSONObject(axioms));
 	}
+	
+	/**
+	 * Sets the comment describing this entry
+	 * @param axioms
+	 */
+	public void setComment(String comment) {
+		this.contents.put(COMMENT_FIELD, comment);
+	}
+	
+	/**
+	 * Sets whether the entry has children so that the client can render the
+	 * entry appropriately (e\.g\. leaf nodes cannot be opened). Furthermore,
+	 * if this is not set the client will assume true and attempt to make
+	 * a callback to obtain children.
+	 * @param axioms
+	 */
+	public void setHasChild(Integer hasChild) {
+		this.contents.put(HASCHILD_FIELD, hasChild);
+	}
+	
+	public void setType(String type) {
+		this.contents.put(TYPE_FIELD, type);
+	}
+	
+	public void setAnnotations(String annotations) {
+		this.contents.put(ANNOTATIONS_FIELD, annotations);
+	}
+	
+	public void setHasChild(String ontologyPrefix) {
+		this.contents.put(ONTOLOGY_PREFIX_FIELD, ontologyPrefix);
+	}
 
 	/**
 	 * Sets an alternative label for the entry
@@ -88,10 +127,10 @@ public class HierarchyEntry implements Serializable {
 
 	/**
 	 * Sets the parent URI for the entry
-	 * @param parent
+	 * @param iri
 	 */
-	public void setParent(final URI parent) {
-		this.contents.put(PARENT_FIELD, parent.toASCIIString());
+	public void setParent(final URI iri) {
+		this.contents.put(PARENT_FIELD, iri.toASCIIString());
 	}
 
 	/**
@@ -124,6 +163,63 @@ public class HierarchyEntry implements Serializable {
 	public String getAltLabel() {
 		return (String)this.contents.get(ALTLABEL_FIELD);
 	}
+	
+	/**
+	 * Gets the comment for this entry
+	 * @return
+	 */
+	public String getComment() {
+		return (String)this.contents.get(COMMENT_FIELD);
+	}
+	
+	/**
+	 * Gets whether this entry has children
+	 * @return
+	 */
+	public Integer getHasChild() {
+		return (Integer)this.contents.get(HASCHILD_FIELD);
+	}
+	
+	/**
+	 * Gets whether this entry has a type
+	 * @return
+	 */
+	public String getType() {
+		return (String)this.contents.get(TYPE_FIELD);
+	}
+	
+
+	
+	/**
+	 * Gets annotations
+	 * @return
+	 */
+	public String getAnnotations() {
+		return (String)this.contents.get(ANNOTATIONS_FIELD);
+	}
+	
+	/**
+	 * Gets prefix of ontology
+	 * @return
+	 */
+	public String getOntologyPrefix() {
+		return (String)this.contents.get(ONTOLOGY_PREFIX_FIELD);
+	}
+	/**
+	 * Gets ontology
+	 * @return
+	 */
+	public String getOntology() {
+		return (String)this.contents.get(ONTOLOGY_FIELD);
+	}
+	/**
+	 * Gets shortname
+	 * @return
+	 */
+	public String getShortName() {
+		return (String)this.contents.get(SHORTNAME_FIELD);
+	}
+	
 
 	/**
 	 * Gets the collection of axioms for this entry (if any)
@@ -191,5 +287,21 @@ public class HierarchyEntry implements Serializable {
 	 */
 	public void setUri(final String uri) {
 		setUri(URI.create(uri));
+	}
+
+	public void setParent(final String uri) {
+		setParent(URI.create(uri));
+	}
+
+	public void setShortName(final String shortName) {
+		this.contents.put(SHORTNAME_FIELD, shortName);
+	}
+
+	public void setPrefix(final String prefix) {
+		this.contents.put(ONTOLOGY_PREFIX_FIELD, prefix);
+	}
+
+	public void setOntology(final String ontology) {
+		this.contents.put(ONTOLOGY_FIELD, ontology);
 	}
 }

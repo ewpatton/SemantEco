@@ -20,10 +20,11 @@ public class TimeModuleTest extends TestCase {
 	class TestSemantEcoUI implements SemantEcoUI {
 
 		List<Resource> facets = new ArrayList<Resource>();
+		List<Resource> scripts = new ArrayList<Resource>();
 		
 		@Override
 		public void addScript(Resource script) {
-			throw new IllegalArgumentException();
+			scripts.add(script);
 		}
 
 		@Override

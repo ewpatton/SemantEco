@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsl">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsl">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -11,7 +10,7 @@
 
   <groupId>edu.rpi.tw.escience</groupId>
   <artifactId>semanteco-parent</artifactId>
-  <version>4.1-SNAPSHOT</version>
+  <version>4.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>semanteco parent</name>
 
@@ -40,23 +39,18 @@
     <url>https://github.com/ewpatton/SemantEco</url>
   </scm>
 
-  <profiles>
-    <profile>
-      <activation>
-	<activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-	<module>common</module>
-	<module>query</module>
-	<module>test</module>
-	<module>facets</module>
-	<module>webapp</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>parent-only</id>
-    </profile>
-  </profiles>
+  <modules>
+    <module>common</module>
+    <module>query</module>
+    <module>test</module>
+    <module>facets</module>
+    <module>core</module>
+    <module>servlet-base</module>
+    <module>servlet</module>
+    <module>servlet-websocket</module>
+    <module>webapp</module>
+    <module>annotator-webapp</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
@@ -74,6 +68,16 @@
 	<groupId>log4j</groupId>
 	<artifactId>log4j</artifactId>
 	<version>1.2.17</version>
+      </dependency>
+      <dependency>
+        <groupId>edu.rpi.tw.escience</groupId>
+        <artifactId>semanteco-servlet-base</artifactId>
+        <version>4.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>edu.rpi.tw.escience</groupId>
+        <artifactId>semanteco-servlet-websocket</artifactId>
+        <version>4.2-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
