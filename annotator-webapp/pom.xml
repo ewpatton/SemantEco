@@ -12,7 +12,7 @@
 
   <groupId>edu.rpi.tw.escience</groupId>
   <packaging>war</packaging>
-  <name>semanteco Annotator facet</name>
+  <name>semanteco Annotator webapp</name>
   <version>4.2-SNAPSHOT</version>
 
   <repositories>
