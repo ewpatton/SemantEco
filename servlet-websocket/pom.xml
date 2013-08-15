@@ -29,7 +29,6 @@
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-servlet-base</artifactId>
-      <version>4.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>

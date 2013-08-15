@@ -26,6 +26,7 @@ public class SemantEcoConfiguration extends Properties {
 	private String basePath = null;
 	private boolean parallel = false;
 	private String encoding = "UTF-8";
+	private String defaultModule = null;
 
 	/**
 	 * Constructs a new configuration object given the servlet context.
@@ -92,6 +93,10 @@ public class SemantEcoConfiguration extends Properties {
 		if(config.getProperty("parallel", "false").equals("true")) {
 			config.parallel = true;
 		}
+		config.defaultModule = config.getProperty("module.default", null);
+		if ( config.defaultModule != null && config.defaultModule.equals("") ) {
+			config.defaultModule = null;
+		}
 		config.encoding = config.getProperty("encoding", "UTF-8");
 	}
 
@@ -117,5 +122,9 @@ public class SemantEcoConfiguration extends Properties {
 	 */
 	public String getEncoding() {
 		return encoding;
+	}
+
+	public String getDefaultModule() {
+		return defaultModule;
 	}
 }
