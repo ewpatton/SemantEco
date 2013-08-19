@@ -512,16 +512,13 @@ public class AnnotatorModule implements Module {
 		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
         String eId = "1";
 		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
-		request.getLogger().debug("headers are : " + headerList.toString());
-		
+		request.getLogger().debug("headers are : " + headerList.toString());	
 		/* generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
 	    			datasetId, datasetVersion, null, 
 	    			conversionID, cellDelimiter, null, null, null,
 	    			null, null, null, username, 
 	    			machineUri, username);
-	    			*/
-		
-		
+	    */
 		//write the string the paramsFile path
 		String turtleFileAsString = (String) request.getParam("turtle");
 		
@@ -652,7 +649,6 @@ public class AnnotatorModule implements Module {
 	}
 	
 	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) throws IOException {
-		// TODO Auto-generated method stub
 		//String inFilename                 = null;
 	      int    header                     = 1;
 	      int    primaryKeyColumn           = 0;
@@ -689,9 +685,7 @@ public class AnnotatorModule implements Module {
 		
 		//enhancementParametersURL = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl";
 		//enhancementParametersURL = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
-		converterIdentifier = "csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606";
-		
-		
+		converterIdentifier = "csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606";	
 		voidFileExtensions.add(".ttl.gz");
 		// Load the initial enhancement parameters.
 	      Repository enhancementParamsRep = Cat.load(enhancementParametersURL);
@@ -700,9 +694,7 @@ public class AnnotatorModule implements Module {
 	         System.exit(3);
 	      }
 	      DefaultEnhancementParameters enhancementParams = new DefaultEnhancementParameters(enhancementParamsRep, baseURI);
-
-
-	         System.out.println("calling demo");
+	      System.out.println("calling demo");
 
 	         CSV2RDFForAnnotator csv2rdfObject = new CSV2RDFForAnnotator(inFilename,classURI, subjectNS,  uuidSubject,  predicateNS, uuidPredicate, 
                 objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
@@ -727,6 +719,9 @@ public class AnnotatorModule implements Module {
 	      //return file at a locatation as a string
 	      //outputRdfFileLocation
 	      //    private String outputRdfFileLocation=workingDir + "/output.ttl";
+	      System.err.print("filename : "  + outputRdfFileLocation);
+	      System.err.print(readFileAsString(outputRdfFileLocation));
+
 	      return readFileAsString(outputRdfFileLocation);
 	}
 	
