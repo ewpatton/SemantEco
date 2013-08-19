@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -537,16 +538,16 @@ public class AnnotatorModule implements Module {
 		
 		//fos.write(arg0);
 		fos.close();
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        return convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
         //convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
 
 		
-		return null;
+		//return null;
 	}
 		
 
 	@QueryMethod
-	public String queryForEnhancing2(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
+	public String queryForEnhancing2(final Request request) throws JSONException, OWLOntologyStorageException, OWLOntologyCreationException, IOException{
 		
 		//example implicit bundle:
 		/*
@@ -650,7 +651,7 @@ public class AnnotatorModule implements Module {
 		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 	}
 	
-	public void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
+	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) throws IOException {
 		// TODO Auto-generated method stub
 		//String inFilename                 = null;
 	      int    header                     = 1;
@@ -722,8 +723,25 @@ public class AnnotatorModule implements Module {
                    Set<String> voidFileExtensions,
                    boolean examplesOnly, int sampleLimit)
 		 */
-
+	      
+	      //return file at a locatation as a string
+	      //outputRdfFileLocation
+	      //    private String outputRdfFileLocation=workingDir + "/output.ttl";
+	      return readFileAsString(outputRdfFileLocation);
 	}
+	
+	public static String readFileAsString(String filePath) throws java.io.IOException
+	{
+	    BufferedReader reader = new BufferedReader(new FileReader(filePath));
+	    String line, results = "";
+	    while( ( line = reader.readLine() ) != null)
+	    {
+	        results += line;
+	    }
+	    reader.close();
+	    return results;
+	}
+	
 	/**
 	 * @throws FileNotFoundException 
 	 * 
@@ -784,15 +802,13 @@ public class AnnotatorModule implements Module {
 		enhancementFileWriter.println("@prefix todo:         <http://www.w3.org/2000/01/rdf-schema#> .");
 		enhancementFileWriter.println("@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
 		enhancementFileWriter.println("@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .");
-
-
 		enhancementFileWriter.println();
 		enhancementFileWriter.println();
 
 		surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
 		String STEP =  "enhancement/1";
 		if(conversionID != null){
-			String dataset = "<" + surrogate + "/source/" + sourceId + "/dataset/" + datasetId + "/version/" + datasetVersion + "/conversion/" + STEP + ">"  ;
+			String dataset = "<" + surrogate + "/source/" + sourceId + "/dataset/" + datasetId + "/version/" + datasetVersion + "/conversion/" + STEP + ">";
 			enhancementFileWriter.println(dataset);
 			enhancementFileWriter.println("  a conversion:LayerDataset, void:Dataset;");
 			enhancementFileWriter.println();
@@ -824,7 +840,6 @@ public class AnnotatorModule implements Module {
 				enhancementFileWriter.println("    ];");
 				columnNumber++;
 			}
-
 		}
 		enhancementFileWriter.println("];");
 		enhancementFileWriter.println(".");
