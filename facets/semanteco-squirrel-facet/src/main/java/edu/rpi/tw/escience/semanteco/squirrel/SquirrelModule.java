@@ -84,7 +84,7 @@ public class SquirrelModule implements Module {
 		
 		// Execute query
 		String responseStr = FAILURE;
-		String resultStr = config.getQueryExecutor(request).execute(LOGD_ENDPOINT, query);	
+		String resultStr = config.getQueryExecutor(request).execute(LOGD_ENDPOINT, query);
 			
 		// DEBUGGING
 		log.debug("Results: " + resultStr);
