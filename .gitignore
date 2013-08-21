@@ -39,3 +39,6 @@ webapp/test
 
 *.swo
 core/test/*
+
+#*#
+.#*
