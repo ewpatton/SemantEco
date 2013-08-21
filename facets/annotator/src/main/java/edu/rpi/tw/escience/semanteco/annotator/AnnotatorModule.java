@@ -699,8 +699,20 @@ public class AnnotatorModule implements Module {
 	         CSV2RDFForAnnotator csv2rdfObject = new CSV2RDFForAnnotator(inFilename,classURI, subjectNS,  uuidSubject,  predicateNS, uuidPredicate, 
                 objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
                 voidFileExtensions, examplesOnly, sampleLimit);
+	         
+	          System.err.print("root path is : " + System.getProperty("AnnotatorRootPath"));
+
+	         File rdfdir = new File(System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data");
+	          if ( !rdfdir.exists() ) {
+	            if ( !rdfdir.mkdir() ) {
+	              // not writeable!
+	              throw new IOException("Failure!");
+	            }
+	          }    
 		
-		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
+//		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
+		 Repository toRDF = csv2rdfObject.toRDF(System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data" + "/enhanced-rdf.ttl", metaOutputFileName);
+
 	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
 	          
 		/*
@@ -719,10 +731,15 @@ public class AnnotatorModule implements Module {
 	      //return file at a locatation as a string
 	      //outputRdfFileLocation
 	      //    private String outputRdfFileLocation=workingDir + "/output.ttl";
-	      System.err.print("filename : "  + outputRdfFileLocation);
-	      System.err.print(readFileAsString(outputRdfFileLocation));
-
-	      return readFileAsString(outputRdfFileLocation);
+	      System.err.println("filename : "  + outputRdfFileLocation);
+	     // System.err.print(readFileAsString(outputRdfFileLocation));
+	      
+          //String rdfPutDir = System.getProperty("java.io.tmpdir");
+          //System.out.println("root path is : " + SemantEcoConfiguration.get().getBasePath());
+   
+	     // return readFileAsString(outputRdfFileLocation);
+	      System.err.println("returning : "  + System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data" + "/enhanced-rdf.ttl");
+	      return "http://localhost:8081/"+ "RDF-data" + "/enhanced-rdf.ttl";
 	}
 	
 	public static String readFileAsString(String filePath) throws java.io.IOException
@@ -2858,7 +2875,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	@QueryMethod
 	public String getAxiomsForClassTester(final Request request){
 		//this.initModel();
-		OntModel model = null;
+
+		//request.getOriginalURL();
+		
+OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	
