@@ -218,8 +218,8 @@ function buildTable(data) {
                 //console.log(currentlySelected, index, indexInSelected);
                 currentlySelected.splice(indexInSelected, 1);
 
-                console.log("unselecting col " + index + "....");
-                console.log("currently Selected: " + currentlySelected);
+                //console.log("unselecting col " + index + "....");
+                //console.log("currently Selected: " + currentlySelected);
             }
         });
     }); 

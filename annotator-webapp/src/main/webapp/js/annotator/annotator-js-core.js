@@ -821,7 +821,6 @@ $(document).ready(function () {
     });
 
     // Bind various click and form event listeners once the DOM is good to go
-	// This is a WORK IN PROGRESS and doesn't do what it did before right now.
     $('#menu-commit-enhancement').click(function () {
 		var turtle = turtleGen();
         /*$.bbq.pushState({
@@ -830,9 +829,11 @@ $(document).ready(function () {
             "DataSet": $("#dataset_info").val(),
             "annotationMappings": window.a
         });*/
-        AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
+        var converted = AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
             console.debug(d);
         });
+		console.log(converted);
+		
     });
 
     $('input#menu-show-globals').click(function () {
