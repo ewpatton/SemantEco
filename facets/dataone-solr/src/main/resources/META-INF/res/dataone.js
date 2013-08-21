@@ -1,5 +1,6 @@
 
-$(window).bind("initialize", function() {
+$("input[type=submit]").click(function(e) {
+	e.preventDefault();
 /*
 	$("body").replaceWith('<div id="hierarchy"><h2>New heading</h2></div>');
 
@@ -63,7 +64,7 @@ $(window).bind("initialize", function() {
 		//this overwrites the dom
 	//document.body.appendChild(table);
 
-
+	return false;
 
 });
 

@@ -490,11 +490,7 @@ public class AnnotatorModule implements Module {
 	//	   <a property="url" href="http://manu.sporny.org/">my homepage</a>.
 	//	</p>
 		System.out.println("rdfa: " + request.getParam("rdfa"));
-		String rdfa = (String) request.getParam("rdfa");
-		
-		
-		//RDFReader r;
-		
+		String rdfa = (String) request.getParam("rdfa");		
 		Class.forName("net.rootdev.javardfa.jena.RDFaReader");
 		//Module.class.getClassLoader().loadClass("net/rootdev/javardfa/jena/RDFaReader.class");
 		Model m = ModelFactory.createDefaultModel();
@@ -506,12 +502,12 @@ public class AnnotatorModule implements Module {
 		FileOutputStream fos = new FileOutputStream("/tmp/rdfa.rdf");
 		m.write(fos, "TTL");
 		fos.close();
-
 		return null;
 	}
 	
 	@QueryMethod(method=HTTP.POST)
 	public String queryForEnhancingParams(final Request request) throws IOException, JSONException{
+		String dateStamp = getDateTime();
 		System.out.println("turtle is : " + request.getParam("turtle"));
 		PrintWriter csvFile = this.csvFileWriter;
 		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
@@ -525,10 +521,27 @@ public class AnnotatorModule implements Module {
 	    			machineUri, username);
 	    */
 		//write the string the paramsFile path
+		
+		String parametersFullPath = System.getProperty("AnnotatorRootPath")  + "RDF-data" + "/parameters-" + dateStamp + ".ttl";
+		
+		System.err.println("parametersFullPath: " + parametersFullPath);
 		String turtleFileAsString = (String) request.getParam("turtle");
 		
+        File rdfdir = new File(System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data");
+        if ( !rdfdir.exists() ) {
+          if ( !rdfdir.mkdir() ) {
+            // not writeable!
+            throw new IOException("Failure!");
+          }
+        } 
 		
-		FileOutputStream fos = new FileOutputStream(paramsFile);
+		File file = new File(parametersFullPath);
+		//File yourFile = new File("score.txt");
+		if(!file.exists()) {
+		    file.createNewFile();
+		}
+		
+		FileOutputStream fos = new FileOutputStream(parametersFullPath);	
 		
 		byte[] contentInBytes = turtleFileAsString.getBytes();
 		fos.write(contentInBytes);
@@ -539,16 +552,13 @@ public class AnnotatorModule implements Module {
 		//fos.write(turtleFileAsString);
 		
 		//fos.write(arg0);
-		fos.close();
+	//	fos.close();
 		
 		//can split by one forward slash
 		//.getOriginalURL(): http://localhost:8081/annotator/rest/AnnotatorModule/queryForEnhancingParams
 		String[] parts = request.getOriginalURL().toString().split("/");
-        return convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile, parts[0] + "/" + parts[1] + "/" + parts[2] + "/" + parts[3] + "/"); 
+        return convertToRdfWithEnhancementsFile(csvFileLocation, parametersFullPath, parts[0] + "/" + parts[1] + "/" + parts[2] + "/" + parts[3] + "/", dateStamp); 
         //convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
-        
-
-		
 		//return null;
 	}
 	private  final static String getDateTime()  
@@ -559,8 +569,7 @@ public class AnnotatorModule implements Module {
 	}  	
 
 	@QueryMethod
-	public String queryForEnhancing2(final Request request) throws JSONException, OWLOntologyStorageException, OWLOntologyCreationException, IOException{
-		
+	public String queryForEnhancing2(final Request request) throws JSONException, OWLOntologyStorageException, OWLOntologyCreationException, IOException{	
 		//example implicit bundle:
 		/*
 		 * :a_sample_bundle
@@ -570,7 +579,7 @@ public class AnnotatorModule implements Module {
 		   conversion:name_template "[/sd]waterSample[r]";
 		   conversion:type_name <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#WaterSample> .
 		   */
-
+		
 		System.out.println("source is : " +request.getParam("sourceName"));
 		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
 		//set the source, dataset, and csv file names based on user input
@@ -644,7 +653,7 @@ public class AnnotatorModule implements Module {
         //(original: writeToEnhancement)
        // writeEnhancementForRange(request);
         //writeEnhancementForRangeTester
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile,request.getOriginalURL().toString() ); 
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile,request.getOriginalURL().toString(), getDateTime() ); 
         //do we have a uri for every ontology, and if a class is sleceted, how do we map it back to the uri?
         
         //iterate over all classes in annotation mappings
@@ -663,7 +672,7 @@ public class AnnotatorModule implements Module {
 		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 	}
 	
-	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL, String tomcatURL ) throws IOException, JSONException {
+	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL, String tomcatURL, String dateStamp) throws IOException, JSONException {
 		//String inFilename                 = null;
 	      int    header                     = 1;
 	      int    primaryKeyColumn           = 0;
@@ -713,22 +722,14 @@ public class AnnotatorModule implements Module {
 
 	         CSV2RDFForAnnotator csv2rdfObject = new CSV2RDFForAnnotator(inFilename,classURI, subjectNS,  uuidSubject,  predicateNS, uuidPredicate, 
                 objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
-                voidFileExtensions, examplesOnly, sampleLimit);
-	         
+                voidFileExtensions, examplesOnly, sampleLimit);         
 	          System.err.print("root path is : " + System.getProperty("AnnotatorRootPath"));
-
-	         File rdfdir = new File(System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data");
-	          if ( !rdfdir.exists() ) {
-	            if ( !rdfdir.mkdir() ) {
-	              // not writeable!
-	              throw new IOException("Failure!");
-	            }
-	          }    
+	    
 		
 //		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
-	     String filePath = "RDF-data" + "/enhanced-rdf-" + getDateTime() + ".ttl";
-		 Repository toRDF = csv2rdfObject.toRDF(System.getProperty("AnnotatorRootPath") + File.separator + filePath, metaOutputFileName);
-
+	     String generatedRDFPath = "RDF-data" + "/enhanced-rdf-" + dateStamp + ".ttl";
+	     String paramsPath = "RDF-data" + "/parameters-" + dateStamp + ".ttl";
+		 Repository toRDF = csv2rdfObject.toRDF(System.getProperty("AnnotatorRootPath") + File.separator + generatedRDFPath, metaOutputFileName);
 	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
 	          
 		/*
@@ -754,14 +755,18 @@ public class AnnotatorModule implements Module {
           //System.out.println("root path is : " + SemantEcoConfiguration.get().getBasePath());
    
 	     // return readFileAsString(outputRdfFileLocation);
-	      System.err.println("returning : "  + System.getProperty("AnnotatorRootPath") + File.separator + filePath);
+	      System.err.println("returning : "  + System.getProperty("AnnotatorRootPath") + File.separator + generatedRDFPath);
 	      System.err.println("tomcat URL: " + tomcatURL);
 	      //return "http://localhost:8081/"+ "RDF-data" + "/enhanced-rdf.ttl";
-	      System.err.println("tomcat URL: " + tomcatURL +  filePath);
+	      System.err.println("tomcat URL: " + tomcatURL +  generatedRDFPath );
 	      //create a json object that returns 2 urls
 	      JSONObject jobj = new JSONObject();
-	      jobj.put("rdfDataFile", tomcatURL + filePath);
-	      jobj.put("paramsFile", "http://github.com/dummyFile.ttl");
+	      jobj.put("rdfDataFile", tomcatURL + generatedRDFPath );
+	      jobj.put("paramsFile", tomcatURL + paramsPath);
+	     // git remote add origin git@github.com:apseyed/SemantEcoAnnotator.git
+
+	      
+	      
 	     // return tomcatURL + "RDF-data" +  "/enhanced-rdf-" + getDateTime() + ".ttl";
 	      System.err.println("jobj:" + jobj.toString());
 	      return jobj.toString();
