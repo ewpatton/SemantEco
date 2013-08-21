@@ -17,6 +17,7 @@
       </div>
     </div>
     <div id="content">
+      <table id="results"><tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></table>
     </div>
   </body>
 </html>

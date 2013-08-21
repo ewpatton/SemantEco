@@ -35,51 +35,32 @@ $(window).bind("initialize", function() {
 	 */
 
 //	var jsonString  = DataoneModule.accessService({}, function(d){console.debug(d)});
-
-
-
-	
-
 	//$(document).ready(function(){
 		
-		DataoneModule.accessService({}, function (data) {
-			var table='<table border="1">';
-			table+= '<tr><td>Title</td><td>Abstract</td><td>Keywords</td></tr>';
-			//table+= '<tr><td>Title2</td><td>Abstract</td><td>Keywords</td></tr>';
-			//table+= '<tr><td>Title3</td><td>Abstract</td><td>Keywords</td></tr>';
-
+		DataoneSolrModule.accessService({}, function (data) {
+			var table=$("<table><tbody></tbody></table");
 			data = jQuery.parseJSON(data);
-			//table+= '<tr><td>Title4</td><td>Abstract</td><td>Keywords</td></tr>';
 
 			console.debug(data);
-
 			//data = data.response.docs;
 			//data = data.response;
-
 			//console.debug(data);
-			//table+= '<tr><td>Title5</td><td>Abstract</td><td>Keywords</td></tr>';
 
 			$.each( data.response.docs, function( index, item){
 				//table+='<tr><td>'+'88'+'</td><td>' +
 				//'88' + '</td><td> ' +
 				//'99' +  '</td></tr>';	table+= '<tr><td>Title4</td><td>Abstract</td><td>Keywords</td></tr>';
-
-				
-				table+='<tr><td>'+item.title+'</td><td>' +
-				item.abstract + '</td><td> ' +
-				item.keywords +  '</td></tr>';
+				table.append("<tr><td>" + item.title +
+					     item.abstract + '</td><td> ' +
+					     item.keywords +  '</td></tr>');
 			});
-			//table+= '<tr><td>Title6</td><td>Abstract</td><td>Keywords</td></tr>';
-
-			//table+= '<tr><td>Title7</td><td>Abstract</td><td>Keywords</td></tr>';
-			table+='</table>';
 
 			$("body").replaceWith(table);
-
+			$("td,th").css("border","1px solid black").css("border-collapse","collapse");
 	//		$('#outTable').replaceWith(table);
 		});
 //	});
-
+		//this overwrites the dom
 	//document.body.appendChild(table);
 
 

@@ -19,8 +19,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -29,6 +32,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -506,7 +511,7 @@ public class AnnotatorModule implements Module {
 	}
 	
 	@QueryMethod(method=HTTP.POST)
-	public String queryForEnhancingParams(final Request request) throws IOException{
+	public String queryForEnhancingParams(final Request request) throws IOException, JSONException{
 		System.out.println("turtle is : " + request.getParam("turtle"));
 		PrintWriter csvFile = this.csvFileWriter;
 		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
@@ -535,13 +540,23 @@ public class AnnotatorModule implements Module {
 		
 		//fos.write(arg0);
 		fos.close();
-        return convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+		
+		//can split by one forward slash
+		//.getOriginalURL(): http://localhost:8081/annotator/rest/AnnotatorModule/queryForEnhancingParams
+		String[] parts = request.getOriginalURL().toString().split("/");
+        return convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile, parts[0] + "/" + parts[1] + "/" + parts[2] + "/" + parts[3] + "/"); 
         //convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        
 
 		
 		//return null;
 	}
-		
+	private  final static String getDateTime()  
+	{  
+	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss");  
+	    df.setTimeZone(TimeZone.getTimeZone("PST"));  
+	    return df.format(new Date());  
+	}  	
 
 	@QueryMethod
 	public String queryForEnhancing2(final Request request) throws JSONException, OWLOntologyStorageException, OWLOntologyCreationException, IOException{
@@ -629,7 +644,7 @@ public class AnnotatorModule implements Module {
         //(original: writeToEnhancement)
        // writeEnhancementForRange(request);
         //writeEnhancementForRangeTester
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile,request.getOriginalURL().toString() ); 
         //do we have a uri for every ontology, and if a class is sleceted, how do we map it back to the uri?
         
         //iterate over all classes in annotation mappings
@@ -648,7 +663,7 @@ public class AnnotatorModule implements Module {
 		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 	}
 	
-	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) throws IOException {
+	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL, String tomcatURL ) throws IOException, JSONException {
 		//String inFilename                 = null;
 	      int    header                     = 1;
 	      int    primaryKeyColumn           = 0;
@@ -711,7 +726,8 @@ public class AnnotatorModule implements Module {
 	          }    
 		
 //		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
-		 Repository toRDF = csv2rdfObject.toRDF(System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data" + "/enhanced-rdf.ttl", metaOutputFileName);
+	     String filePath = "RDF-data" + "/enhanced-rdf-" + getDateTime() + ".ttl";
+		 Repository toRDF = csv2rdfObject.toRDF(System.getProperty("AnnotatorRootPath") + File.separator + filePath, metaOutputFileName);
 
 	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
 	          
@@ -738,8 +754,18 @@ public class AnnotatorModule implements Module {
           //System.out.println("root path is : " + SemantEcoConfiguration.get().getBasePath());
    
 	     // return readFileAsString(outputRdfFileLocation);
-	      System.err.println("returning : "  + System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data" + "/enhanced-rdf.ttl");
-	      return "http://localhost:8081/"+ "RDF-data" + "/enhanced-rdf.ttl";
+	      System.err.println("returning : "  + System.getProperty("AnnotatorRootPath") + File.separator + filePath);
+	      System.err.println("tomcat URL: " + tomcatURL);
+	      //return "http://localhost:8081/"+ "RDF-data" + "/enhanced-rdf.ttl";
+	      System.err.println("tomcat URL: " + tomcatURL +  filePath);
+	      //create a json object that returns 2 urls
+	      JSONObject jobj = new JSONObject();
+	      jobj.put("rdfDataFile", tomcatURL + filePath);
+	      jobj.put("paramsFile", "http://github.com/dummyFile.ttl");
+	     // return tomcatURL + "RDF-data" +  "/enhanced-rdf-" + getDateTime() + ".ttl";
+	      System.err.println("jobj:" + jobj.toString());
+	      return jobj.toString();
+	   
 	}
 	
 	public static String readFileAsString(String filePath) throws java.io.IOException
