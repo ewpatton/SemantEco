@@ -12,7 +12,7 @@
 
   <groupId>${groupId}</groupId>
   <packaging>war</packaging>
-  <name>semanteco ${appName} facet</name>
+  <name>semanteco ${appName} webapp</name>
   <version>${version}</version>
 
   <repositories>
