@@ -50,6 +50,7 @@
     <module>servlet-websocket</module>
     <module>webapp</module>
     <module>annotator-webapp</module>
+    <module>testapp</module>
   </modules>
 
   <dependencyManagement>

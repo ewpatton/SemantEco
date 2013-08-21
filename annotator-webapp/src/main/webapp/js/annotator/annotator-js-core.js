@@ -961,15 +961,18 @@ $(document).ready(function () {
 // Bind to clicks on editables (text to input to text)
 $(function () {
     $('body').on('click' ,'p.editable-input', function(e) {
-        console.log("Clicked editable");
+		var thingID = this.id;
+        console.log("Clicked editable, ID: " + thingID);
         var input = $('<input />', {'type': 'text', 'name': 'anEditable', 'value': $(this).html(), "class": $(this).attr('class')});
         $(this).parent().append(input);
-        $(this).remove();
+        this.style.display="none";
         input.focus();
     });
 
     $('body').on('blur' ,'input.editable-input', function(e) {
-        $(this).parent().append($('<p />', { "class": $(this).attr('class')}).html($(this).val()));
+		var original = $(this).parent().find("p.editable-input");
+		original.html($(this).val());
+		original[0].style.display="block";
         $(this).remove();
     });
 });
