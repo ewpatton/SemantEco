@@ -1159,7 +1159,7 @@ function getBundleById(theID){
 	console.log("Checking for bundle #" + theID);
 	for (i in bundles){
 		console.log("... bundle#" + bundles[i]._id + "?");
-		if ( parseInt(bundles[i]._id) === parseInt(theID) ){	
+		if ( bundles[i]._id === theID ){	
 			theBundle = bundles[i];
 		}
 	}
@@ -1196,6 +1196,14 @@ function updateBundleName(bundleID, theNameTemp){
 	theBundle.setName(theNameTemp);
 }// /update
 
+// Indicates whether the resource for a bundle is another bundle.
+// 	* if TRUE: theBundle.resource refers to a BUNDLE ID
+//	* if FALSE: theBundle.resource refers to a COLUMN NUMBER
+function isBundledByBundle(bundleID){
+	var theBundle = getBundleById(bundleID);
+	return theBundle.resourceIsBundle;
+}// /isBundledByBundle
+
 // Accessory function for creating a bundle 
 // Takes three arguments:
 //  - id: a unique static ID for the bundle, different from
@@ -1206,13 +1214,16 @@ function updateBundleName(bundleID, theNameTemp){
 //    bundle, IF it is EXPLICIT. A value of -1 indicates the
 //    bundle is IMPLICIT; this is the default set here at 
 //    creation.
+// 	- **NOTE** That if resourceIsBundle == TRUE, then resource
+// 		represents a bundle ID! Otherwise, it represents a column number!
 // Prop and Type are null at creation, and must be set later
 //	via drag and drop.
 function Bundle(bundleId, implicitId, columns) {
-    this._id = bundleId;
+    this._id = "b" + bundleId;
     this.implicitId = implicitId;
     this.columns = columns;
 	this.resource = -1;
+	this.resourceIsBundle = false;
 	this.nameTemp = "";
 	this.type = "";
 	this.prop = "";

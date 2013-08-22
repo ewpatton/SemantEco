@@ -411,7 +411,7 @@ function createImplicitBundleNode(theBundle){
 // adds a "conversion:bundled_by", to indicate a column is bundled by another
 //	- bundlingCol: the BUNDLING column
 // 	- subCol: the column that is IN the bundle (subordinate column)
-function createExplicitBundledBy(bundlingCol, subCol){
+function createExplicitBundledByCol(bundlingCol, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('div');
 	var bbCol = document.createElement('div');
@@ -420,7 +420,7 @@ function createExplicitBundledBy(bundlingCol, subCol){
 	$(bbCol).text( bundlingCol );
 	bbNode.appendChild(bbCol);
 	subEnhancement.appendChild(bbNode);
-}// /createExplicitBundledBy
+}// /createExplicitBundledByCol
 
 function createImplicitBundledBy(bundleName, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
@@ -428,7 +428,7 @@ function createImplicitBundledBy(bundleName, subCol){
 	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
 	$(bbNode).text( bundleName );
 	subEnhancement.appendChild(bbNode);
-}// /createExplicitBundledBy
+}// /createImplicitBundledBy
 
 function addAnnotationRDFa( index, annoID, predicate, object ){
 	// create nodes...
@@ -501,7 +501,7 @@ function finalizeTriples(){
 		if( bundles[i].resource != "-1" ){
 			for( j in bundles[i].columns ){ // for each column in bundle
 				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].resource );
-				createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
+					createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
 			}
 		}	
 		else { // implicit bundle
@@ -512,6 +512,7 @@ function finalizeTriples(){
 			}
 		}
 	}
+
 	
 	// handle subject annotations: 
 	for ( var i=0; i<annotationID; i++ ){
