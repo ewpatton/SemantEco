@@ -331,6 +331,7 @@ $(function () {
                                         // has a colspan so set colspan for dest
                                         $("td#bundledRow\\," + selectedID).attr("colspan", itemColspan);
 										$("td#bundledRow\\," + selectedID).addClass("bundled");
+										$("td#bundledRow\\," + selectedID).addClass("ui.selected")
                                     }
                                     // Before we move the item down, handle hidden cells
                                     if (item.hasClass("hidden")) {
@@ -357,6 +358,7 @@ $(function () {
                                     // TODO: Disable the forms here .attr("disabled", "disabled");
                                 });
                             });
+							currentlySelected = [newBundle._id];
                         }
                     },
 
@@ -452,23 +454,7 @@ $(function () {
                                     }
                                 }
                             });
-                            /*
-                            var egRow = document.getElementById("annotations");
-                            var index = $("th").index(this);
-                            var egType = "conversion:eg"; // in the end, these two fields 
-                            var egText = "test_eg"; //  shouldn't be hard-coded....
-                            // if the row is hidden (ie, this is the first comment added), show the row
-                            if (egRow.classList.contains("hide-while-empty")) {
-                                $(egRow).removeClass("hide-while-empty");
-                            }
-                            var workingCol = document.getElementById("annotationRow," + index);
-                            var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-                            var addedRow = workingTable.insertRow(-1);
-                            var typeCell = addedRow.insertCell(0);
-                            var textCell = addedRow.insertCell(1);
-                            typeCell.innerHTML = egType;
-                            textCell.innerHTML = egText;
-                            */
+                            
                         } // /callback function
 
                     }, // /eg
