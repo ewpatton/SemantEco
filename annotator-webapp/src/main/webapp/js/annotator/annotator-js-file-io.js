@@ -236,9 +236,15 @@ function buildTable(data) {
                 var index = parseInt($(ui.unselected).attr("id").split(",")[1]);
 				var tableheader = (document.getElementById("0," + index));
 				var indexInSelected;
-				if ( $(tableheader).hasClass("hidden") ){
+				// We never want to have a hidden column selected. If a column is hidden, that means it is part
+				// 	of a bundle and is then subordinate to that bundle. The bundle can then be selectable, but
+				// 	the individual column, not necessarily.
+				if ( $(tableheader).hasClass("hidden") ){ 
 					return;
 				}
+				// If a column header is in a bundle, we want to select the whole bundle. We already know a bundle
+				// 	contains all the columns that are part of it. (If we really need the subordinate columns, we can
+				// 	get them from references to the bundle).
 				else if ( $(tableheader).hasClass("bundled-implicit") ){
 					var tableID = (tableheader).getElementsByTagName('table')[0].id;
 					var bundleID = (tableID.split(',')[1]).toString();

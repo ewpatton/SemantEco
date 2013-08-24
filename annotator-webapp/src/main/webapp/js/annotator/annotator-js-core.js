@@ -77,7 +77,7 @@ function createBundleSubtable(bundleID, implicitID) {
     });
 
     // Build a list of items
-    var generatedOptions = "<option value = \"Implicit Bundle " + implicitID + "\">Implicit Bundle " + implicitID + "</option>";
+    var generatedOptions = "<option value = \"-1\"" + implicitID + "\">Implicit Bundle " + implicitID + "</option>";
 	var colID;
     validHeadersToBundle.each(function (index) {
 
@@ -286,16 +286,16 @@ $(function () {
                             var headerGroupings = [];
                             var aGroup = [];
                             $.each(currentlySelected, function(index, value) {
-                                aGroup.push($("th#0\\," + value));
-                                // Detect selection gaps, so we can selectivly colspan
-                                if( index != currentlySelected.length - 1 ) {
-                                    if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
-                                        headerGroupings.push(aGroup);
-                                        aGroup = [];
-                                    }
-                                } else if (index == currentlySelected.length - 1) {
-                                    headerGroupings.push(aGroup);
-                                }
+								aGroup.push($("th#0\\," + value));
+								// Detect selection gaps, so we can selectivly colspan
+								if( index != currentlySelected.length - 1 ) {
+									if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
+										headerGroupings.push(aGroup);
+										aGroup = [];
+									}
+								} else if (index == currentlySelected.length - 1) {
+									headerGroupings.push(aGroup);
+								}
                             });
 
                             console.log("Groups:", headerGroupings);
@@ -975,6 +975,7 @@ $(function () {
     $('body').on('change' ,'select.bundle-select', function(e) {
         console.log("Saw Change:", this);
         var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqeuryyyy
+		console.log("Saw Change:"+ this + ", with new value: "+newResource);
         var _this = this; // keep track of scope on triggering select item
         var bundleId = $(this).closest("td").attr("id").split(",")[1];
         var bundleDropdowns = $("th select.bundle-select").filter(function () { return $(this).closest("td").attr("id").split(",")[1] == bundleId });
@@ -1160,6 +1161,7 @@ function getBundleById(theID){
 // These are accessory functions for updating bundle objects based on user drag-and-drop.
 // They need the bundle ID, and whatever is being updated for each.
 function updateResource(bundleID){
+	console.log("update resource is being called");
 	var theForm = document.getElementById("bundle-resource-select," + bundleID);
 	var newResource = theForm.options[theForm.selectedIndex].value;
 	var theBundle = getBundleById(bundleID);

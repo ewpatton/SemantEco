@@ -393,7 +393,9 @@ function createImplicitBundleNode(theBundle){
 	var bundleNameTemp = document.createElement('div');
 	var bundleType = document.createElement('a');
 	// ... type them...
+	// * Each bundle node is referenced by the ID impNode,[bundleID]
 	d3.select(bundleNode).attr("rdfa:about","#"+bNameTemp).attr("rdfa:typeof","conversion:ImplicitBundle");
+	$(bundleNode).attr("id","impNode," + theBundle._id);
 	d3.select(bundleProp).attr("rdfa:property","conversion:property_name");
 	d3.select(bundleNameTemp).attr("rdfa:property","name_template");
 	d3.select(bundleType).attr("rdfa:property","conversion:type_name");
@@ -411,8 +413,19 @@ function createImplicitBundleNode(theBundle){
 // adds a "conversion:bundled_by", to indicate a column is bundled by another
 //	- bundlingCol: the BUNDLING column
 // 	- subCol: the column that is IN the bundle (subordinate column)
-function createExplicitBundledByCol(bundlingCol, subCol){
-	var subEnhancement = document.getElementById("enhance-col,"+subCol);
+function createExplicitBundledBy(bundlingCol, subCol){
+	var subEnhancement;
+	// check if subCol is a COLUMN or a BUNDLE:
+	if ( parseInt(subCol) === 0)
+		subEnhancement = document.getElementById("enhance-col,"+subCol);
+	else if ( !(parseInt(subCol)) ){
+		var subBundleID = getBundleById(subCol)._id;
+		subEnhancement = document.getElementById("impNode,"+subBundleID);
+		console.log("subordinate bundle:" + subBundleID); //get the bundle node of RDFa
+	}
+	else 
+		subEnhancement = document.getElementById("enhance-col,"+subCol);
+	
 	var bbNode = document.createElement('div');
 	var bbCol = document.createElement('div');
 	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
@@ -420,7 +433,7 @@ function createExplicitBundledByCol(bundlingCol, subCol){
 	$(bbCol).text( bundlingCol );
 	bbNode.appendChild(bbCol);
 	subEnhancement.appendChild(bbNode);
-}// /createExplicitBundledByCol
+}// /createExplicitBundledBy
 
 function createImplicitBundledBy(bundleName, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
@@ -498,17 +511,17 @@ function finalizeTriples(){
 	
 	// handle explicit bundles
 	for( i in bundles ){ // for each bundle
-		if( bundles[i].resource != "-1" ){
-			for( j in bundles[i].columns ){ // for each column in bundle
-				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].resource );
-					createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
-			}
-		}	
-		else { // implicit bundle
+		if( parseInt(bundles[i].resource) === -1 ){ // implicit bundle
 			createImplicitBundleNode(bundles[i]);
 			for (j in bundles[i].columns){ // for each column in bundle
 				console.log("bundling " + bundles[i].columns[j] + " into implicit");
 				createImplicitBundledBy(bundles[i].nameTemp, bundles[i].columns[j]);
+			}
+		}	
+		else { // explicit bundle
+			for( j in bundles[i].columns ){ // for each column in bundle
+				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].resource );
+					createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
 			}
 		}
 	}
