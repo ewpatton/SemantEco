@@ -2,6 +2,7 @@
 <%@ taglib uri="/WEB-INF/semanteco-module.tld" prefix="module" %>
 <!DOCTYPE html>
 <html lang="en">
+    <!-- facet index.jsp -->
     <head>
         <!-- HTML Metadata -->
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
