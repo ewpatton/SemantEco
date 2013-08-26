@@ -1,4 +1,5 @@
 // Brendan Edit: Organize all the code
+var debugGlobal;
 
 // Keeps track of the ID's of the bundles.
 // These stay constant regardless of the bundle's resource or name, to make it
@@ -514,6 +515,9 @@ var dnd = {
         // Get which facet the drop came from
         //var sourceFacet = data.o.closest("div.facet").attr("id");
         // class, objectProperty, datatypeProperty, annotationProperty, datatype
+        console.log("DRAG EVENT", data);
+        debugGlobal = data;
+
         var sourceFacet = SemantEcoUI.HierarchicalFacet.entryForElement(data.o).rawData.type; // Thanks Evan :)
 
         // Determine the label we are looking for given the source facet
@@ -553,15 +557,15 @@ var dnd = {
         target.parent().css("color", "black");
 		//console.log("colType: " + columnType + ", colID: " + columnID);
 		
-		if (columnType == "annotationRow"){ // we're dealing with an annotation
+		if (columnType == "annotationRow") { // we're dealing with an annotation
 			var annotationID = target.attr("id").split(",")[2];
 			console.log("dropped onto annotation #" + annotationID);
-			if ( sourceFacet == "class" || sourceFacet == "datatype" ){
+			if ( sourceFacet == "class" || sourceFacet == "datatype" ) {
 				console.log("dnd updating annotation object...");
 				updateAnnotationObj(columnID,annotationID,uri,payload);
 				//updateClassType(columnID,columnType,uri,payload,sourceFacet);
 			}
-			else if (sourceFacet=="objectProperty" || sourceFacet=="datatypeProperty" || sourceFacet=="annotationProperty"){
+			else if (sourceFacet=="objectProperty" || sourceFacet=="datatypeProperty" || sourceFacet=="annotationProperty") {
 				console.log("dnd updating annotation predicate...");
 				updateAnnotationPred(columnID,annotationID,uri,payload);
 			}
@@ -569,7 +573,7 @@ var dnd = {
 		
 		else { // not an annotation
 			// check the source facet and make the appropriate RDFa update
-			if ( sourceFacet == "class" || sourceFacet == "datatype" ){
+			if ( sourceFacet == "class" || sourceFacet == "datatype" ) {
 				//console.log("dnd is calling updateClassType here");
 				updateClassType(columnID,columnType,uri,payload,sourceFacet);
 			}
