@@ -285,7 +285,6 @@ public class AnnotatorModule implements Module {
 	@QueryMethod
 	public String initOWLModel(Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException{
 
-
 			if (request.getParam("listOfOntologies") != null){
 				JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies") ;
 				this.annotatorTester = new AnnotatorTester(listOfOntologies, false);	
@@ -296,7 +295,6 @@ public class AnnotatorModule implements Module {
 			}
 			
 			return "done";
-
 		}
 		
 
