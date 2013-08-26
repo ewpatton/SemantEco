@@ -242,7 +242,7 @@
             <executions>
               <execution>
                 <id>unpack-default-module</id>
-                <phase>prepare-package</phase>
+                <phase>generate-resources</phase>
                 <goals>
                   <goal>unpack-dependencies</goal>
                 </goals>
@@ -261,7 +261,7 @@
             <executions>
               <execution>
                 <id>copy-default-module-assets</id>
-                <phase>prepare-package</phase>
+                <phase>process-resources</phase>
                 <goals>
                   <goal>copy-resources</goal>
                 </goals>
@@ -276,6 +276,14 @@
                 </configuration>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.2</version>
+            <configuration>
+              <warSourceExcludes>index.jsp</warSourceExcludes>
+            </configuration>
           </plugin>
         </plugins>
       </build>
