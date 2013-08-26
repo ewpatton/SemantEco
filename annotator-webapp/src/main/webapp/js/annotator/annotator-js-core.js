@@ -495,91 +495,6 @@ $(function () {
     }); // /context menu
 }); // /context menu function
 
-
-// Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
-var dnd_classes = {
-    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
-    "drop_check": function (data) {
-        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
-            if ( data.r.children().length == 0 ) { 
-                return false; 
-            }
-        }
-        return true;
-    },
-    "drop_finish": function (data) {
-        // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
-        var target, columnID, columnType;
-
-        if (data.r.is("p.class-label")) {
-            target = data.r;
-			columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
-            columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
-        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
-            target = data.r.find("p.class-label:eq(0)");
-			columnType = data.r.attr("id").split(",")[0];
-            columnID = data.r.attr("id").split(",")[1];
-        } else {
-            var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
-            target = parent.find("p.class-label:eq(0)");
-			columnType = parent.attr("id").split(",")[0];
-            columnID = parent.attr("id").split(",")[1];
-        }
-
-        console.log(columnType + " " + columnID);
-
-
-        // handle source object having children
-        if (data.o.hasClass("jstree-open")) {
-            var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
-        } else {
-            var payload = $.trim($(data.o).text());
-        }
-
-        /*var targetParent;
-        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
-            targetID = data.r.attr("id").split(",")[1];
-        } else if () {
-            asdawd
-        } else {
-            // get the header of this element
-            var parentHeader = data.r.parents("th:eq(0)");
-            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
-               targetID = parentHeader.attr("id").split(",")[1];
-            }
-        }*/
-
-
-        // Set the value now that we have done some validation (some...)
-		// [RDFa]: also sets the RDFa to the text in the node
-		//  * still need URI/prefix for whatever ontology the node comes from.
-        //var fullID = "[id='classRow," + targetID + "']";
-		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
-		target.empty().append(payload);
-        target.parent().css("color", "black");
-		updateClassType(columnID,columnType,uri,payload,sourceFacet);
-        // Manipulate the property-label to reflect what was just dropped
-        // First find the property-label
-        var propertyLabel = target.closest("tr").siblings().filter(function () {
-            return $(this).find("p.property-label").length == 1;
-        });
-		
-		// Now get which fact the drop target was from
-		var sourceFacet = data.o.closest("div.facet").attr("id");
-        
-		// Only apply if class has not been set yet
-        if ( propertyLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
-            propertyLabel = propertyLabel.find("p.property-label");
-
-            // Now apply logic
-            if ( sourceFacet == "datatypesFacet" ) {
-                propertyLabel.empty().append("[datatype or annotation property]");
-            }
-        }
-		
-    }// /drop_finish
-};// /dnd_classes
-
 // Arguments for Drag and Drop for facets ( this applies to the jstree library. see: jstree.com)
 var dnd = {
     "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row, div.global-properties-container",
@@ -629,6 +544,7 @@ var dnd = {
         // [RDFa]: also sets the RDFa to the text in the node
         //  * still need URI/prefix for whatever ontology the node comes from.
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
+        console.log("DEBUG TYPE:", $(data.o));
 		target.empty().append(payload);
         target.parent().css("color", "black");
 		console.log("colType: " + columnType + ", colID: " + columnID);
@@ -1713,4 +1629,90 @@ $(function () {
 }); // /ontology-selector
 
 
+*/
+
+/*
+// Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
+var dnd_classes = {
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
+    "drop_check": function (data) {
+        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
+            if ( data.r.children().length == 0 ) { 
+                return false; 
+            }
+        }
+        return true;
+    },
+    "drop_finish": function (data) {
+        // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
+        var target, columnID, columnType;
+
+        if (data.r.is("p.class-label")) {
+            target = data.r;
+			columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
+            columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
+            target = data.r.find("p.class-label:eq(0)");
+			columnType = data.r.attr("id").split(",")[0];
+            columnID = data.r.attr("id").split(",")[1];
+        } else {
+            var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
+            target = parent.find("p.class-label:eq(0)");
+			columnType = parent.attr("id").split(",")[0];
+            columnID = parent.attr("id").split(",")[1];
+        }
+
+        console.log(columnType + " " + columnID);
+
+
+        // handle source object having children
+        if (data.o.hasClass("jstree-open")) {
+            var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
+        } else {
+            var payload = $.trim($(data.o).text());
+        }
+
+        var targetParent;
+        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
+            targetID = data.r.attr("id").split(",")[1];
+        } else if () {
+            asdawd
+        } else {
+            // get the header of this element
+            var parentHeader = data.r.parents("th:eq(0)");
+            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
+               targetID = parentHeader.attr("id").split(",")[1];
+            }
+        }
+
+
+        // Set the value now that we have done some validation (some...)
+		// [RDFa]: also sets the RDFa to the text in the node
+		//  * still need URI/prefix for whatever ontology the node comes from.
+        //var fullID = "[id='classRow," + targetID + "']";
+		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
+		target.empty().append(payload);
+        target.parent().css("color", "black");
+		updateClassType(columnID,columnType,uri,payload,sourceFacet);
+        // Manipulate the property-label to reflect what was just dropped
+        // First find the property-label
+        var propertyLabel = target.closest("tr").siblings().filter(function () {
+            return $(this).find("p.property-label").length == 1;
+        });
+		
+		// Now get which fact the drop target was from
+		var sourceFacet = data.o.closest("div.facet").attr("id");
+        
+		// Only apply if class has not been set yet
+        if ( propertyLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
+            propertyLabel = propertyLabel.find("p.property-label");
+
+            // Now apply logic
+            if ( sourceFacet == "datatypesFacet" ) {
+                propertyLabel.empty().append("[datatype or annotation property]");
+            }
+        }
+		
+    }// /drop_finish
+};// /dnd_classes
 */
