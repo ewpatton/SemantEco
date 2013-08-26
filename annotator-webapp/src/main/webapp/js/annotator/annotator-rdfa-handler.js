@@ -510,21 +510,21 @@ function finalizeTriples(){
 	}
 	
 	// handle explicit bundles
-	for( i in bundles ){ // for each bundle
-		if( parseInt(bundles[i].resource) === -1 ){ // implicit bundle
-			createImplicitBundleNode(bundles[i]);
-			for (j in bundles[i].columns){ // for each column in bundle
-				console.log("bundling " + bundles[i].columns[j] + " into implicit");
-				createImplicitBundledBy(bundles[i].nameTemp, bundles[i].columns[j]);
-			}
+	$.each(bundles, function(i,theBundle){// (index, value)
+		if( parseInt(theBundle.resource) === -1 ){ // implicit bundle
+			createImplicitBundleNode(theBundle);
+			$.each(theBundle.columns, function(j,colIndex){ // for each column in bundle
+				console.log("bundling " + colIndex + " into implicit");
+				createImplicitBundledBy(theBundle.nameTemp, colIndex);
+			});
 		}	
 		else { // explicit bundle
-			for( j in bundles[i].columns ){ // for each column in bundle
-				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].resource );
-					createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
-			}
+			$.each(theBundle.columns, function(j,colIndex){ // for each column in bundle
+				console.log("bundling " + colIndex + " into " + theBundle.resource );
+					createExplicitBundledBy(theBundle.resource, colIndex);
+			});
 		}
-	}
+	});
 
 	
 	// handle subject annotations: 

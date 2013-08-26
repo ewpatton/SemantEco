@@ -208,22 +208,22 @@ $(function () {
                             } // /if
                             // if more than one column is selected, perform the toggle on ALL selected columns
                             else {
-                                for (i in currentlySelected) {
-                                    var toggle = document.getElementById("nameRow," + currentlySelected[i]);
+                                $.each(currentlySelected, function(index,colNum) {
+                                    var toggle = document.getElementById("nameRow," + colNum);
                                     // if the column is already there, remove it
-                                    if (existsA(cellBased, currentlySelected[i])) {
+                                    if (existsA(cellBased, colNum)) {
                                         $(toggle).removeClass("cellBased-on");
-                                        removeA(cellBased, currentlySelected[i]);
-                                        console.log("removing col " + currentlySelected[i]);
+                                        removeA(cellBased, colNum);
+                                        console.log("removing col " + colNum);
                                     }
                                     // if the column is not there, add it
                                     else {
                                         $(toggle).addClass("cellBased-on");
                                         //$(toggle).attr("class","cellBased-on");
-                                        cellBased.push(currentlySelected[i]);
-                                        console.log("adding col " + currentlySelected[i]);
+                                        cellBased.push(colNum);
+                                        console.log("adding col " + colNum);
                                     }
-                                } // /for	
+                                }); // /$.each
                             }
                             console.log("currently specified for cell-based: " + cellBased);
                         } // /cell-based callback
@@ -258,22 +258,22 @@ $(function () {
                             } // /if
                             // if more than one column is selected, perform the toggle on ALL selected columns
                             else {
-                                for (i in currentlySelected) {
-                                    var toggle = document.getElementById("nameRow," + currentlySelected[i]);
+                                $.each(currentlySelected, function(index,colNum) {
+                                    var toggle = document.getElementById("nameRow," + colNum);
                                     // if the column is already there, remove it
-                                    if (existsA(links_via, currentlySelected[i])) {
+                                    if (existsA(links_via, colNum)) {
                                         $(toggle).removeClass("links_via-on");
-                                        removeA(links_via, currentlySelected[i]);
-                                        console.log("removing col " + currentlySelected[i]);
+                                        removeA(links_via, colNum);
+                                        console.log("removing col " + colNum);
                                     }
                                     // if the column is not there, add it
                                     else {
                                         $(toggle).addClass("links_via-on");
                                         //$(toggle).attr("class","links_via-on");
-                                        links_via.push(currentlySelected[i]);
-                                        console.log("adding col " + currentlySelected[i]);
+                                        links_via.push(colNum);
+                                        console.log("adding col " + colNum);
                                     }
-                                } // /for	
+                                }); // /$.each
                             } // /else
                             console.log("currently specified for links_via: " + links_via);
                         } // /links_via callback
@@ -737,7 +737,7 @@ $(document).ready(function () {
         var converted = AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
             console.debug(d);
         });
-		console.log(converted);
+		//console.log(converted);
 		
     });
 
@@ -1079,12 +1079,12 @@ function existsA(theArray, theThing) {
 function getBundleById(theID){
 	var theBundle;
 	console.log("Checking for bundle #" + theID);
-	for (i in bundles){
-		console.log("... bundle#" + bundles[i]._id + "?");
-		if ( bundles[i]._id === theID ){	
-			theBundle = bundles[i];
+	$.each(bundles, function(i,checkBundle){
+		console.log("... bundle#" + checkBundle._id + "?");
+		if ( checkBundle._id === theID ){	
+			theBundle = checkBundle;
 		}
-	}
+	});
 	if( !theBundle ){
 		console.log("Bundle does not exist!");
 		return;
@@ -1280,7 +1280,7 @@ $.fn.accordion = function(opts){
 
     this.setActive = function(target) {
 		$.each($(this).find("h3"), function(i) {
-			console.log("searching to activate", i, target, this);
+			//console.log("searching to activate", i, target, this);
 			if(i === target) {
 				toggle(this);
 			}
@@ -1302,7 +1302,7 @@ $.fn.accordion = function(opts){
 // Accordion Helper Functions
 function setActiveFacet(target, index) {
 	$.each($(target).find("h3"), function(i) {
-		console.log("searching to activate", i, index, this);
+		//console.log("searching to activate", i, index, this);
 		if(i == index) {
 			$(this).toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
     			.find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
