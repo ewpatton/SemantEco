@@ -736,15 +736,31 @@ $(document).ready(function () {
     // Bind various click and form event listeners once the DOM is good to go
     $('#menu-commit-enhancement').click(function () {
 		var turtle = turtleGen();
-        var results = AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
-            console.debug(d);
-        });
-		console.log(results);
-		//var paramsURL = results.paramsFile;
-		//var rdfURL = results.rdfDataFile;
-		//console.log(paramsURL);
-		//console.log(rdfURL);
-    });
+		AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
+			results = jQuery.parseJSON(d);
+			var paramsURL = results.paramsFile;
+			var rdfURL = results.rdfDataFile;
+			console.log(paramsURL);
+			console.log(rdfURL);
+			var params = (document.getElementById("params-link-here")).getElementsByTagName('a')[0];
+			var rdf = (document.getElementById("rdf-link-here")).getElementsByTagName('a')[0];
+			$(params).attr('href',paramsURL);
+			$(rdf).attr('href',rdfURL);
+			//params.innerHTML = "parameters file";
+			//rdf.innerHTML = "RDF file";
+			$("#finalLinksModal").dialog({
+				modal: true,
+				width: 800,
+				draggable: false,
+				resizable: false,
+				buttons: {
+					Done: function () {
+						$(this).dialog("close");
+					}
+				}// /buttons
+			});// /dialog
+		});// /queryForEnhancingParams
+	});// /menu-commit-enhancement
 
     $('input#menu-show-globals').click(function () {
         if ( $('div.global-properties-container').is(":visible") ) {
