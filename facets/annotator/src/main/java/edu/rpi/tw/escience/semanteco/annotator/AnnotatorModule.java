@@ -564,7 +564,8 @@ public class AnnotatorModule implements Module {
 	}
 	private  final static String getDateTime()  
 	{  
-	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss");  
+	   // DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss");  
+	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");  
 	    df.setTimeZone(TimeZone.getTimeZone("PST"));  
 	    return df.format(new Date());  
 	}  	
