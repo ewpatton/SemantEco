@@ -536,6 +536,7 @@ public class AnnotatorModule implements Module {
         } 
 		
 		File file = new File(parametersFullPath);
+		System.err.println("parameters file path: " + parametersFullPath);
 		//File yourFile = new File("score.txt");
 		if(!file.exists()) {
 		    file.createNewFile();
