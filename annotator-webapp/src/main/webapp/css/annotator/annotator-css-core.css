@@ -346,3 +346,7 @@
     	margin-bottom: 0px;
     	text-align: center;
     }
+
+    input#addOntologyModalInput {
+    	width: 100%;
+    }
