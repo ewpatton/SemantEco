@@ -225,7 +225,18 @@
             <input type="text" id="canonicalModalInput" placeHolder="e.g. Alabama is a state" />
         </div>
         
-        
+        <!-- Katie Edit, creating a modal for giving the user links to BOTH enhancement params and the final RDF -->
+        <div id="finalLinksModal" class="hidden">
+            <p>Data Links:</p>
+            <table>
+				<tr>
+					<td><p id="params-link-here"><a>Click to download your Parameters file</a></p>
+					</td>
+					<td><p id="rdf-link-here"><a>Click to download your RDF</a></p>
+					</td>
+				</tr>
+			</table>
+		</div>
 
         <!-- Load Javascript libraries -->
         <!-- Local JS Libraries -->
