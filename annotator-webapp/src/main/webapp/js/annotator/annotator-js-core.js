@@ -95,7 +95,7 @@ function createBundleSubtable(bundleID, implicitID) {
         generatedOptions += "<option value = \"" + colID + "\">Column " + colID + " (" + itemLabel + ")</option>"
     });
 
-    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange=updateResource('+bundleID+') action="return false;"><select id="bundle-resource-select,'+bundleID+'" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
+    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange="updateResource(\''+bundleID+'\');" action="return false;"><select id="bundle-resource-select,'+bundleID+'" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride editable-input">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + bundleID + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + bundleID + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
