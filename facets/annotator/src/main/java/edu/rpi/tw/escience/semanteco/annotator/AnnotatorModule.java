@@ -522,7 +522,7 @@ public class AnnotatorModule implements Module {
 	    */
 		//write the string the paramsFile path
 		
-		String parametersFullPath = System.getProperty("AnnotatorRootPath")  + "RDF-data" + "/parameters-" + dateStamp + ".ttl";
+		String parametersFullPath = System.getProperty("AnnotatorRootPath")  + "RDF-data" + File.separator + "parameters-" + dateStamp + ".ttl";
 		
 		System.err.println("parametersFullPath: " + parametersFullPath);
 		String turtleFileAsString = (String) request.getParam("turtle");
