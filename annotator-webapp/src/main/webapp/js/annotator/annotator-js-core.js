@@ -35,6 +35,9 @@ var cellBased = [];
 //    are elaborated upon there.
 var bundles = [];
 
+// Brendan Global Variable - Track selection in ontology dropdown for changes
+var selectedOntologies = [];
+
 // Generate the subtables for each column header in the CSV file.
 //    The handleFileSelect function below that generates the table calls this repeatedly.
 // Every subtable will be the same, (except for the ID's of the cells)
@@ -871,8 +874,6 @@ $(document).ready(function () {
             forcePlaceholderSize: true
         });
 
-    // Enable 
-
     // getListofOntologies() call, builds the dropdown and then fills the facets
     AnnotatorModule.getListofOntologies({}, function (d) {
         d = $.parseJSON(d);
@@ -889,9 +890,6 @@ $(document).ready(function () {
             $("#checkboxDropDownOntologies").dropdownchecklist({
                 emptyText: "Select an Ontology ...",
                 onComplete: function (selector) {
-                    // Show user we are about to re-populate the facets with new jstrees
-                    $(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
-
                     var values = []; // [RDFa]: can use this for prefixes?
                     for (i = 0; i < selector.options.length; i++) {
                         if (selector.options[i].selected && (selector.options[i].value != "")) {
@@ -901,40 +899,61 @@ $(document).ready(function () {
                     $.bbq.pushState({
                         "listOfOntologies": values
                     });
-                   
 
-                    // Call patrice's new silly init call thingy ( :D )
-                    AnnotatorModule.initOWLModel({}, function (d) {
-                        
-                        // Clean up, then Re-query facets
-                        $(".hierarchy").empty();
+                    // Activate facets based on some simple conditionals
+                    var differenceRemove = $.grep(selectedOntologies, function(item) { return $.inArray(item, values) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
+                    var differenceAdd = $.grep(values, function(item) { return $.inArray(item, selectedOntologies) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
+                    var activeFacets = $("div#facets").size() > 0 ? getActiveFacets($("div#facets")) : [];
+                    
+                    // Debug
+                    console.log("Arrays", values, selectedOntologies, differenceRemove, differenceAdd);
 
-                        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"],
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"],
-                            "populate": false
-                        });
-                    });
+                    selectedOntologies = values;
+                    if (differenceAdd.length > 0 || ( differenceRemove.length > 0 && values.length > 0 )) {
+                    	// Show user we are about to re-populate the facets with new jstrees
+                    	$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
+	                 	
+	                 	// Look at all the facets TODO: don't reference by index but by name! Breaks if the items are shuffled around
+	                 	for (var i = 0; i < 5; i++) {
+	                 		if ($.inArray(i, activeFacets) < 0) {
+	                 			console.log("activate facet #", i);
+	                 			setActiveFacet($("div#facets"), i);	
+	                 		}
+	                 	}
+	                
+	                    // Call patrice's new silly init call thingy ( :D )
+	                    AnnotatorModule.initOWLModel({}, function (d) {
+	                        
+	                        // Clean up, then Re-query facets
+	                        $(".hierarchy").empty();
+
+	                        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
+	                            "dnd": dnd,
+	                            "plugins": ["dnd"]
+	                        });
+	                        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
+	                            "dnd": dnd,
+	                            "plugins": ["dnd"]
+	                        });
+	                        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
+	                            "dnd": dnd,
+	                            "plugins": ["dnd"],
+	                        });
+	                        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
+	                            "dnd": dnd,
+	                            "plugins": ["dnd"]
+	                        });
+	                        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
+	                            "dnd": dnd,
+	                            "plugins": ["dnd"]
+	                        });
+	                        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
+	                            "dnd": dnd,
+	                            "plugins": ["dnd"],
+	                            "populate": false
+	                        });
+	                    });
+					}
                 }
             });
         }
@@ -1342,6 +1361,15 @@ $.fn.accordion = function(opts){
                 }
             }
     });
+
+    this.setActive = function(target) {
+		$.each($(this).find("h3"), function(i) {
+			console.log("searching to activate", i, target, this);
+			if(i === target) {
+				toggle(this);
+			}
+    	});
+    };
     
     this.getActive = function() {
         var isActive = [];
@@ -1355,7 +1383,53 @@ $.fn.accordion = function(opts){
     return acc;
 };
 
+// Accordion Helper Functions
+function setActiveFacet(target, index) {
+	$.each($(target).find("h3"), function(i) {
+		console.log("searching to activate", i, index, this);
+		if(i == index) {
+			$(this).toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+    			.find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+    			.next().slideToggle();
+    		return false; // break out of loop
+		}
+	});
+};
 
+function getActiveFacets(target) {
+    var isActive = [];
+    $.each($(target).find("h3"), function(i) {
+        if($(this).hasClass("ui-state-active"))
+            isActive.push(i);
+    });
+    return isActive;
+};
+
+
+// Attach the .compare method to Array's prototype to call it on any array | Credit: http://stackoverflow.com/questions/7837456/comparing-two-arrays-in-javascript
+Array.prototype.compare = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0; i < this.length; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].compare(array[i]))
+                return false;
+        }
+        else if (this[i] != array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}
 
 // ==========================================
 // = HERE LIES THE CODE ARCHIVE / GRAVEYARD =
