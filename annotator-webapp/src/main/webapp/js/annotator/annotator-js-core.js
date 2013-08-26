@@ -1,4 +1,5 @@
 // Brendan Edit: Organize all the code
+var debugGlobal;
 
 // Keeps track of the ID's of the bundles.
 // These stay constant regardless of the bundle's resource or name, to make it
@@ -37,6 +38,9 @@ var bundles = [];
 
 // Brendan Global Variable - Track selection in ontology dropdown for changes
 var selectedOntologies = [];
+
+// Brendan Global Variable - Track ontolgies added by user (custom ones via a URL)
+var customUserOntologies = [];
 
 // Generate the subtables for each column header in the CSV file.
 //    The handleFileSelect function below that generates the table calls this repeatedly.
@@ -509,10 +513,15 @@ var dnd = {
     "drop_finish": function (data) {
 
         // Get which facet the drop came from
-        var sourceFacet = data.o.closest("div.facet").attr("id");
+        //var sourceFacet = data.o.closest("div.facet").attr("id");
+        // class, objectProperty, datatypeProperty, annotationProperty, datatype
+        console.log("DRAG EVENT", data);
+        debugGlobal = data;
+
+        var sourceFacet = SemantEcoUI.HierarchicalFacet.entryForElement(data.o).rawData.type; // Thanks Evan :)
 
         // Determine the label we are looking for given the source facet
-        var label = ( $.inArray(sourceFacet, ["annotationPropertiesFacet", "dataPropertiesFacet", "objectPropertiesFacet"]) != -1 ? "property-label" : "class-label" );
+        var label = ( $.inArray(sourceFacet, ["annotationProperty", "datatypeProperty", "objectProperty"]) != -1 ? "property-label" : "class-label" );
 
         // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
         var target, columnID, columnType;
@@ -544,20 +553,19 @@ var dnd = {
         // [RDFa]: also sets the RDFa to the text in the node
         //  * still need URI/prefix for whatever ontology the node comes from.
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
-        console.log("DEBUG TYPE:", $(data.o));
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		console.log("colType: " + columnType + ", colID: " + columnID);
+		//console.log("colType: " + columnType + ", colID: " + columnID);
 		
-		if (columnType == "annotationRow"){ // we're dealing with an annotation
+		if (columnType == "annotationRow") { // we're dealing with an annotation
 			var annotationID = target.attr("id").split(",")[2];
 			console.log("dropped onto annotation #" + annotationID);
-			if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
+			if ( sourceFacet == "class" || sourceFacet == "datatype" ) {
 				console.log("dnd updating annotation object...");
 				updateAnnotationObj(columnID,annotationID,uri,payload);
 				//updateClassType(columnID,columnType,uri,payload,sourceFacet);
 			}
-			else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet"){
+			else if (sourceFacet=="objectProperty" || sourceFacet=="datatypeProperty" || sourceFacet=="annotationProperty") {
 				console.log("dnd updating annotation predicate...");
 				updateAnnotationPred(columnID,annotationID,uri,payload);
 			}
@@ -565,11 +573,11 @@ var dnd = {
 		
 		else { // not an annotation
 			// check the source facet and make the appropriate RDFa update
-			if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
+			if ( sourceFacet == "class" || sourceFacet == "datatype" ) {
 				//console.log("dnd is calling updateClassType here");
 				updateClassType(columnID,columnType,uri,payload,sourceFacet);
 			}
-			else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet") {
+			else if (sourceFacet=="objectProperty" || sourceFacet=="datatypeProperty" || sourceFacet=="annotationProperty") {
 				//console.log("dnd is calling updateProp here");
 				updateProp(columnID,columnType,uri);
 			}
@@ -803,75 +811,95 @@ $(document).ready(function () {
             $("#checkboxDropDownOntologies").dropdownchecklist({
                 emptyText: "Select an Ontology ...",
                 onComplete: function (selector) {
-                    var values = []; // [RDFa]: can use this for prefixes?
-                    for (i = 0; i < selector.options.length; i++) {
-                        if (selector.options[i].selected && (selector.options[i].value != "")) {
-                            values.push(selector.options[i].value);
-                        }
-                    }
-                    $.bbq.pushState({
-                        "listOfOntologies": values
-                    });
-
-                    // Activate facets based on some simple conditionals
-                    var differenceRemove = $.grep(selectedOntologies, function(item) { return $.inArray(item, values) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
-                    var differenceAdd = $.grep(values, function(item) { return $.inArray(item, selectedOntologies) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
-                    var activeFacets = $("div#facets").size() > 0 ? getActiveFacets($("div#facets")) : [];
-                    
-                    // Debug
-                    console.log("Arrays", values, selectedOntologies, differenceRemove, differenceAdd);
-
-                    selectedOntologies = values;
-                    if (differenceAdd.length > 0 || ( differenceRemove.length > 0 && values.length > 0 )) {
-                    	// Show user we are about to re-populate the facets with new jstrees
-                    	$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
-	                 	
-	                 	// Look at all the facets TODO: don't reference by index but by name! Breaks if the items are shuffled around
-	                 	for (var i = 0; i < 5; i++) {
-	                 		if ($.inArray(i, activeFacets) < 0) {
-	                 			console.log("activate facet #", i);
-	                 			setActiveFacet($("div#facets"), i);	
-	                 		}
-	                 	}
-	                
-	                    // Call patrice's new silly init call thingy ( :D )
-	                    AnnotatorModule.initOWLModel({}, function (d) {
-	                        
-	                        // Clean up, then Re-query facets
-	                        $(".hierarchy").empty();
-
-	                        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
-	                            "dnd": dnd,
-	                            "plugins": ["dnd"]
-	                        });
-	                        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
-	                            "dnd": dnd,
-	                            "plugins": ["dnd"]
-	                        });
-	                        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
-	                            "dnd": dnd,
-	                            "plugins": ["dnd"],
-	                        });
-	                        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
-	                            "dnd": dnd,
-	                            "plugins": ["dnd"]
-	                        });
-	                        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
-	                            "dnd": dnd,
-	                            "plugins": ["dnd"]
-	                        });
-	                        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
-	                            "dnd": dnd,
-	                            "plugins": ["dnd"],
-	                            "populate": false
-	                        });
-	                    });
+                	var values = []; // [RDFa]: can use this for prefixes?
+					for (i = 0; i < selector.options.length; i++) {
+					    if (selector.options[i].selected && (selector.options[i].value != "")) {
+					        values.push(selector.options[i].value);
+					    }
 					}
+					// Qeury given user selection
+					queryOntologies(values);
                 }
             });
         }
     });
 });
+
+// Query for ontologies. Broken into own function as can be called from multiple places
+function queryOntologies(ontologies) {
+
+	// No ontologies means no change to dropdown selection
+	if ( ontologies == undefined ) {
+		var current = $.bbq.getState("listOfOntologies");
+		if ( current == undefined ) {
+			// Nothing was sent to the bbq state yet
+			current = [];
+		}
+		ontologies = current;
+	}
+
+	// Build current state of ontologies
+	var ontologies = ontologies.concat(customUserOntologies);
+
+	$.bbq.pushState({
+	    "listOfOntologies": ontologies
+	});
+
+	// Activate facets based on some simple conditionals
+	var differenceRemove = $.grep(selectedOntologies, function(item) { return $.inArray(item, ontologies) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
+	var differenceAdd = $.grep(ontologies, function(item) { return $.inArray(item, selectedOntologies) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
+	var activeFacets = $("div#facets").size() > 0 ? getActiveFacets($("div#facets")) : [];
+
+	// Debug
+	console.log("Arrays", ontologies, selectedOntologies, differenceRemove, differenceAdd);
+
+	selectedOntologies = ontologies;
+	if (differenceAdd.length > 0 || ( differenceRemove.length > 0 && ontologies.length > 0 )) {
+		// Show user we are about to re-populate the facets with new jstrees
+		$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
+	 	
+	 	// Look at all the facets TODO: don't reference by index but by name! Breaks if the items are shuffled around
+	 	for (var i = 0; i < 5; i++) {
+	 		if ($.inArray(i, activeFacets) < 0) {
+	 			console.log("activate facet #", i);
+	 			setActiveFacet($("div#facets"), i);	
+	 		}
+	 	}
+
+	    // Call patrice's new silly init call thingy ( :D )
+	    AnnotatorModule.initOWLModel({}, function (d) {
+	        
+	        // Clean up, then Re-query facets
+	        $(".hierarchy").empty();
+
+	        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"],
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"],
+	            "populate": false
+	        });
+	    });
+	}
+}
 
 // =====================================================================
 // ====================== ACCESSORY / MISC. FUNCTIONS ==================
@@ -1006,6 +1034,24 @@ $(function () {
                     //var prefixes = createPrefix(uriPrefix);
                     //d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
                     GreenTurtle.attach(document,true);
+                    $(this).dialog("close");
+                }
+            }
+        });    
+    });
+});
+
+// Load a CSV file from the user system
+$(function () {
+    $('body').on('click' ,'input#menu-add-new-ontology', function(e) {
+        // Show modal
+        $("#addOntologyModal").dialog({
+            modal: true,
+            width: 800,
+            buttons: {
+                Load: function () {
+                	customUserOntologies.push($('input#addOntologyModalInput').val());
+                	queryOntologies(undefined);
                     $(this).dialog("close");
                 }
             }
@@ -1274,24 +1320,6 @@ $.fn.accordion = function(opts){
                 }
             }
     });
-
-    this.setActive = function(target) {
-		$.each($(this).find("h3"), function(i) {
-			//console.log("searching to activate", i, target, this);
-			if(i === target) {
-				toggle(this);
-			}
-    	});
-    };
-    
-    this.getActive = function() {
-        var isActive = [];
-        $.each($(this).find("h3"), function(i) {
-            if($(this).hasClass("ui-state-active"))
-                isActive.push(i);
-        });
-        return isActive;
-    };
     
     return acc;
 };
