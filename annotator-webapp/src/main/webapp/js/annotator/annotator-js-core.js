@@ -728,17 +728,14 @@ $(document).ready(function () {
     // Bind various click and form event listeners once the DOM is good to go
     $('#menu-commit-enhancement').click(function () {
 		var turtle = turtleGen();
-        /*$.bbq.pushState({
-            "FileName": window.file_name,
-            "Source": $("#source_info").val(),
-            "DataSet": $("#dataset_info").val(),
-            "annotationMappings": window.a
-        });*/
-        var converted = AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
+        var results = AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
             console.debug(d);
         });
-		//console.log(converted);
-		
+		console.log(results);
+		//var paramsURL = results.paramsFile;
+		//var rdfURL = results.rdfDataFile;
+		//console.log(paramsURL);
+		//console.log(rdfURL);
     });
 
     $('input#menu-show-globals').click(function () {
