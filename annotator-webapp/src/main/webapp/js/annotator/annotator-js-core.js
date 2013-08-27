@@ -293,10 +293,13 @@ $(function () {
                             var headerGroupings = [];
                             var aGroup = [];
                             $.each(currentlySelected, function(index, value) {
-								if( !isNaN(value) ){
+								if( !isNaN(value) ){ // If a currentlySelected column is a number, then that means it is not a bundle;
+													 //  go ahead and push that to the grouping array.
 									aGroup.push($("th#0\\," + value));
 								}
-								else {
+								else { // If we have a bundle, add the headers for all the columns in that bundle.
+									   // This will include all of the hidden ones! But this keeps them from dangling alone
+									   //  without their superior bundle header.
 									console.log("hark, a bundle!");
 									var theBundle = getBundleById(value);
 									$.each( theBundle.columns, function(colIndex, colNum){
