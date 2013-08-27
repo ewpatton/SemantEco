@@ -293,7 +293,16 @@ $(function () {
                             var headerGroupings = [];
                             var aGroup = [];
                             $.each(currentlySelected, function(index, value) {
-								aGroup.push($("th#0\\," + value));
+								if( !isNaN(value) ){
+									aGroup.push($("th#0\\," + value));
+								}
+								else {
+									console.log("hark, a bundle!");
+									var theBundle = getBundleById(value);
+									$.each( theBundle.columns, function(colIndex, colNum){
+										aGroup.push($("th#0\\," + colNum));
+									});
+								}
 								// Detect selection gaps, so we can selectivly colspan
 								if( index != currentlySelected.length - 1 ) {
 									if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
