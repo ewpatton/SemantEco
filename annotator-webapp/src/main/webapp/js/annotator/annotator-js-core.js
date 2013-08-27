@@ -962,8 +962,7 @@ $(function () {
 
     $('body').on('change' ,'select.bundle-select', function(e) {
         console.log("Saw Change:", this);
-        var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqeuryyyy
-		console.log("Saw Change:"+ this + ", with new value: "+newResource);
+        var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqueryyyy
         var _this = this; // keep track of scope on triggering select item
         var bundleId = $(this).closest("td").attr("id").split(",")[1];
         var bundleDropdowns = $("th select.bundle-select").filter(function () { return $(this).closest("td").attr("id").split(",")[1] == bundleId });
@@ -1190,14 +1189,6 @@ function updateBundleName(bundleID, theNameTemp){
 	theBundle.setName(theNameTemp);
 }// /update
 
-// Indicates whether the resource for a bundle is another bundle.
-// 	* if TRUE: theBundle.resource refers to a BUNDLE ID
-//	* if FALSE: theBundle.resource refers to a COLUMN NUMBER
-function isBundledByBundle(bundleID){
-	var theBundle = getBundleById(bundleID);
-	return theBundle.resourceIsBundle;
-}// /isBundledByBundle
-
 // Accessory function for creating a bundle 
 // Takes three arguments:
 //  - id: a unique static ID for the bundle, different from
@@ -1217,7 +1208,6 @@ function Bundle(bundleId, implicitId, columns) {
     this.implicitId = implicitId;
     this.columns = columns;
 	this.resource = -1;
-	this.resourceIsBundle = false;
 	this.nameTemp = "";
 	this.type = "";
 	this.prop = "";

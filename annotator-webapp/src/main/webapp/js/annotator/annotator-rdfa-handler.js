@@ -416,16 +416,14 @@ function createImplicitBundleNode(theBundle){
 function createExplicitBundledBy(bundlingCol, subCol){
 	var subEnhancement;
 	// check if subCol is a COLUMN or a BUNDLE:
-	if ( parseInt(subCol) === 0)
-		subEnhancement = document.getElementById("enhance-col,"+subCol);
-	else if ( !(parseInt(subCol)) ){
+	if ( isNaN(subCol) ){
 		var subBundleID = getBundleById(subCol)._id;
 		subEnhancement = document.getElementById("impNode,"+subBundleID);
 		console.log("subordinate bundle:" + subBundleID); //get the bundle node of RDFa
 	}
-	else 
+	else {
 		subEnhancement = document.getElementById("enhance-col,"+subCol);
-	
+	}
 	var bbNode = document.createElement('div');
 	var bbCol = document.createElement('div');
 	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
