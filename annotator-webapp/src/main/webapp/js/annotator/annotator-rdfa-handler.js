@@ -439,7 +439,7 @@ function createImplicitBundledBy(bundleName, subCol){
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('a');
 	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by")
-	$(bbNode).text( bundleName );
+	$(bbNode).attr("href", ("#"+bundleName));
 	subEnhancement.appendChild(bbNode);
 }// /createImplicitBundledBy
 
