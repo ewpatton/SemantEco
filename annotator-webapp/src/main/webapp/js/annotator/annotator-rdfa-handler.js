@@ -105,7 +105,7 @@ function updateProp(index,colType,theProperty){
 }// /updateProp
 
 function updateClassType(index,colType,classURI,classLabel,sourceFacet){
-	console.log("updateClassType: " + colType);
+	console.log("updateClassType from source: " + sourceFacet);
 	var tableheader = (document.getElementById(colType+ "," + index));
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
@@ -121,7 +121,6 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){		
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
-		console.log("bundleID: "+bundleID);
 		updateBundleClassType(bundleID, classURI);
 		return;
 	}
@@ -136,7 +135,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 		var isClass = hasClassType(index);
 		var isDataType = hasDataType(index);
 		// Is the thing we are adding a Class or a Data Type?
-		if ( sourceFacet == "classesFacet" ){ // if it's a class
+		if ( sourceFacet == "class" ){ // if it's a class
 			if ( isClass ){ 	// and so is the thing we're adding...
 				// The enhancement property is already set for typeNode
 				// Just add the stuff
@@ -172,8 +171,8 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				bNode.appendChild(eNode);
 			}// /else create nodes
 		}// /adding a class
-		else if (sourceFacet == "datatypesFacet"){ // the thing is a datatype
-			if (isDataType){					  // and so is the node we're adding it to....
+		else if (sourceFacet == "datatype"){ // the thing is a datatype
+			if (isDataType){				 // and so is the node we're adding it to....
 			// override the things; property is already set
 				console.log("updating datatype");
 				$(typeNode).text(classURI);
@@ -195,7 +194,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 			}// /!isDataType
 		}// /adding a datatype
 		else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
-			console.log("why are you calling this method???");
+			console.log("updateClassType: invalid sourceFacet!");
 	}
 }// /updateClassType
 
