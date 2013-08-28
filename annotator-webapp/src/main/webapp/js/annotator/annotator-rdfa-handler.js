@@ -384,6 +384,7 @@ function createImplicitBundleNode(theBundle){
 	}
 	else {// the bundle was not given a name
 		bNameTemp = "an_implicit_" + theBundle._id;
+		theBundle.setName(bNameTemp);
 	}
 	
 	var mainNode = document.getElementById("here-be-rdfa");
@@ -434,9 +435,10 @@ function createExplicitBundledBy(bundlingCol, subCol){
 }// /createExplicitBundledBy
 
 function createImplicitBundledBy(bundleName, subCol){
+	console.log("ImplicitBundledBy is being called: " + bundleName);
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('a');
-	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
+	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by")
 	$(bbNode).text( bundleName );
 	subEnhancement.appendChild(bbNode);
 }// /createImplicitBundledBy
@@ -512,7 +514,7 @@ function finalizeTriples(){
 		if( parseInt(theBundle.resource) === -1 ){ // implicit bundle
 			createImplicitBundleNode(theBundle);
 			$.each(theBundle.columns, function(j,colIndex){ // for each column in bundle
-				console.log("bundling " + colIndex + " into implicit");
+				console.log("bundling " + colIndex + " into implicit " + theBundle.nameTemp);
 				createImplicitBundledBy(theBundle.nameTemp, colIndex);
 			});
 		}	
