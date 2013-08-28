@@ -728,6 +728,11 @@ var SemantEcoUI = {
                     var state = {};
                     state[name] = value;
                     $.bbq.pushState(state);
+                } else if(type=="text") {
+                    var value = me.val();
+                    var state = {};
+                    state[name] = value;
+                    $.bbq.pushState(state);
                 }
             });
             $("select", this).change(function(e) {
