@@ -32,18 +32,6 @@ function createEnhancementNode(label, index){
 	// create nodes for the first enhancements
 	var colNum = document.createElement('div');
 	var colLabel = document.createElement('div');
-	// node for property is created here, and given the necessary RDFa
-	//   type for the eventual conversion, but it remains blank until the user
-	//   specifies what it is.
-	var colProp = document.createElement('a');
-	$(colProp).attr("id","prop-enhance,"+index);
-	// We can also create a node for the class, and give it an ID, however
-	//	 depending on whether it is a class or a datatype, the structure will be
-	//	 different. So this will be a dummy node that can be overridden/retyped
-	//	 as necessary. We mostly just want to give it an ID right now for ease of
-	//	 manipulation later =)
-	var colType = document.createElement('div');
-	$(colType).attr("id","type-enhance,"+index);
 	
 	// These are the only two things where we already know the necessary
 	//   objects at table creation.
@@ -53,13 +41,10 @@ function createEnhancementNode(label, index){
 	d3.select(bNode).attr("rdfa:rel","conversion:enhance");
 	d3.select(colNum).attr("rdfa:property","ov:csvCol");
 	d3.select(colLabel).attr("rdfa:property","ov:csvHeader conversion:label");
-	d3.select(colProp).attr("rdfa:property","conversion:equivalent_property");
 	
 	// glue everything together....
 	bNode.appendChild(colNum);
 	bNode.appendChild(colLabel);
-	bNode.appendChild(colProp);
-	bNode.appendChild(colType);
 	
 	// stick it in the page
 	var rdfaDiv = document.getElementById("e_process");
@@ -79,17 +64,10 @@ function updateProp(index,colType,theProperty){
 	console.log("updateProp: " + colType+ "," + index);
 	
 	var tableheader = (document.getElementById(colType+ "," + index));
+	// for annotations:
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
-	/*else if ( $(tableheader).hasClass("annotation-row") ){
-		// we have to know both the column index and the ID of the annotation to update it
-		/*var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
-		var annoID = rowID.split(',')[1]; 
-		console.log("rowID: "+rowID);
-		var propNode = document.getElementById("anno,"+index+","+annoID+",pred");
-		$(propNode).attr("href",theProperty);
-	}*/// /properties for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -101,6 +79,13 @@ function updateProp(index,colType,theProperty){
 	
 	// general case is properties for plain ol' column headers: 
 	var propNode = document.getElementById("prop-enhance,"+index);
+	if ( !propNode ){
+		var bNode = document.getElementById("enhance-col,"+index);
+		propNode = document.createElement('a');
+		$(propNode).attr("id","prop-enhance,"+index);
+		d3.select(propNode).attr("rdfa:property","conversion:equivalent_property");
+		bNode.appendChild(propNode);
+	}
 	$(propNode).attr("href",theProperty);
 }// /updateProp
 
@@ -110,14 +95,6 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
-	/*else if ( $(tableheader).hasClass("annotation-row") ){
-		// we have to know both the column index and the ID of the annotation to update it
-		/*var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
-		var annoID = rowID.split(',')[1]; 
-		console.log("rowID: "+rowID);
-		var objNode = document.getElementById("anno,"+index+","+annoID+",obj");
-		$(objNode).attr("href",classURI);
-	}*/// /classes for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){		
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -129,6 +106,11 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 		var bNode = document.getElementById("enhance-col,"+index);
 		// get the node we want to update, and check its type if any
 		var typeNode = document.getElementById("type-enhance,"+index);
+		if (!typeNode){
+			typeNode = document.createElement('div');
+			$(typeNode).attr("id","type-enhance,"+index);
+			bNode.appendChild(typeNode);
+		}
 		var subclassNode,classNameNode,eNode;	// These are the nodes for the subclassing enhancements. They
 												//	  might exist, OR we might need to create them. Either way,
 												//    use these variable.
@@ -202,6 +184,8 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 //	 in the RDFa for the column at (index).
 function hasDataType(index){
 	var checking = document.getElementById("type-enhance,"+index);
+	if (!checking){
+		return false; }
 	var rdfaType = d3.select(checking).attr("rdfa:property");
 	console.log(rdfaType);
 	if (rdfaType === "conversion:range"){
@@ -217,6 +201,8 @@ function hasDataType(index){
 //	 one.
 function hasClassType(index){
 	var checking = document.getElementById("type-enhance,"+index);
+	if (!checking){
+		return false; }
 	var rdfaType = d3.select(checking).attr("rdfa:property");
 	console.log(rdfaType);
 	if (rdfaType === "conversion:range_name"){
@@ -434,7 +420,7 @@ function createExplicitBundledBy(bundlingCol, subCol){
 }// /createExplicitBundledBy
 
 function createImplicitBundledBy(bundleName, subCol){
-	console.log("ImplicitBundledBy is being called: " + bundleName);
+	//console.log("ImplicitBundledBy is being called: " + bundleName);
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('a');
 	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by")
