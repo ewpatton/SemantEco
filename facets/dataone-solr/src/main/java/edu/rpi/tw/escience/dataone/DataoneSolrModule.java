@@ -98,7 +98,11 @@ public class DataoneSolrModule implements Module {
 				
 		//WebServiceRequestHandler.getRequest(query, "text");
 		
-		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+OR+hydrology&wt=json&rows=100";
+		String searchTerm = request.getParam("term").toString();
+		System.out.println("searched term is : " + searchTerm);
+		
+		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+OR+hydrology&wt=json&rows=100";
+		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:" + searchTerm + "&wt=json&rows=10000000";
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+AND+hydrology&wt=json&rows=10000000";
 
 		
@@ -125,7 +129,10 @@ public class DataoneSolrModule implements Module {
 		tempDataoneArray = (JSONArray) results.get("docs");
 		
 		System.out.println("Document2 count is: " + tempDataoneArray.length());		
-		
+		System.out.println("searched term is : " + searchTerm);
+		System.out.println("query is : " + searchTerm);
+
+
 		return j2.toString();	
 	}
 	
