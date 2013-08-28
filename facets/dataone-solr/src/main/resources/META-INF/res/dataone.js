@@ -1,5 +1,6 @@
-
-$("input[type=submit]").click(function(e) {
+$(window).bind("initialize", function() {
+$("input[type=button]").click(function(e) {
+	vocab();
 	e.preventDefault();
 /*
 	$("body").replaceWith('<div id="hierarchy"><h2>New heading</h2></div>');
@@ -67,7 +68,7 @@ $("input[type=submit]").click(function(e) {
 	return false;
 
 });
-
+});
 
 
 

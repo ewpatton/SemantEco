@@ -50,6 +50,8 @@ public class DataoneSolrModule implements Module {
 	public void visit(final SemantEcoUI ui, final Request request) {
 		// TODO add resources to display
 		ui.addScript(config.getResource("dataone.js"));
+		ui.addScript(config.getResource("vocab.js"));
+
 	}
 
 	@Override
