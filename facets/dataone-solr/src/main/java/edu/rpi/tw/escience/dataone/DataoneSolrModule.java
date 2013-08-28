@@ -97,10 +97,8 @@ public class DataoneSolrModule implements Module {
 		String query = "";
 
 		//query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion.php?q=insect%20herbivore";
-		//WebServiceRequestHandler.getRequest(query, "text");
-		
-		//query = "http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=passeriformes&Submit=Submit&domain=organism&getTree=true&upward=true&level=1";
-				
+		//WebServiceRequestHandler.getRequest(query, "text");		
+		//query = "http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=passeriformes&Submit=Submit&domain=organism&getTree=true&upward=true&level=1";			
 		//WebServiceRequestHandler.getRequest(query, "text");
 		
 		String searchTerm = request.getParam("term").toString();
@@ -120,6 +118,9 @@ public class DataoneSolrModule implements Module {
 
 
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:hydrology&wt=json&rows=100";
+		searchTerm = queryTopic(searchTerm);
+		
+		
 		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:" + searchTerm + "&wt=json&rows=10000000";
 		System.out.println("query is : " + query);
 		JSONObject j2 = (JSONObject) getRequest(query, "json");		
@@ -136,30 +137,42 @@ public class DataoneSolrModule implements Module {
 		return j2.toString();	
 	}
 	
-	public static void queryTopic(String searchTerm) throws JSONException{
+	public static String queryTopic(String searchTerm) throws JSONException{
 		// http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=
 		String query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=" + searchTerm;
 		System.out.println("query is : " + query);
 		String j2 = (String) getRequest(query, "text");	
 		System.out.println("j2 is : " + j2);
 		String[] temp = new String[100];
+		String[] temp3 = new String[100];
+
 		temp = j2.split("\t");
-		System.out.println("j2: " + temp[0].toString());		
-		System.out.println("j2: " + temp[1].toString());
+		//String[] temp2 = new String[100];
+		String temp2 = temp[2].toString();
+		temp3 = temp2.split(" ");
+
+		System.out.println("index 0: " + temp[0].toString());		
+		System.out.println("1: " + temp[1].toString());
+		System.out.println("2: " + temp[2].toString());
+		System.out.println("temp3: " + temp3.toString());
+
 		
 		//iterate on the one forward for OR string
-		String orSearchString = null;
-		for(int i = 2; i< temp.length; i++){
+		String search = "";
+		for(int i = 2; i< temp3.length; i++){
 		//System.out.println("j2: " + temp[2].toString());	
-			if(orSearchString != null ){
-				orSearchString += "OR";
+			if(!search.equals("") ){
+				search += "+OR+";
 			}
-			orSearchString += temp[i].toString();		
+			String search2 = search.replace("<br/>","");
+			search2 +=  (temp3[i].toString());
+			System.out.println("string: " + search2);
+
 		}
 		//JSONObject  results = j2.getJSONObject("response");	
 		
-		System.out.println("aSearchString: " + orSearchString);
-
+		System.out.println("search: " + search);
+		return search;
 	}
 	
 	@SuppressWarnings("deprecation")
