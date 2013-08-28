@@ -40,7 +40,7 @@ $("input[type=button]").click(function(e) {
 	//$(document).ready(function(){
 		
 		DataoneSolrModule.accessService({}, function (data) {
-			var table=$("<table><tbody></tbody></table");
+			var table=$("<table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table>");
 			data = jQuery.parseJSON(data);
 
 			console.debug(data);
@@ -52,7 +52,7 @@ $("input[type=button]").click(function(e) {
 				//table+='<tr><td>'+'88'+'</td><td>' +
 				//'88' + '</td><td> ' +
 				//'99' +  '</td></tr>';	table+= '<tr><td>Title4</td><td>Abstract</td><td>Keywords</td></tr>';
-				table.append("<tr><td>" + item.title +
+				table.append("<tr><td>" + item.title + '</td><td> ' +
 					     item.abstract + '</td><td> ' +
 					     item.keywords +  '</td></tr>');
 			});

@@ -13,7 +13,7 @@
   <body onload="SemantEco.initialize()">
     <div id="header">
       <div class="header-text">
-        <img src="images/header.png" alt="SolrTesting" />
+      <!--   <img src="images/header.png" alt="SolrTesting" /> -->
       </div>
     </div>
     <div id="content">

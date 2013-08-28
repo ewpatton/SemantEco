@@ -102,7 +102,6 @@ public class DataoneSolrModule implements Module {
 		System.out.println("searched term is : " + searchTerm);
 		
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+OR+hydrology&wt=json&rows=100";
-		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:" + searchTerm + "&wt=json&rows=10000000";
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+AND+hydrology&wt=json&rows=10000000";
 
 		
@@ -115,7 +114,9 @@ public class DataoneSolrModule implements Module {
 		System.out.println("Document1 count is: " + tempDataoneArray.length());
 
 
-		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:hydrology&wt=json&rows=100";
+		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:hydrology&wt=json&rows=100";
+		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:" + searchTerm + "&wt=json&rows=10000000";
+
 		JSONObject j2 = getRequest(query, "json");
 		
 		//System.out.println("Document count is: " +  DataoneDataObjectCollection.getDataOneJsonFromResponse(j).length());
@@ -130,7 +131,7 @@ public class DataoneSolrModule implements Module {
 		
 		System.out.println("Document2 count is: " + tempDataoneArray.length());		
 		System.out.println("searched term is : " + searchTerm);
-		System.out.println("query is : " + searchTerm);
+		System.out.println("query is : " + query);
 
 
 		return j2.toString();	
