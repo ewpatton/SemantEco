@@ -28,7 +28,12 @@ import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.Query;
 
 public class DataoneSolrModule implements Module {
-
+	
+	
+	public static void main (String[] args) throws JSONException{
+		queryTopic("birds");
+	}
+//
 	private ModuleConfiguration config = null;
 	
 	@Override
@@ -104,31 +109,25 @@ public class DataoneSolrModule implements Module {
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+OR+hydrology&wt=json&rows=100";
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:ecology+AND+hydrology&wt=json&rows=10000000";
 
-		
-		JSONObject j = getRequest(query, "json");
+
+		//JSONObject j = getRequest(query, "json");
 		//coll = new DataoneDataObjectCollection(j, query, false);
 		//keywords = coll.getKeywords();
 		
-		JSONObject results = j.getJSONObject("response");
-		JSONArray tempDataoneArray = (JSONArray) results.get("docs");
-		System.out.println("Document1 count is: " + tempDataoneArray.length());
+		//JSONObject results = j.getJSONObject("response");
+		//JSONArray tempDataoneArray = (JSONArray) results.get("docs");
+		//System.out.println("Document1 count is: " + tempDataoneArray.length());
 
 
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:hydrology&wt=json&rows=100";
 		query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:" + searchTerm + "&wt=json&rows=10000000";
-
-		JSONObject j2 = getRequest(query, "json");
-		
+		System.out.println("query is : " + query);
+		JSONObject j2 = (JSONObject) getRequest(query, "json");		
 		//System.out.println("Document count is: " +  DataoneDataObjectCollection.getDataOneJsonFromResponse(j).length());
-
-		//DataoneDataObject d;
-
-		
-		System.out.println("calls made");
-		
-		results = j2.getJSONObject("response");
-		tempDataoneArray = (JSONArray) results.get("docs");
-		
+		//DataoneDataObject d;	
+		System.out.println("calls made");	
+		JSONObject  results = j2.getJSONObject("response");
+		JSONArray  tempDataoneArray = (JSONArray) results.get("docs");	
 		System.out.println("Document2 count is: " + tempDataoneArray.length());		
 		System.out.println("searched term is : " + searchTerm);
 		System.out.println("query is : " + query);
@@ -137,8 +136,34 @@ public class DataoneSolrModule implements Module {
 		return j2.toString();	
 	}
 	
+	public static void queryTopic(String searchTerm) throws JSONException{
+		// http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=
+		String query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=" + searchTerm;
+		System.out.println("query is : " + query);
+		String j2 = (String) getRequest(query, "text");	
+		System.out.println("j2 is : " + j2);
+		String[] temp = new String[100];
+		temp = j2.split("\t");
+		System.out.println("j2: " + temp[0].toString());		
+		System.out.println("j2: " + temp[1].toString());
+		
+		//iterate on the one forward for OR string
+		String orSearchString = null;
+		for(int i = 2; i< temp.length; i++){
+		//System.out.println("j2: " + temp[2].toString());	
+			if(orSearchString != null ){
+				orSearchString += "OR";
+			}
+			orSearchString += temp[i].toString();		
+		}
+		//JSONObject  results = j2.getJSONObject("response");	
+		
+		System.out.println("aSearchString: " + orSearchString);
+
+	}
+	
 	@SuppressWarnings("deprecation")
-	public static JSONObject getRequest(String query, String resultType){
+	public static Object getRequest(String query, String resultType){
 		try{		
 			//URLEncoder.encode(term, "UTF-8") 
 			//String query = "https://www.googleapis.com/freebase/v1/search?query=" + URLEncoder.encode(term, "UTF-8") + "&indent=true&limit=1" + "&key=" + "AIzaSyBuu7a45hYNBYcwTC9DkeXCIHI3_o0fBd0";
@@ -156,7 +181,7 @@ public class DataoneSolrModule implements Module {
 				HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
 
 
-				conn.setReadTimeout(5000);
+				conn.setReadTimeout(50000);
 				//String contentType = conn.getContentType();
 				//System.out.println("connType : " + contentType);
 				try{
@@ -203,6 +228,8 @@ if(resultType.equals("json")){
 if(resultType.equals("text")){
 	//JSONObject content = new JSONObject(result);
 	System.out.println("content: " + result.toString());
+	return result.toString();		
+
 }
 			
 		}
