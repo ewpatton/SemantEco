@@ -36,7 +36,11 @@ public class TestQueryExecutor extends MockQueryExecutor {
 	private String endpoint = null;
 	private String query = null;
 	private Map<String, String> defaults = new TreeMap<String, String>();
-	
+
+	public TestQueryExecutor() {
+	    defaults.put("endpoint", "http://sparql.tw.rpi.edu/virtuoso/sparql");
+	}
+
 	/**
 	 * Interface for an execution entry
 	 * @author ewpatton
@@ -113,7 +117,7 @@ public class TestQueryExecutor extends MockQueryExecutor {
 	
 	@Override
 	public String getDefaultSparqlEndpoint() {
-		return "http://sparql.tw.rpi.edu/virtuoso/sparql";
+		return defaults.get("endpoint");
 	}
 	
 	@Override
@@ -205,25 +209,27 @@ public class TestQueryExecutor extends MockQueryExecutor {
 		}
 		
 		protected final void checkEndpoint() {
-			if(endpoint == null || !endpoint.equals(value)) {
-				Assert.fail("Expected endpoint "+endpoint);
+			if(endpoint == null && !getDefaultSparqlEndpoint().equals(value)) {
+			    Assert.fail("Expected endpoint "+value+", got "+getDefaultSparqlEndpoint());
+			} else if(endpoint != null && !endpoint.equals(value)) {
+				Assert.fail("Expected endpoint "+value+", got "+endpoint);
 			}
 		}
 		
 		protected final void checkQuery() throws FileNotFoundException {
 			String matchQuery = readFile(new FileInputStream("src/test/resources/"+value));
 			String temp = query;
-			
+
 			// correct for platform-dependent line endings
 			if(temp != null) {
-			    temp = temp.replaceAll("\r\n", "\n");
-			    temp = temp.replaceAll("\r", "\n");
+			    temp = temp.replaceAll("[ \t\r\n]+", " ");
+			    temp = temp.trim();
 			}
-			matchQuery = matchQuery.replaceAll("\r\n", "\n");
-			matchQuery = matchQuery.replaceAll("\r", "\n");
-			
+			matchQuery = matchQuery.replaceAll("[ \t\r\n]+", " ");
+			matchQuery = matchQuery.trim();
+
 			if(temp == null || !temp.equals(matchQuery)) {
-				Assert.fail();
+				Assert.fail("Expected query:\r\n"+matchQuery+"but got:\r\n"+query);
 			}
 		}
 		
