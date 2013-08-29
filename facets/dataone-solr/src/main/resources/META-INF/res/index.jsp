@@ -31,6 +31,13 @@
 <input name="domain" type="checkbox" value="geo" id="geo" /><label for="geo">Geospatial Feature</label><br />
 </form>
 </div>
+<table id="data-source-module" border="1">
+<tr><th>Search Type</th></tr><tr>
+<td><div id="DataSourceFacet" class="facet">
+<input name="searchType" type="checkbox" value="vocabulary" id="vocabulary" /><label for="Vocabulary expansion">vocabulary expansion</label><br />
+<input name="searchType" type="checkbox" value="topic" id= "topic" /><label for="Topic expansion">topic expansion</label><br />
+
+</div>
 </div>
       <table id="results"><tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></table>
     </div>
