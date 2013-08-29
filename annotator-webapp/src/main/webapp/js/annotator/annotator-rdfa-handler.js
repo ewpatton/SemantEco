@@ -145,6 +145,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
 				$(subclassNode).attr("href",classURI);
 				$(typeNode).text(classLabel);
+				$(typeNode).removeAttr("href");
 				$(classNameNode).text(classLabel);
 				$(subclassNode).text(classURI);
 				
@@ -155,7 +156,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 		}// /adding a class
 		else if (sourceFacet == "datatype"){ // the thing is a datatype
 			if (isDataType){				 // and so is the node we're adding it to....
-			// override the things; property is already set
+			// override the things; datatype is already set
 				console.log("updating datatype");
 				$(typeNode).text(classURI);
 			}// /isDataType
