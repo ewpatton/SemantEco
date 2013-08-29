@@ -258,8 +258,8 @@
         <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script type="text/javascript" src="js/RDFa.1.2.1.js"></script>
         <!-- Katie's Code -->
-        <script src="http://lacuna.ithiltari.com/vault/jquery.contextMenu.js"></script>
-        <script src="http://lacuna.ithiltari.com/vault/jquery.ui.position.js"></script>
+        <script type="text/javascript" src="js/annotator/jquery.contextMenu.js"></script>
+        <script type="text/javascript" src="js/annotator/jquery.ui.position.js"></script>
         <!-- Annotator Core Code -->
         <script type="text/javascript" src="js/annotator/annotator-js-file-io.js"></script>
         <script type="text/javascript" src="js/annotator/annotator-js-core.js"></script>
