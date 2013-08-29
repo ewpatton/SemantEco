@@ -235,8 +235,14 @@ function addPackageLevelData(){
 	// * base_uri might not be hardcoded in the future
 	var base = "http://purl.org/twc/semantgeo";
 	var source = setSource();
+	if (!source)
+		source = "undefined";
 	var dataset = setDataset();
+	if (!dataset)
+		dataset = "undefined";
 	var version = setVersion();
+	if (!version)
+		version = "undefined"
 	var full = base + "/source/" + source + "/dataset/" + dataset + "/version/" + version + "/conversion/enhancement/1";
 	
 	rootNode.attr("about",full);
@@ -488,6 +494,7 @@ function finalizeTriples(){
 	// handle package level data
 	var uriPrefix = addPackageLevelData();
     var prefixes = createPrefix(uriPrefix);
+	prefixes += "ov: http://open.vocab.org/terms/ ";
 	d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
 	
 	// handle cell-based
