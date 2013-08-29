@@ -531,7 +531,7 @@ var dnd = {
         debugGlobal = data;
 
         var sourceFacet = SemantEcoUI.HierarchicalFacet.entryForElement(data.o).rawData.type || "datatype";  // Thanks Evan :)
-		// Katie edit: hacky workaround right now, until we're sure the type is being set for the "datatype" facet
+		// Katie edit: hacky workaround right now, until we're sure the type is being set for the "datatype" facet (thanks, Evan =) )
 
         // Determine the label we are looking for given the source facet
         var label = ( $.inArray(sourceFacet, ["annotationProperty", "datatypeProperty", "objectProperty"]) != -1 ? "property-label" : "class-label" );
@@ -807,6 +807,20 @@ $(document).ready(function () {
             }
         });
     });
+	
+	$('#menu-show-downloads').click(function () {
+		$("#finalLinksModal").dialog({
+			modal: true,
+			width: 800,
+			draggable: false,
+			resizable: false,
+			buttons: {
+				Done: function () {
+					$(this).dialog("close");
+				}
+			}// /buttons
+		});// /dialog
+	});
 
     /* $( ".selector" ).dialog( "close" ); */
 

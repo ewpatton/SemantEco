@@ -31,6 +31,7 @@
                         <li><input id="menu-show-globals" type="button" value="Edit Global Properties" class="button-width-override" /></li>
                         <li><input id="menu-add-new-ontology" type="button" value="Load Ontology" class="button-width-override" /></li>
                         <li><input id="menu-commit-enhancement" type="button" value="Commit Enhancements" class="button-width-override" /></li>
+						<li><input id="menu-show-downloads" type="button" value="Show RDF Downloads" class="button-width-override" /></li>
                     </ul>
                 </div>
             </div>
