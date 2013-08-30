@@ -753,12 +753,12 @@ $(document).ready(function () {
 			results = jQuery.parseJSON(d);
 			var paramsURL = results.paramsFile;
 			var rdfURL = results.rdfDataFile;
-			console.log(paramsURL);
-			console.log(rdfURL);
+			var paramsLink = paramsURL.split('/')[5];
+			var rdfLink = rdfURL.split('/')[5];
 			var params = (document.getElementById("params-link-here")).getElementsByTagName('a')[0];
 			var rdf = (document.getElementById("rdf-link-here")).getElementsByTagName('a')[0];
-			$(params).attr('href',paramsURL);
-			$(rdf).attr('href',rdfURL);
+			$(params).attr('href',paramsURL).text(paramsLink);
+			$(rdf).attr('href',rdfURL).text(rdfLink);
 			//params.innerHTML = "parameters file";
 			//rdf.innerHTML = "RDF file";
 			$("#finalLinksModal").dialog({

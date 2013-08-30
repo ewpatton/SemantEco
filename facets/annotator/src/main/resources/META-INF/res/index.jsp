@@ -240,9 +240,9 @@
             <p>Data Links:</p>
             <table>
 				<tr>
-					<td><p id="params-link-here"><a>Click to download your Parameters file</a></p>
+					<td id="params-link-here"><p>Click to download your Parameters file</p><a target="_blank"></a>
 					</td>
-					<td><p id="rdf-link-here"><a>Click to download your RDF</a></p>
+					<td id="rdf-link-here"><p>Click to download your RDF</p><a target="_blank"></a>
 					</td>
 				</tr>
 			</table>
