@@ -284,16 +284,14 @@ public class AnnotatorModule implements Module {
 	
 	@QueryMethod
 	public String initOWLModel(Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException{
-
 			if (request.getParam("listOfOntologies") != null){
 				JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies") ;
 				this.annotatorTester = new AnnotatorTester(listOfOntologies, false);	
 			}
 			else{
 				this.annotatorTester = new AnnotatorTester();
-				System.out.println("Must provide a list of ontologies, forloading.");
-			}
-			
+				System.out.println("Must provide a list of ontologies, for loading.");
+			}		
 			return "done";
 		}
 		
@@ -566,7 +564,17 @@ public class AnnotatorModule implements Module {
 	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");  
 	    df.setTimeZone(TimeZone.getTimeZone("PST"));  
 	    return df.format(new Date());  
-	}  	
+	}  
+	
+	
+	@QueryMethod
+	public String queryForInstances(final Request request) throws JSONException{
+		
+		String aClassString = request.getParam("aClass").toString();
+		return this.annotatorTester.queryForInstances(aClassString).toString();
+
+	}
+	
 
 	@QueryMethod
 	public String queryForEnhancing2(final Request request) throws JSONException, OWLOntologyStorageException, OWLOntologyCreationException, IOException{	
