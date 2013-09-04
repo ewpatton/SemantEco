@@ -120,6 +120,16 @@ public class ClientRequest extends LoggerWrapper implements Request {
 		}
 	}
 
+	protected ClientRequest(ClientRequest other) {
+		super(other.name);
+		log = other.log;
+		params = other.params;
+		models = other.models;
+		original = other.original;
+		activeDomains = other.activeDomains;
+		manager = other.manager;
+	}
+
 	@Override
 	public final Object getParam(String key) {
 		String value = params.get(key);
