@@ -75,6 +75,7 @@
     <module>semanteco-darrin</module>
     <module>semanteco-health</module>
     <module>semanteco-squirrel-facet</module>
+    <module>dataone-solr</module>
   </modules>
 
   <build>

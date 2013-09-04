@@ -506,6 +506,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	private boolean shouldCallModule(final Module module, final Domain domain) {
+		if(moduleDomainMap == null) {
+			buildDomain();
+		}
 		List<Domain> domains = moduleDomainMap.get(module);
 		if(domains == null || domains.size() == 0) {
 			return true;
@@ -514,6 +517,9 @@ public class ModuleManagerImpl implements ModuleManager, FileListener {
 	}
 
 	private boolean shouldCallModule(final Module module, final Request request) {
+		if(moduleDomainMap == null) {
+			buildDomain();
+		}
 		List<Domain> domains = moduleDomainMap.get(module);
 		if(domains == null || domains.size() == 0) {
 			return true;

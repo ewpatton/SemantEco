@@ -50,6 +50,7 @@
     <module>servlet-websocket</module>
     <module>webapp</module>
     <module>annotator-webapp</module>
+    <module>testapp</module>
   </modules>
 
   <dependencyManagement>
@@ -77,6 +78,11 @@
       <dependency>
         <groupId>edu.rpi.tw.escience</groupId>
         <artifactId>semanteco-servlet-websocket</artifactId>
+        <version>4.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>edu.rpi.tw.escience</groupId>
+        <artifactId>semanteco-servlet</artifactId>
         <version>4.2-SNAPSHOT</version>
       </dependency>
     </dependencies>

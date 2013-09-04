@@ -12,7 +12,7 @@
 
   <groupId>${groupId}</groupId>
   <packaging>war</packaging>
-  <name>semanteco ${appName} facet</name>
+  <name>semanteco ${appName} webapp</name>
   <version>${version}</version>
 
   <repositories>
@@ -27,6 +27,11 @@
     <tomcat.version>7.0.29</tomcat.version>
     <tomcat.port>8080</tomcat.port>
     <tomcat.url>http://localhost:${tomcat.port}/manager/text</tomcat.url>
+    <!-- specify artifact for default module here -->
+    <!-- you will also need to enable the use-default-module profile at the end of the pom -->
+    <!--
+    <module.default>semanteco-sample-module</module.default>
+    -->
   </properties>
 
   <dependencies>
@@ -220,4 +225,68 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>use-default-module</id>
+      <activation>
+        <!-- switch this to true to activate default module on every build -->
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.5.1</version>
+            <executions>
+              <execution>
+                <id>unpack-default-module</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <includeArtifactIds>${module.default}</includeArtifactIds>
+                  <outputDirectory>${project.build.directory}/default-module/resources</outputDirectory>
+                  <includes>META-INF\/res\/**\/*</includes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+              <execution>
+                <id>copy-default-module-assets</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.directory}/default-module/resources/META-INF/res</directory>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.2</version>
+            <configuration>
+              <warSourceExcludes>index.jsp</warSourceExcludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

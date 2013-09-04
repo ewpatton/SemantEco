@@ -2,6 +2,7 @@
 <%@ taglib uri="/WEB-INF/semanteco-module.tld" prefix="module" %>
 <!DOCTYPE html>
 <html lang="en">
+    <!-- facet index.jsp -->
     <head>
         <!-- HTML Metadata -->
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -26,9 +27,11 @@
                 <div id="header-menu">
                     <ul>
                         <li><input id="menu-import-file" type="button" value="Import File" class="button-width-override" /></li>
-                        <li><input id="menu-commit-enhancement" type="button" value="Commit Enhancements" class="button-width-override" /></li>
-                        <li><input id="menu-show-globals" type="button" value="Edit Global Properties" class="button-width-override" /></li>
                         <li><input id="menu-show-data-info-form" type="button" value="Describe Dataset" class="button-width-override" /></li>
+                        <li><input id="menu-show-globals" type="button" value="Edit Global Properties" class="button-width-override" /></li>
+                        <li><input id="menu-add-new-ontology" type="button" value="Load Ontology" class="button-width-override" /></li>
+                        <li><input id="menu-commit-enhancement" type="button" value="Commit Enhancements" class="button-width-override" /></li>
+						<li><input id="menu-show-downloads" type="button" value="Show RDF Downloads" class="button-width-override" /></li>
                     </ul>
                 </div>
             </div>
@@ -129,6 +132,10 @@
         <!-- dropdown div, filled by plugin -->
         <div id="ontology-dropdown"></div>
         
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+        <!-- + All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) + -->
+        <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
         <!-- RDFa will live here. This div will always remain hidden -->
         <div id="here-be-rdfa" class="hidden">
             <div id="e_process" property="conversion:conversion_process" typeof="conversion:EnhancementConversionProcess">
@@ -136,8 +143,7 @@
             </div>
         <!-- package-level triples -->
         </div>
-        
-        <!-- All the HTML below is shown to the user via modal prompts (and is thus hidden until needed) -->
+
         <!-- File to Import Prompt (what file are we working with?) -->
         <div id="fileDialogWrapper" class="hidden">
             <p><input type="radio" id="importSystemInput" class="import-radio" name="importing" value="Import a *.CSV file from your system:" checked="checked">Import a *.CSV file from your system: <input type="file" id="the_file" accept=".csv" />
@@ -224,7 +230,23 @@
             <input type="text" id="canonicalModalInput" placeHolder="e.g. Alabama is a state" />
         </div>
         
-        
+        <!-- Brendan Edit, creating a modal for adding additional ontologies -->
+        <div id="addOntologyModal" class="hidden">
+            <p>Specify a URL for your new ontology below.</p>
+            <input type="text" id="addOntologyModalInput" placeHolder="e.g. http://www.example.com/ontology.owl" />
+        </div>
+        <!-- Katie Edit, creating a modal for giving the user links to BOTH enhancement params and the final RDF -->
+        <div id="finalLinksModal" class="hidden">
+            <p>Data Links:</p>
+            <table>
+				<tr>
+					<td id="params-link-here"><p>Click to download your Parameters file</p><a target="_blank"></a>
+					</td>
+					<td id="rdf-link-here"><p>Click to download your RDF</p><a target="_blank"></a>
+					</td>
+				</tr>
+			</table>
+		</div>
 
         <!-- Load Javascript libraries -->
         <!-- Local JS Libraries -->
@@ -237,8 +259,8 @@
         <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script type="text/javascript" src="js/RDFa.1.2.1.js"></script>
         <!-- Katie's Code -->
-        <script src="http://lacuna.ithiltari.com/vault/jquery.contextMenu.js"></script>
-        <script src="http://lacuna.ithiltari.com/vault/jquery.ui.position.js"></script>
+        <script type="text/javascript" src="js/annotator/jquery.contextMenu.js"></script>
+        <script type="text/javascript" src="js/annotator/jquery.ui.position.js"></script>
         <!-- Annotator Core Code -->
         <script type="text/javascript" src="js/annotator/annotator-js-file-io.js"></script>
         <script type="text/javascript" src="js/annotator/annotator-js-core.js"></script>

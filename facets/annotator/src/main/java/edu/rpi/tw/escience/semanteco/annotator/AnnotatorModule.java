@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,8 +19,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -28,6 +32,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -278,19 +284,15 @@ public class AnnotatorModule implements Module {
 	
 	@QueryMethod
 	public String initOWLModel(Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException{
-
-
 			if (request.getParam("listOfOntologies") != null){
 				JSONArray listOfOntologies = (JSONArray) request.getParam("listOfOntologies") ;
 				this.annotatorTester = new AnnotatorTester(listOfOntologies, false);	
 			}
 			else{
 				this.annotatorTester = new AnnotatorTester();
-				System.out.println("Must provide a list of ontologies, forloading.");
-			}
-			
+				System.out.println("Must provide a list of ontologies, for loading.");
+			}		
 			return "done";
-
 		}
 		
 
@@ -484,11 +486,7 @@ public class AnnotatorModule implements Module {
 	//	   <a property="url" href="http://manu.sporny.org/">my homepage</a>.
 	//	</p>
 		System.out.println("rdfa: " + request.getParam("rdfa"));
-		String rdfa = (String) request.getParam("rdfa");
-		
-		
-		//RDFReader r;
-		
+		String rdfa = (String) request.getParam("rdfa");		
 		Class.forName("net.rootdev.javardfa.jena.RDFaReader");
 		//Module.class.getClassLoader().loadClass("net/rootdev/javardfa/jena/RDFaReader.class");
 		Model m = ModelFactory.createDefaultModel();
@@ -500,32 +498,47 @@ public class AnnotatorModule implements Module {
 		FileOutputStream fos = new FileOutputStream("/tmp/rdfa.rdf");
 		m.write(fos, "TTL");
 		fos.close();
-
 		return null;
 	}
 	
 	@QueryMethod(method=HTTP.POST)
-	public String queryForEnhancingParams(final Request request) throws IOException{
+	public String queryForEnhancingParams(final Request request) throws IOException, JSONException{
+		String dateStamp = getDateTime();
 		System.out.println("turtle is : " + request.getParam("turtle"));
 		PrintWriter csvFile = this.csvFileWriter;
 		String[] arguments = new String[] {csvFileLocation," --header-line '1'"," --delimiter ,"};
         String eId = "1";
 		List<String> headerList = CSVHeadersForAnnotator.getHeaders(arguments);
-		request.getLogger().debug("headers are : " + headerList.toString());
-		
+		request.getLogger().debug("headers are : " + headerList.toString());	
 		/* generateParmsFileFromHeaders(headerList, paramsFile, surrogate, sourceId, 
 	    			datasetId, datasetVersion, null, 
 	    			conversionID, cellDelimiter, null, null, null,
 	    			null, null, null, username, 
 	    			machineUri, username);
-	    			*/
-		
-		
+	    */
 		//write the string the paramsFile path
+		
+		String parametersFullPath = System.getProperty("AnnotatorRootPath")  + "RDF-data" + File.separator + "parameters-" + dateStamp + ".ttl";
+		
+		System.err.println("parametersFullPath: " + parametersFullPath);
 		String turtleFileAsString = (String) request.getParam("turtle");
 		
+        File rdfdir = new File(System.getProperty("AnnotatorRootPath") + File.separator + "RDF-data");
+        if ( !rdfdir.exists() ) {
+          if ( !rdfdir.mkdir() ) {
+            // not writeable!
+            throw new IOException("Failure!");
+          }
+        } 
 		
-		FileOutputStream fos = new FileOutputStream(paramsFile);
+		File file = new File(parametersFullPath);
+		System.err.println("parameters file path: " + parametersFullPath);
+		//File yourFile = new File("score.txt");
+		if(!file.exists()) {
+		    file.createNewFile();
+		}
+		
+		FileOutputStream fos = new FileOutputStream(parametersFullPath);	
 		
 		byte[] contentInBytes = turtleFileAsString.getBytes();
 		fos.write(contentInBytes);
@@ -536,18 +549,35 @@ public class AnnotatorModule implements Module {
 		//fos.write(turtleFileAsString);
 		
 		//fos.write(arg0);
-		fos.close();
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+	//	fos.close();
+		
+		//can split by one forward slash
+		//.getOriginalURL(): http://localhost:8081/annotator/rest/AnnotatorModule/queryForEnhancingParams
+		String[] parts = request.getOriginalURL().toString().split("/");
+        return convertToRdfWithEnhancementsFile(csvFileLocation, parametersFullPath, parts[0] + "/" + parts[1] + "/" + parts[2] + "/" + parts[3] + "/", dateStamp); 
         //convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
-
-		
-		return null;
+		//return null;
 	}
+	private  final static String getDateTime()  
+	{  
+	   // DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss");  
+	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");  
+	    df.setTimeZone(TimeZone.getTimeZone("PST"));  
+	    return df.format(new Date());  
+	}  
+	
+	
+	@QueryMethod
+	public String queryForInstances(final Request request) throws JSONException{
 		
+		String aClassString = request.getParam("aClass").toString();
+		return this.annotatorTester.queryForInstances(aClassString).toString();
+
+	}
+	
 
 	@QueryMethod
-	public String queryForEnhancing2(final Request request) throws FileNotFoundException, JSONException, OWLOntologyStorageException, OWLOntologyCreationException{
-		
+	public String queryForEnhancing2(final Request request) throws JSONException, OWLOntologyStorageException, OWLOntologyCreationException, IOException{	
 		//example implicit bundle:
 		/*
 		 * :a_sample_bundle
@@ -557,7 +587,7 @@ public class AnnotatorModule implements Module {
 		   conversion:name_template "[/sd]waterSample[r]";
 		   conversion:type_name <http://escience.rpi.edu/ontology/semanteco/2/0/water.owl#WaterSample> .
 		   */
-
+		
 		System.out.println("source is : " +request.getParam("sourceName"));
 		System.out.println("datasetName is : " + request.getParam("dataSetName"));		
 		//set the source, dataset, and csv file names based on user input
@@ -631,7 +661,7 @@ public class AnnotatorModule implements Module {
         //(original: writeToEnhancement)
        // writeEnhancementForRange(request);
         //writeEnhancementForRangeTester
-        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile); 
+        convertToRdfWithEnhancementsFile(csvFileLocation, paramsFile,request.getOriginalURL().toString(), getDateTime() ); 
         //do we have a uri for every ontology, and if a class is sleceted, how do we map it back to the uri?
         
         //iterate over all classes in annotation mappings
@@ -650,8 +680,7 @@ public class AnnotatorModule implements Module {
 		//FileManager.get().readModel(model, "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl");
 	}
 	
-	public void convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL ) {
-		// TODO Auto-generated method stub
+	public String convertToRdfWithEnhancementsFile(String inFilename, String enhancementParametersURL, String tomcatURL, String dateStamp) throws IOException, JSONException {
 		//String inFilename                 = null;
 	      int    header                     = 1;
 	      int    primaryKeyColumn           = 0;
@@ -688,9 +717,7 @@ public class AnnotatorModule implements Module {
 		
 		//enhancementParametersURL = "/Users/apseyed/Desktop/source/scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/automatic/uk-offshore-oil-wells-short.csv.raw.params.ttl";
 		//enhancementParametersURL = "/Users/apseyed/Desktop/source/p-scraperwiki-com/uk-offshore-oil-wells/version/2011-Jan-24/manual/uk-offshore-oil-wells-short.csv.e1.params.ttl";
-		converterIdentifier = "csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606";
-		
-		
+		converterIdentifier = "csv2rdf4lod_96add9a1c2a9b862527cd8d6e795a606";	
 		voidFileExtensions.add(".ttl.gz");
 		// Load the initial enhancement parameters.
 	      Repository enhancementParamsRep = Cat.load(enhancementParametersURL);
@@ -699,15 +726,18 @@ public class AnnotatorModule implements Module {
 	         System.exit(3);
 	      }
 	      DefaultEnhancementParameters enhancementParams = new DefaultEnhancementParameters(enhancementParamsRep, baseURI);
-
-
-	         System.out.println("calling demo");
+	      System.out.println("calling demo");
 
 	         CSV2RDFForAnnotator csv2rdfObject = new CSV2RDFForAnnotator(inFilename,classURI, subjectNS,  uuidSubject,  predicateNS, uuidPredicate, 
                 objectNS, uuidObject, enhancementParams, converterIdentifier, enhancementParametersURL,
-                voidFileExtensions, examplesOnly, sampleLimit);
+                voidFileExtensions, examplesOnly, sampleLimit);         
+	          System.err.print("root path is : " + System.getProperty("AnnotatorRootPath"));
+	    
 		
-		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
+//		 Repository toRDF = csv2rdfObject.toRDF(outputRdfFileLocation, metaOutputFileName);
+	     String generatedRDFPath = "RDF-data" + "/enhanced-rdf-" + dateStamp + ".ttl";
+	     String paramsPath = "RDF-data" + "/parameters-" + dateStamp + ".ttl";
+		 Repository toRDF = csv2rdfObject.toRDF(System.getProperty("AnnotatorRootPath") + File.separator + generatedRDFPath, metaOutputFileName);
 	      System.err.println("========== edu.rpi.tw.data.csv.CSVtoRDF complete. ==========");
 	          
 		/*
@@ -722,8 +752,47 @@ public class AnnotatorModule implements Module {
                    Set<String> voidFileExtensions,
                    boolean examplesOnly, int sampleLimit)
 		 */
+	      
+	      //return file at a locatation as a string
+	      //outputRdfFileLocation
+	      //    private String outputRdfFileLocation=workingDir + "/output.ttl";
+	      System.err.println("filename : "  + outputRdfFileLocation);
+	     // System.err.print(readFileAsString(outputRdfFileLocation));
+	      
+          //String rdfPutDir = System.getProperty("java.io.tmpdir");
+          //System.out.println("root path is : " + SemantEcoConfiguration.get().getBasePath());
+   
+	     // return readFileAsString(outputRdfFileLocation);
+	      System.err.println("returning : "  + System.getProperty("AnnotatorRootPath") + File.separator + generatedRDFPath);
+	      System.err.println("tomcat URL: " + tomcatURL);
+	      //return "http://localhost:8081/"+ "RDF-data" + "/enhanced-rdf.ttl";
+	      System.err.println("tomcat URL: " + tomcatURL +  generatedRDFPath );
+	      //create a json object that returns 2 urls
+	      JSONObject jobj = new JSONObject();
+	      jobj.put("rdfDataFile", tomcatURL + generatedRDFPath );
+	      jobj.put("paramsFile", tomcatURL + paramsPath);
+	     // git remote add origin git@github.com:apseyed/SemantEcoAnnotator.git
 
+	      
+	      
+	     // return tomcatURL + "RDF-data" +  "/enhanced-rdf-" + getDateTime() + ".ttl";
+	      System.err.println("jobj:" + jobj.toString());
+	      return jobj.toString();
+	   
 	}
+	
+	public static String readFileAsString(String filePath) throws java.io.IOException
+	{
+	    BufferedReader reader = new BufferedReader(new FileReader(filePath));
+	    String line, results = "";
+	    while( ( line = reader.readLine() ) != null)
+	    {
+	        results += line;
+	    }
+	    reader.close();
+	    return results;
+	}
+	
 	/**
 	 * @throws FileNotFoundException 
 	 * 
@@ -784,15 +853,13 @@ public class AnnotatorModule implements Module {
 		enhancementFileWriter.println("@prefix todo:         <http://www.w3.org/2000/01/rdf-schema#> .");
 		enhancementFileWriter.println("@prefix rdf:         <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
 		enhancementFileWriter.println("@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .");
-
-
 		enhancementFileWriter.println();
 		enhancementFileWriter.println();
 
 		surrogate = "https://github.com/timrdf/csv2rdf4lod-automation/wiki/CSV2RDF4LOD_BASE_URI#";
 		String STEP =  "enhancement/1";
 		if(conversionID != null){
-			String dataset = "<" + surrogate + "/source/" + sourceId + "/dataset/" + datasetId + "/version/" + datasetVersion + "/conversion/" + STEP + ">"  ;
+			String dataset = "<" + surrogate + "/source/" + sourceId + "/dataset/" + datasetId + "/version/" + datasetVersion + "/conversion/" + STEP + ">";
 			enhancementFileWriter.println(dataset);
 			enhancementFileWriter.println("  a conversion:LayerDataset, void:Dataset;");
 			enhancementFileWriter.println();
@@ -824,7 +891,6 @@ public class AnnotatorModule implements Module {
 				enhancementFileWriter.println("    ];");
 				columnNumber++;
 			}
-
 		}
 		enhancementFileWriter.println("];");
 		enhancementFileWriter.println(".");
@@ -2848,7 +2914,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	@QueryMethod
 	public String getAxiomsForClassTester(final Request request){
 		//this.initModel();
-		OntModel model = null;
+
+		//request.getOriginalURL();
+		
+OntModel model = null;
 		model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 
 		FileManager.get().readModel(model, config.getResource("owl-files/oboe-core.owl").toString()) ;	

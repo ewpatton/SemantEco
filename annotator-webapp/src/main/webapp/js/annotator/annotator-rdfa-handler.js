@@ -32,18 +32,6 @@ function createEnhancementNode(label, index){
 	// create nodes for the first enhancements
 	var colNum = document.createElement('div');
 	var colLabel = document.createElement('div');
-	// node for property is created here, and given the necessary RDFa
-	//   type for the eventual conversion, but it remains blank until the user
-	//   specifies what it is.
-	var colProp = document.createElement('a');
-	$(colProp).attr("id","prop-enhance,"+index);
-	// We can also create a node for the class, and give it an ID, however
-	//	 depending on whether it is a class or a datatype, the structure will be
-	//	 different. So this will be a dummy node that can be overridden/retyped
-	//	 as necessary. We mostly just want to give it an ID right now for ease of
-	//	 manipulation later =)
-	var colType = document.createElement('div');
-	$(colType).attr("id","type-enhance,"+index);
 	
 	// These are the only two things where we already know the necessary
 	//   objects at table creation.
@@ -53,13 +41,10 @@ function createEnhancementNode(label, index){
 	d3.select(bNode).attr("rdfa:rel","conversion:enhance");
 	d3.select(colNum).attr("rdfa:property","ov:csvCol");
 	d3.select(colLabel).attr("rdfa:property","ov:csvHeader conversion:label");
-	d3.select(colProp).attr("rdfa:property","conversion:equivalent_property");
 	
 	// glue everything together....
 	bNode.appendChild(colNum);
 	bNode.appendChild(colLabel);
-	bNode.appendChild(colProp);
-	bNode.appendChild(colType);
 	
 	// stick it in the page
 	var rdfaDiv = document.getElementById("e_process");
@@ -79,17 +64,10 @@ function updateProp(index,colType,theProperty){
 	console.log("updateProp: " + colType+ "," + index);
 	
 	var tableheader = (document.getElementById(colType+ "," + index));
+	// for annotations:
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
-	/*else if ( $(tableheader).hasClass("annotation-row") ){
-		// we have to know both the column index and the ID of the annotation to update it
-		/*var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
-		var annoID = rowID.split(',')[1]; 
-		console.log("rowID: "+rowID);
-		var propNode = document.getElementById("anno,"+index+","+annoID+",pred");
-		$(propNode).attr("href",theProperty);
-	}*/// /properties for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
@@ -101,27 +79,25 @@ function updateProp(index,colType,theProperty){
 	
 	// general case is properties for plain ol' column headers: 
 	var propNode = document.getElementById("prop-enhance,"+index);
+	if ( !propNode ){
+		var bNode = document.getElementById("enhance-col,"+index);
+		propNode = document.createElement('a');
+		$(propNode).attr("id","prop-enhance,"+index);
+		d3.select(propNode).attr("rdfa:property","conversion:equivalent_property");
+		bNode.appendChild(propNode);
+	}
 	$(propNode).attr("href",theProperty);
 }// /updateProp
 
 function updateClassType(index,colType,classURI,classLabel,sourceFacet){
-	console.log("updateClassType: " + colType);
+	console.log("updateClassType from source: " + sourceFacet);
 	var tableheader = (document.getElementById(colType+ "," + index));
 	if ( $(tableheader).hasClass("hidden") ){ // why is this function being called for each table-header in a bundle?
 		return;
 	}
-	/*else if ( $(tableheader).hasClass("annotation-row") ){
-		// we have to know both the column index and the ID of the annotation to update it
-		/*var rowID = (tableheader).getElementsByTagName('table')[0].getElementsByTagName('tr')[0].id; // **fix this
-		var annoID = rowID.split(',')[1]; 
-		console.log("rowID: "+rowID);
-		var objNode = document.getElementById("anno,"+index+","+annoID+",obj");
-		$(objNode).attr("href",classURI);
-	}*/// /classes for annotations are handled in a different way
 	else if ( $(tableheader).hasClass("bundled-implicit") || $(tableheader).hasClass("bundled")){		
 		var tableID = (tableheader).getElementsByTagName('table')[0].id;
 		var bundleID = tableID.split(',')[1];
-		console.log("bundleID: "+bundleID);
 		updateBundleClassType(bundleID, classURI);
 		return;
 	}
@@ -130,13 +106,18 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 		var bNode = document.getElementById("enhance-col,"+index);
 		// get the node we want to update, and check its type if any
 		var typeNode = document.getElementById("type-enhance,"+index);
+		if (!typeNode){
+			typeNode = document.createElement('div');
+			$(typeNode).attr("id","type-enhance,"+index);
+			bNode.appendChild(typeNode);
+		}
 		var subclassNode,classNameNode,eNode;	// These are the nodes for the subclassing enhancements. They
 												//	  might exist, OR we might need to create them. Either way,
 												//    use these variable.
 		var isClass = hasClassType(index);
 		var isDataType = hasDataType(index);
 		// Is the thing we are adding a Class or a Data Type?
-		if ( sourceFacet == "classesFacet" ){ // if it's a class
+		if ( sourceFacet == "class" ){ // if it's a class
 			if ( isClass ){ 	// and so is the thing we're adding...
 				// The enhancement property is already set for typeNode
 				// Just add the stuff
@@ -164,6 +145,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
 				$(subclassNode).attr("href",classURI);
 				$(typeNode).text(classLabel);
+				$(typeNode).removeAttr("href");
 				$(classNameNode).text(classLabel);
 				$(subclassNode).text(classURI);
 				
@@ -172,9 +154,9 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 				bNode.appendChild(eNode);
 			}// /else create nodes
 		}// /adding a class
-		else if (sourceFacet == "datatypesFacet"){ // the thing is a datatype
-			if (isDataType){					  // and so is the node we're adding it to....
-			// override the things; property is already set
+		else if (sourceFacet == "datatype"){ // the thing is a datatype
+			if (isDataType){				 // and so is the node we're adding it to....
+			// override the things; datatype is already set
 				console.log("updating datatype");
 				$(typeNode).text(classURI);
 			}// /isDataType
@@ -195,7 +177,7 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 			}// /!isDataType
 		}// /adding a datatype
 		else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
-			console.log("why are you calling this method???");
+			console.log("updateClassType: invalid sourceFacet!");
 	}
 }// /updateClassType
 
@@ -203,6 +185,8 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 //	 in the RDFa for the column at (index).
 function hasDataType(index){
 	var checking = document.getElementById("type-enhance,"+index);
+	if (!checking){
+		return false; }
 	var rdfaType = d3.select(checking).attr("rdfa:property");
 	console.log(rdfaType);
 	if (rdfaType === "conversion:range"){
@@ -218,6 +202,8 @@ function hasDataType(index){
 //	 one.
 function hasClassType(index){
 	var checking = document.getElementById("type-enhance,"+index);
+	if (!checking){
+		return false; }
 	var rdfaType = d3.select(checking).attr("rdfa:property");
 	console.log(rdfaType);
 	if (rdfaType === "conversion:range_name"){
@@ -249,8 +235,14 @@ function addPackageLevelData(){
 	// * base_uri might not be hardcoded in the future
 	var base = "http://purl.org/twc/semantgeo";
 	var source = setSource();
+	if (!source)
+		source = "undefined";
 	var dataset = setDataset();
+	if (!dataset)
+		dataset = "undefined";
 	var version = setVersion();
+	if (!version)
+		version = "undefined"
 	var full = base + "/source/" + source + "/dataset/" + dataset + "/version/" + version + "/conversion/enhancement/1";
 	
 	rootNode.attr("about",full);
@@ -384,6 +376,7 @@ function createImplicitBundleNode(theBundle){
 	}
 	else {// the bundle was not given a name
 		bNameTemp = "an_implicit_" + theBundle._id;
+		theBundle.setName(bNameTemp);
 	}
 	
 	var mainNode = document.getElementById("here-be-rdfa");
@@ -393,7 +386,9 @@ function createImplicitBundleNode(theBundle){
 	var bundleNameTemp = document.createElement('div');
 	var bundleType = document.createElement('a');
 	// ... type them...
+	// * Each bundle node is referenced by the ID impNode,[bundleID]
 	d3.select(bundleNode).attr("rdfa:about","#"+bNameTemp).attr("rdfa:typeof","conversion:ImplicitBundle");
+	$(bundleNode).attr("id","impNode," + theBundle._id);
 	d3.select(bundleProp).attr("rdfa:property","conversion:property_name");
 	d3.select(bundleNameTemp).attr("rdfa:property","name_template");
 	d3.select(bundleType).attr("rdfa:property","conversion:type_name");
@@ -412,7 +407,16 @@ function createImplicitBundleNode(theBundle){
 //	- bundlingCol: the BUNDLING column
 // 	- subCol: the column that is IN the bundle (subordinate column)
 function createExplicitBundledBy(bundlingCol, subCol){
-	var subEnhancement = document.getElementById("enhance-col,"+subCol);
+	var subEnhancement;
+	// check if subCol is a COLUMN or a BUNDLE:
+	if ( isNaN(subCol) ){
+		var subBundleID = getBundleById(subCol)._id;
+		subEnhancement = document.getElementById("impNode,"+subBundleID);
+		console.log("subordinate bundle:" + subBundleID); //get the bundle node of RDFa
+	}
+	else {
+		subEnhancement = document.getElementById("enhance-col,"+subCol);
+	}
 	var bbNode = document.createElement('div');
 	var bbCol = document.createElement('div');
 	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
@@ -423,12 +427,13 @@ function createExplicitBundledBy(bundlingCol, subCol){
 }// /createExplicitBundledBy
 
 function createImplicitBundledBy(bundleName, subCol){
+	//console.log("ImplicitBundledBy is being called: " + bundleName);
 	var subEnhancement = document.getElementById("enhance-col,"+subCol);
 	var bbNode = document.createElement('a');
-	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
-	$(bbNode).text( bundleName );
+	d3.select(bbNode).attr("rdfa:property","conversion:bundled_by")
+	$(bbNode).attr("href", ("#"+bundleName));
 	subEnhancement.appendChild(bbNode);
-}// /createExplicitBundledBy
+}// /createImplicitBundledBy
 
 function addAnnotationRDFa( index, annoID, predicate, object ){
 	// create nodes...
@@ -489,6 +494,7 @@ function finalizeTriples(){
 	// handle package level data
 	var uriPrefix = addPackageLevelData();
     var prefixes = createPrefix(uriPrefix);
+	prefixes += "ov: http://open.vocab.org/terms/ ";
 	d3.select("#here-be-rdfa").attr("rdfa:prefix", prefixes);
 	
 	// handle cell-based
@@ -497,21 +503,22 @@ function finalizeTriples(){
 	}
 	
 	// handle explicit bundles
-	for( i in bundles ){ // for each bundle
-		if( bundles[i].resource != "-1" ){
-			for( j in bundles[i].columns ){ // for each column in bundle
-				console.log("bundling " + bundles[i].columns[j] + " into " + bundles[i].resource );
-				createExplicitBundledBy(bundles[i].resource, bundles[i].columns[j]);
-			}
+	$.each(bundles, function(i,theBundle){// (index, value)
+		if( parseInt(theBundle.resource) === -1 ){ // implicit bundle
+			createImplicitBundleNode(theBundle);
+			$.each(theBundle.columns, function(j,colIndex){ // for each column in bundle
+				console.log("bundling " + colIndex + " into implicit " + theBundle.nameTemp);
+				createImplicitBundledBy(theBundle.nameTemp, colIndex);
+			});
 		}	
-		else { // implicit bundle
-			createImplicitBundleNode(bundles[i]);
-			for (j in bundles[i].columns){ // for each column in bundle
-				console.log("bundling " + bundles[i].columns[j] + " into implicit");
-				createImplicitBundledBy(bundles[i].nameTemp, bundles[i].columns[j]);
-			}
+		else { // explicit bundle
+			$.each(theBundle.columns, function(j,colIndex){ // for each column in bundle
+				console.log("bundling " + colIndex + " into " + theBundle.resource );
+					createExplicitBundledBy(theBundle.resource, colIndex);
+			});
 		}
-	}
+	});
+
 	
 	// handle subject annotations: 
 	for ( var i=0; i<annotationID; i++ ){

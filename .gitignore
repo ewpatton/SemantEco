@@ -39,3 +39,12 @@ webapp/test
 *.class
 
 *.swo
+core/test/*
+
+#*#
+.#*
+bin/
+
+
+
+.#*

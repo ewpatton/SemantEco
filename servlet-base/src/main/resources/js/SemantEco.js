@@ -6,7 +6,10 @@ var SemantEco = {
 		// TODO: move to SemantEcoUI
         $("div.float").scrollFollow({'container':'sidebar','speed':300,
             'delay':100,'easing':'swing'});
-		SemantEcoUI.configureMap();
+        // TODO: need a better UI init system
+        if( window["google"] != undefined ) {
+            SemantEcoUI.configureMap();
+        }
 		$(window).trigger("initialize");
 		
 		// set up facets

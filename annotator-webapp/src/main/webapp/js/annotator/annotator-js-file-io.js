@@ -52,14 +52,21 @@ function handleFileSelect(event) {
 }
 
 // Remove duplicates by using a 'set' in javascript. Wait, no set in JS? No problem, JS objects act as sets, so use one of those. :)
+// NOTE that we want to be able to store strings and ints in arrays to account for bundle IDs
 function dedupe(items) {
-   var set = {};
-   for (var i = 0; i < items.length; i++)
-      set[items[i]] = true;
-   var clean = [];
-   for (var item in set)
-      clean.push(parseInt(item));
-   return clean;
+	var set = {};
+	for (var i = 0; i < items.length; i++)
+		set[items[i]] = true;
+	var clean = [];
+	for (var item in set){
+		if( parseInt(item) === 0 )
+			clean.push(parseInt(item));
+		else if( !parseInt(item) )
+			clean.push(item);
+		else 
+			clean.push(parseInt(item));
+	}
+	return clean;
 }
 
 function buildTable(data) {
@@ -190,10 +197,23 @@ function buildTable(data) {
             cancel: "p.editable-input,input,textarea,button,select,option",
             selected: function (event, ui) {
                 var index = parseInt($(ui.selected).attr("id").split(",")[1]);
-                currentlySelected.push(index);
-                currentlySelected = dedupe(currentlySelected);
-             
-                $.each(bundles, function(idx, bundle) {
+				var tableheader = (document.getElementById("0," + index));
+				// If we select a bundle header, we want to push the bundle ID to the currentlySelected list
+				//  * NOTE that this SHOULD be a STRING....
+				if ( $(tableheader).hasClass("bundled-implicit") ){
+					var tableID = (tableheader).getElementsByTagName('table')[0].id;
+					var bundleID = (tableID.split(',')[1]).toString();
+					currentlySelected.push(bundleID);
+					console.log("selecting bundle " + bundleID + "....");
+				}
+				// Otherwise, just add the (integer) index of the column to the array
+				else {
+					
+					currentlySelected.push(index);
+					console.log("selecting col " + index + "....");
+				}
+				
+                /*$.each(bundles, function(idx, bundle) {
                     if ($.inArray(index, bundle.columns) != -1) {
                         // Okay, found one of the bundles tied to this item (can be more), see if any of the other items in the bundle are selected or not, select the ones that are not
                         $.each(bundle.columns, function(idx, item) {
@@ -203,22 +223,41 @@ function buildTable(data) {
                             }
                         });
                     }
-                });
-
+                });*/
+				
                 //$("colgroup,"+index).addClass("selected-col");
                 // We have added new items to the array, so sort it ascending by index
-                currentlySelected.sort();
-                console.log("selecting col " + index + "....");
+				currentlySelected = dedupe(currentlySelected);
+                //currentlySelected.sort();
                 console.log("currently Selected: " + currentlySelected);
             }, // /selected
             unselected: function (event, ui) {
                 //console.log(this, $(this), event, ui);
                 var index = parseInt($(ui.unselected).attr("id").split(",")[1]);
-                var indexInSelected = currentlySelected.indexOf(index);
-                //console.log(currentlySelected, index, indexInSelected);
-                currentlySelected.splice(indexInSelected, 1);
-
-                console.log("unselecting col " + index + "....");
+				var tableheader = (document.getElementById("0," + index));
+				var indexInSelected;
+				// We never want to have a hidden column selected. If a column is hidden, that means it is part
+				// 	of a bundle and is then subordinate to that bundle. The bundle can then be selectable, but
+				// 	the individual column, not necessarily.
+				if ( $(tableheader).hasClass("hidden") ){ 
+					return;
+				}
+				// If a column header is in a bundle, we want to select the whole bundle. We already know a bundle
+				// 	contains all the columns that are part of it. (If we really need the subordinate columns, we can
+				// 	get them from references to the bundle).
+				else if ( $(tableheader).hasClass("bundled-implicit") ){
+					var tableID = (tableheader).getElementsByTagName('table')[0].id;
+					var bundleID = (tableID.split(',')[1]).toString();
+					indexInSelected = currentlySelected.indexOf(bundleID);
+					currentlySelected.splice(indexInSelected, 1);
+					console.log("unselecting bundle " + bundleID + "....");
+				}
+				else {
+					indexInSelected = currentlySelected.indexOf(index);
+					console.log("unselect index: " + indexInSelected);
+					currentlySelected.splice(indexInSelected, 1);
+					console.log("unselecting " + index + "....");
+				}
                 console.log("currently Selected: " + currentlySelected);
             }
         });

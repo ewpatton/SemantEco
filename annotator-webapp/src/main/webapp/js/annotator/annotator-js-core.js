@@ -1,4 +1,5 @@
 // Brendan Edit: Organize all the code
+var debugGlobal;
 
 // Keeps track of the ID's of the bundles.
 // These stay constant regardless of the bundle's resource or name, to make it
@@ -34,6 +35,12 @@ var cellBased = [];
 //    defined in the bundle function above; details about each part of the bundle
 //    are elaborated upon there.
 var bundles = [];
+
+// Brendan Global Variable - Track selection in ontology dropdown for changes
+var selectedOntologies = [];
+
+// Brendan Global Variable - Track ontolgies added by user (custom ones via a URL)
+var customUserOntologies = [];
 
 // Generate the subtables for each column header in the CSV file.
 //    The handleFileSelect function below that generates the table calls this repeatedly.
@@ -77,7 +84,7 @@ function createBundleSubtable(bundleID, implicitID) {
     });
 
     // Build a list of items
-    var generatedOptions = "<option value = \"Implicit Bundle " + implicitID + "\">Implicit Bundle " + implicitID + "</option>";
+    var generatedOptions = "<option value = \"-1\"" + implicitID + "\">Implicit Bundle " + implicitID + "</option>";
 	var colID;
     validHeadersToBundle.each(function (index) {
 
@@ -92,7 +99,7 @@ function createBundleSubtable(bundleID, implicitID) {
         generatedOptions += "<option value = \"" + colID + "\">Column " + colID + " (" + itemLabel + ")</option>"
     });
 
-    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange=updateResource('+bundleID+') action="return false;"><select id="bundle-resource-select,'+bundleID+'" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
+    tbody += '<tr><td id=bundleResource,' + bundleID + '><form style="background:white" onchange="updateResource(\''+bundleID+'\');" action="return false;"><select id="bundle-resource-select,'+bundleID+'" class="bundle-select">' + generatedOptions + '</select></form></td></tr>\n';
     tbody += '<tr><td id=bundleName,' + bundleID + '><p class="ellipses marginOverride editable-input">[name template]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-prop" id=bundlePropRow,' + bundleID + '><p class="ellipses marginOverride property-label">[property]</p></td></tr>\n';
     tbody += '<tr><td style="color:red" class="droppable-class" id=bundleClassRow,' + bundleID + '><p class="ellipses marginOverride class-label">[class or datatype]</p></td></tr>\n';
@@ -205,22 +212,22 @@ $(function () {
                             } // /if
                             // if more than one column is selected, perform the toggle on ALL selected columns
                             else {
-                                for (i in currentlySelected) {
-                                    var toggle = document.getElementById("nameRow," + currentlySelected[i]);
+                                $.each(currentlySelected, function(index,colNum) {
+                                    var toggle = document.getElementById("nameRow," + colNum);
                                     // if the column is already there, remove it
-                                    if (existsA(cellBased, currentlySelected[i])) {
+                                    if (existsA(cellBased, colNum)) {
                                         $(toggle).removeClass("cellBased-on");
-                                        removeA(cellBased, currentlySelected[i]);
-                                        console.log("removing col " + currentlySelected[i]);
+                                        removeA(cellBased, colNum);
+                                        console.log("removing col " + colNum);
                                     }
                                     // if the column is not there, add it
                                     else {
                                         $(toggle).addClass("cellBased-on");
                                         //$(toggle).attr("class","cellBased-on");
-                                        cellBased.push(currentlySelected[i]);
-                                        console.log("adding col " + currentlySelected[i]);
+                                        cellBased.push(colNum);
+                                        console.log("adding col " + colNum);
                                     }
-                                } // /for	
+                                }); // /$.each
                             }
                             console.log("currently specified for cell-based: " + cellBased);
                         } // /cell-based callback
@@ -255,22 +262,22 @@ $(function () {
                             } // /if
                             // if more than one column is selected, perform the toggle on ALL selected columns
                             else {
-                                for (i in currentlySelected) {
-                                    var toggle = document.getElementById("nameRow," + currentlySelected[i]);
+                                $.each(currentlySelected, function(index,colNum) {
+                                    var toggle = document.getElementById("nameRow," + colNum);
                                     // if the column is already there, remove it
-                                    if (existsA(links_via, currentlySelected[i])) {
+                                    if (existsA(links_via, colNum)) {
                                         $(toggle).removeClass("links_via-on");
-                                        removeA(links_via, currentlySelected[i]);
-                                        console.log("removing col " + currentlySelected[i]);
+                                        removeA(links_via, colNum);
+                                        console.log("removing col " + colNum);
                                     }
                                     // if the column is not there, add it
                                     else {
                                         $(toggle).addClass("links_via-on");
                                         //$(toggle).attr("class","links_via-on");
-                                        links_via.push(currentlySelected[i]);
-                                        console.log("adding col " + currentlySelected[i]);
+                                        links_via.push(colNum);
+                                        console.log("adding col " + colNum);
                                     }
-                                } // /for	
+                                }); // /$.each
                             } // /else
                             console.log("currently specified for links_via: " + links_via);
                         } // /links_via callback
@@ -286,16 +293,28 @@ $(function () {
                             var headerGroupings = [];
                             var aGroup = [];
                             $.each(currentlySelected, function(index, value) {
-                                aGroup.push($("th#0\\," + value));
-                                // Detect selection gaps, so we can selectivly colspan
-                                if( index != currentlySelected.length - 1 ) {
-                                    if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
-                                        headerGroupings.push(aGroup);
-                                        aGroup = [];
-                                    }
-                                } else if (index == currentlySelected.length - 1) {
-                                    headerGroupings.push(aGroup);
-                                }
+								if( !isNaN(value) ){ // If a currentlySelected column is a number, then that means it is not a bundle;
+													 //  go ahead and push that to the grouping array.
+									aGroup.push($("th#0\\," + value));
+								}
+								else { // If we have a bundle, add the headers for all the columns in that bundle.
+									   // This will include all of the hidden ones! But this keeps them from dangling alone
+									   //  without their superior bundle header.
+									console.log("hark, a bundle!");
+									var theBundle = getBundleById(value);
+									$.each( theBundle.columns, function(colIndex, colNum){
+										aGroup.push($("th#0\\," + colNum));
+									});
+								}
+								// Detect selection gaps, so we can selectivly colspan
+								if( index != currentlySelected.length - 1 ) {
+									if( Math.abs(value - currentlySelected[index + 1]) != 1 ) {
+										headerGroupings.push(aGroup);
+										aGroup = [];
+									}
+								} else if (index == currentlySelected.length - 1) {
+									headerGroupings.push(aGroup);
+								}
                             });
 
                             console.log("Groups:", headerGroupings);
@@ -331,6 +350,7 @@ $(function () {
                                         // has a colspan so set colspan for dest
                                         $("td#bundledRow\\," + selectedID).attr("colspan", itemColspan);
 										$("td#bundledRow\\," + selectedID).addClass("bundled");
+										$("td#bundledRow\\," + selectedID).addClass("ui.selected")
                                     }
                                     // Before we move the item down, handle hidden cells
                                     if (item.hasClass("hidden")) {
@@ -357,6 +377,7 @@ $(function () {
                                     // TODO: Disable the forms here .attr("disabled", "disabled");
                                 });
                             });
+							currentlySelected = [newBundle._id];
                         }
                     },
 
@@ -452,23 +473,7 @@ $(function () {
                                     }
                                 }
                             });
-                            /*
-                            var egRow = document.getElementById("annotations");
-                            var index = $("th").index(this);
-                            var egType = "conversion:eg"; // in the end, these two fields 
-                            var egText = "test_eg"; //  shouldn't be hard-coded....
-                            // if the row is hidden (ie, this is the first comment added), show the row
-                            if (egRow.classList.contains("hide-while-empty")) {
-                                $(egRow).removeClass("hide-while-empty");
-                            }
-                            var workingCol = document.getElementById("annotationRow," + index);
-                            var workingTable = workingCol.getElementsByTagName('TABLE')[0];
-                            var addedRow = workingTable.insertRow(-1);
-                            var typeCell = addedRow.insertCell(0);
-                            var textCell = addedRow.insertCell(1);
-                            typeCell.innerHTML = egType;
-                            textCell.innerHTML = egText;
-                            */
+                            
                         } // /callback function
 
                     }, // /eg
@@ -506,91 +511,6 @@ $(function () {
     }); // /context menu
 }); // /context menu function
 
-
-// Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
-var dnd_classes = {
-    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
-    "drop_check": function (data) {
-        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
-            if ( data.r.children().length == 0 ) { 
-                return false; 
-            }
-        }
-        return true;
-    },
-    "drop_finish": function (data) {
-        // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
-        var target, columnID, columnType;
-
-        if (data.r.is("p.class-label")) {
-            target = data.r;
-			columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
-            columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
-        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
-            target = data.r.find("p.class-label:eq(0)");
-			columnType = data.r.attr("id").split(",")[0];
-            columnID = data.r.attr("id").split(",")[1];
-        } else {
-            var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
-            target = parent.find("p.class-label:eq(0)");
-			columnType = parent.attr("id").split(",")[0];
-            columnID = parent.attr("id").split(",")[1];
-        }
-
-        console.log(columnType + " " + columnID);
-
-
-        // handle source object having children
-        if (data.o.hasClass("jstree-open")) {
-            var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
-        } else {
-            var payload = $.trim($(data.o).text());
-        }
-
-        /*var targetParent;
-        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
-            targetID = data.r.attr("id").split(",")[1];
-        } else if () {
-            asdawd
-        } else {
-            // get the header of this element
-            var parentHeader = data.r.parents("th:eq(0)");
-            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
-               targetID = parentHeader.attr("id").split(",")[1];
-            }
-        }*/
-
-
-        // Set the value now that we have done some validation (some...)
-		// [RDFa]: also sets the RDFa to the text in the node
-		//  * still need URI/prefix for whatever ontology the node comes from.
-        //var fullID = "[id='classRow," + targetID + "']";
-		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
-		target.empty().append(payload);
-        target.parent().css("color", "black");
-		updateClassType(columnID,columnType,uri,payload,sourceFacet);
-        // Manipulate the property-label to reflect what was just dropped
-        // First find the property-label
-        var propertyLabel = target.closest("tr").siblings().filter(function () {
-            return $(this).find("p.property-label").length == 1;
-        });
-		
-		// Now get which fact the drop target was from
-		var sourceFacet = data.o.closest("div.facet").attr("id");
-        
-		// Only apply if class has not been set yet
-        if ( propertyLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
-            propertyLabel = propertyLabel.find("p.property-label");
-
-            // Now apply logic
-            if ( sourceFacet == "datatypesFacet" ) {
-                propertyLabel.empty().append("[datatype or annotation property]");
-            }
-        }
-		
-    }// /drop_finish
-};// /dnd_classes
-
 // Arguments for Drag and Drop for facets ( this applies to the jstree library. see: jstree.com)
 var dnd = {
     "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row, div.global-properties-container",
@@ -605,10 +525,16 @@ var dnd = {
     "drop_finish": function (data) {
 
         // Get which facet the drop came from
-        var sourceFacet = data.o.closest("div.facet").attr("id");
+        //var sourceFacet = data.o.closest("div.facet").attr("id");
+        // class, objectProperty, datatypeProperty, annotationProperty, datatype
+        console.log("DRAG EVENT", data);
+        debugGlobal = data;
+
+        var sourceFacet = SemantEcoUI.HierarchicalFacet.entryForElement(data.o).rawData.type || "datatype";  // Thanks Evan :)
+		// Katie edit: hacky workaround right now, until we're sure the type is being set for the "datatype" facet (thanks, Evan =) )
 
         // Determine the label we are looking for given the source facet
-        var label = ( $.inArray(sourceFacet, ["annotationPropertiesFacet", "dataPropertiesFacet", "objectPropertiesFacet"]) != -1 ? "property-label" : "class-label" );
+        var label = ( $.inArray(sourceFacet, ["annotationProperty", "datatypeProperty", "objectProperty"]) != -1 ? "property-label" : "class-label" );
 
         // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
         var target, columnID, columnType;
@@ -642,17 +568,17 @@ var dnd = {
         var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
 		target.empty().append(payload);
         target.parent().css("color", "black");
-		console.log("colType: " + columnType + ", colID: " + columnID);
+		//console.log("colType: " + columnType + ", colID: " + columnID);
 		
-		if (columnType == "annotationRow"){ // we're dealing with an annotation
+		if (columnType == "annotationRow") { // we're dealing with an annotation
 			var annotationID = target.attr("id").split(",")[2];
 			console.log("dropped onto annotation #" + annotationID);
-			if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
+			if ( sourceFacet == "class" || sourceFacet == "datatype" ) {
 				console.log("dnd updating annotation object...");
 				updateAnnotationObj(columnID,annotationID,uri,payload);
 				//updateClassType(columnID,columnType,uri,payload,sourceFacet);
 			}
-			else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet"){
+			else if (sourceFacet=="objectProperty" || sourceFacet=="datatypeProperty" || sourceFacet=="annotationProperty") {
 				console.log("dnd updating annotation predicate...");
 				updateAnnotationPred(columnID,annotationID,uri,payload);
 			}
@@ -660,11 +586,11 @@ var dnd = {
 		
 		else { // not an annotation
 			// check the source facet and make the appropriate RDFa update
-			if ( sourceFacet == "classesFacet" || sourceFacet == "datatypesFacet" ){
+			if ( sourceFacet == "class" || sourceFacet == "datatype" ) {
 				//console.log("dnd is calling updateClassType here");
 				updateClassType(columnID,columnType,uri,payload,sourceFacet);
 			}
-			else if (sourceFacet=="objectPropertiesFacet" || sourceFacet=="dataPropertiesFacet" || sourceFacet=="annotationPropertiesFacet") {
+			else if (sourceFacet=="objectProperty" || sourceFacet=="datatypeProperty" || sourceFacet=="annotationProperty") {
 				//console.log("dnd is calling updateProp here");
 				updateProp(columnID,columnType,uri);
 			}
@@ -821,19 +747,33 @@ $(document).ready(function () {
     });
 
     // Bind various click and form event listeners once the DOM is good to go
-	// This is a WORK IN PROGRESS and doesn't do what it did before right now.
     $('#menu-commit-enhancement').click(function () {
 		var turtle = turtleGen();
-        /*$.bbq.pushState({
-            "FileName": window.file_name,
-            "Source": $("#source_info").val(),
-            "DataSet": $("#dataset_info").val(),
-            "annotationMappings": window.a
-        });*/
-        AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
-            console.debug(d);
-        });
-    });
+		AnnotatorModule.queryForEnhancingParams({"turtle":turtle}, function (d) {
+			results = jQuery.parseJSON(d);
+			var paramsURL = results.paramsFile;
+			var rdfURL = results.rdfDataFile;
+			var paramsLink = paramsURL.split('/')[5];
+			var rdfLink = rdfURL.split('/')[5];
+			var params = (document.getElementById("params-link-here")).getElementsByTagName('a')[0];
+			var rdf = (document.getElementById("rdf-link-here")).getElementsByTagName('a')[0];
+			$(params).attr('href',paramsURL).text(paramsLink);
+			$(rdf).attr('href',rdfURL).text(rdfLink);
+			//params.innerHTML = "parameters file";
+			//rdf.innerHTML = "RDF file";
+			$("#finalLinksModal").dialog({
+				modal: true,
+				width: 800,
+				draggable: false,
+				resizable: false,
+				buttons: {
+					Done: function () {
+						$(this).dialog("close");
+					}
+				}// /buttons
+			});// /dialog
+		});// /queryForEnhancingParams
+	});// /menu-commit-enhancement
 
     $('input#menu-show-globals').click(function () {
         if ( $('div.global-properties-container').is(":visible") ) {
@@ -867,6 +807,20 @@ $(document).ready(function () {
             }
         });
     });
+	
+	$('#menu-show-downloads').click(function () {
+		$("#finalLinksModal").dialog({
+			modal: true,
+			width: 800,
+			draggable: false,
+			resizable: false,
+			buttons: {
+				Done: function () {
+					$(this).dialog("close");
+				}
+			}// /buttons
+		});// /dialog
+	});
 
     /* $( ".selector" ).dialog( "close" ); */
 
@@ -884,8 +838,6 @@ $(document).ready(function () {
             forcePlaceholderSize: true
         });
 
-    // Enable 
-
     // getListofOntologies() call, builds the dropdown and then fills the facets
     AnnotatorModule.getListofOntologies({}, function (d) {
         d = $.parseJSON(d);
@@ -902,57 +854,95 @@ $(document).ready(function () {
             $("#checkboxDropDownOntologies").dropdownchecklist({
                 emptyText: "Select an Ontology ...",
                 onComplete: function (selector) {
-                    // Show user we are about to re-populate the facets with new jstrees
-                    $(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
-
-                    var values = []; // [RDFa]: can use this for prefixes?
-                    for (i = 0; i < selector.options.length; i++) {
-                        if (selector.options[i].selected && (selector.options[i].value != "")) {
-                            values.push(selector.options[i].value);
-                        }
-                    }
-                    $.bbq.pushState({
-                        "listOfOntologies": values
-                    });
-                   
-
-                    // Call patrice's new silly init call thingy ( :D )
-                    AnnotatorModule.initOWLModel({}, function (d) {
-                        
-                        // Clean up, then Re-query facets
-                        $(".hierarchy").empty();
-
-                        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"],
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"]
-                        });
-                        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
-                            "dnd": dnd,
-                            "plugins": ["dnd"],
-                            "populate": false
-                        });
-                    });
+                	var values = []; // [RDFa]: can use this for prefixes?
+					for (i = 0; i < selector.options.length; i++) {
+					    if (selector.options[i].selected && (selector.options[i].value != "")) {
+					        values.push(selector.options[i].value);
+					    }
+					}
+					// Qeury given user selection
+					queryOntologies(values);
                 }
             });
         }
     });
 });
+
+// Query for ontologies. Broken into own function as can be called from multiple places
+function queryOntologies(ontologies) {
+
+	// No ontologies means no change to dropdown selection
+	if ( ontologies == undefined ) {
+		var current = $.bbq.getState("listOfOntologies");
+		if ( current == undefined ) {
+			// Nothing was sent to the bbq state yet
+			current = [];
+		}
+		ontologies = current;
+	}
+
+	// Build current state of ontologies
+	var ontologies = ontologies.concat(customUserOntologies);
+
+	$.bbq.pushState({
+	    "listOfOntologies": ontologies
+	});
+
+	// Activate facets based on some simple conditionals
+	var differenceRemove = $.grep(selectedOntologies, function(item) { return $.inArray(item, ontologies) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
+	var differenceAdd = $.grep(ontologies, function(item) { return $.inArray(item, selectedOntologies) < 0 }); // Credit to: http://stackoverflow.com/questions/10927722/jquery-compare-2-arrays-return-difference
+	var activeFacets = $("div#facets").size() > 0 ? getActiveFacets($("div#facets")) : [];
+
+	// Debug
+	console.log("Arrays", ontologies, selectedOntologies, differenceRemove, differenceAdd);
+
+	selectedOntologies = ontologies;
+	if (differenceAdd.length > 0 || ( differenceRemove.length > 0 && ontologies.length > 0 )) {
+		// Show user we are about to re-populate the facets with new jstrees
+		$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
+	 	
+	 	// Look at all the facets TODO: don't reference by index but by name! Breaks if the items are shuffled around
+	 	for (var i = 0; i < 5; i++) {
+	 		if ($.inArray(i, activeFacets) < 0) {
+	 			console.log("activate facet #", i);
+	 			setActiveFacet($("div#facets"), i);	
+	 		}
+	 	}
+
+	    // Call patrice's new silly init call thingy ( :D )
+	    AnnotatorModule.initOWLModel({}, function (d) {
+	        
+	        // Clean up, then Re-query facets
+	        $(".hierarchy").empty();
+
+	        SemantEcoUI.HierarchicalFacet.create("#ClassTree", AnnotatorModule, "queryClassHM", "classes", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#dataPropertiesTree", AnnotatorModule, "queryDataPropertyHM", "dataProperties", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"],
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#annotationPropertiesTree", AnnotatorModule, "queryAnnoPropertyHM", "annoProperties", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#DataTypeTree", AnnotatorModule, "queryDataTypesHM", "dataTypes", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"]
+	        });
+	        SemantEcoUI.HierarchicalFacet.create("#PaletteTree", AnnotatorModule, "nullnullnull", "nullnullnull", {
+	            "dnd": dnd,
+	            "plugins": ["dnd"],
+	            "populate": false
+	        });
+	    });
+	}
+}
 
 // =====================================================================
 // ====================== ACCESSORY / MISC. FUNCTIONS ==================
@@ -961,15 +951,18 @@ $(document).ready(function () {
 // Bind to clicks on editables (text to input to text)
 $(function () {
     $('body').on('click' ,'p.editable-input', function(e) {
-        console.log("Clicked editable");
+		var thingID = this.id;
+        console.log("Clicked editable, ID: " + thingID);
         var input = $('<input />', {'type': 'text', 'name': 'anEditable', 'value': $(this).html(), "class": $(this).attr('class')});
         $(this).parent().append(input);
-        $(this).remove();
+        this.style.display="none";
         input.focus();
     });
 
     $('body').on('blur' ,'input.editable-input', function(e) {
-        $(this).parent().append($('<p />', { "class": $(this).attr('class')}).html($(this).val()));
+		var original = $(this).parent().find("p.editable-input");
+		original.html($(this).val());
+		original[0].style.display="block";
         $(this).remove();
     });
 });
@@ -984,7 +977,7 @@ $(function () {
 
     $('body').on('change' ,'select.bundle-select', function(e) {
         console.log("Saw Change:", this);
-        var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqeuryyyy
+        var newValue = $("option:selected", this).text().split(" ")[0]; // argh jqueryyyy
         var _this = this; // keep track of scope on triggering select item
         var bundleId = $(this).closest("td").attr("id").split(",")[1];
         var bundleDropdowns = $("th select.bundle-select").filter(function () { return $(this).closest("td").attr("id").split(",")[1] == bundleId });
@@ -1090,6 +1083,24 @@ $(function () {
     });
 });
 
+// Load a CSV file from the user system
+$(function () {
+    $('body').on('click' ,'input#menu-add-new-ontology', function(e) {
+        // Show modal
+        $("#addOntologyModal").dialog({
+            modal: true,
+            width: 800,
+            buttons: {
+                Load: function () {
+                	customUserOntologies.push($('input#addOntologyModalInput').val());
+                	queryOntologies(undefined);
+                    $(this).dialog("close");
+                }
+            }
+        });    
+    });
+});
+
 // if the row is hidden (ie, this is the first comment added), show the row
 function checkAnnotationRow(){
 	var cRow = document.getElementById("annotations");
@@ -1153,12 +1164,12 @@ function existsA(theArray, theThing) {
 function getBundleById(theID){
 	var theBundle;
 	console.log("Checking for bundle #" + theID);
-	for (i in bundles){
-		console.log("... bundle#" + bundles[i]._id + "?");
-		if ( parseInt(bundles[i]._id) === parseInt(theID) ){	
-			theBundle = bundles[i];
+	$.each(bundles, function(i,checkBundle){
+		console.log("... bundle#" + checkBundle._id + "?");
+		if ( checkBundle._id === theID ){	
+			theBundle = checkBundle;
 		}
-	}
+	});
 	if( !theBundle ){
 		console.log("Bundle does not exist!");
 		return;
@@ -1170,6 +1181,7 @@ function getBundleById(theID){
 // These are accessory functions for updating bundle objects based on user drag-and-drop.
 // They need the bundle ID, and whatever is being updated for each.
 function updateResource(bundleID){
+	console.log("update resource is being called");
 	var theForm = document.getElementById("bundle-resource-select," + bundleID);
 	var newResource = theForm.options[theForm.selectedIndex].value;
 	var theBundle = getBundleById(bundleID);
@@ -1202,10 +1214,12 @@ function updateBundleName(bundleID, theNameTemp){
 //    bundle, IF it is EXPLICIT. A value of -1 indicates the
 //    bundle is IMPLICIT; this is the default set here at 
 //    creation.
+// 	- **NOTE** That if resourceIsBundle == TRUE, then resource
+// 		represents a bundle ID! Otherwise, it represents a column number!
 // Prop and Type are null at creation, and must be set later
 //	via drag and drop.
 function Bundle(bundleId, implicitId, columns) {
-    this._id = bundleId;
+    this._id = "b" + bundleId;
     this.implicitId = implicitId;
     this.columns = columns;
 	this.resource = -1;
@@ -1340,19 +1354,56 @@ $.fn.accordion = function(opts){
             }
     });
     
-    this.getActive = function() {
-        var isActive = [];
-        $.each($(this).find("h3"), function(i) {
-            if($(this).hasClass("ui-state-active"))
-                isActive.push(i);
-        });
-        return isActive;
-    };
-    
     return acc;
 };
 
+// Accordion Helper Functions
+function setActiveFacet(target, index) {
+	$.each($(target).find("h3"), function(i) {
+		//console.log("searching to activate", i, index, this);
+		if(i == index) {
+			$(this).toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+    			.find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+    			.next().slideToggle();
+    		return false; // break out of loop
+		}
+	});
+};
 
+function getActiveFacets(target) {
+    var isActive = [];
+    $.each($(target).find("h3"), function(i) {
+        if($(this).hasClass("ui-state-active"))
+            isActive.push(i);
+    });
+    return isActive;
+};
+
+
+// Attach the .compare method to Array's prototype to call it on any array | Credit: http://stackoverflow.com/questions/7837456/comparing-two-arrays-in-javascript
+Array.prototype.compare = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0; i < this.length; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].compare(array[i]))
+                return false;
+        }
+        else if (this[i] != array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}
 
 // ==========================================
 // = HERE LIES THE CODE ARCHIVE / GRAVEYARD =
@@ -1636,4 +1687,90 @@ $(function () {
 }); // /ontology-selector
 
 
+*/
+
+/*
+// Arguments for Drag and Drop for class facets ( this applies to the jstree library. see: jstree.com)
+var dnd_classes = {
+    "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row",
+    "drop_check": function (data) {
+        if ( data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
+            if ( data.r.children().length == 0 ) { 
+                return false; 
+            }
+        }
+        return true;
+    },
+    "drop_finish": function (data) {
+        // We need to determine where we are now that a drop has happened. First, get the ID of the column we are in, next get the respective label for where we dropped
+        var target, columnID, columnType;
+
+        if (data.r.is("p.class-label")) {
+            target = data.r;
+			columnType = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[0];
+            columnID = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row").attr("id").split(",")[1];
+        } else if ( data.r.is("th.column-header") || data.r.is("td.bundled-row") || data.r.is("td.bundled-row-extended") || data.r.is("td.annotation-row") ) {
+            target = data.r.find("p.class-label:eq(0)");
+			columnType = data.r.attr("id").split(",")[0];
+            columnID = data.r.attr("id").split(",")[1];
+        } else {
+            var parent = data.r.closest("th.column-header, td.bundled-row, td.bundled-row-extended, td.annotation-row");
+            target = parent.find("p.class-label:eq(0)");
+			columnType = parent.attr("id").split(",")[0];
+            columnID = parent.attr("id").split(",")[1];
+        }
+
+        console.log(columnType + " " + columnID);
+
+
+        // handle source object having children
+        if (data.o.hasClass("jstree-open")) {
+            var payload = $.trim($(data.o.find('a.jstree-clicked')).text());
+        } else {
+            var payload = $.trim($(data.o).text());
+        }
+
+        var targetParent;
+        if (data.r.hasClass("column-header") && data.r.is("th") && data.r.attr("id") != undefined) {
+            targetID = data.r.attr("id").split(",")[1];
+        } else if () {
+            asdawd
+        } else {
+            // get the header of this element
+            var parentHeader = data.r.parents("th:eq(0)");
+            if (parentHeader != undefined && parentHeader.attr("id") != undefined) {
+               targetID = parentHeader.attr("id").split(",")[1];
+            }
+        }
+
+
+        // Set the value now that we have done some validation (some...)
+		// [RDFa]: also sets the RDFa to the text in the node
+		//  * still need URI/prefix for whatever ontology the node comes from.
+        //var fullID = "[id='classRow," + targetID + "']";
+		var uri = $(data.o).attr("hierarchy_id"); // not sure but this may need to be altered as well?
+		target.empty().append(payload);
+        target.parent().css("color", "black");
+		updateClassType(columnID,columnType,uri,payload,sourceFacet);
+        // Manipulate the property-label to reflect what was just dropped
+        // First find the property-label
+        var propertyLabel = target.closest("tr").siblings().filter(function () {
+            return $(this).find("p.property-label").length == 1;
+        });
+		
+		// Now get which fact the drop target was from
+		var sourceFacet = data.o.closest("div.facet").attr("id");
+        
+		// Only apply if class has not been set yet
+        if ( propertyLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
+            propertyLabel = propertyLabel.find("p.property-label");
+
+            // Now apply logic
+            if ( sourceFacet == "datatypesFacet" ) {
+                propertyLabel.empty().append("[datatype or annotation property]");
+            }
+        }
+		
+    }// /drop_finish
+};// /dnd_classes
 */
