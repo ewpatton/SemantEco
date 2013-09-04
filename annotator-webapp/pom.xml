@@ -10,10 +10,8 @@
 
   <artifactId>semanteco-annotator-webapp</artifactId>
 
-  <groupId>edu.rpi.tw.escience</groupId>
   <packaging>war</packaging>
   <name>semanteco Annotator webapp</name>
-  <version>4.2-SNAPSHOT</version>
 
   <repositories>
     <repository>

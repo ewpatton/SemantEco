@@ -53,6 +53,13 @@ public class WsClientRequest extends ClientRequest implements Request {
 		this.provenanceLog = provenance;
 	}
 
+	public WsClientRequest(ClientRequest other, WsOutbound channel,
+	        WsOutbound provenance) {
+	    super(other);
+	    this.clientLog = channel;
+	    this.provenanceLog = provenance;
+	}
+
 	@Override
 	public Logger getLogger() {
 		return this;
