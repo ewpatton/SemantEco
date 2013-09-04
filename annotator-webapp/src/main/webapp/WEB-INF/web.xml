@@ -14,6 +14,15 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <servlet-mapping>
+    <servlet-name>Annotator</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+    <url-pattern>/js/modules/*</url-pattern>
+    <url-pattern>/js/config.js</url-pattern>
+    <url-pattern>/log</url-pattern>
+    <url-pattern>/provenance</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>

@@ -29,6 +29,7 @@
     <tomcat.url>http://localhost:${tomcat.port}/manager/text</tomcat.url>
     <!-- specify artifact for default module here -->
     <module.default>semanteco-annotator</module.default>
+    <use-servlet>semanteco-servlet-websocket</use-servlet>
   </properties>
 
   <dependencies>
@@ -61,7 +62,7 @@
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
-      <artifactId>semanteco-servlet-websocket</artifactId>
+      <artifactId>${use-servlet}</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>

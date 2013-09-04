@@ -80,6 +80,11 @@
         <artifactId>semanteco-servlet-websocket</artifactId>
         <version>4.2-SNAPSHOT</version>
       </dependency>
+      <dependency>
+        <groupId>edu.rpi.tw.escience</groupId>
+        <artifactId>semanteco-servlet</artifactId>
+        <version>4.2-SNAPSHOT</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>
