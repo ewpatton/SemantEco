@@ -229,7 +229,7 @@ public class TestQueryExecutor extends MockQueryExecutor {
 			matchQuery = matchQuery.trim();
 
 			if(temp == null || !temp.equals(matchQuery)) {
-				Assert.fail("Expected query:\r\n"+matchQuery+"but got:\r\n"+query);
+				Assert.fail("Expected query:\r\n"+matchQuery+"but got:\r\n"+temp);
 			}
 		}
 		
