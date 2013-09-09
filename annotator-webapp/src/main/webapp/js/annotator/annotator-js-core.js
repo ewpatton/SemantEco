@@ -511,6 +511,10 @@ $(function () {
     }); // /context menu
 }); // /context menu function
 
+// ***************************************************
+// DRAG AND DROP
+// ***************************************************
+
 // Arguments for Drag and Drop for facets ( this applies to the jstree library. see: jstree.com)
 var dnd = {
     "drop_target": ".column-header, .bundled-row, .bundled-row-extended, .annotation-row, div.global-properties-container",
@@ -635,7 +639,7 @@ var dnd = {
             });
         }
     }
-};
+}; 
 
 // A function that given a DnD dropTarget and the sourceFacet of the drop, restrict a label on this cell
 function modifyLabelAsRestriction(dropTarget, sourceFacet) {
@@ -940,7 +944,7 @@ function queryOntologies(ontologies) {
 	            "plugins": ["dnd"],
 	            "populate": false
 	        });
-	    });
+	    });// /initOWLModel
 	}
 }
 
