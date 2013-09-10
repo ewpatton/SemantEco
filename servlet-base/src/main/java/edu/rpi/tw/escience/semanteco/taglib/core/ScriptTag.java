@@ -54,6 +54,7 @@ public class ScriptTag extends TagSupport {
 			writeScript(out, "js/d3.csv.js");
 			writeScript(out, "js/d3.time.js");
 			writeScript(out, "js/json.js");
+			writeScript(out, "js/URI.min.js");
 			writeScript(out, "js/SemantEco.js");
 			writeScript(out, "js/SemantEcoUI.js");
 			writeScript(out, "js/SemantEcoUI.HierarchicalFacet.js");

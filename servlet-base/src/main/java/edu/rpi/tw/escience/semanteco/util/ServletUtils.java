@@ -109,8 +109,8 @@ public class ServletUtils {
 		ps.println("SemantEco.baseUrl=\""+baseUrl+"\";\n" +
 				"SemantEco.restBaseUrl=\""+baseUrl+"rest/\";");
 		ps.println("if(SemantEco.baseUrl!==location.href){"
-				+ "SemantEco.baseUrl=location.href;"
-				+ "SemantEco.restBaseUrl=location.href+'rest/';"
+				+ "SemantEco.baseUrl=URI(location.href).fragment('').query('').toString();"
+				+ "SemantEco.restBaseUrl=SemantEco.baseUrl+'rest/';"
 				+ "}");
 		ps.close();
 	}
