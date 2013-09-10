@@ -1,8 +1,12 @@
 $(window).bind("initialize", function() {
-$("input[type=button]").click(function(e) {
-	vocab();
-	e.preventDefault();
-/*
+	$("input[type=button]").click(function(e) {
+
+
+		//vocab();
+		e.preventDefault();
+
+
+		/*
 	$("body").replaceWith('<div id="hierarchy"><h2>New heading</h2></div>');
 
 	check_value = new Array()
@@ -22,11 +26,11 @@ $("input[type=button]").click(function(e) {
 		parentElement.appendChild(document.createTextNode(check_value[count]));
 
 	}
-*/
+		 */
 
-	//accessService
-	//var a=$.extend(SemantEcoUI.getState(),args);
-	/*
+		//accessService
+		//var a=$.extend(SemantEcoUI.getState(),args);
+		/*
 	var a="";
 	var b=$.ajax(SemantEco.restBaseUrl+"DataoneModule/accessService",{"data":SemantEco.prepareArgs(a)});
     if(success)
@@ -34,11 +38,12 @@ $("input[type=button]").click(function(e) {
     	//document.write(b);
     if(error)
       b.fail(error);
-	 */
+		 */
 
-//	var jsonString  = DataoneModule.accessService({}, function(d){console.debug(d)});
-	//$(document).ready(function(){
-		
+//		var jsonString  = DataoneModule.accessService({}, function(d){console.debug(d)});
+		//$(document).ready(function(){
+
+		/*
 		DataoneSolrModule.accessService({}, function (data) {
 			var table=$("<table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table>");
 			data = jQuery.parseJSON(data);
@@ -53,24 +58,74 @@ $("input[type=button]").click(function(e) {
 				//'88' + '</td><td> ' +
 				//'99' +  '</td></tr>';	table+= '<tr><td>Title4</td><td>Abstract</td><td>Keywords</td></tr>';
 				table.append("<tr><td>" + item.title + '</td><td> ' +
-					     item.abstract + '</td><td> ' +
-					     item.keywords +  '</td></tr>');
+						item.abstract + '</td><td> ' +
+						item.keywords +  '</td></tr>');
 			});
 
 			$("body").replaceWith(table);
 			$("td,th").css("border","1px solid black").css("border-collapse","collapse");
-	//		$('#outTable').replaceWith(table);
+			//		$('#outTable').replaceWith(table);
 		});
-//	});
+//		});
 		//this overwrites the dom
-	//document.body.appendChild(table);
+		//document.body.appendChild(table);
 
-	return false;
+		return false;
+
+	});
+
+		 */
+		var newdiv = $("<div id=expansion></div>");
+		DataoneSolrModule.expandTopicJSONPassteriformes({}, function(d){
+			console.debug(d); arr= JSON.parse(d); 
+			console.debug(arr); 
+			$.map(arr, function(item) { 
+				newdiv.append($("<input>").attr("type","checkbox").attr("name",item).val(item)); 
+				newdiv.append($("<label>").attr("for",item).text(item)); }); 
+				newdiv.append($("<br>"));
+		});
+		$("#vocab").append(newdiv);
+	});
+	//$("#vocab").append(newdiv.html());
 
 });
-});
 
 
+/*
+ * 
+ * do the following:
+ * 
+ * DataoneSolrModule.expandTopicJSONPassteriformes({}, function(d){console.debug(d); arr= JSON.parse(d); console.debug(arr); 
+ * $.map(arr, function(item) { 
+ * newdiv.append($("<input>").attr("type","checkbox").attr("name",item).val(item)); 
+ * newdiv.append($("<label>").attr("for",item).text(item)); }); });
 
+
+$("#vocab").append(newdiv.html());
+
+ * 
+ * 
+ * DataoneSolrModule.expandTopicJSONPassteriformes({}, function(d){console.debug(d); arr= JSON.parse(d); console.debug(arr); 
+ * 
+ * $.map(arr, function(item) { html += '<input type="checkbox" name="' + item + '" value=\"' + item + '" >'; }); });
+ * 
+ * 
+ * 
+ * DataoneSolrModule.expandTopicJSONPassteriformes({}, function(d){console.debug(d); arr= JSON.parse(d); console.debug(arr); 
+ * 
+ * $.map(arr, function(item) { html += $("<input>").attr("type","checkbox").attr("name",item).val(item);  }); });
+
+
+undefined
+XHR finished loading: "http://localhost:8081/SolrTesting/rest/DataoneSolrModule/expandTopicJSONPassteriformes?term=&domain=%5B%5D&searchType=%5B%5D". jquery-1.7.1.min.js:4
+["species","avian","breeding","warblers","warbler","passerine","migratory","neotropical","population","habitat","populations","avifauna","songbirds","passerines","great","songbird","dendroica","insectivorous","aves","acrocephalus","parrots","reed"]
+["species", "avian", "breeding", "warblers", "warbler", "passerine", "migratory", "neotropical", "population", "habitat", "populations", "avifauna", "songbirds", "passerines", "great", "songbird", "dendroica", "insectivorous", "aves", "acrocephalus", "parrots", "reed"]
+html
+
+"null[object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object][object Object]"
+ * 
+ * 
+ * 
+ */
 
 

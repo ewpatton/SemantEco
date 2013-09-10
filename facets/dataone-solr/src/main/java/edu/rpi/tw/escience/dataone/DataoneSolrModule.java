@@ -88,6 +88,23 @@ public class DataoneSolrModule implements Module {
 		System.out.println("test awesome");
 		return null;
 	}
+	
+	@QueryMethod
+	public JSONArray expandOnSearchTerm(final Request request) throws JSONException{
+		JSONArray searchTermTopicExpanded = new JSONArray();
+		JSONArray searchType = (JSONArray) request.getParam("searchType");
+		String searchTerm = request.getParam("term").toString();
+		
+		for(int i = 0; i< searchType.length(); i++){
+			System.out.println("a searchType: " + searchType.get(i));
+		
+			if(searchType.get(i).toString().equals("topic")){
+				System.out.println("(doing topic search now) "); 
+				searchTermTopicExpanded = expandTopicJSON(searchTerm);
+			}	
+		}
+		return searchTermTopicExpanded;		
+	}
 
 	@QueryMethod
 	public String accessService(final Request request) throws JSONException{	
@@ -195,6 +212,28 @@ public class DataoneSolrModule implements Module {
 		searchTerm = searchTerm + "+OR+" + "'" + preferredLabel + "'";
 		return searchTerm;
 	}
+	
+	
+	
+	public static JSONArray expandConceptJSON(String searchTerm, JSONArray domains) throws JSONException{
+		JSONArray expansions = new JSONArray();
+		//example
+		//http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=passeriformes&Submit=Submit&domain=organism&getTree=true&upward=true&level=1	
+		String query = "http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=" + searchTerm + "&Submit=Submit" ;
+		if(domains != null){
+			query += "&domain=organism";
+		}
+		query += "&getTree=true&upward=true&level=1";
+		
+		System.out.println("query is : " + query);
+		JSONObject j2 = (JSONObject) getRequest(query, "json");	
+		System.out.println("j2 is : " + j2.toString());
+		String preferredLabel = j2.get("preferredLabel").toString();
+		//searchTerm = searchTerm + "+OR+" + "'" + preferredLabel + "'";
+		expansions.put(searchTerm);
+		expansions.put(preferredLabel);
+		return expansions;
+	}
 
 	/**
 	 * from the search term, return the EES corpora trained topic that term appears in
@@ -241,6 +280,79 @@ public class DataoneSolrModule implements Module {
 
 		System.out.println("final search: " + search);
 		return search;
+	}
+	
+	/**
+	 * from the search term, return the EES corpora trained topic that term appears in
+	 * calls Ben Adam's service at nceas and parses it into a solr string using disjunction
+	 * @param searchTerm
+	 * @return
+	 * @throws JSONException
+	 */
+	public static JSONArray expandTopicJSON(String searchTerm) throws JSONException{
+		JSONArray expansions = new JSONArray();
+		// http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=
+		String query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=" + searchTerm;
+		System.out.println("query is : " + query);
+		String j2 = (String) getRequest(query, "text");	
+		System.out.println("j2 is : " + j2);
+		String[] temp = new String[100];
+		String[] temp3 = new String[100];
+
+		temp = j2.split("\t");
+		String temp2 = temp[2].toString();
+		temp3 = temp2.split(" ");
+		System.out.println("index 0: " + temp[0].toString());		
+		System.out.println("1: " + temp[1].toString());
+		System.out.println("2: " + temp[2].toString());
+		System.out.println("temp3: " + temp3.toString());
+		String search = "";
+		String search2 = "";
+		for(int i = 2; i< temp3.length; i++){
+			
+			search2 = temp3[i].replace("<br/>","");
+			expansions.put(search2);
+
+		}
+		System.out.println("final search: " + expansions.toString());
+		return expansions;
+	}
+	
+	/**
+	 * from the search term, return the EES corpora trained topic that term appears in
+	 * calls Ben Adam's service at nceas and parses it into a solr string using disjunction
+	 * @param searchTerm
+	 * @return
+	 * @throws JSONException
+	 */
+	@QueryMethod
+	public static String expandTopicJSONPassteriformes(final Request request) throws JSONException{
+		JSONArray expansions = new JSONArray();
+		// http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=
+		String query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=" + "passeriformes";
+		System.out.println("query is : " + query);
+		String j2 = (String) getRequest(query, "text");	
+		System.out.println("j2 is : " + j2);
+		String[] temp = new String[100];
+		String[] temp3 = new String[100];
+
+		temp = j2.split("\t");
+		String temp2 = temp[2].toString();
+		temp3 = temp2.split(" ");
+		System.out.println("index 0: " + temp[0].toString());		
+		System.out.println("1: " + temp[1].toString());
+		System.out.println("2: " + temp[2].toString());
+		System.out.println("temp3: " + temp3.toString());
+		String search = "";
+		String search2 = "";
+		for(int i = 2; i< temp3.length; i++){
+			
+			search2 = temp3[i].replace("<br/>","");
+			expansions.put(search2);
+
+		}
+		System.out.println("final search: " + expansions.toString());
+		return expansions.toString();
 	}
 
 	public static JSONArray getDiff(JSONObject objVocab,JSONObject  objTopic) throws JSONException{
