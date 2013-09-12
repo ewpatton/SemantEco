@@ -726,6 +726,8 @@ $(window).bind("rendered_tree.semanteco", function (e, div) {
 // =====================================================================
 
 $(document).ready(function () {
+	
+
 
     // Check on mouseenter if ellipses are being used, qtip if they are (works on dynamicly created qtips)
     $('body').on('mouseenter' ,'.ellipses', function(e) {
