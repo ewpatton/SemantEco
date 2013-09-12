@@ -88,22 +88,38 @@ public class DataoneSolrModule implements Module {
 		System.out.println("test awesome");
 		return null;
 	}
-	
+
 	@QueryMethod
 	public JSONArray expandOnSearchTerm(final Request request) throws JSONException{
 		JSONArray searchTermTopicExpanded = new JSONArray();
 		JSONArray searchType = (JSONArray) request.getParam("searchType");
 		String searchTerm = request.getParam("term").toString();
-		
+
 		for(int i = 0; i< searchType.length(); i++){
 			System.out.println("a searchType: " + searchType.get(i));
-		
+
 			if(searchType.get(i).toString().equals("topic")){
 				System.out.println("(doing topic search now) "); 
-				searchTermTopicExpanded = expandTopicJSON(searchTerm);
+				//searchTermTopicExpanded = expandTopicJSON(searchTerm);
 			}	
 		}
 		return searchTermTopicExpanded;		
+	}
+
+	@QueryMethod
+	public String outputExpansionSelections(final Request request) throws JSONException{	
+		JSONArray expansion = (JSONArray) request.getParam("expansionTerm");
+		System.out.println("expansion: " + expansion.toString());
+		return null;
+	}
+	
+	@QueryMethod
+	public String performSearch(final Request request) throws JSONException{
+		JSONObject serviceResults = null;
+		JSONArray expansion = (JSONArray) request.getParam("expansionTerm");
+		System.out.println("expansion: " + expansion.toString());
+		serviceResults =  searchSolr(Orify(expansion));
+		return serviceResults.toString();
 	}
 
 	@QueryMethod
@@ -113,20 +129,25 @@ public class DataoneSolrModule implements Module {
 		//query = "http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=passeriformes&Submit=Submit&domain=organism&getTree=true&upward=true&level=1";			
 		//WebServiceRequestHandler.getRequest(query, "text");
 
+		JSONArray expansion = (JSONArray) request.getParam("expansionTerm");
+		System.out.println("expansion: " + expansion.toString());
+		
 		JSONObject objVocab = null;
 		JSONObject objTopic = null;
 		JSONArray domains = null;
 		String searchTerm = request.getParam("term").toString();
 		System.out.println("searched term is : " + searchTerm);
 		System.out.println("request object is : " + request.toString());
-		
-		
+
+
+		/*
 		if(request.getParam("domain") != null){
-		domains = (JSONArray) request.getParam("domain");
-		for(int i = 0; i< domains.length(); i++){
-			System.out.println("a domain: " + domains.get(i));
-		}	
+			domains = (JSONArray) request.getParam("domain");
+			for(int i = 0; i< domains.length(); i++){
+				System.out.println("a domain: " + domains.get(i));
+			}	
 		}
+		*/
 
 		JSONArray searchType = (JSONArray) request.getParam("searchType");
 		for(int i = 0; i< searchType.length(); i++){
@@ -155,24 +176,20 @@ public class DataoneSolrModule implements Module {
 		//System.out.println("Document1 count is: " + tempDataoneArray.length());
 
 		//query = "https://cn-orc-1.dataone.org/cn/v1/query/solr/?q=abstract:hydrology&wt=json&rows=100";
-		
+
 		//System.out.println("objVocab: " + objVocab.toString()); 
 		//System.out.println("objTopic: " + objTopic.toString()); 
 
 		JSONArray inVocabNotTopic = getDiff(objVocab, objTopic);
 		JSONArray inTopicNotVocab = getDiff(objTopic, objVocab);
-		
+
 		//diff id output
 		for(int i = 0 ; i < inVocabNotTopic.length(); i++){
 			System.out.println("inVocabNotTopic: " + inVocabNotTopic.get(i).toString());
 		}
 		System.out.println("inVocabNotTopic diff id count:" + inVocabNotTopic.length());
-
-		
 		//String searchTermTopicExpanded = expandConcept(searchTerm);
 		return objVocab.toString();
-
-
 	}
 
 	public static JSONObject searchSolr(String searchTerm) throws JSONException{
@@ -204,7 +221,7 @@ public class DataoneSolrModule implements Module {
 			query += "&domain=organism";
 		}
 		query += "&getTree=true&upward=true&level=1";
-		
+
 		System.out.println("query is : " + query);
 		JSONObject j2 = (JSONObject) getRequest(query, "json");	
 		System.out.println("j2 is : " + j2.toString());
@@ -212,19 +229,33 @@ public class DataoneSolrModule implements Module {
 		searchTerm = searchTerm + "+OR+" + "'" + preferredLabel + "'";
 		return searchTerm;
 	}
-	
-	
-	
-	public static JSONArray expandConceptJSON(String searchTerm, JSONArray domains) throws JSONException{
+
+
+
+	@QueryMethod
+	public static String expandConceptJSON(final Request request) throws JSONException{
 		JSONArray expansions = new JSONArray();
+		JSONArray domains = null;
+		String searchTerm = request.getParam("term").toString();
+		System.out.println("searched term is : " + searchTerm);
+		System.out.println("request object is : " + request.toString());
+
+
+		if(request.getParam("domain") != null){
+			domains = (JSONArray) request.getParam("domain");
+			for(int i = 0; i< domains.length(); i++){
+				System.out.println("a domain: " + domains.get(i));
+			}	
+		}                    
+
 		//example
 		//http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=passeriformes&Submit=Submit&domain=organism&getTree=true&upward=true&level=1	
 		String query = "http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=" + searchTerm + "&Submit=Submit" ;
 		if(domains != null){
-			query += "&domain=organism";
+			query += "&domain=" + domains.get(0).toString();
 		}
 		query += "&getTree=true&upward=true&level=1";
-		
+
 		System.out.println("query is : " + query);
 		JSONObject j2 = (JSONObject) getRequest(query, "json");	
 		System.out.println("j2 is : " + j2.toString());
@@ -232,7 +263,22 @@ public class DataoneSolrModule implements Module {
 		//searchTerm = searchTerm + "+OR+" + "'" + preferredLabel + "'";
 		expansions.put(searchTerm);
 		expansions.put(preferredLabel);
-		return expansions;
+		return expansions.toString();
+	}
+	
+	public static String Orify(JSONArray termList) throws JSONException{
+		String search = "";
+		String search2 = "";
+		for(int i = 0; i< termList.length(); i++){
+			//System.out.println("j2: " + temp[2].toString());	
+			if(!search.equals("") ){
+				search += "+OR+";
+			}
+			search += termList.get(i);
+		}
+		System.out.println("final search: " + search);
+		return search;
+		
 	}
 
 	/**
@@ -281,7 +327,7 @@ public class DataoneSolrModule implements Module {
 		System.out.println("final search: " + search);
 		return search;
 	}
-	
+
 	/**
 	 * from the search term, return the EES corpora trained topic that term appears in
 	 * calls Ben Adam's service at nceas and parses it into a solr string using disjunction
@@ -289,10 +335,22 @@ public class DataoneSolrModule implements Module {
 	 * @return
 	 * @throws JSONException
 	 */
-	public static JSONArray expandTopicJSON(String searchTerm) throws JSONException{
+	@QueryMethod
+	public static String expandTopicJSON(final Request request) throws JSONException{
 		JSONArray expansions = new JSONArray();
+		String query = "";
+		String searchTerm = request.getParam("term").toString();
+		System.out.println("search term is: " + searchTerm);
+		if(request.getParam("term") != null){
+			query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=" + searchTerm;
+		}
+		else{
+			return null;
+		}
+
+		//take the search Term
+
 		// http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=
-		String query = "http://alchemist.nceas.ucsb.edu/tmosearch/get_results_topic_expansion_ees.php?q=" + searchTerm;
 		System.out.println("query is : " + query);
 		String j2 = (String) getRequest(query, "text");	
 		System.out.println("j2 is : " + j2);
@@ -309,15 +367,15 @@ public class DataoneSolrModule implements Module {
 		String search = "";
 		String search2 = "";
 		for(int i = 2; i< temp3.length; i++){
-			
+
 			search2 = temp3[i].replace("<br/>","");
 			expansions.put(search2);
 
 		}
 		System.out.println("final search: " + expansions.toString());
-		return expansions;
+		return expansions.toString();
 	}
-	
+
 	/**
 	 * from the search term, return the EES corpora trained topic that term appears in
 	 * calls Ben Adam's service at nceas and parses it into a solr string using disjunction
@@ -346,7 +404,7 @@ public class DataoneSolrModule implements Module {
 		String search = "";
 		String search2 = "";
 		for(int i = 2; i< temp3.length; i++){
-			
+
 			search2 = temp3[i].replace("<br/>","");
 			expansions.put(search2);
 
@@ -359,13 +417,13 @@ public class DataoneSolrModule implements Module {
 		System.out.println("got to getDiff**********");
 		JSONObject  vocabResults = objVocab.getJSONObject("response");
 		JSONArray vocabDocs = (JSONArray) vocabResults.get("docs");
-		
+
 		JSONObject  topicResults = objTopic.getJSONObject("response");
 		JSONArray topicDocs = (JSONArray) topicResults.get("docs");
-		
+
 		System.out.println("vocabDocs: " + vocabDocs.toString()); 
 		System.out.println("topicDocs: " + topicDocs.toString()); 
-		
+
 		JSONArray diffIds = new JSONArray();
 		for(int i = 0 ; i < vocabDocs.length(); i++){
 
@@ -392,7 +450,7 @@ public class DataoneSolrModule implements Module {
 				diffIds.put(vocabDoc.get("id"));
 			}
 		}
-		
+
 
 		return diffIds;
 	}

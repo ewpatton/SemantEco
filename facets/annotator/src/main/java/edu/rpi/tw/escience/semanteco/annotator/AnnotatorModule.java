@@ -571,7 +571,7 @@ public class AnnotatorModule implements Module {
 	public String queryForInstances(final Request request) throws JSONException{
 		
 		String aClassString = request.getParam("aClass").toString();
-		return this.annotatorTester.queryForInstances(aClassString).toString();
+		return this.annotatorTester.getInstances(aClassString).toString();
 
 	}
 	
@@ -2175,6 +2175,29 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 		return items;
 	}
 	
+	@HierarchicalMethod(parameter = "individuals")
+	public Collection<HierarchyEntry> queryIndividualHM(final Request request, final HierarchyVerb action) throws JSONException, OWLOntologyCreationException, OWLOntologyStorageException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+		
+		if(action == HierarchyVerb.ROOTS) {		
+			return  queryIndividualHMRoots(request);
+		} 
+		/*
+		else if ( action == HierarchyVerb.CHILDREN ) {
+			return  queryClassHMChildren(request, (String) request.getParam("classes"));
+		} 
+	
+		else if ( action == HierarchyVerb.SEARCH ) {
+			return searchAnnotatorClass( request, (String) request.getParam("string") );
+		} 
+		
+		else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+			return annotatorClassToNode( request, (String) request.getParam("uri") );
+		}	
+		*/
+		return items;
+	}
+	
 	@QueryMethod
 	protected String searchAnnotations(final Request request) throws JSONException{
 		final Collection<HierarchyEntry> entries ;
@@ -2254,6 +2277,14 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	private Collection<HierarchyEntry> queryClassHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {		
 		System.out.println("queryClassHMRoots");
 		return  this.annotatorTester.getChildClasses("root");	
+	}
+	
+	private Collection<HierarchyEntry> queryIndividualHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {		
+		System.out.println("queryIndividualHMRoots");
+		//get the named class, but how do we add it to "selectedClass" in the bbq state upon selection?	
+		String aClass = request.getParam("selectedClass").toString();
+		
+		return  this.annotatorTester.getInstances(aClass);	
 	}
 	
 	private Collection<HierarchyEntry> queryClassHMChildren(final Request request, String clazz) throws OWLOntologyCreationException, JSONException {

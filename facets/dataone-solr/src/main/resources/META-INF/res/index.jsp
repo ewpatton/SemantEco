@@ -20,8 +20,13 @@
     <div id="facets">
     <div id="vocab" class="facet">
 
-<h1>Search</h1>
-<form onsubmit="return false;"><input name="term" size="15" type="text" /><br><br><input name="Submit" type="button" value="Submit">
+<h1>Enter Search Term(s):</h1>
+<form onsubmit="return false;"><input name="term" size="15" type="text"/><br><br>
+<form onsubmit="return false;"><input name="Expand" type="button" value="Expand" id="Expansion">
+
+<input name="Search" type="button" value="Search" id="Search"  >
+
+
 <br><br>
 <table id="data-source-module" border="1">
 <tr><th>Domain</th></tr><tr>
@@ -34,8 +39,8 @@
 <table id="data-source-module" border="1">
 <tr><th>Search Type</th></tr><tr>
 <td><div id="DataSourceFacet" class="facet">
-<input name="searchType" type="checkbox" value="vocabulary" id="vocabulary" /><label for="Vocabulary expansion">vocabulary expansion</label><br />
-<input name="searchType" type="checkbox" value="topic" id= "topic" /><label for="Topic expansion">topic expansion</label><br />
+<input name="searchType" type="checkbox" value="vocabulary" id="vocabulary" checked="checked" /><label for="Vocabulary expansion" >vocabulary expansion</label><br />
+<input name="searchType" type="checkbox" value="topic" id= "topic"  checked="checked" /><label for="Topic expansion">topic expansion</label><br />
 
 </div>
 </div>

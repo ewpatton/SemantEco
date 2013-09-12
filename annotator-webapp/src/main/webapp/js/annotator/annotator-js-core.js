@@ -42,6 +42,16 @@ var selectedOntologies = [];
 // Brendan Global Variable - Track ontolgies added by user (custom ones via a URL)
 var customUserOntologies = [];
 
+
+$(document).on('hashchange', function() { 
+	console.log("got a change in the bbq state!");
+window.alert("sometext");
+console.log($.bbq.getState()); 
+});
+
+
+
+
 // Generate the subtables for each column header in the CSV file.
 //    The handleFileSelect function below that generates the table calls this repeatedly.
 // Every subtable will be the same, (except for the ID's of the cells)
@@ -923,6 +933,10 @@ function queryOntologies(ontologies) {
 	            "dnd": dnd,
 	            "plugins": ["dnd"]
 	        });
+ 		SemantEcoUI.HierarchicalFacet.create("#IndividualTree", AnnotatorModule, "queryIndividualHM", "individuals", {
+                    "dnd": dnd,
+                    "plugins": ["dnd"]
+                });
 	        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
 	            "dnd": dnd,
 	            "plugins": ["dnd"]

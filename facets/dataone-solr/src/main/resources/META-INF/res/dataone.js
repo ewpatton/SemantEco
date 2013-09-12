@@ -1,10 +1,15 @@
-$(window).bind("initialize", function() {
-	$("input[type=button]").click(function(e) {
+var expansionTermsList = [];
 
+
+$(window).bind("initialize", function() {
+	//$("input[type=button]").click(function(e) {
+	
+	
+	$("input[id='Expansion']").click(function(e){
 
 		//vocab();
 		e.preventDefault();
-
+		console.debug("Expand button selected.");
 
 		/*
 	$("body").replaceWith('<div id="hierarchy"><h2>New heading</h2></div>');
@@ -43,7 +48,7 @@ $(window).bind("initialize", function() {
 //		var jsonString  = DataoneModule.accessService({}, function(d){console.debug(d)});
 		//$(document).ready(function(){
 
-		/*
+	/*
 		DataoneSolrModule.accessService({}, function (data) {
 			var table=$("<table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table>");
 			data = jQuery.parseJSON(data);
@@ -73,21 +78,106 @@ $(window).bind("initialize", function() {
 		return false;
 
 	});
+*/
+		
 
-		 */
-		var newdiv = $("<div id=expansion></div>");
-		DataoneSolrModule.expandTopicJSONPassteriformes({}, function(d){
-			console.debug(d); arr= JSON.parse(d); 
-			console.debug(arr); 
-			$.map(arr, function(item) { 
-				newdiv.append($("<input>").attr("type","checkbox").attr("name",item).val(item)); 
-				newdiv.append($("<label>").attr("for",item).text(item)); }); 
-				newdiv.append($("<br>"));
-		});
-		$("#vocab").append(newdiv);
-	});
+		//should conditionally check if topic expansion is selected
+		if ($('#topic').is(':checked')) {
+			$("#topic").show();
+			console.debug("topic is checked");
+
+
+
+
+			var topicDiv = $("<div id=topicExpansion></div>");
+			DataoneSolrModule.expandTopicJSON({}, function(d){
+				console.debug(d); 
+				arr= JSON.parse(d); 
+				console.debug(arr); 
+				$.map(arr, function(item) { 
+					expansionTermsList.push(item);
+					topicDiv.append($("<input>").attr("type","checkbox").attr("name","expansionTerm").val(item)); 
+					topicDiv.append($("<label>").attr("for",item).text(item)); 
+					topicDiv.append($("<br>"));
+				});
+			});
+
+			//<table id="data-source-module" border="1">
+			//<tr><th>Domain</th></tr><tr>
+			//var newTable = $(<"table">).attr("id","topicExpansion").attr("border",1);
+
+			$("#vocab").append(topicDiv);
+
+
+		}
+		
+		//should conditionally check if topic expansion is selected
+		if ($('#vocabulary').is(':checked')) {
+			$("#vocabulary").show();
+			console.debug("vocabulary is checked");
+			
+			var vocabDiv = $("<div id=expansion2></div>");
+			DataoneSolrModule.expandConceptJSON({}, function(d){
+				console.debug(d); 
+				arr= JSON.parse(d); 
+				console.debug(arr); 
+				$.map(arr, function(item) { 
+					expansionTermsList.push(item);
+					vocabDiv.append($("<input>").attr("type","checkbox").attr("name","expansionTerm").val(item)); 
+					vocabDiv.append($("<label>").attr("for",item).text(item)); 
+					vocabDiv.append($("<br>"));
+				});
+			});
+
+			//<table id="data-source-module" border="1">
+			//<tr><th>Domain</th></tr><tr>
+			//var newTable = $(<"table">).attr("id","topicExpansion").attr("border",1);
+
+			$("#vocab").append(vocabDiv);		
+		}
+		
+		}); //expansion button
 	//$("#vocab").append(newdiv.html());
 
+
+	$("input[id='Search']").click(function(e){
+		
+		
+		DataoneSolrModule.outputExpansionSelections({}, function(d){
+			console.debug(d); 
+		});
+		
+		console.debug("got to perform search.1"); 
+
+		DataoneSolrModule.performSearch({}, function (data) {
+			console.debug("got to perform search"); 
+
+			var table=$("<table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table>");
+			data = jQuery.parseJSON(data);
+
+			console.debug(data);
+			//data = data.response.docs;
+			//data = data.response;
+			//console.debug(data);
+
+			$.each( data.response.docs, function( index, item){
+				//table+='<tr><td>'+'88'+'</td><td>' +
+				//'88' + '</td><td> ' +
+				//'99' +  '</td></tr>';	table+= '<tr><td>Title4</td><td>Abstract</td><td>Keywords</td></tr>';
+				table.append("<tr><td>" + item.title + '</td><td> ' +
+						item.abstract + '</td><td> ' +
+						item.keywords +  '</td></tr>');
+			});
+
+			$("body").replaceWith(table);
+			$("td,th").css("border","1px solid black").css("border-collapse","collapse");
+			//		$('#outTable').replaceWith(table);
+		});
+
+		//return false;
+
+	});
+	
 });
 
 

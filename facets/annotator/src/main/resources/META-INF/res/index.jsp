@@ -63,6 +63,19 @@
                             </div>
                         </div>
                     </div>
+                        
+                        
+                        <!-- Individuals view -->
+                        <div id="individuals-module" class="module-facet-container">
+                        <h3>Individuals</h3>
+                        <div id="individualsFacet" class="facet">
+                            <div id="IndividualTree" class="hierarchy"></div>
+                            <div class="show-annotations-link inactive-text-link">Show Annotations</div>
+                            <div id="IndividualsDescription" class="description">
+                                <div id="IndividualBox"></div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Object properties view -->
                     <div id="object-properties-module" class="module-facet-container">
