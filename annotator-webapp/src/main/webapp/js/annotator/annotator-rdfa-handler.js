@@ -40,6 +40,7 @@ function createEnhancementNode(label, index){
 	// But we know the predicates for everything except for class/type.
 	d3.select(bNode).attr("rdfa:rel","conversion:enhance");
 	d3.select(colNum).attr("rdfa:property","ov:csvCol");
+	d3.select(colNum).attr("rdfa:datatype","xsd:integer");
 	d3.select(colLabel).attr("rdfa:property","ov:csvHeader conversion:label");
 	
 	// glue everything together....
@@ -348,6 +349,7 @@ function createCellBasedNode(cbCols){
 		var cols = document.createElement('div');
 		//var type = document.createElement('div');
 		d3.select(cols).attr("rdfa:property","ov:csvColumn");
+		d3.select(cols).attr("rdfa:datatype","xsd:integer");
 		//d3.select(type).attr("rdfa:typeof","qb:Observation");
 		var colList = "";
 		for ( i in cbCols ){
@@ -421,6 +423,7 @@ function createExplicitBundledBy(bundlingCol, subCol){
 	var bbCol = document.createElement('div');
 	d3.select(bbNode).attr("rdfa:rel","conversion:bundled_by")
 	d3.select(bbCol).attr("rdfa:property","ov:csvCol");
+	d3.select(bbCol).attr("rdfa:datatype","xsd:integer");
 	$(bbCol).text( bundlingCol );
 	bbNode.appendChild(bbCol);
 	subEnhancement.appendChild(bbNode);
@@ -446,6 +449,7 @@ function addAnnotationRDFa( index, annoID, predicate, object ){
 	$(anNodetation).attr("id","anno,"+index+","+annoID);
 	// TODO: give the root node an ID
 	d3.select(colNumber).attr("rdfa:property","ov:csvCol");
+	d3.select(colNumber).attr("rdfa:datatype","xsd:integer");
 	d3.select(pred).attr("rdfa:rel","conversion:predicate");
 	d3.select(obj).attr("rdfa:rel","conversion:object");
 	// ... add things...
