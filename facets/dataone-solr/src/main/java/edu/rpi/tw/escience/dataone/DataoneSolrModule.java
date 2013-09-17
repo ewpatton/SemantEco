@@ -254,16 +254,63 @@ public class DataoneSolrModule implements Module {
 		if(domains != null){
 			query += "&domain=" + domains.get(0).toString();
 		}
-		query += "&getTree=true&upward=true&level=1";
+		query += "&getTree=true&upward=true&level=3";
 
 		System.out.println("query is : " + query);
 		JSONObject j2 = (JSONObject) getRequest(query, "json");	
+		
+		//here we're just retrieving the first level of (example output):
+		//j2 is : {"preferredLabel":"nitrite","synonyms":["amyl nitrite"],
+		//"hypernyms":[{"preferredLabel":"nitrogen oxide","synonyms":["nitrogen dioxide radical"]},{"preferredLabel":"oxide","synonyms":[]},{"preferredLabel":"oxygen compound","synonyms":[]},{"preferredLabel":"nitrogen compound","synonyms":["imidoester"]},{"preferredLabel":"chemical","synonyms":[]}]}
+		
+		//rewrite this to not use data1.tw service but bioportal directly?
+		//you can do the xml parsing like Zach did (which he did in python) or 
+		//you can use the code available in the bioportal appliance that you've used. (which *is* that service
+		
+		
 		System.out.println("j2 is : " + j2.toString());
 		String preferredLabel = j2.get("preferredLabel").toString();
+		
+		JSONArray hypernymObject = (JSONArray) j2.get("hypernyms");
+		System.out.println("jsonArray is : " +  hypernymObject.toString());
+		
+		for(int i=0; i < hypernymObject.length(); i++){
+			JSONObject obj = (JSONObject) hypernymObject.get(i);
+			System.out.println("obj is : " +  obj.toString());
+
+			String label = obj.get("preferredLabel").toString();
+			System.out.println("prefrred2 is : " +  label);
+
+			if(!isStringInArray(label, expansions)){
+			expansions.put(label);
+			}
+		}
+		
+		//String synonymLabel = j2.get("synonyms").toString();
+
+		
 		//searchTerm = searchTerm + "+OR+" + "'" + preferredLabel + "'";
+		
+		if(!isStringInArray(preferredLabel, expansions)){
+			expansions.put(preferredLabel);
+			
+		}
+		if(!isStringInArray(searchTerm, expansions)){
 		expansions.put(searchTerm);
-		expansions.put(preferredLabel);
+		}
+		
 		return expansions.toString();
+	}
+	
+	public static boolean isStringInArray(String string, JSONArray jsonArray) throws JSONException{
+		for(int i=0; i < jsonArray.length(); i++){
+			if(string.toLowerCase().equals(jsonArray.get(i).toString().toLowerCase())){
+				return true;
+			}
+		}
+		
+		return false;
+		
 	}
 	
 	public static String Orify(JSONArray termList) throws JSONException{
@@ -274,7 +321,12 @@ public class DataoneSolrModule implements Module {
 			if(!search.equals("") ){
 				search += "+OR+";
 			}
-			search += termList.get(i);
+			//replace blanks in the string with '+'.
+			String term = termList.get(i).toString().replace(" ","+");
+
+			
+			
+			search += term;
 		}
 		System.out.println("final search: " + search);
 		return search;

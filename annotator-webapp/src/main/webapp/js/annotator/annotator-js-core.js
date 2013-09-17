@@ -43,11 +43,40 @@ var selectedOntologies = [];
 var customUserOntologies = [];
 
 
-$(document).on('hashchange', function() { 
-	console.log("got a change in the bbq state!");
-window.alert("sometext");
-console.log($.bbq.getState()); 
-});
+
+
+//  $(window).bind('hashchange', SemantEco.handleStateChange);
+//        jqdiv.jstree(args).bind("select_node.jstree", clickHandler)
+//well the fragment is a function of the window (see window.location), not the document. so it doesn't really make much sense to bind it on $(document)
+// $("div#class div.jstree").bind("select_node.jstree", ...)
+
+
+            
+//	SemantEcoUI.HierarchicalFacet.create("#IndividualTree", AnnotatorModule, "queryIndividualHM", "individuals", {
+  //      "dnd": dnd,
+    //    "plugins": ["dnd"]
+   // });
+
+//now call roots for Individuals facet
+
+//$("div#ClassTree div.jstree").bind("select_node.jstree", console.log("clickClassFacetHandler"))
+//	$(window).bind('hashchange', console.log("hasChange"));	//loads on window but not loading on ontolgoy selection or class selection
+		
+		//clickClassFacetHandler
+//)
+//var clickClassFacetHandler = function() {
+//	console.log("clickClassFacetHandler");
+ //how do I call my queryMethod which deals with reading from a bbq state item
+	//and returns the HierarchyEntry Collection that are the instances?
+
+	//call .empty()
+
+////	  SemantEcoUI.HierarchicalFacet.create("#IndividualTree", AnnotatorModule, "queryIndividualHM", "individuals", {
+//          "dnd": dnd,
+ ////         "plugins": ["dnd"]
+//      });
+//}
+
 
 
 
@@ -925,7 +954,7 @@ function queryOntologies(ontologies) {
 	 		}
 	 	}
 
-	    // Call patrice's new silly init call thingy ( :D )
+	    // Initialize ontology loading
 	    AnnotatorModule.initOWLModel({}, function (d) {
 	        
 	        // Clean up, then Re-query facets
@@ -935,10 +964,7 @@ function queryOntologies(ontologies) {
 	            "dnd": dnd,
 	            "plugins": ["dnd"]
 	        });
- 		SemantEcoUI.HierarchicalFacet.create("#IndividualTree", AnnotatorModule, "queryIndividualHM", "individuals", {
-                    "dnd": dnd,
-                    "plugins": ["dnd"]
-                });
+
 	        SemantEcoUI.HierarchicalFacet.create("#PropertyTree", AnnotatorModule, "queryObjPropertyHM", "objProperties", {
 	            "dnd": dnd,
 	            "plugins": ["dnd"]
@@ -960,6 +986,42 @@ function queryOntologies(ontologies) {
 	            "plugins": ["dnd"],
 	            "populate": false
 	        });
+        	console.log("prior to haschange event!");
+
+        	var current = $.bbq.getState("classes");
+    		if ( current == undefined ) {
+            	console.log("classes are..");
+    		}
+    		else{
+            	console.log("classes are2..");
+    		}
+    		
+	         $(document).on('hashchange', function() { 
+	        	console.log("got a change in the bbq state!");
+	        window.alert("sometext");
+	        console.log($.bbq.getState()); 
+	        
+	      $("div#ClassTree div.jstree").bind("select_node.jstree", console.log("clickClassFacetHandler"))
+
+	        
+	        //  $(window).bind('hashchange', SemantEco.handleStateChange);
+	        //        jqdiv.jstree(args).bind("select_node.jstree", clickHandler)
+	        //well the fragment is a function of the window (see window.location), not the document. so it doesn't really make much sense to bind it on $(document)
+	        // $("div#class div.jstree").bind("select_node.jstree", ...)
+	       
+
+	                    
+//	        	SemantEcoUI.HierarchicalFacet.create("#IndividualTree", AnnotatorModule, "queryIndividualHM", "individuals", {
+	          //      "dnd": dnd,
+	            //    "plugins": ["dnd"]
+	           // });
+
+	        //now call roots for Individuals facet
+
+	        });
+	        
+	        
+	        
 	    });// /initOWLModel
 	}
 }

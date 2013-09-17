@@ -106,7 +106,14 @@ $(window).bind("initialize", function() {
 			//<tr><th>Domain</th></tr><tr>
 			//var newTable = $(<"table">).attr("id","topicExpansion").attr("border",1);
 
-			$("#vocab").append(topicDiv);
+			
+var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%"><tr><th>Topic Expansions</th></tr>');
+			
+			
+			tableNew2.append(topicDiv);
+			$("#master-module").append(tableNew2);	
+			
+		//	$("#vocab").append(topicDiv);
 
 
 		}
@@ -116,7 +123,7 @@ $(window).bind("initialize", function() {
 			$("#vocabulary").show();
 			console.debug("vocabulary is checked");
 			
-			var vocabDiv = $("<div id=expansion2></div>");
+			var vocabDiv = $(" <div id=expansion2></div>");
 			DataoneSolrModule.expandConceptJSON({}, function(d){
 				console.debug(d); 
 				arr= JSON.parse(d); 
@@ -132,8 +139,15 @@ $(window).bind("initialize", function() {
 			//<table id="data-source-module" border="1">
 			//<tr><th>Domain</th></tr><tr>
 			//var newTable = $(<"table">).attr("id","topicExpansion").attr("border",1);
+			var tableNew = $('<table id="mmodule" border="1" style="float:left;width:100%"><tr><th>Vocabulary Expansions</th></tr>');
+			
+			//spinner usage from annotator-js-core.js
+			//		$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
 
-			$("#vocab").append(vocabDiv);		
+			tableNew.append(vocabDiv);
+			$("#master-module").append(tableNew);		
+			
+		//	$("#vocab").append(vocabDiv);		
 		}
 		
 		}); //expansion button
@@ -141,18 +155,16 @@ $(window).bind("initialize", function() {
 
 
 	$("input[id='Search']").click(function(e){
-		
-		
 		DataoneSolrModule.outputExpansionSelections({}, function(d){
 			console.debug(d); 
 		});
 		
-		console.debug("got to perform search.1"); 
+		console.debug("got to (before) perform search "); 
 
 		DataoneSolrModule.performSearch({}, function (data) {
-			console.debug("got to perform search"); 
+			console.debug("got to (within) perform search"); 
 
-			var table=$("<table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table>");
+			var table=$("<td><table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table></td>");
 			data = jQuery.parseJSON(data);
 
 			console.debug(data);
@@ -169,7 +181,11 @@ $(window).bind("initialize", function() {
 						item.keywords +  '</td></tr>');
 			});
 
-			$("body").replaceWith(table);
+			//$("body").replaceWith(table);
+			//try to add a td on the same tr of the selection options.
+			$("#master-module").append(table);		
+
+			
 			$("td,th").css("border","1px solid black").css("border-collapse","collapse");
 			//		$('#outTable').replaceWith(table);
 		});
