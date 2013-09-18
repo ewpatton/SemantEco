@@ -13,12 +13,12 @@
         
         <!-- Extended Stylesheets -->
         <link rel="stylesheet" type="text/css" href="js/jstree/themes/default/style.css" />
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" href="css/annotator/jquery-ui.css" />
         <link rel="stylesheet" type="text/css" href="css/dropdownchecklist/ui.dropdownchecklist.standalone.css" />
         <link rel="stylesheet" type="text/css" href="css/dropdownchecklist/ui.dropdownchecklist.themeroller.css" />
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" />
         <link rel="stylesheet" type="text/css" href="css/annotator/annotator-css-core.css" />
-        <link rel="stylesheet" type="text/css" href="//qtip2.com/v/stable/jquery.qtip.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/annotator/jquery.qtip.min.css" />
     </head>
     <body>
         <div id="header">
@@ -268,7 +268,7 @@
         <module:scripts />
         <script type="text/javascript" src="js/annotator/annotator-js-Queue.compressed.js"></script> <!-- Source: http://code.stephenmorley.org/javascript/queues/ -->
         <!-- External JS Libraries -->
-        <script type="text/javascript" src="//qtip2.com/v/stable/jquery.qtip.min.js"></script>
+        <script type="text/javascript" src="js/annotator/jquery.qtip.min.js"></script>
         <script type="text/javascript" src="js/annotator/d3.v3.min.js" charset="utf-8"></script>
         <script type="text/javascript" src="js/RDFa.1.2.1.js"></script>
         <!-- Katie's Code -->
