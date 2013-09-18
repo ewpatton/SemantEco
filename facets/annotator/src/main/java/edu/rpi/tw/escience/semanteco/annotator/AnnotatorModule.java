@@ -2282,8 +2282,10 @@ public String writeEnhancementForRangeTesterModel(Request request, String header
 	private Collection<HierarchyEntry> queryIndividualHMRoots(final Request request) throws OWLOntologyCreationException, JSONException, OWLOntologyStorageException, UnsupportedEncodingException {		
 		System.out.println("queryIndividualHMRoots");
 		//get the named class, but how do we add it to "selectedClass" in the bbq state upon selection?	
-		String aClass = request.getParam("selectedClass").toString();
-		
+		//String aClass = request.getParam("selectedClass").toString();
+		JSONArray classes = (JSONArray) request.getParam("classes");
+		String aClass = classes.get(0).toString();
+
 		return  this.annotatorTester.getInstances(aClass);	
 	}
 	

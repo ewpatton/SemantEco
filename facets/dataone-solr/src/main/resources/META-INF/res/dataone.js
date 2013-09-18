@@ -111,7 +111,7 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 			
 			
 			tableNew2.append(topicDiv);
-			$("#master-module").append(tableNew2);	
+			$("#expansion-module").append(tableNew2);	
 			
 		//	$("#vocab").append(topicDiv);
 
@@ -145,7 +145,7 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 			//		$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
 
 			tableNew.append(vocabDiv);
-			$("#master-module").append(tableNew);		
+			$("#expansion-module").append(tableNew);		
 			
 		//	$("#vocab").append(vocabDiv);		
 		}
@@ -183,7 +183,7 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 
 			//$("body").replaceWith(table);
 			//try to add a td on the same tr of the selection options.
-			$("#master-module").append(table);		
+			$("#masterDiv").append(table);		
 
 			
 			$("td,th").css("border","1px solid black").css("border-collapse","collapse");

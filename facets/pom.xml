@@ -76,6 +76,7 @@
     <module>semanteco-health</module>
     <module>semanteco-squirrel-facet</module>
     <module>dataone-solr</module>
+    <module>sample-faceted-module</module>
   </modules>
 
   <build>

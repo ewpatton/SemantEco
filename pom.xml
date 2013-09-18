@@ -51,6 +51,7 @@
     <module>webapp</module>
     <module>annotator-webapp</module>
     <module>testapp</module>
+    <module>sample-faceted-app</module>
   </modules>
 
   <dependencyManagement>
