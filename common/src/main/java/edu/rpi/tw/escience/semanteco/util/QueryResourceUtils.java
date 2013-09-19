@@ -22,7 +22,15 @@ public class QueryResourceUtils {
 		this.query = query;
 	}
 
-	public QueryResource rdfType() {
+	public final QueryResource rdfType() {
 		return getResource(RDF_NS, "type");
+	}
+
+	public final QueryResource rdfsLabel() {
+		return getResource(RDFS_NS, "label");
+	}
+
+	public final QueryResource dcIdentifier() {
+		return getResource(DC_NS, "identifier");
 	}
 }

@@ -30,6 +30,10 @@ public class QueryVariableUtils {
 		return getVariable( "characteristic" );
 	}
 
+	public final Variable id() {
+		return getVariable( "id" );
+	}
+
 	/**
 	 * Label, often used with rdfs:label or skos:prefLabel
 	 */
