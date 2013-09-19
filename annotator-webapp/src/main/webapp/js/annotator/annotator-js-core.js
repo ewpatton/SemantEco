@@ -1,6 +1,9 @@
 //Brendan Edit: Organize all the code
 var debugGlobal;
 
+//Keeps track of class assignments.
+var subclassOfNodeArray = [];
+
 //Keeps track of the ID's of the bundles.
 //These stay constant regardless of the bundle's resource or name, to make it
 //easier to find the bundles.
@@ -1262,6 +1265,28 @@ function existsA(theArray, theThing) {
 	} else
 		return true;
 }// /existsA
+
+// Objects to hold onto class assignment names and URIs for
+// enhancement node creation later.
+function subclassOfNode(theLabel,theURI){
+	this.className = theLabel;
+	this.subclassOf = theURI;
+}
+
+// Given a URI,
+// Returns TRUE if there is already a node with that URI in the array.
+// Otherwise, returns FALSE.
+function subclassAlreadyExists(theURI){
+	var answer = false;
+	$.each(subclassOfNodeArray, function(i,checkNode){
+		console.log("Testing URI: " + checkNode.subclassOf);
+		if ( checkNode.subclassOf === theURI ){	
+			console.log("Class already exists, no need to add a duplicate =)");
+			answer = true;
+		}
+	});
+	return answer;
+}
 
 //Given a bundle ID, returns the bundle that has that ID.
 //Used for assigning properties and things.

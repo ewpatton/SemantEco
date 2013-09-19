@@ -112,73 +112,27 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 			$(typeNode).attr("id","type-enhance,"+index);
 			bNode.appendChild(typeNode);
 		}
-		var subclassNode,classNameNode,eNode;	// These are the nodes for the subclassing enhancements. They
-												//	  might exist, OR we might need to create them. Either way,
-												//    use these variable.
-		var isClass = hasClassType(index);
-		var isDataType = hasDataType(index);
 		// Is the thing we are adding a Class or a Data Type?
 		if ( sourceFacet == "class" ){ // if it's a class
-			if ( isClass ){ 	// and so is the thing we're adding...
-				// The enhancement property is already set for typeNode
-				// Just add the stuff
-				// * NOTE that eNode is meant to remain blank!
-				console.log("updating class");
-				classNameNode = document.getElementById("classname-enhance,"+index);
-				subclassNode = document.getElementById("subclass-enhance,"+index);
-				$(typeNode).text(classLabel);
-				$(classNameNode).text(classLabel);
-				$(subclassNode).attr("href",classURI);
-			}// /if isClass
-			else { 				// if it isn't, then we need to create nodes....
-				console.log("adding class");
-				eNode = document.createElement('div');
-				classNameNode = document.createElement('div');
-				subclassNode = document.createElement('a');
-				// ... give them ID's.... 
-				$(eNode).attr("id","class-root-enhance,"+index);
-				$(classNameNode).attr("id","classname-enhance,"+index);
-				$(subclassNode).attr("id","subclass-enhance,"+index);
-				// ... and type them.
-				d3.select(eNode).attr("rdfa:rel","conversion:enhance");
-				d3.select(typeNode).attr("rdfa:property","conversion:range_name");
-				d3.select(classNameNode).attr("rdfa:property","conversion:class_name");
-				d3.select(subclassNode).attr("rdfa:property","conversion:subclass_of");
-				$(subclassNode).attr("href",classURI);
-				$(typeNode).text(classLabel);
+			// remove the href if user is overwriting a datatype assignment with a class
+			if($(typeNode).attr("href"))
 				$(typeNode).removeAttr("href");
-				$(classNameNode).text(classLabel);
-				$(subclassNode).text(classURI);
-				
-				eNode.appendChild(classNameNode);
-				eNode.appendChild(subclassNode);
-				bNode.appendChild(eNode);
-			}// /else create nodes
+			d3.select(typeNode).attr("rdfa:property","conversion:range_name");
+			$(typeNode).text(classLabel);
+			// We also need to add the class to the subclassOfNodes array (defined in annotator-js-core.js)
+			if ( !subclassAlreadyExists(classURI) ){
+				var newEntry = new subclassOfNode(classLabel,classURI);
+				subclassOfNodeArray.push(newEntry);
+			}
+			console.log("range_name update!");
 		}// /adding a class
 		else if (sourceFacet == "datatype"){ // the thing is a datatype
-			if (isDataType){				 // and so is the node we're adding it to....
-			// override the things; datatype is already set
-				console.log("updating datatype");
-				$(typeNode).text(classURI);
-			}// /isDataType
-			else {
-				// we have to delete some nodes =(
-				console.log("removing class, adding datatype");
-				eNode = document.getElementById("class-root-enhance,"+index);
-				classNameNode = document.getElementById("classname-enhance,"+index);
-				subclassNode = document.getElementById("subclass-enhance,"+index);
-				if ( eNode ) { // but only if the nodes exist....
-					eNode.removeChild(classNameNode);
-					eNode.removeChild(subclassNode);
-					bNode.removeChild(eNode);
-				}
-				// then re-type the typeNode and add the thing
-				d3.select(typeNode).attr("rdfa:property","conversion:range");
-				$(typeNode).attr("href",classURI);
-			}// /!isDataType
-		}// /adding a datatype
+			d3.select(typeNode).attr("rdfa:property","conversion:range").attr("href",classURI);
+			$(typeNode).text(classLabel);
+			console.log("range update!");
+		}
 		else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
-			console.log("updateClassType: invalid sourceFacet!");
+			console.log("updateClassType: invalid sourceFacet!\nExpected: 'class' or 'datatype'\nReceived: " + sourceFacet);
 	}
 }// /updateClassType
 
@@ -482,6 +436,23 @@ function createDomainTemplateNode(){
 
 }// /createDomainTemplateNode
 
+function createSubclassOfNodes(){
+	var eNode, cNameNode, subOfNode;
+	var mainNode = document.getElementById("e_process");
+	$.each(subclassOfNodeArray, function(i,writeNode){
+		console.log("writing subclass_of for " + writeNode.className);
+		eNode = document.createElement('div');
+		cNameNode = document.createElement('div');
+		subOfNode = document.createElement('a');
+		d3.select(eNode).attr("rdfa:rel","conversion:enhance");
+		d3.select(cNameNode).attr("rdfa:property","conversion:class_name").text(writeNode.className);
+		d3.select(subOfNode).attr("rdfa:rel","conversion:subclass_of").attr("href",writeNode.subclassOf);
+		eNode.appendChild(cNameNode);
+		eNode.appendChild(subOfNode);
+		mainNode.appendChild(eNode);
+	});
+}// /createSubclassOfNodes
+
 
 // Adds triples for: 
 //	- package-level data [DONE]
@@ -489,6 +460,7 @@ function createDomainTemplateNode(){
 //	- implicit bundles [mostly done]
 //	- explicit bundles [DONE]
 //	- subject annotations [DONE]
+// 	- subclass_of
 //	- name template
 //	- domain template 
 // This should be called inside the turtleGen function, or AFTER the user has 
@@ -523,12 +495,14 @@ function finalizeTriples(){
 		}
 	});
 
-	
 	// handle subject annotations: 
 	for ( var i=0; i<annotationID; i++ ){
 		console.log("handling annotation #" + i);
 		handleAnnotations(i);
 	}// /for each subject annotation
+	
+	// handle subclass_of for class assignments
+	createSubclassOfNodes();
 	
 	GreenTurtle.attach(document,true);
 }
