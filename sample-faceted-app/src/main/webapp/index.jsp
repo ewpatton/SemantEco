@@ -39,6 +39,21 @@
                             </div>
                         </div>
                     </div>
+                    
+                    
+                         <!-- classes view -->
+                    <div id="properties-module" class="module-facet-container">
+                        <h3>Properties</h3>
+                        <div id="PropertiesFacet" class="facet">
+                            <div id="PropertyTree" class="hierarchy"></div>
+                            <div class="show-annotations-link inactive-text-link">Show Annotations</div>
+                            <div id="PropertiesDescription" class="description">
+                                <div id="PropertyBox"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
                     </div>
                     </div>
     

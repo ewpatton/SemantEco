@@ -29,17 +29,44 @@
 <table id="master-module" border="1" style="float:left;width:50%">
  -->
     <style type="text/css">
- div.scrollWrapper{
+ #resultsView{
 
-  height:250px;
-  width:200px;
-  overflow:scroll;
+  border: solid black 0px;
+  overflow-y:scroll;
 }
+
+ #headers{
+
+  height: 50px;;
+}
+
+
+html, body {
+  height: 100%;
+}
+
+.fixedHeight{
+
+  max-height:148px;
+
+  overflow-y:scroll;
+}
+
+
+
+
+
   </style>
+
+<script>
+$(window).resize(function() {
+$('#resultsView').css('height', (window.innerHeight - 122) +'px');
+});
+</script>
 
  
  				
- <div id="masterDiv" class="facet" style="float: left; width: 100%" class="ui-sortable" class="scrollWrapper">
+ <div id="masterDiv" class="facet" style="width: 100%" class="ui-sortable" class="scrollWrapper">
  
  
  
@@ -121,6 +148,8 @@ height: 100%;
 						</div>
 					</table>
 				</div>
+				<div id="resultsView"></div>
 				</div>
+
 </body>
 </html>

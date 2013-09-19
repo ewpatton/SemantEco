@@ -89,7 +89,7 @@ $(window).bind("initialize", function() {
 
 
 
-			var topicDiv = $("<div id=topicExpansion></div>");
+			var topicDiv = $("<div id=topicExpansion class=\"fixedHeight\"></div>");
 			DataoneSolrModule.expandTopicJSON({}, function(d){
 				console.debug(d); 
 				arr= JSON.parse(d); 
@@ -123,7 +123,7 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 			$("#vocabulary").show();
 			console.debug("vocabulary is checked");
 			
-			var vocabDiv = $(" <div id=expansion2></div>");
+			var vocabDiv = $(" <div id=expansion2 class=\"fixedHeight\"></div>");
 			DataoneSolrModule.expandConceptJSON({}, function(d){
 				console.debug(d); 
 				arr= JSON.parse(d); 
@@ -164,7 +164,7 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 		DataoneSolrModule.performSearch({}, function (data) {
 			console.debug("got to (within) perform search"); 
 
-			var table=$("<td><table><tbody> <tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></tbody></table></td>");
+			var table=$("<table><tr><th>Title</th><th>Abstract</th><th>Keywords</th></tr></table>");
 			data = jQuery.parseJSON(data);
 
 			console.debug(data);
@@ -183,7 +183,7 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 
 			//$("body").replaceWith(table);
 			//try to add a td on the same tr of the selection options.
-			$("#masterDiv").append(table);		
+			$("#resultsView").append(table);		
 
 			
 			$("td,th").css("border","1px solid black").css("border-collapse","collapse");
