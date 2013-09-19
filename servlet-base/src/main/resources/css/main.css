@@ -446,6 +446,10 @@ div#facets {
 	width:100% !important;
 }
 
+div#facets select {
+    width: 100%;
+}
+
 input[type='button'],input[type='submit']{
     clear:both;
     font-family: Arial,Helvetica,verdana,sans-serif;
