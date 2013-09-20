@@ -251,13 +251,7 @@
         <!-- Katie Edit, creating a modal for giving the user links to BOTH enhancement params and the final RDF -->
         <div id="finalLinksModal" class="hidden">
             <p>Data Links:</p>
-            <table>
-				<tr>
-					<td id="params-link-here"><p>Click to download your Parameters file</p><a target="_blank"></a>
-					</td>
-					<td id="rdf-link-here"><p>Click to download your RDF</p><a target="_blank"></a>
-					</td>
-				</tr>
+            <table id="download-manager">
 			</table>
 		</div>
 

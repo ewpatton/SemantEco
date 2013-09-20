@@ -1,6 +1,9 @@
 //Brendan Edit: Organize all the code
 var debugGlobal;
 
+//For download history
+var downloadHistory = [];
+
 //Keeps track of class assignments.
 var subclassOfNodeArray = [];
 
@@ -826,12 +829,18 @@ $(document).ready(function () {
 			var rdfURL = results.rdfDataFile;
 			var paramsLink = paramsURL.split('/')[5];
 			var rdfLink = rdfURL.split('/')[5];
-			var params = (document.getElementById("params-link-here")).getElementsByTagName('a')[0];
-			var rdf = (document.getElementById("rdf-link-here")).getElementsByTagName('a')[0];
-			$(params).attr('href',paramsURL).text(paramsLink);
-			$(rdf).attr('href',rdfURL).text(rdfLink);
-			//params.innerHTML = "parameters file";
-			//rdf.innerHTML = "RDF file";
+			//var params = (document.getElementById("params-link-here")).getElementsByTagName('a')[0];
+			//var rdf = (document.getElementById("rdf-link-here")).getElementsByTagName('a')[0];
+			//$(params).attr('href',paramsURL).text(paramsLink);
+			//$(rdf).attr('href',rdfURL).text(rdfLink);
+			var r,p,f;
+			var table = document.getElementById("download-manager");
+			r = table.insertRow(0);
+			p = r.insertCell(0);
+			f = r.insertCell(1);
+			$(p).append($('<a>').attr('href',paramsURL).text(paramsLink));
+			$(f).append($('<a>').attr('href',rdfURL).text(rdfLink));
+			
 			$("#finalLinksModal").dialog({
 				modal: true,
 				width: 800,
@@ -1431,6 +1440,11 @@ BundleIdManager.prototype.requestBundleID = function() {
 
 BundleIdManager.prototype.returnBundleID = function(id) {
 	this.bundleIds.enqueue(id);
+}
+
+function download(params,file){
+	this.parametersLink = params;
+	this.fileLink = file;
 }
 
 //We extend the accordion function of jquery to allow multiple items open at a time
