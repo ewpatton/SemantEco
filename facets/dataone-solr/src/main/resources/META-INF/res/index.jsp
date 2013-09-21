@@ -4,10 +4,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:v="urn:schemas-microsoft-com:vml">
 <head>
+
+<link rel="shortcut icon" href="/favicon-magze.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-maze.ico" type="image/x-icon">
+
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <title>SolrTesting</title>
+
 <core:styles />
-<module:styles />
+<module:styles /> 
 <core:scripts />
 <module:scripts />
 </head>
@@ -37,7 +42,7 @@
 
  #headers{
 
-  height: 50px;;
+  height: 50px;
 }
 
 

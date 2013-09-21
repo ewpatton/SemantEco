@@ -15,9 +15,18 @@
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" />
         <link rel="stylesheet" type="text/css" href="css/annotator/annotator-css-core.css" />
         <link rel="stylesheet" type="text/css" href="//qtip2.com/v/stable/jquery.qtip.min.css" />
-
+<link rel="shortcut icon" href="/flex.gif" type="image/x-icon">
+<link rel="icon" href="/flex.gif" type="image/x-icon">
   </head>
+  <!-- this was causing the hierarchy create default action for SemantEco Portal
+  but not suitable for an app that does not want to load facets 
   <body onload="SemantEco.initialize()">
+  
+   -->
+   
+   
+     <body>
+   
     <div id="header">
       <div class="header-text">
         <img src="images/header.png" alt="FacetedApp" />

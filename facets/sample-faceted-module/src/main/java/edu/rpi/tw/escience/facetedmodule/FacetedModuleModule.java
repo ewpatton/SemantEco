@@ -2,14 +2,19 @@ package edu.rpi.tw.escience.facetedmodule;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
+
+import org.json.JSONException;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.rpi.tw.escience.semanteco.Domain;
+import edu.rpi.tw.escience.semanteco.HierarchyEntry;
 import edu.rpi.tw.escience.semanteco.Module;
 import edu.rpi.tw.escience.semanteco.ModuleConfiguration;
+import edu.rpi.tw.escience.semanteco.QueryMethod;
 import edu.rpi.tw.escience.semanteco.Request;
 import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
@@ -102,6 +107,23 @@ graph <http://dataone.tw.rpi.edu/inf>{
 	@Override
 	public void setModuleConfiguration(final ModuleConfiguration config) {
 		this.config = config;
+	}
+	
+	/**
+	 * will be called on node selection, which will ultimately call the query Executor
+	 * @param request
+	 * @return
+	 * @throws JSONException
+	 */
+	@QueryMethod
+	protected String searchAnnotations(final Request request) throws JSONException{
+		final Collection<HierarchyEntry> entries ;
+		String str = (String) request.getParam("search");
+	//	entries = this.annotatorTester.searchAnnotations(str);
+	//	return entries.toString();
+		
+		//must use a query executor to "run" all the visitors
+		return str;
 	}
 
 }
