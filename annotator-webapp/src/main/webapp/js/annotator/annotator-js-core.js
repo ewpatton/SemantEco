@@ -721,20 +721,20 @@ function modifyLabelAsRestriction(dropTarget, sourceFacet) {
 		return $(this).find("p." + label).length == 1;
 	});
 
-	console.log("More", siblingLabel, $(siblingLabel), siblingLabel.find("td").css("color"));
+	console.log("More", sourceFacet, siblingLabel, $(siblingLabel), siblingLabel.find("td").css("color"));
 
 	// Only apply if has not been set yet (indicated by color)
 	if ( siblingLabel.find("td").css("color") == "rgb(255, 0, 0)" ) { // Oh jquery, making me say red in rgb...
 		siblingLabel = siblingLabel.find("p." + label);
 
 		// Now apply logic
-		if ( ( sourceFacet == "annotationPropertiesFacet" || sourceFacet == "dataPropertiesFacet" ) && label == "class-label" ) {
+		if ( ( sourceFacet == "annotationProperty" || sourceFacet == "datatypeProperty" ) && label == "class-label" ) {
 			siblingLabel.empty().append("[datatype]");
-		} else if (sourceFacet == "objectPropertiesFacet" && label == "class-label" ) {
+		} else if (sourceFacet == "objectProperty" && label == "class-label" ) {
 			siblingLabel.empty().append("[class]");
-		} else if ( sourceFacet == "datatypesFacet" && label == "property-label" ) {
+		} else if ( sourceFacet == "datatype" && label == "property-label" ) {
 			siblingLabel.empty().append("[datatype or annotation property]");
-		} else if ( sourceFacet == "classesFacet" && label == "property-label" ) {
+		} else if ( sourceFacet == "class" && label == "property-label" ) {
 			siblingLabel.empty().append("[object property]");
 		} else {
 			console.log("Source of DnD invalid, can't apply logic over label!");
