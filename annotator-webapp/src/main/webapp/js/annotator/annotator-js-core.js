@@ -829,10 +829,6 @@ $(document).ready(function () {
 			var rdfURL = results.rdfDataFile;
 			var paramsLink = paramsURL.split('/')[5];
 			var rdfLink = rdfURL.split('/')[5];
-			//var params = (document.getElementById("params-link-here")).getElementsByTagName('a')[0];
-			//var rdf = (document.getElementById("rdf-link-here")).getElementsByTagName('a')[0];
-			//$(params).attr('href',paramsURL).text(paramsLink);
-			//$(rdf).attr('href',rdfURL).text(rdfLink);
 			var r,p,f;
 			var table = document.getElementById("download-manager");
 			r = table.insertRow(0);
@@ -1208,8 +1204,14 @@ $(function () {
 			width: 800,
 			buttons: {
 				Load: function () {
-					customUserOntologies.push($('input#addOntologyModalInput').val());
+					var importOntology = $('input#addOntologyModalInput').val();
+					customUserOntologies.push(importOntology);
 					queryOntologies(undefined);
+					var table = document.getElementById("ontology-manager");
+					var r = table.insertRow(0);
+					var ontologyURI = r.insertCell(0);
+					$(ontologyURI).append($('<a>').attr('href',importOntology).text(importOntology));
+					
 					$(this).dialog("close");
 				}
 			}

@@ -247,7 +247,11 @@
         <div id="addOntologyModal" class="hidden">
             <p>Specify a URL for your new ontology below.</p>
             <input type="text" id="addOntologyModalInput" placeHolder="e.g. http://www.example.com/ontology.owl" />
+			<p>Recent ontology imports:</p>
+			<table id="ontology-manager">
+			</table>
         </div>
+		
         <!-- Katie Edit, creating a modal for giving the user links to BOTH enhancement params and the final RDF -->
         <div id="finalLinksModal" class="hidden">
             <p>Data Links:</p>
