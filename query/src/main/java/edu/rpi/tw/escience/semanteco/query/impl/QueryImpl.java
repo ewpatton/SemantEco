@@ -269,7 +269,9 @@ public class QueryImpl implements Query {
 	}
 	
 	private void writeConstruct(PrintStream out) {
-		out.println(constructClause.toString());
+		if ( constructClause.getComponents().size() > 0 ) {
+			out.println(constructClause.toString());
+		}
 	}
 	
 	private void writeVars(PrintStream out) {
