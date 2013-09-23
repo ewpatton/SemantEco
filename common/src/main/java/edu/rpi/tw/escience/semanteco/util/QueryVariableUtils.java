@@ -30,6 +30,10 @@ public class QueryVariableUtils {
 		return getVariable( "characteristic" );
 	}
 
+	public final Variable date() {
+		return getVariable( "date" );
+	}
+
 	public final Variable id() {
 		return getVariable( "id" );
 	}

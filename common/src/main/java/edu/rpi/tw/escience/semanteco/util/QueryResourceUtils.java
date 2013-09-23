@@ -33,4 +33,8 @@ public class QueryResourceUtils {
 	public final QueryResource dcIdentifier() {
 		return getResource(DC_NS, "identifier");
 	}
+
+	public final QueryResource dcDate() {
+		return getResource(DC_NS, "date");
+	}
 }
