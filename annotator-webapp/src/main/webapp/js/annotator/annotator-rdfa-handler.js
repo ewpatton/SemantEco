@@ -32,20 +32,24 @@ function createEnhancementNode(label, index){
 	// create nodes for the first enhancements
 	var colNum = document.createElement('div');
 	var colLabel = document.createElement('div');
+	var typeNode = document.createElement('div');
 	
 	// These are the only two things where we already know the necessary
 	//   objects at table creation.
 	$(colNum).text(index);
 	$(colLabel).text(label);
+	$(typeNode).attr("id","type-range,"+index);
 	// But we know the predicates for everything except for class/type.
 	d3.select(bNode).attr("rdfa:rel","conversion:enhance");
 	d3.select(colNum).attr("rdfa:property","ov:csvCol");
 	d3.select(colNum).attr("rdfa:datatype","xsd:integer");
 	d3.select(colLabel).attr("rdfa:property","ov:csvHeader conversion:label");
+	d3.select(typeNode).attr("rdfa:property","conversion:range");
 	
 	// glue everything together....
 	bNode.appendChild(colNum);
 	bNode.appendChild(colLabel);
+	bNode.appendChild(typeNode);
 	
 	// stick it in the page
 	var rdfaDiv = document.getElementById("e_process");
@@ -106,30 +110,37 @@ function updateClassType(index,colType,classURI,classLabel,sourceFacet){
 		// if not in a bundle, do this
 		var bNode = document.getElementById("enhance-col,"+index);
 		// get the node we want to update, and check its type if any
-		var typeNode = document.getElementById("type-enhance,"+index);
-		if (!typeNode){
-			typeNode = document.createElement('div');
-			$(typeNode).attr("id","type-enhance,"+index);
-			bNode.appendChild(typeNode);
-		}
+		var rangeNode = document.getElementById("type-range,"+index);
+		var rangeNameNode = document.getElementById("range-name,"+index);
 		// Is the thing we are adding a Class or a Data Type?
-		if ( sourceFacet == "class" ){ // if it's a class
-			// remove the href if user is overwriting a datatype assignment with a class
-			if($(typeNode).attr("href"))
-				$(typeNode).removeAttr("href");
-			d3.select(typeNode).attr("rdfa:property","conversion:range_name");
-			$(typeNode).text(classLabel);
+		if ( sourceFacet ==	"class" ){ // if it's a class
+			// range is always Resource
+			// range_name is the class
+			if (!rangeNameNode){ // if there isn't a range_name node, we need to add it
+				rangeNameNode = document.createElement('div');
+				$(rangeNameNode).attr("id","range-name,"+index);
+				d3.select(rangeNameNode).attr("rdfa:property","conversion:range_name");
+			}
+			$(rangeNode).attr("href","http://www.w3.org/2000/01/rdf-schema#Resource");
+			$(rangeNameNode).attr("href",classURI);
+			$(rangeNameNode).text(classLabel);
 			// We also need to add the class to the subclassOfNodes array (defined in annotator-js-core.js)
 			if ( !subclassAlreadyExists(classURI) ){
 				var newEntry = new subclassOfNode(classLabel,classURI);
 				subclassOfNodeArray.push(newEntry);
 			}
-			console.log("range_name update!");
+			bNode.appendChild(rangeNameNode);
+			console.log("class update!");
 		}// /adding a class
 		else if (sourceFacet == "datatype"){ // the thing is a datatype
-			d3.select(typeNode).attr("rdfa:property","conversion:range").attr("href",classURI);
-			$(typeNode).text(classLabel);
-			console.log("range update!");
+			// we only need the range, which depends on the datatype
+			// and is (presumably) not Resource
+			if (rangeNameNode != null){
+				var removal = bNode.removeChild(rangeNameNode);
+			}
+			d3.select(rangeNode).attr("href",classURI);
+			$(rangeNode).text(classLabel);
+			console.log("datatype update!");
 		}
 		else // for whatever reason the new thing is neither a class nor a datatype!?!?1//
 			console.log("updateClassType: invalid sourceFacet!\nExpected: 'class' or 'datatype'\nReceived: " + sourceFacet);
