@@ -115,33 +115,33 @@ function buildTable(data) {
         } else {
             // This creates the portion in the DOM that will hold the RDFa!
             if (tharr[j] != ''){
-                createEnhancementNode(tharr[j], j);
+                createEnhancementNode(tharr[j], (j+1));
             }
             
             // colgroup
             oneCol = document.createElement('col');
-            $(oneCol).attr("id", "colgroup," + j);
+            $(oneCol).attr("id", "colgroup," + (j+1));
             group.appendChild(oneCol);
             // column header
             th = document.createElement('th');
             $(th).attr("class", "ui-widget-content the-context-menu column-header not-bundled");
             // $(th).attr("class", "the-context-menu"); // disabled for ease of debugging other things...
-            $(th).attr("id", '0,' + j);
-            th.innerHTML= (createSubtable(tharr[j], j));
+            $(th).attr("id", '0,' + (j+1));
+            th.innerHTML= (createSubtable(tharr[j], (j+1)));
             thr.appendChild(th);
             // bundled column row
             btd = document.createElement('td');
-            $(btd).attr("id", 'bundledRow,' + j);
+            $(btd).attr("id", 'bundledRow,' + (j+1));
             $(btd).attr("class", 'bundled-row');
             btr.appendChild(btd);
             // bundled column row
             btdx = document.createElement('td');
-            $(btdx).attr("id", 'bundledRow-extended,' + j);
+            $(btdx).attr("id", 'bundledRow-extended,' + (j+1));
             $(btdx).attr("class", 'bundled-row-extended');
             btrx.appendChild(btdx);
             // annotation row
             atd = document.createElement('td');
-            $(atd).attr("id", 'annotationRow,' + j);
+            $(atd).attr("id", 'annotationRow,' + (j+1));
             $(atd).attr("class", 'annotation-row');
             annTable = document.createElement('table');
             $(annTable).attr("class", 'annotation-table');
@@ -169,7 +169,7 @@ function buildTable(data) {
         var td;
         for (var j = 0; j < numcols; j++) {
             td = document.createElement('td');
-            $(td).attr("id", i + ',' + j);
+            $(td).attr("id", i + ',' + (j+1));
             if (link_reg.test(arr[j])) { // if the thing from the CSV file is a link
                 var a = document.createElement('a');
                 a.href = arr[j];
