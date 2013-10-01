@@ -2099,12 +2099,10 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		final Variable label = query.getVariable(VAR_NS + "label");
 		final Variable parent = query.getVariable(VAR_NS + "parent");
 		// URIs
-		final QueryResource subClassOf = query.getResource(RDFS_NS
-				+ "subClassOf");
+		final QueryResource subClassOf = query.getResource(RDFS_NS + "subClassOf");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
 		final QueryResource birdTaxonomy = query.getResource("http://ebird#birdTaxonomy");
 		request.getLogger().info("reached queryeBirdTaxonomyRoots \n");
-
 		// build query
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		vars.add(id);
@@ -2118,7 +2116,6 @@ public class SpeciesDataProviderModule implements Module, ProvidesDomain {
 		graph.addPattern(id, hasLabel, label);
 		// get only the subclasses of the subclasses of OWL thing
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
-
 		String resultStr = config.getQueryExecutor(request)
 				.accept("application/json").execute(query);
 		if (resultStr == null) {

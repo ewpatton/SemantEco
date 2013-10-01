@@ -236,6 +236,7 @@ public class DataoneSolrModule implements Module {
 	public static String expandConceptJSON(final Request request) throws JSONException{
 		JSONArray expansions = new JSONArray();
 		JSONArray domains = null;
+		String depth = "";
 		String searchTerm = request.getParam("term").toString();
 		System.out.println("searched term is : " + searchTerm);
 		System.out.println("request object is : " + request.toString());
@@ -246,7 +247,11 @@ public class DataoneSolrModule implements Module {
 			for(int i = 0; i< domains.length(); i++){
 				System.out.println("a domain: " + domains.get(i));
 			}	
-		}                    
+		}  
+		
+		if(request.getParam("depth") != null){
+			depth = request.getParam("depth").toString();
+		}   
 
 		//example
 		//http://data1.tw.rpi.edu/tomcat/VocabularyServer/ServeSparql?term=passeriformes&Submit=Submit&domain=organism&getTree=true&upward=true&level=1	
@@ -254,7 +259,13 @@ public class DataoneSolrModule implements Module {
 		if(domains != null){
 			query += "&domain=" + domains.get(0).toString();
 		}
+		
+		if(depth != ""){
+			query += "&getTree=true&upward=true&level=" + depth;
+		}
+		else{ //default at 3 levels for now
 		query += "&getTree=true&upward=true&level=3";
+		}
 
 		System.out.println("query is : " + query);
 		JSONObject j2 = (JSONObject) getRequest(query, "json");	
@@ -266,24 +277,46 @@ public class DataoneSolrModule implements Module {
 		//rewrite this to not use data1.tw service but bioportal directly?
 		//you can do the xml parsing like Zach did (which he did in python) or 
 		//you can use the code available in the bioportal appliance that you've used. (which *is* that service
-		
-		
-		System.out.println("j2 is : " + j2.toString());
+				
+		System.out.println("\n" + "vocab query results are : " + j2.toString() + "\n");
 		String preferredLabel = j2.get("preferredLabel").toString();
 		
+		//handle leaf term (i.e., matched term) level synonyms
+		if( j2.get("synonyms") != null){		
+			JSONArray leafSynonyms = (JSONArray) j2.get("synonyms");
+			   for(int j=0; j < leafSynonyms.length(); j++){
+					String syn = (String) leafSynonyms.get(j);
+					if(!isStringInArray(syn, expansions)){
+						expansions.put(syn);						
+					}
+			   }	
+		}
+
+		
 		JSONArray hypernymObject = (JSONArray) j2.get("hypernyms");
-		System.out.println("jsonArray is : " +  hypernymObject.toString());
+		System.out.println("hypernyms jsonArray is : " +  hypernymObject.toString());
 		
 		for(int i=0; i < hypernymObject.length(); i++){
 			JSONObject obj = (JSONObject) hypernymObject.get(i);
-			System.out.println("obj is : " +  obj.toString());
+			System.out.println("hypernym entry is : " +  obj.toString());
 
 			String label = obj.get("preferredLabel").toString();
-			System.out.println("prefrred2 is : " +  label);
+			System.out.println("\n" + "hypernym entry preferred term is : " +  label + "\n");
 
 			if(!isStringInArray(label, expansions)){
 			expansions.put(label);
 			}
+			
+			//also add the synonyms for the hypernym terms.
+			if( obj.get("synonyms") != null){
+			JSONArray synonyms = (JSONArray) obj.get("synonyms");
+			   for(int j=0; j < synonyms.length(); j++){
+					String syn = (String) synonyms.get(j);
+					if(!isStringInArray(syn, expansions)){
+						expansions.put(syn);						
+					}
+			   }
+			}	
 		}
 		
 		//String synonymLabel = j2.get("synonyms").toString();

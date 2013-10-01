@@ -19,7 +19,7 @@
 <link rel="icon" href="/flex.gif" type="image/x-icon">
   </head>
   <!-- this was causing the hierarchy create default action for SemantEco Portal
-  but not suitable for an app that does not want to load facets 
+  but not suitable for an app that does not want to load facets immediately on load
   <body onload="SemantEco.initialize()">
   
    -->
@@ -37,11 +37,12 @@
     
     <div id="sidebar" class="sidebar">
                 <div id="facets">
+                
                     <!-- classes view -->
-                    <div id="classes-module" class="module-facet-container">
-                        <h3>Classes</h3>
+                    <div id="chemicals-module" class="module-facet-container">
+                        <h3>Chemicals</h3>
                         <div id="classesFacet" class="facet">
-                            <div id="ClassTree" class="hierarchy"></div>
+                            <div id="ChemicalTree" class="hierarchy"></div>
                             <div class="show-annotations-link inactive-text-link">Show Annotations</div>
                             <div id="ClassesDescription" class="description">
                                 <div id="ClassBox"></div>
@@ -51,10 +52,33 @@
                     
                     
                          <!-- classes view -->
-                    <div id="properties-module" class="module-facet-container">
-                        <h3>Properties</h3>
+                    <div id="geospatialFeatures-module" class="module-facet-container">
+                        <h3>Geospatial Features</h3>
                         <div id="PropertiesFacet" class="facet">
-                            <div id="PropertyTree" class="hierarchy"></div>
+                            <div id="GeospatialFeatureTree" class="hierarchy"></div>
+                            <div class="show-annotations-link inactive-text-link">Show Annotations</div>
+                            <div id="PropertiesDescription" class="description">
+                                <div id="PropertyBox"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="organisms-module" class="module-facet-container">
+                        <h3>Organisms</h3>
+                        <div id="PropertiesFacet" class="facet">
+                            <div id="OrganismTree" class="hierarchy"></div>
+                            <div class="show-annotations-link inactive-text-link">Show Annotations</div>
+                            <div id="PropertiesDescription" class="description">
+                                <div id="PropertyBox"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                     <div id="topics-module" class="module-facet-container">
+                        <h3>Topics</h3>
+                        <div id="TopicsFacet" class="facet">
+                            <div id="TopicTree" class="hierarchy"></div>
                             <div class="show-annotations-link inactive-text-link">Show Annotations</div>
                             <div id="PropertiesDescription" class="description">
                                 <div id="PropertyBox"></div>
@@ -71,9 +95,11 @@
     
     </div>
 
-blah2
+<!-- blah2  -->
     <core:scripts />
     <module:scripts />
         <script type="text/javascript" src="js/test.js"></script>
+        <div id="resultsView"></div>
+				</div>
   </body>
 </html>

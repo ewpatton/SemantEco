@@ -107,7 +107,7 @@ $(window).bind("initialize", function() {
 			//var newTable = $(<"table">).attr("id","topicExpansion").attr("border",1);
 
 			
-var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%"><tr><th>Topic Expansions</th></tr>');
+var tableNew2 = $('<table id="topic-module" border="1" style="float:left;width:100%"><tr><th>Topic Expansions</th></tr>');
 			
 			
 			tableNew2.append(topicDiv);
@@ -122,8 +122,10 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 		if ($('#vocabulary').is(':checked')) {
 			$("#vocabulary").show();
 			console.debug("vocabulary is checked");
-			
+			//here its executing the handling of vocabulary, so put the spinner here
 			var vocabDiv = $(" <div id=expansion2 class=\"fixedHeight\"></div>");
+			$("#expansion2").append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");
+
 			DataoneSolrModule.expandConceptJSON({}, function(d){
 				console.debug(d); 
 				arr= JSON.parse(d); 
@@ -139,7 +141,8 @@ var tableNew2 = $('<table id="mmodule" border="1" style="float:left;width:100%">
 			//<table id="data-source-module" border="1">
 			//<tr><th>Domain</th></tr><tr>
 			//var newTable = $(<"table">).attr("id","topicExpansion").attr("border",1);
-			var tableNew = $('<table id="mmodule" border="1" style="float:left;width:100%"><tr><th>Vocabulary Expansions</th></tr>');
+			var tableNew = $('<table id="vocab-module" border="1" style="float:left;width:100%"><tr><th>Vocabulary Expansions</th></tr>');
+
 			
 			//spinner usage from annotator-js-core.js
 			//		$(".hierarchy").empty().append("<div class=\"loading\"><img src=\""+SemantEco.baseUrl+"images/spinner.gif\" /><br />Loading...</div>");

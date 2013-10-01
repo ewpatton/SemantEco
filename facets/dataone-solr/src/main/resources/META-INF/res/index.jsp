@@ -17,6 +17,9 @@
 <module:scripts />
 </head>
 <body onload="SemantEco.initialize()">
+	<div id="resultsView"></div>
+				</div>
+
 	<div id="header">
 		<div class="header-text">
 			<!--   <img src="images/header.png" alt="SolrTesting" /> -->
@@ -124,6 +127,20 @@ height: 100%;
 									<input name="searchType" type="checkbox" value="vocabulary"
 										id="vocabulary" checked="checked" /><label
 										for="Vocabulary expansion">vocabulary expansion</label><br />
+									<select name="depth">
+    <option value="" disabled="disabled" selected="selected" >Select a level of depth for vocabulary expansion</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    
+    <option value="to root">to root</option>
+    
+</select>
+									
+									
+									
 									<input name="searchType" type="checkbox" value="topic"
 										id="topic" checked="checked" /><label for="Topic expansion">topic
 										expansion</label><br />
@@ -153,8 +170,7 @@ height: 100%;
 						</div>
 					</table>
 				</div>
-				<div id="resultsView"></div>
-				</div>
+			
 
 </body>
 </html>
