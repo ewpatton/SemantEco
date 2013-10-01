@@ -77,4 +77,22 @@ public interface GraphComponentCollection extends GraphComponent {
 	 * @param var Variable to bind the result of expr to.
 	 */
 	void addBind(String expr, Variable var);
+
+	/**
+	 * Gets a subcomponent for the query that represents a named graph. Calling
+	 * this method is equivalent to calling {@link #getNamedGraph(String, boolean)}
+	 * with autoAdd = true.
+	 * @param uri The named graph to query against
+	 * @return NamedGraphComponent named by uri
+	 */
+	NamedGraphComponent getNamedGraph(String uri);
+
+	/**
+	 * Gets a subcomponent for the query that represents a named graph.
+	 * @param uri The named graph to query against
+	 * @param autoAdd If true, automatically add the collection to the query's
+	 * WHERE { } clause
+	 * @return NamedGraphComponent named by uri
+	 */
+	NamedGraphComponent getNamedGraph(String uri, boolean autoAdd);
 }

@@ -10,6 +10,7 @@ import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 import edu.rpi.tw.escience.semanteco.query.GraphComponent;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
+import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.UnionComponent;
 import edu.rpi.tw.escience.semanteco.query.Variable;
@@ -90,6 +91,16 @@ public class UnionComponentImpl implements UnionComponent {
 			first = false;
 		}
 		return out.toString();
+	}
+
+	@Override
+	public NamedGraphComponent getNamedGraph(String uri) {
+		throw new RuntimeException("getNamedGraph not allowed on Union. Call it on a child.");
+	}
+
+	@Override
+	public NamedGraphComponent getNamedGraph(String uri, boolean autoAdd) {
+		throw new RuntimeException("getNamedGraph not allowed on Union. Call it on a child.");
 	}
 
 }
