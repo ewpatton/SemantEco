@@ -136,9 +136,16 @@ public class QueryImpl implements Query {
 
 	@Override
 	public NamedGraphComponent getNamedGraph(String uri) {
+		return getNamedGraph(uri, true);
+	}
+
+	@Override
+	public NamedGraphComponent getNamedGraph(String uri, boolean autoAdd) {
 		if(!namedGraphs.containsKey(uri)) {
 			namedGraphs.put(uri, new NamedGraphComponentImpl(uri));
-			whereClause.addGraphComponent(namedGraphs.get(uri));
+			if(autoAdd) {
+				whereClause.addGraphComponent(namedGraphs.get(uri));
+			}
 		}
 		return namedGraphs.get(uri);
 	}

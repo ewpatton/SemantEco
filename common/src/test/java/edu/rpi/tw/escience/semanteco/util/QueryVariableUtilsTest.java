@@ -17,7 +17,6 @@ import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.UnionComponent;
 import edu.rpi.tw.escience.semanteco.query.Variable;
-
 import junit.framework.TestCase;
 
 public class QueryVariableUtilsTest extends TestCase {
@@ -294,6 +293,12 @@ public class QueryVariableUtilsTest extends TestCase {
 
 		@Override
 		public QueryResource createPropertyPath(String string) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public NamedGraphComponent getNamedGraph(String uri, boolean autoAdd) {
 			// TODO Auto-generated method stub
 			return null;
 		}

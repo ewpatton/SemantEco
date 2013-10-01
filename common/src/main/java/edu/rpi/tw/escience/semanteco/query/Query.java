@@ -55,12 +55,22 @@ public interface Query extends GraphComponentCollection {
 	GraphComponentCollection getConstructComponent();
 
 	/**
-	 * Gets a subcomponent for the query that represents
-	 * a named graph.
+	 * Gets a subcomponent for the query that represents a named graph. Calling
+	 * this method is equivalent to calling {@link #getNamedGraph(String, boolean)}
+	 * with autoAdd = true.
 	 * @param uri The named graph to query against
 	 * @return NamedGraphComponent named by uri
 	 */
 	NamedGraphComponent getNamedGraph(String uri);
+
+	/**
+	 * Gets a subcomponent for the query that represents a named graph.
+	 * @param uri The named graph to query against
+	 * @param autoAdd If true, automatically add the collection to the query's
+	 * WHERE { } clause
+	 * @return NamedGraphComponent named by uri
+	 */
+	NamedGraphComponent getNamedGraph(String uri, boolean autoAdd);
 	
 	/**
 	 * Creates a union graph component for this query.

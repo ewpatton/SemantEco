@@ -248,4 +248,9 @@ public class MockQuery implements Query {
 		throw new UnsupportedOperationException();
 	}
 
+    @Override
+    public NamedGraphComponent getNamedGraph(String uri, boolean autoAdd) {
+        throw new UnsupportedOperationException();
+    }
+
 }
