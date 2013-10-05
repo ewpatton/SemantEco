@@ -34,6 +34,7 @@ import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
+import edu.rpi.tw.escience.semanteco.query.UnionComponent;
 import edu.rpi.tw.escience.semanteco.query.Variable;
 import edu.rpi.tw.escience.semanteco.query.Query.Type;
 
@@ -313,11 +314,28 @@ graph <http://dataone.tw.rpi.edu/inf>{
 			//you want to union a graph component and a clause with two graph components
 			//query.get
 			
+			final UnionComponent union = query.createUnion();
+			query.addGraphComponent(union);
+			GraphComponentCollection coll = union.getUnionComponent(0);
+			NamedGraphComponent g1 =  coll.getNamedGraph("http://dataone.tw.rpi.edu/inferred2"); 
+			g1.addPattern(v1, subClassOf, entityResource);
+		    NamedGraphComponent g2 = coll.getNamedGraph("http://dataone.tw.rpi.edu/dois2");
+			g2.addPattern(goal, hasKeyword, v1);
+			
+			GraphComponentCollection coll2 = union.getUnionComponent(1);
+			NamedGraphComponent g3 =  coll2.getNamedGraph("http://dataone.tw.rpi.edu/dois2"); 
+			g3.addPattern(goal, hasKeyword, entityResource);
 
+
+			//NamedGraphComponent g1 = union.getUnionComponent(0).getNamedGraph("http://dataone.tw.rpi.edu/inferred2"); 
+
+			
+/*
 			GraphComponentCollection graph1 = query.getNamedGraph("http://dataone.tw.rpi.edu/inferred2");
 			graph1.addPattern(v1, subClassOf, entityResource);
 			GraphComponentCollection graph2 = query.getNamedGraph("http://dataone.tw.rpi.edu/dois2");
 			graph2.addPattern(goal, hasKeyword, v1);
+			*/
 
 			return query;				
 		}
@@ -534,7 +552,6 @@ GRAPH <http://dataone.tw.rpi.edu/dois2> { ?goal <http://dataone.tw.rpi.edu/hasAb
 		graph.addPattern(id, category, parent);
 		graph.addPattern(id, category, chemicalEntity);
 		graph.addPattern(id, hasLabel, label);
-
 		graph.addPattern(goal, hasKeyword, id);
 
 		//should also update the inferred graph patterns
@@ -578,10 +595,16 @@ graph<http://dataone.org/dois> {
 		 */	
 	}
 
-	private Collection<HierarchyEntry> queryGeospatialFeaturesHMRoots(final Request request) throws UnsupportedEncodingException {		
+	private Collection<HierarchyEntry> queryGeospatialFeaturesHMRoots(final Request request) throws UnsupportedEncodingException, JSONException {		
 		System.out.println("queryGeospatialFeaturesHMRoots");
+		
 
-		final Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+		
+
+		query = processFacetRequests(request, query);
+		
+		
 		// Variables
 		final Variable id = query.getVariable(VAR_NS + "child");
 		final Variable label = query.getVariable(VAR_NS + "label");
@@ -589,10 +612,13 @@ graph<http://dataone.org/dois> {
 		// URIs
 		final QueryResource category = query.getResource( "http://dataone.org#Category");
 		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
-		final QueryResource chemicalEntity = query.getResource("http://freebase.com#Geospatial_Feature_Entity");
+		final QueryResource GeospatialFeatureEntity = query.getResource("http://freebase.com#Geospatial_Feature_Entity");
 
 		//final NamedGraphComponent graph = query.getNamedGraph("http://dataone.org/dois");
 		final NamedGraphComponent graph = query.getNamedGraph("http://dataone.tw.rpi.edu/dois2");
+		
+		final Variable goal = query.getVariable(VAR_NS + "goal");
+		final QueryResource hasKeyword = query.getResource( "http://dataone.tw.rpi.edu/hasKeyword");
 
 
 		Set<Variable> vars = new LinkedHashSet<Variable>();
@@ -600,9 +626,24 @@ graph<http://dataone.org/dois> {
 		vars.add(label);
 		vars.add(parent);
 		query.setVariables(vars);
+		
+		
 		graph.addPattern(id, category, parent);
-		graph.addPattern(id, category, chemicalEntity);
+		graph.addPattern(id, category, GeospatialFeatureEntity);
 		graph.addPattern(id, hasLabel, label);
+        graph.addPattern(goal, hasKeyword, id);
+
+		
+		/*
+		 * from chemical pattern that doesn't work:
+		 * 		graph.addPattern(id, category, parent);
+		        graph.addPattern(id, category, chemicalEntity);
+		        graph.addPattern(id, hasLabel, label);
+		        graph.addPattern(goal, hasKeyword, id);
+		 * 
+		 */
+		
+		
 		String BINDINGS = "bindings";
 
 		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();

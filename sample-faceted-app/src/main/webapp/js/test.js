@@ -36,8 +36,12 @@ $(window).bind("rendered_tree.semanteco", function(e, d) {
 			
 			//how about in each query method check for all the params array
 			//as a uniform method for updating the query object for that facet
-			$("#ChemicalTree").empty();			
-			SemantEcoUI.HierarchicalFacet.create("#ChemicalTree", FacetedModuleModule, "queryChemicalHM", "chemicals");
+			
+			//$("#ChemicalTree").empty();			
+			//SemantEcoUI.HierarchicalFacet.create("#ChemicalTree", FacetedModuleModule, "queryChemicalHM", "chemicals");
+			
+			$("#GeospatialFeatureTree").empty();			
+			SemantEcoUI.HierarchicalFacet.create("#GeospatialFeatureTree", FacetedModuleModule, "queryGeospatialFeaturesHM", "features");
 			
 			//call query methods for updating trees
 			
