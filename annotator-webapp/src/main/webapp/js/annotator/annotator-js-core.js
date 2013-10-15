@@ -243,7 +243,7 @@ $(function () {
 				//    key of the selection and the column on which the menu was invoked
 				//    to the console.
 				callback: function (key, options) {
-					var index = $("th").index(this);
+					var index = ($("th").index(this))+1;
 					var m = "clicked: " + key + ", invoked on col: " + index;
 					console.log(m);
 				},
@@ -262,7 +262,7 @@ $(function () {
 						callback: function () {
 							// if one or fewer columns are selected, add/remove the column on which the menu was invoked
 							if (currentlySelected.length <= 1) {
-								var index = $("th").index(this);
+								var index = ($("th").index(this))+1;
 								var toggle = document.getElementById("nameRow," + index);
 								// if the column is already there, remove it
 								if (existsA(cellBased, index)) {
@@ -312,7 +312,7 @@ $(function () {
 						callback: function () {
 							// if one or fewer columns are selected, add/remove the column on which the menu was invoked
 							if (currentlySelected.length <= 1) {
-								var index = $("th").index(this);
+								var index = ($("th").index(this))+1;
 								var toggle = document.getElementById("nameRow," + index);
 								// if the column is already there, remove it
 								if (existsA(links_via, index)) {
@@ -462,7 +462,7 @@ $(function () {
 						name: "Add Comment",
 						disabled: true,
 						callback: function () {
-							var index = $("th").index(this);
+							var index = ($("th").index(this))+1;
 							$("#commentModal").dialog({
 								modal: true,
 								width: 800,
@@ -523,7 +523,7 @@ $(function () {
 						name: "Add Canonical Value",
 						disabled: true,
 						callback: function () {
-							var index = $("th").index(this);
+							var index = ($("th").index(this))+1;
 							$("#canonicalModal").dialog({
 								modal: true,
 								width: 800,
@@ -550,7 +550,7 @@ $(function () {
 						// Subject Annotation addes new triples. Forced triples is what we like to call it.
 						name: "Add Subject Annotation",
 						callback: function () {
-							var index = $("th").index(this);
+							var index = ($("th").index(this))+1;
 							checkAnnotationRow();
 							// Patrice wants it to default
 							var cType = "aPredicate";
