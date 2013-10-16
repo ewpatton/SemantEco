@@ -186,8 +186,8 @@ var tableNew2 = $('<table id="topic-module" border="1" style="float:left;width:1
 
 			//$("body").replaceWith(table);
 			//try to add a td on the same tr of the selection options.
-			$("#resultsView").append(table);		
-
+			$("#resultsView").append(table);	
+			//$("#masterDiv").append(table);		
 			
 			$("td,th").css("border","1px solid black").css("border-collapse","collapse");
 			//		$('#outTable').replaceWith(table);

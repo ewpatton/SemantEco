@@ -26,7 +26,7 @@
    
    
      <body>
-   
+ 
     <div id="header">
       <div class="header-text">
         <img src="images/header.png" alt="FacetedApp" />
@@ -86,12 +86,31 @@
                         </div>
                     </div>
                     
+                     <div id="phenoscape-module" class="module-facet-container">
+                        <h3>Phenoscape</h3>
+                        <div id="PhenoscapeFacet" class="facet">
+                            <div id="PhenoscapeTree" class="hierarchy"></div>
+                            <div class="show-annotations-link inactive-text-link">Show Annotations</div>
+                            <div id="PropertiesDescription" class="description">
+                                <div id="PropertyBox"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     
                     </div>
                     </div>
     
-    
-    
+    <style type="text/css">
+     div.sidebar {
+float: left;
+width: 18%;
+position: relative;
+height: 100%;
+}
+  </style>
+  
+    <div id="resultsView" style="float:right; width: 82%"></div>
     
     </div>
 

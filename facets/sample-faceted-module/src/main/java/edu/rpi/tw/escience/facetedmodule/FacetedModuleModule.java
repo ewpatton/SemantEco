@@ -32,6 +32,7 @@ import edu.rpi.tw.escience.semanteco.Resource;
 import edu.rpi.tw.escience.semanteco.SemantEcoUI;
 import edu.rpi.tw.escience.semanteco.query.GraphComponentCollection;
 import edu.rpi.tw.escience.semanteco.query.NamedGraphComponent;
+import edu.rpi.tw.escience.semanteco.query.OptionalComponent;
 import edu.rpi.tw.escience.semanteco.query.Query;
 import edu.rpi.tw.escience.semanteco.query.QueryResource;
 import edu.rpi.tw.escience.semanteco.query.UnionComponent;
@@ -398,8 +399,166 @@ graph <http://dataone.tw.rpi.edu/inf>{
 		//	}	
 		return items;
 	}
+	
+	@HierarchicalMethod(parameter = "phenoscape")
+	public Collection<HierarchyEntry> queryPhenoscapeHM(final Request request, final HierarchyVerb action) throws JSONException, UnsupportedEncodingException {
+		List<HierarchyEntry> items = new ArrayList<HierarchyEntry>();
+
+		if(action == HierarchyVerb.ROOTS) {
+
+			return  queryPhenoscapeRoots(request);
+		} else if ( action == HierarchyVerb.CHILDREN ) {
+				return  queryPhenoscapeChildren(request, (String) request.getParam("phenoscape"));
+		} 
+
+		//	else if ( action == HierarchyVerb.SEARCH ) {
+		//		return searchAnnotatorClass( request, (String) request.getParam("string") );
+		//	} 
+
+		//	else if ( action == HierarchyVerb.PATH_TO_NODE ) {
+		//		return annotatorClassToNode( request, (String) request.getParam("uri") );
+		//	}	
+		return items;
+	}
 
 
+	@QueryMethod
+	public String performResultPanelSearch(final Request request) throws JSONException{
+		System.out.println("performResultPanelSearch");
+		//sparql query on results
+
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+
+		query = processFacetRequests(request, query);
+
+
+		// Variables
+		final Variable id = query.getVariable(VAR_NS + "child");
+		final Variable label = query.getVariable(VAR_NS + "label");
+		final Variable parent = query.getVariable(VAR_NS + "parent");				
+		final Variable goal = query.getVariable(VAR_NS + "goal");
+		final Variable title = query.getVariable(VAR_NS + "title");
+		final Variable anAbstract = query.getVariable(VAR_NS + "anAbstract");
+		final Variable author = query.getVariable(VAR_NS + "author");
+
+		// URIs
+		//final QueryResource category = query.getResource( "http://dataone.org#Category");
+		final QueryResource hasLabel = query.getResource(RDFS_NS + "label");
+		final QueryResource chemicalEntity = query.getResource("http://freebase.com#Chemical_Entity");
+		final QueryResource hasKeyword = query.getResource( "http://dataone.tw.rpi.edu/hasKeyword");
+		
+		
+		
+		final QueryResource hasTitle = query.getResource( "http://dataone.tw.rpi.edu/hasTitle");
+		final QueryResource hasAbstract = query.getResource( "http://dataone.tw.rpi.edu/hasAbstract");
+		final QueryResource hasAuthor = query.getResource( "http://dataone.tw.rpi.edu/hasAuthor");
+
+
+
+		//final NamedGraphComponent graph = query.getNamedGraph("http://dataone.org/dois");
+		final NamedGraphComponent graph = query.getNamedGraph("http://dataone.tw.rpi.edu/dois2");
+
+		Set<Variable> vars = new LinkedHashSet<Variable>();
+		//vars.add(id);
+		//vars.add(label);
+		vars.add(goal);
+		vars.add(title);
+		vars.add(anAbstract);
+		vars.add(author);
+
+
+		//vars.add(parent);
+		query.setVariables(vars);
+		//graph.addPattern(id, category, parent);
+		//graph.addPattern(id, category, chemicalEntity);
+		//graph.addPattern(id, hasLabel, label);
+		//graph.addPattern(goal, hasKeyword, id);
+		
+		//mapping of keyword 
+		//graph.addPattern(goal, hasKeyword, id);
+		
+        OptionalComponent optional = query.createOptional();
+		
+		optional.addPattern(goal, hasTitle, title);
+		optional.addPattern(goal, hasAuthor, author);
+		optional.addPattern(goal, hasAbstract, anAbstract);
+		graph.addGraphComponent(optional);
+
+		//should also update the inferred graph patterns
+		// v2 subClassOf  id
+
+
+		String BINDINGS = "bindings";
+
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+		String resultStr = config.getQueryExecutor(request).accept("application/json").execute("http://data1.tw.rpi.edu/sparql",query);
+		
+		System.out.println("results are: " + resultStr);
+		JSONObject results = new JSONObject(resultStr);
+        JSONObject response = new JSONObject();
+        JSONArray data = new JSONArray();
+        results = results.getJSONObject("results");
+        response.put("success", true);
+        response.put("data", data);
+        
+        JSONArray bindings = results.getJSONArray(BINDINGS);
+        
+        for (int j = 0; j < bindings.length(); j++) {
+            JSONObject binding = bindings.getJSONObject(j);
+            
+            JSONObject mapping = new JSONObject();
+
+            
+            String document = binding.getJSONObject("goal").getString("value");
+            mapping.put("document", document);
+
+            
+            //look for "has"
+            if(binding.has("title")){
+                    String titleString = binding.getJSONObject("title").getString("value");
+                    mapping.put("title", titleString);
+            }
+            
+            if(binding.has("anAbstract")){
+                String abstractString = binding.getJSONObject("anAbstract").getString("value");   
+                mapping.put("abstract", abstractString);
+            }
+            
+            if(binding.has("author")){
+                String authorString = binding.getJSONObject("author").getString("value");
+                mapping.put("author", authorString);
+            }
+                
+            data.put(mapping);
+    }
+		
+		/*
+		if (resultStr == null) {
+			return entries;
+		}		try {
+			JSONObject results = new JSONObject(resultStr);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
+			for (int i = 0; i < bindings.length(); i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				String subclassId = binding.getJSONObject("child").getString(
+						"value");
+				String subclassLabel = binding.getJSONObject("label")
+						.getString("value");
+				HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(subclassId);
+				entry.setLabel(subclassLabel);
+				entries.add(entry);
+			}
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return entries;
+		*/
+		System.out.println("response is: " + response.toString());	
+		return response.toString();
+
+	}
 
 
 	@QueryMethod
@@ -518,6 +677,173 @@ GRAPH <http://dataone.tw.rpi.edu/dois2> { ?goal <http://dataone.tw.rpi.edu/hasAb
 		return entries;
 		 */
 	}
+	
+	//need to define the parent binding based on parameters.
+	private Collection<HierarchyEntry> queryPhenoscapeChildren(final Request request, String classes) throws UnsupportedEncodingException, JSONException {	
+		String PHENOSCAPE_NS = "http://vocab.phenoscape.org/";
+		System.out.println("queryPhenoscapeExample");
+
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+
+		// Variables
+				final Variable id = query.getVariable(VAR_NS + "child");
+				final Variable label = query.getVariable(VAR_NS + "label");
+				final Variable parent = query.getVariable(VAR_NS + "parent");			
+				
+				//String features = (String) request.getParam("features");
+				final QueryResource classRequiresSubclasses = query
+						.getResource(classes);
+				
+				
+				// URIs
+				//final QueryResource category = query.getResource( "http://dataone.org#Category");
+				final QueryResource subCladeOf = query.getResource(PHENOSCAPE_NS  + "subclade_of");
+				
+				Set<Variable> vars = new LinkedHashSet<Variable>();
+				
+				vars.add(id);
+				//vars.add(label);
+				vars.add(parent);
+				query.setVariables(vars);
+				
+				final NamedGraphComponent graph = query.getNamedGraph("http://phenoscape-example");
+				graph.addPattern(id, subCladeOf, classRequiresSubclasses);
+				String BINDINGS = "bindings";
+				
+				Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute("http://localhost:8890/sparql",query);
+
+
+				if (resultStr == null) {
+					return entries;
+				}		try {
+					JSONObject results = new JSONObject(resultStr);
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for (int i = 0; i < bindings.length(); i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						String subclassId = binding.getJSONObject("child").getString(
+								"value");
+						
+						
+						String[] temp2 = subclassId.split("/");
+                        System.out.println("temp2: " + temp2.toString());
+                        System.out.println("position: " + temp2.length);
+                        System.out.println("temp2 concat: " +temp2[temp2.length-1] );
+                        String newLabel = temp2[temp2.length-1];
+						
+						
+						
+						String subclassLabel = newLabel;
+						
+						
+					
+						HierarchyEntry entry = new HierarchyEntry();
+						entry.setUri(subclassId);
+						entry.setLabel(subclassLabel);
+						entries.add(entry);
+					}
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				return entries;	}
+	
+	//need to define a top
+	private Collection<HierarchyEntry> queryPhenoscapeRoots(final Request request) throws UnsupportedEncodingException, JSONException {	
+		String PHENOSCAPE_NS = "http://vocab.phenoscape.org/";
+		System.out.println("queryPhenoscapeExample");
+
+		Query query = config.getQueryFactory().newQuery(Type.SELECT);
+
+		// Variables
+				final Variable id = query.getVariable(VAR_NS + "child");
+				final Variable label = query.getVariable(VAR_NS + "label");
+				final Variable parent = query.getVariable(VAR_NS + "parent");			
+				
+				
+				// URIs
+				//final QueryResource category = query.getResource( "http://dataone.org#Category");
+				final QueryResource subCladeOf = query.getResource(PHENOSCAPE_NS  + "subclade_of");
+				
+				Set<Variable> vars = new LinkedHashSet<Variable>();
+				
+				vars.add(id);
+				//vars.add(label);
+				vars.add(parent);
+				query.setVariables(vars);
+				
+				final NamedGraphComponent graph = query.getNamedGraph("http://phenoscape-example");
+				graph.addPattern(id, subCladeOf, parent);
+				graph.addFilter("NOT EXISTS { ?parent <http://vocab.phenoscape.org/subclade_of> ?z } ");
+				
+				
+				String BINDINGS = "bindings";
+				
+				Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+				String resultStr = config.getQueryExecutor(request).accept("application/json").execute("http://localhost:8890/sparql",query);
+
+
+				if (resultStr == null) {
+					return entries;
+				}		try {
+					JSONObject results = new JSONObject(resultStr);
+					results = results.getJSONObject("results");
+					JSONArray bindings = results.getJSONArray(BINDINGS);
+					for (int i = 0; i < bindings.length(); i++) {
+						JSONObject binding = bindings.getJSONObject(i);
+						String subclassId = binding.getJSONObject("child").getString(
+								"value");
+						
+						
+						String[] temp2 = subclassId.split("/");
+                        System.out.println("temp2: " + temp2.toString());
+                        System.out.println("position: " + temp2.length);
+                        System.out.println("temp2 concat: " +temp2[temp2.length-1] );
+                        String newLabel = temp2[temp2.length-1];
+						
+						
+						
+						String subclassLabel = newLabel;
+						HierarchyEntry entry = new HierarchyEntry();
+						entry.setUri(subclassId);
+						entry.setLabel(subclassLabel);
+						entries.add(entry);
+					}
+				} catch (JSONException e) {
+					log.error("Unable to parse JSON results", e);
+				}
+				return entries;	}
+	
+	private Collection<HierarchyEntry>  parseResultString(String resultStr){
+		String BINDINGS = "bindings";
+		Collection<HierarchyEntry> entries = new ArrayList<HierarchyEntry>();
+
+		if (resultStr == null) {
+			return entries;
+		}		try {
+			JSONObject results = new JSONObject(resultStr);
+			results = results.getJSONObject("results");
+			JSONArray bindings = results.getJSONArray(BINDINGS);
+			for (int i = 0; i < bindings.length(); i++) {
+				JSONObject binding = bindings.getJSONObject(i);
+				String subclassId = binding.getJSONObject("child").getString(
+						"value");
+				String subclassLabel = binding.getJSONObject("label")
+						.getString("value");
+				HierarchyEntry entry = new HierarchyEntry();
+				entry.setUri(subclassId);
+				entry.setLabel(subclassLabel);
+				entries.add(entry);
+			}
+		} catch (JSONException e) {
+			log.error("Unable to parse JSON results", e);
+		}
+		return entries;
+
+		
+		
+	}
+	
 
 	private Collection<HierarchyEntry> queryChemicalHMRoots(final Request request) throws UnsupportedEncodingException, JSONException {		
 		System.out.println("queryChemicalHMRoots");

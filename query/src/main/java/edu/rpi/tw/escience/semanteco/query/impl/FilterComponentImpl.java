@@ -34,7 +34,8 @@ public class FilterComponentImpl implements GraphComponent {
 	
 	@Override
 	public String toString() {
-		return "FILTER("+condition+")";
+		return "FILTER "+condition;
+		//return "FILTER("+condition+")";
 	}
 	
 	@Override

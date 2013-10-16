@@ -17,8 +17,8 @@
 <module:scripts />
 </head>
 <body onload="SemantEco.initialize()">
-	<div id="resultsView"></div>
-				</div>
+	
+			<!-- 	</div> -->
 
 	<div id="header">
 		<div class="header-text">
@@ -76,7 +76,7 @@ $('#resultsView').css('height', (window.innerHeight - 122) +'px');
  				
  <div id="masterDiv" class="facet" style="width: 100%" class="ui-sortable" class="scrollWrapper">
  
- 
+ <div id="resultsView" style="float:right; width: 82%"></div>
  
  
  

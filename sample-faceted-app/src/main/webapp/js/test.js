@@ -6,6 +6,7 @@ SemantEcoUI.HierarchicalFacet.create("#ChemicalTree", FacetedModuleModule, "quer
 SemantEcoUI.HierarchicalFacet.create("#GeospatialFeatureTree", FacetedModuleModule, "queryGeospatialFeaturesHM", "features");
 SemantEcoUI.HierarchicalFacet.create("#OrganismTree", FacetedModuleModule, "queryOrganismsHM", "organisms");
 SemantEcoUI.HierarchicalFacet.create("#TopicTree", FacetedModuleModule, "queryTopicsHM", "topics");
+SemantEcoUI.HierarchicalFacet.create("#PhenoscapeTree", FacetedModuleModule, "queryPhenoscapeHM", "phenoscape");
 
 
 //Enable sortable and collapsable facets
@@ -42,6 +43,41 @@ $(window).bind("rendered_tree.semanteco", function(e, d) {
 			
 			$("#GeospatialFeatureTree").empty();			
 			SemantEcoUI.HierarchicalFacet.create("#GeospatialFeatureTree", FacetedModuleModule, "queryGeospatialFeaturesHM", "features");
+			
+			FacetedModuleModule.performResultPanelSearch({}, function (data) {
+			
+				console.debug("performResultPanelSearch"); 
+				data = jQuery.parseJSON(data);
+
+				console.debug(data);
+				$("#resultsView").empty();
+				$("#resultsView").append(table);		
+
+				var table=$("<table><tr><th>Title</th><th>Abstract</th><th>Id</th><th>Author</th></tr></table>");
+				
+				console.debug(data.data);
+
+				//put results in the table
+				
+			$.each( data.data, function( index, item){
+				console.debug("title : " + item.document);
+					//table+='<tr><td>'+'88'+'</td><td>' +
+					//'88' + '</td><td> ' +
+					//'99' +  '</td></tr>';	table+= '<tr><td>Title4</td><td>Abstract</td><td>Keywords</td></tr>';
+					table.append("<tr><td>" + 
+							item.title + '</td><td> ' +
+							item.abstract + '</td><td> ' +
+							item.id + '</td><td> ' +
+
+							item.author +  '</td></tr>');
+				});
+				
+				
+				$("#resultsView").append(table);		
+
+
+				
+			});
 			
 			//call query methods for updating trees
 			
