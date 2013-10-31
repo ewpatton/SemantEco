@@ -29,7 +29,8 @@
  
     <div id="header">
       <div class="header-text">
-        <img src="images/header.png" alt="FacetedApp" />
+     <!--   <img src="images/header.png" alt="FacetedApp" /> -->
+     Test Faceted App
       </div>
     </div>
     <div id="content">
