@@ -19,15 +19,9 @@
       <artifactId>semanteco-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.hp.hpl.jena</groupId>
-      <artifactId>arq</artifactId>
-      <version>2.8.8</version>
-      <exclusions>
-	<exclusion>
-	  <groupId>com.hp.hpl.jena</groupId>
-	  <artifactId>jena</artifactId>
-	</exclusion>
-      </exclusions>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-arq</artifactId>
+      <version>2.10.0</version>
     </dependency>
   </dependencies>
 

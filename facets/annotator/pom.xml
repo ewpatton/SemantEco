@@ -57,7 +57,7 @@
     <dependency>
       <groupId>com.clarkparsia.pellet</groupId>
       <artifactId>pellet-core</artifactId>
-      <version>2.2.2</version>
+      <version>2.3.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
