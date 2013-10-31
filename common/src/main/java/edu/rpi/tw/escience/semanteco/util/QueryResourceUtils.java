@@ -37,4 +37,12 @@ public class QueryResourceUtils {
 	public final QueryResource dcDate() {
 		return getResource(DC_NS, "date");
 	}
+
+	public final QueryResource owlClass() {
+		return getResource(OWL_NS, "Class");
+	}
+
+	public final QueryResource rdfsSubClassOf() {
+		return getResource(RDFS_NS, "subClassOf");
+	}
 }
