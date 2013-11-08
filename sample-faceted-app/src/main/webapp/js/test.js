@@ -23,6 +23,37 @@ $("div#facets")
 	forcePlaceholderSize: true
 });
 
+//Accordion Helper Functions
+function setActiveFacet(target, index) {
+	$.each($(target).find("h3"), function(i) {
+		//console.log("searching to activate", i, index, this);
+		if(i == index) {
+			$(this).toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+			.find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+			.next().slideToggle();
+			return false; // break out of loop
+		}
+	});
+};
+
+function getActiveFacets(target) {
+	var isActive = [];
+	$.each($(target).find("h3"), function(i) {
+		if($(this).hasClass("ui-state-active"))
+			isActive.push(i);
+	});
+	return isActive;
+};
+
+var activeFacets = $("div#facets").size() > 0 ? getActiveFacets($("div#facets")) : [];
+//Look at all the facets TODO: don't reference by index but by name! Breaks if the items are shuffled around
+for (var i = 0; i < 5; i++) {
+	if ($.inArray(i, activeFacets) < 0) {
+		console.log("activate facet #", i);
+		setActiveFacet($("div#facets"), i);	
+	}
+}
+
 
 $(window).bind("rendered_tree.semanteco", function(e, d) {
 	//if ($(d).parents('div#ChemicalTree').length) {
