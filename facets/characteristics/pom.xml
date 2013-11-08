@@ -25,12 +25,10 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>edu.rpi.tw.escience</groupId>
       <artifactId>semanteco-test</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

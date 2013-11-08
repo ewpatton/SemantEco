@@ -352,9 +352,5 @@ public class RegulationModule implements Module {
 		optional.addFilter("?"+PROP_VAR+" = "+xsdOp);
 		optional.addBind("\""+mathOp+"\"", mathVar);
 	}
-
-	@QueryMethod
-	public String getThresholds(final Request request) {
-		return null;
-	}
+	
 }

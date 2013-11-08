@@ -17,6 +17,8 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.graph.query.BindingQueryPlan;
+import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.ontology.AllDifferent;
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.AnnotationProperty;
@@ -1046,6 +1048,11 @@ public class OntModelWrapper implements OntModel {
 	}
 
 	@Override
+	public QueryHandler queryHandler() {
+		return m.queryHandler();
+	}
+
+	@Override
 	public Resource wrapAsResource(Node arg0) {
 		return m.wrapAsResource(arg0);
 	}
@@ -1704,6 +1711,12 @@ public class OntModelWrapper implements OntModel {
 	@Override
 	public void loadImports() {
 		m.loadImports();
+	}
+
+	@Override
+	public <T extends RDFNode> ExtendedIterator<T> queryFor(
+			BindingQueryPlan arg0, List<BindingQueryPlan> arg1, Class<T> arg2) {
+		return m.queryFor(arg0, arg1, arg2);
 	}
 
 	@Override
