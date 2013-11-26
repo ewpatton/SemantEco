@@ -355,6 +355,8 @@ public class RegulationModule implements Module {
 
 	@QueryMethod
 	public String getThresholds(final Request request) {
-		return null;
+		ThresholdQueryBuilder builder = new ThresholdQueryBuilder();
+		Query query = builder.build(config);
+		return config.getQueryExecutor(request).executeLocalQuery(query);
 	}
 }
