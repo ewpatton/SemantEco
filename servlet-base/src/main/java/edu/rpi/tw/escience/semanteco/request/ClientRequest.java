@@ -211,6 +211,7 @@ public class ClientRequest extends LoggerWrapper implements Request {
 
 	@Override
 	public Model getDataModel(Domain domain) {
+		ensureModelCacheForDomain(domain);
 		if(models.get(domain).dataModel == null) {
 			models.get(domain).dataModel = ModelFactory.createDefaultModel();
 			manager.buildDataModel(models.get(domain).dataModel, this, domain);
