@@ -24,6 +24,7 @@ public final class ThresholdQueryBuilder {
 
 		final Variable cls = query.getVariable(VAR_NS + "cls");
 		final Variable bn = query.createBlankNode();
+		final Variable subPropBN = query.createBlankNode();
 		final Variable charRes = query.getVariable(VAR_NS + "charRes");
 		final Variable limitRes = query.getVariable(VAR_NS + "limitRes");
 		final Variable unitRes = query.getVariable(VAR_NS + "unitRes");
@@ -42,7 +43,8 @@ public final class ThresholdQueryBuilder {
 		query.addPattern(cls, res.rdfType(), res.owlClass());
 		query.addPattern(cls, res.owlIntersectionOf(), list);
 		query.addPattern(list, res.rdfListPropPath(), charRes);
-		query.addPattern(charRes, res.owlOnProperty(), res.escimHasCharacteristic());
+		query.addPattern(charRes, res.owlOnProperty(), subPropBN);
+		query.addPattern(subPropBN, res.rdfsSubPropertyOf(), res.escimHasCharacteristic());
 		query.addPattern(charRes, res.owlHasValue(), var.characteristic());
 		query.addPattern(list, res.rdfListPropPath(), limitRes);
 		query.addPattern(limitRes, path, bn);

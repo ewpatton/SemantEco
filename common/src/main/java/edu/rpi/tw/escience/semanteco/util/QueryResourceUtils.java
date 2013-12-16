@@ -75,4 +75,8 @@ public class QueryResourceUtils {
 	public final QueryResource escimHasCharacteristic() {
 		return getResource(ESCIM_NS, "hasCharacteristic");
 	}
+
+	public final QueryResource rdfsSubPropertyOf() {
+		return getResource( RDFS_NS, "subPropertyOf" );
+	}
 }
